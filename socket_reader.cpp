@@ -23,31 +23,19 @@ std::pair<bool, std::string> SocketReader::read()
 		m_chunk_size - buflen
 	);
 	bytes_read += buflen;
-	if (bytes_read == 0){
+	if (bytes_read == 0)
 		return {false, {}};
-	}
 
 	bool found = false;
 	size_t i = 0;
 	for (; i < bytes_read; ++i){
-		if (this->ignores(buffer[i]))
-			continue;
-
 		// search forward for the delimiter
-		// j is the number of characters read ahead
-		// d is the number of characters read from the delimiter
-		size_t j = 0, d = 0;
-		for (; d < m_delimiter.length() and i + j < bytes_read; ++j, ++d){
-			if (this->ignores(buffer[i + j])){
-				--d;
-				continue;
-			}
-			if (buffer[i + j] != m_delimiter[j]){
+		size_t j = 0;
+		for (; j < m_delimiter.length() and i + j < bytes_read; ++j)
+			if (buffer[i + j] != m_delimiter[j])
 				break;
-			}
-		}
 
-		if (d == m_delimiter.length()){
+		if (j == m_delimiter.length()){
 			// found the delimiter
 			found = true;
 			size_t k = i + m_delimiter.length();
@@ -55,7 +43,7 @@ std::pair<bool, std::string> SocketReader::read()
 			break;
 		} else if (i + j == bytes_read){
 			// found part of the delimiter, but buffer is exhausted
-			m_buffer = std::string{m_delimiter, 0, d};
+			m_buffer = std::string{m_delimiter, 0, j};
 			break;
 		}
 	}
