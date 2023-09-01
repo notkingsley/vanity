@@ -21,9 +21,8 @@ private:
 	const std::string m_delimiter{"$$$"};
 
 	// temporary buffer of unparsed characters or partial delimiter
-	// we copy here after a message is hit, and copy back on next read()
-	// this is only expensive if there's a lot of characters
-	// present in the buffer after the delimiter when we read()
+	// we copy here after a message or part of delimiter is hit,
+	// and use it directly as buffer on next read() to avoid copying
 	std::string m_buffer;
 
 	// buffer for message read

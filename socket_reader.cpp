@@ -8,23 +8,28 @@ SocketReader::SocketReader(ClientSocket& socket)
 
 std::pair<bool, std::string> SocketReader::read()
 {
-	std::string msg;
-	char buffer[m_chunk_size];
-	for (size_t i = 0; i < m_buffer.length(); ++i){
-		buffer[i] = m_buffer[i];
+	char* buffer = nullptr;
+	char stack_buffer[m_chunk_size];
+	if (m_buffer.empty()){
+		buffer = stack_buffer;
+	} else {
+		m_buffer.reserve(m_chunk_size);
+		buffer = m_buffer.data();
 	}
+
+	size_t buflen = m_buffer.length();
 	size_t bytes_read = m_socket.read(
-		buffer + m_buffer.length(),
-		m_chunk_size - m_buffer.length()
+		buffer + buflen,
+		m_chunk_size - buflen
 	);
-
+	bytes_read += buflen;
 	if (bytes_read == 0){
-		return {false, msg};
+		return {false, {}};
 	}
-	bytes_read += m_buffer.length();
-	m_buffer.clear();
 
-	for (size_t i = 0; i < bytes_read; ++i){
+	bool found = false;
+	size_t i = 0;
+	for (; i < bytes_read; ++i){
 		if (this->ignores(buffer[i]))
 			continue;
 
@@ -44,7 +49,7 @@ std::pair<bool, std::string> SocketReader::read()
 
 		if (d == m_delimiter.length()){
 			// found the delimiter
-			std::swap(msg, m_message);
+			found = true;
 			size_t k = i + m_delimiter.length();
 			m_buffer = std::string{&buffer[k], bytes_read - k};
 			break;
@@ -52,11 +57,18 @@ std::pair<bool, std::string> SocketReader::read()
 			// found part of the delimiter, but buffer is exhausted
 			m_buffer = std::string{m_delimiter, 0, d};
 			break;
-		} else {
-			// didn't find the delimiter
-			m_message.push_back(buffer[i]);
 		}
 	}
+	m_message.append(buffer, i);
+
+	std::string msg;
+	if (found)
+		std::swap(msg, m_message);
+
+	if (i == bytes_read)
+		// exhausted buffer, clear in case m_buffer was buffer
+		m_buffer.clear();
+	
 	return {true, msg};
 }
 
