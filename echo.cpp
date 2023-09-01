@@ -34,12 +34,15 @@ void EchoServer::start(int port)
 	vanity::ClientSocket client = m_socket.accept();
 	std::cout << "Accepted a connection" << std::endl;
 
-	vanity::BaseServer server{};
-	vanity::SocketReader reader{server, client};
+	vanity::SocketReader reader{client};
 
 	while (true){
-		if (reader.read()){
+		auto res = reader.read();
+		if (res.first){
 			std::cout << "Read data\n";
+			if (not res.second.empty())
+				std::cout << "Message: " << res.second << '\n';
+			client.write(res.second);
 		} else {
 			std::cout << "Connection closed\n";
 			break;
