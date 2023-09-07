@@ -2,9 +2,12 @@
 #define VANITY_SOCKET_H
 
 #include <exception>
+#include <cerrno>
 #include <string>
 #include <netdb.h>
+#include <sys/epoll.h>
 
+#include "socket_event_handler.h"
 
 namespace vanity{
 
@@ -17,7 +20,7 @@ private:
 	std::string m_msg;
 
 public:
-	SocketError(const std::string& msg) : m_msg(msg) {}
+	explicit SocketError(const std::string& msg) : m_msg{"SocketError " + std::to_string(errno) + ": " + msg} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
 };
 
@@ -28,12 +31,12 @@ class Socket
 {
 protected:
 	// the file descriptor of the socket
-	int m_fd;
-	sockaddr_in m_addr;
+	int m_fd{};
+	sockaddr_in m_addr{};
 	socklen_t m_addr_size = sizeof(m_addr);
 
 	// can't be instantiated directly
-	Socket() {};
+	Socket() = default;
 
 public:
 	// close the connection
@@ -42,29 +45,39 @@ public:
 	// no copy
 	Socket(const Socket&) = delete;
 	Socket& operator=(const Socket&) = delete;
+
+	// move constructor
+	Socket(Socket&& other) noexcept;
+	Socket& operator=(Socket&& other) noexcept;
+
+	// register to epoll for events with handler
+	void register_event(int epoll_fd, SocketEventHandler& handler) const;
+
+	// unregister from epoll for events
+	void unregister_event(int epoll_fd, SocketEventHandler& handler) const;
 };
 
 /*
 A class representing a socket connection that has been received
 */
-class ClientSocket : Socket
+class ClientSocket : public Socket
 {
 public:
 	// instantiate a ClientSocket object,
 	// blocks until a connection is received
-	ClientSocket(int server_fd);
+	explicit ClientSocket(int server_fd);
 
 	// read a string from the socket
 	size_t read(char* buffer, size_t buffer_size);
 
 	// write a string to the socket
-	void write(std::string msg);
+	void write(const std::string& msg);
 };
 
 /*
 A server socket binds and listens for connections
 */
-class ServerSocket : Socket
+class ServerSocket : public Socket
 {
 public:
 	ServerSocket();
@@ -74,6 +87,8 @@ public:
 
 	// start listening for connections
 	void listen(int port);
+
+	int get_fd() const noexcept;
 };
 
 } // namespace vanity

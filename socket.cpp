@@ -7,8 +7,33 @@ namespace vanity{
 
 Socket::~Socket()
 {
-	close(m_fd);
+	if (m_fd >= 0)
+		close(m_fd);
 }
+
+Socket::Socket(Socket &&other) noexcept {
+	m_fd = other.m_fd;
+	m_addr = other.m_addr;
+	m_addr_size = other.m_addr_size;
+	other.m_fd = -1;
+}
+
+Socket &Socket::operator=(Socket &&other) noexcept {
+	m_fd = other.m_fd;
+	m_addr = other.m_addr;
+	m_addr_size = other.m_addr_size;
+	other.m_fd = -1;
+	return *this;
+}
+
+void Socket::register_event(int epoll_fd, SocketEventHandler& handler) const {
+	handler.register_event(epoll_fd, m_fd);
+}
+
+void Socket::unregister_event(int epoll_fd, SocketEventHandler &handler) const {
+	SocketEventHandler::unregister_event(epoll_fd, m_fd);
+}
+
 
 ClientSocket::ClientSocket(int server_fd)
 {
@@ -20,18 +45,19 @@ ClientSocket::ClientSocket(int server_fd)
 
 size_t ClientSocket::read(char* buffer, size_t buffer_size)
 {
-	int bytes_read = ::read(m_fd, buffer, buffer_size);
+	auto bytes_read = ::read(m_fd, buffer, buffer_size);
 	if (bytes_read < 0){
 		throw SocketError("Could not read from the socket");
 	}
 	return bytes_read;
 }
 
-void ClientSocket::write(std::string msg)
+void ClientSocket::write(const std::string& msg)
 {
 	if (::write(m_fd, msg.c_str(), msg.length()) < 0)
 		throw SocketError("Could not write to the socket");
 }
+
 
 ServerSocket::ServerSocket()
 {
@@ -58,6 +84,10 @@ void ServerSocket::listen(int port)
 ClientSocket ServerSocket::accept()
 {
 	return ClientSocket{m_fd};
+}
+
+int ServerSocket::get_fd() const noexcept {
+	return m_fd;
 }
 
 } // namespace vanity
