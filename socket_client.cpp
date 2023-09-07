@@ -12,12 +12,7 @@ SocketClient::SocketClient(ClientSocket&& socket)
 
 bool SocketClient::ready(AbstractBaseServer& server)
 {
-	auto res = m_reader.read(server);
-	if (not res.first){
-		std::cout << "Connection closed\n";
-	}
-
-	return res.first;
+	return m_reader.read(server);
 }
 
 void SocketClient::register_event(int epoll_fd) {

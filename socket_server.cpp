@@ -52,6 +52,7 @@ void SocketServer::start() {
 		for (int i = 0; i < n; ++i) {
 			auto *ready_handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
 			if (!ready_handler->ready(*this)){
+				std::cout << "Connection closed" << std::endl;
 				remove_handler(*ready_handler);
 				return;
 			}

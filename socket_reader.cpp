@@ -6,27 +6,22 @@ namespace vanity{
 SocketReader::SocketReader(ClientSocket& socket)
 	: m_socket(socket) {}
 
-std::pair<bool, std::string> SocketReader::read(AbstractBaseServer& server)
+bool SocketReader::read(AbstractBaseServer& server)
 {
-	char* buffer = nullptr;
-	char stack_buffer[m_chunk_size];
-	if (m_buffer.empty()){
-		buffer = stack_buffer;
-	} else {
-		m_buffer.reserve(m_chunk_size);
-		buffer = m_buffer.data();
+	char buffer[m_chunk_size];
+	for (size_t i = 0; i < m_delimiter_read; ++i){
+		buffer[i] = m_delimiter[i];
 	}
-
-	size_t buflen = m_buffer.length();
 	size_t bytes_read = m_socket.read(
-		buffer + buflen,
-		m_chunk_size - buflen
+			buffer + m_delimiter_read,
+			m_chunk_size - m_delimiter_read
 	);
-	bytes_read += buflen;
 	if (bytes_read == 0)
-		return {false, {}};
+		return false;
 
-	bool found = false;
+	bytes_read += m_delimiter_read;
+	m_delimiter_read = 0;
+
 	size_t i = 0;
 	for (; i < bytes_read; ++i){
 		// search forward for the delimiter
@@ -37,29 +32,20 @@ std::pair<bool, std::string> SocketReader::read(AbstractBaseServer& server)
 
 		if (j == m_delimiter.length()){
 			// found the delimiter
-			found = true;
-			size_t k = i + m_delimiter.length();
-			m_buffer = std::string{&buffer[k], bytes_read - k};
-			break;
+			server.handle(m_message, m_socket);
+			m_message.clear();
+			i += m_delimiter.length() - 1;
+
 		} else if (i + j == bytes_read){
 			// found part of the delimiter, but buffer is exhausted
-			m_buffer = std::string{m_delimiter, 0, j};
+			m_delimiter_read = j;
 			break;
+
+		} else {
+			m_message += buffer[i];
 		}
 	}
-	m_message.append(buffer, i);
-
-	std::string msg;
-	if (found){
-		std::swap(msg, m_message);
-		server.handle(msg, m_socket);
-	}
-
-	if (i == bytes_read)
-		// exhausted buffer, clear in case m_buffer was buffer
-		m_buffer.clear();
-	
-	return {true, msg};
+	return true;
 }
 
 } // namespace vanity

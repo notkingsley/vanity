@@ -9,7 +9,7 @@ namespace vanity{
 
 /*
 A SocketReader reads and buffers text from a ClientSocket,
-returning a message if the delimiter is encountered
+emitting a message if the delimiter is encountered
 */
 class SocketReader
 {
@@ -20,10 +20,8 @@ private:
 	// the message delimiter
 	const std::string m_delimiter{"~~~~"};
 
-	// temporary buffer of unparsed characters or partial delimiter
-	// we copy here after a message or part of delimiter is hit,
-	// and use it directly as buffer on next read() to avoid copying
-	std::string m_buffer;
+	// characters read from the delimiter during last read
+	size_t m_delimiter_read = 0;
 
 	// buffer for message read
 	std::string m_message;
@@ -35,14 +33,10 @@ public:
 	// create a SocketReader
 	explicit SocketReader(ClientSocket& socket);
 
-	// Read once from the socket. this will block if the socket is empty.
-	// this reads exactly once from the socket, even if the data fills the buffer,
-	// this is to avoid blocking in the case that the message exactly fills the buffer
-	// returns a pair of (is_open, message)
-	// if is_open is false, socket is closed and empty and message will be empty
-	// if is_open is true, message will be returned if a delimiter was found,
-	// empty otherwise
-	std::pair<bool, std::string> read(AbstractBaseServer& server);
+	// Read once from the socket, buffering until the delimiter is found.
+	// transparently alerts the server when a message is read
+	// returns true if the socket is open, false if it is closed
+	bool read(AbstractBaseServer& server);
 };
 
 } // namespace vanity
