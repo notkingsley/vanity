@@ -86,8 +86,4 @@ ClientSocket ServerSocket::accept()
 	return ClientSocket{m_fd};
 }
 
-int ServerSocket::get_fd() const noexcept {
-	return m_fd;
-}
-
 } // namespace vanity

@@ -59,6 +59,6 @@ public:
 	uint32_t get_event_mask() const override { return EPOLLOUT; };
 };
 
-}
+} // namespace vanity
 
 #endif //VANITY_SOCKET_EVENT_HANDLER_H

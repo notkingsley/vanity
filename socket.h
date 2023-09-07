@@ -87,8 +87,6 @@ public:
 
 	// start listening for connections
 	void listen(int port);
-
-	int get_fd() const noexcept;
 };
 
 } // namespace vanity
