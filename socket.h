@@ -7,9 +7,12 @@
 #include <netdb.h>
 #include <sys/epoll.h>
 
-#include "socket_event_handler.h"
+//#include "socket_event_handler.h"
 
 namespace vanity{
+
+// forward declaration
+class SocketEventHandler;
 
 /*
 There was a connection related error
@@ -54,7 +57,7 @@ public:
 	void register_event(int epoll_fd, SocketEventHandler& handler) const;
 
 	// unregister from epoll for events
-	void unregister_event(int epoll_fd, SocketEventHandler& handler) const;
+	void unregister_event(int epoll_fd) const;
 };
 
 /*
@@ -68,10 +71,10 @@ public:
 	explicit ClientSocket(int server_fd);
 
 	// read a string from the socket
-	size_t read(char* buffer, size_t buffer_size);
+	size_t read(char* buffer, size_t buffer_size) const;
 
 	// write a string to the socket
-	void write(const std::string& msg);
+	void write(const std::string& msg) const;
 };
 
 /*

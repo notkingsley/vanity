@@ -5,6 +5,7 @@
 #include "socket_connection_server.h"
 #include "socket_server.h"
 
+
 namespace vanity {
 
 SocketServer::SocketServer() {
@@ -50,7 +51,7 @@ void SocketServer::start() {
 
 		for (int i = 0; i < n; ++i) {
 			auto *ready_handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
-			if (!ready_handler->ready()){
+			if (!ready_handler->ready(*this)){
 				remove_handler(*ready_handler);
 				return;
 			}
@@ -60,6 +61,11 @@ void SocketServer::start() {
 
 void SocketServer::listen(uint16_t port) {
 	add_handler(std::make_unique<SocketConnectionServer>(*this, port));
+}
+
+void SocketServer::handle(const std::string &msg, const ClientSocket &socket) {
+	std::cout << "Received: " << msg << std::endl;
+	socket.write(msg);
 }
 
 } // namespace vanity

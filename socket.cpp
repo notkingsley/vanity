@@ -1,6 +1,7 @@
 #include <unistd.h>
 
 #include "socket.h"
+#include "socket_event_handler.h"
 
 
 namespace vanity{
@@ -30,7 +31,7 @@ void Socket::register_event(int epoll_fd, SocketEventHandler& handler) const {
 	handler.register_event(epoll_fd, m_fd);
 }
 
-void Socket::unregister_event(int epoll_fd, SocketEventHandler &handler) const {
+void Socket::unregister_event(int epoll_fd) const {
 	SocketEventHandler::unregister_event(epoll_fd, m_fd);
 }
 
@@ -43,7 +44,7 @@ ClientSocket::ClientSocket(int server_fd)
 	}
 }
 
-size_t ClientSocket::read(char* buffer, size_t buffer_size)
+size_t ClientSocket::read(char* buffer, size_t buffer_size) const
 {
 	auto bytes_read = ::read(m_fd, buffer, buffer_size);
 	if (bytes_read < 0){
@@ -52,7 +53,7 @@ size_t ClientSocket::read(char* buffer, size_t buffer_size)
 	return bytes_read;
 }
 
-void ClientSocket::write(const std::string& msg)
+void ClientSocket::write(const std::string& msg) const
 {
 	if (::write(m_fd, msg.c_str(), msg.length()) < 0)
 		throw SocketError("Could not write to the socket");

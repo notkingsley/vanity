@@ -6,7 +6,7 @@ namespace vanity{
 SocketReader::SocketReader(ClientSocket& socket)
 	: m_socket(socket) {}
 
-std::pair<bool, std::string> SocketReader::read()
+std::pair<bool, std::string> SocketReader::read(AbstractBaseServer& server)
 {
 	char* buffer = nullptr;
 	char stack_buffer[m_chunk_size];
@@ -50,8 +50,10 @@ std::pair<bool, std::string> SocketReader::read()
 	m_message.append(buffer, i);
 
 	std::string msg;
-	if (found)
+	if (found){
 		std::swap(msg, m_message);
+		server.handle(msg, m_socket);
+	}
 
 	if (i == bytes_read)
 		// exhausted buffer, clear in case m_buffer was buffer

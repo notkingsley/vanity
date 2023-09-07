@@ -1,7 +1,7 @@
 #ifndef VANITY_SOCKET_READER_H
 #define VANITY_SOCKET_READER_H
 
-#include "base_server.h"
+#include "abstract_base_server.h"
 #include "socket.h"
 
 
@@ -42,7 +42,7 @@ public:
 	// if is_open is false, socket is closed and empty and message will be empty
 	// if is_open is true, message will be returned if a delimiter was found,
 	// empty otherwise
-	std::pair<bool, std::string> read();
+	std::pair<bool, std::string> read(AbstractBaseServer& server);
 };
 
 } // namespace vanity

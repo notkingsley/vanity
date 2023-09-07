@@ -17,10 +17,10 @@ void SocketConnectionServer::register_event(int epoll_fd) {
 }
 
 void SocketConnectionServer::unregister_event(int epoll_fd) {
-	m_socket.unregister_event(epoll_fd, *this);
+	m_socket.unregister_event(epoll_fd);
 }
 
-bool SocketConnectionServer::ready() {
+bool SocketConnectionServer::ready(AbstractBaseServer& server) {
 	m_server.add_handler(std::make_unique<SocketClient>(m_socket.accept()));
 	return true; 	// TODO: handle errors if server socket is closed
 }

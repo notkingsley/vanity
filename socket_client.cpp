@@ -7,17 +7,13 @@
 
 namespace vanity{
 
-SocketClient::SocketClient(ClientSocket&& socket) : m_socket{std::move(socket)}, m_reader{m_socket} {}
+SocketClient::SocketClient(ClientSocket&& socket)
+	: m_socket{std::move(socket)}, m_reader{m_socket} {}
 
-bool SocketClient::ready()
+bool SocketClient::ready(AbstractBaseServer& server)
 {
-	auto res = m_reader.read();
-
-	if (res.first){
-		std::cout << "Message: " << res.second << '\n';
-		m_socket.write(res.second);
-	}
-	else {
+	auto res = m_reader.read(server);
+	if (not res.first){
 		std::cout << "Connection closed\n";
 	}
 
@@ -29,7 +25,7 @@ void SocketClient::register_event(int epoll_fd) {
 }
 
 void SocketClient::unregister_event(int epoll_fd) {
-	m_socket.unregister_event(epoll_fd, *this);
+	m_socket.unregister_event(epoll_fd);
 }
 
 }

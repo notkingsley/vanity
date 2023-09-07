@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <memory>
 
+#include "abstract_base_server.h"
 #include "socket.h"
 
 
@@ -12,7 +13,8 @@ namespace vanity{
 /*
  * A SocketServer allows us to listen on one or more sockets, accept connections and read/write data
  */
-class SocketServer
+class SocketServer : public AbstractBaseServer
+
 {
 private:
 	// max number of events to process at once
@@ -35,7 +37,7 @@ public:
 	SocketServer();
 
 	// destroy the socket server
-	virtual ~SocketServer();
+	~SocketServer() override;
 
 	// no copy
 	SocketServer(const SocketServer&) = delete;
@@ -56,6 +58,9 @@ public:
 
 	// start the server
 	void start();
+
+	// a message has been received from a client
+	void handle(const std::string& msg, const ClientSocket& socket) override;
 };
 
 } // namespace vanity
