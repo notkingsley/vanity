@@ -18,16 +18,16 @@ private:
 	static const size_t m_chunk_size = 16;
 
 	// the message delimiter
-	const std::string m_delimiter{"~~~~"};
-
-	// characters read from the delimiter during last read
-	size_t m_delimiter_read = 0;
+	static const char m_delimiter = '~';
 
 	// buffer for message read
 	std::string m_message;
 
 	// the socket to read from
 	ClientSocket& m_socket;
+
+	// if the delimiter was found at the end of the last read
+	bool m_delimiter_read = false;
 
 public:
 	// create a SocketReader
