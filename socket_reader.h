@@ -33,7 +33,7 @@ private:
 
 public:
 	// create a SocketReader
-	SocketReader(ClientSocket& socket);
+	explicit SocketReader(ClientSocket& socket);
 
 	// Read once from the socket. this will block if the socket is empty.
 	// this reads exactly once from the socket, even if the data fills the buffer,

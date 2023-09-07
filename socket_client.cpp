@@ -7,10 +7,7 @@
 
 namespace vanity{
 
-SocketClient::SocketClient(ClientSocket&& socket) : m_socket{std::move(socket)}, m_reader{m_socket}
-{
-	std::cout << "Accepted a connection" << std::endl;
-}
+SocketClient::SocketClient(ClientSocket&& socket) : m_socket{std::move(socket)}, m_reader{m_socket} {}
 
 bool SocketClient::ready()
 {

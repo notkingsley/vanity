@@ -37,7 +37,7 @@ void Socket::unregister_event(int epoll_fd, SocketEventHandler &handler) const {
 
 ClientSocket::ClientSocket(int server_fd)
 {
-	m_fd = accept(server_fd, (sockaddr*)&m_addr, &m_addr_size);
+	m_fd = accept4(server_fd, (sockaddr*)&m_addr, &m_addr_size, SOCK_NONBLOCK);
 	if (m_fd < 0){
 		throw SocketError("Could not accept the connection");
 	}
@@ -61,7 +61,7 @@ void ClientSocket::write(const std::string& msg)
 
 ServerSocket::ServerSocket()
 {
-	m_fd = socket(AF_INET, SOCK_STREAM, 0);
+	m_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (m_fd < 0){
 		throw SocketError("Could not create the server socket");
 	}
