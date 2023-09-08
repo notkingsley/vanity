@@ -3,10 +3,10 @@
 
 namespace vanity{
 
-SocketReader::SocketReader(ClientSocket& socket)
-	: m_socket(socket) {}
+SocketReader::SocketReader(ClientSocket&& socket)
+	: m_socket(std::move(socket)) {}
 
-bool SocketReader::read(AbstractBaseServer& server)
+bool SocketReader::ready(AbstractBaseServer& server)
 {
 	char buffer[m_chunk_size];
 	buffer[0] = m_delimiter;
@@ -40,6 +40,14 @@ bool SocketReader::read(AbstractBaseServer& server)
 	}
 
 	return true;
+}
+
+void SocketReader::register_event(int epoll_fd) {
+	m_socket.register_event(epoll_fd, *this);
+}
+
+void SocketReader::unregister_event(int epoll_fd) {
+	m_socket.unregister_event(epoll_fd);
 }
 
 } // namespace vanity

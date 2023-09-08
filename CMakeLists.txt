@@ -8,7 +8,6 @@ include_directories(.)
 add_executable(vanity
         socket.cpp
         socket_reader.cpp
-        socket_client.cpp
         socket_event_handler.cpp
         socket_connection_server.cpp
         socket_server.cpp

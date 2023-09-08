@@ -7,7 +7,6 @@
 #include <netdb.h>
 #include <sys/epoll.h>
 
-//#include "socket_event_handler.h"
 
 namespace vanity{
 

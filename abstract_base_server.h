@@ -1,5 +1,5 @@
-#ifndef VANITY_BASE_SERVER_H
-#define VANITY_BASE_SERVER_H
+#ifndef VANITY_ABSTRACT_BASE_SERVER_H
+#define VANITY_ABSTRACT_BASE_SERVER_H
 
 #include <iostream>
 
@@ -23,4 +23,4 @@ public:
 
 } // namespace vanity
 
-#endif // VANITY_BASE_SERVER_H
+#endif // VANITY_ABSTRACT_BASE_SERVER_H

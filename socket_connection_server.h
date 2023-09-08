@@ -14,7 +14,8 @@
 namespace vanity{
 
 /*
- * A SocketConnectionServer accepts connections with a socket server and yields SocketClients
+ * A SocketConnectionServer accepts connections with a
+ * server socket and yields SocketReaders to the server
  */
 class SocketConnectionServer : public SocketReadHandler
 {

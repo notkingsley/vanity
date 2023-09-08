@@ -14,7 +14,6 @@ namespace vanity{
  * A SocketServer allows us to listen on one or more sockets, accept connections and read/write data
  */
 class SocketServer : public AbstractBaseServer
-
 {
 private:
 	// max number of events to process at once
@@ -48,7 +47,7 @@ public:
 	SocketServer& operator=(SocketServer&& other) noexcept;
 
 	// add a handler
-	void add_handler(std::unique_ptr<SocketEventHandler> handler);
+	void add_handler(std::unique_ptr<SocketEventHandler>&& handler);
 
 	// remove a handler
 	void remove_handler(SocketEventHandler& handler);

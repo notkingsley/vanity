@@ -3,6 +3,7 @@
 
 #include "abstract_base_server.h"
 #include "socket.h"
+#include "socket_event_handler.h"
 
 
 namespace vanity{
@@ -11,7 +12,7 @@ namespace vanity{
 A SocketReader reads and buffers text from a ClientSocket,
 emitting a message if the delimiter is encountered
 */
-class SocketReader
+class SocketReader : public SocketReadHandler
 {
 private:
 	// characters read at a time from the socket
@@ -24,19 +25,25 @@ private:
 	std::string m_message;
 
 	// the socket to read from
-	ClientSocket& m_socket;
+	ClientSocket m_socket;
 
 	// if the delimiter was found at the end of the last read
 	bool m_delimiter_read = false;
 
 public:
 	// create a SocketReader
-	explicit SocketReader(ClientSocket& socket);
+	explicit SocketReader(ClientSocket&& socket);
 
 	// Read once from the socket, buffering until the delimiter is found.
 	// transparently alerts the server when a message is read
 	// returns true if the socket is open, false if it is closed
-	bool read(AbstractBaseServer& server);
+	bool ready(AbstractBaseServer& server) override;
+
+	// register to epoll for events
+	void register_event(int epoll_fd) override;
+
+	// unregister from epoll for events
+	void unregister_event(int epoll_fd) override;
 };
 
 } // namespace vanity

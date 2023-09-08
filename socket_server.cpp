@@ -30,7 +30,7 @@ SocketServer::~SocketServer() {
 		close(m_epoll_fd);
 }
 
-void SocketServer::add_handler(std::unique_ptr<SocketEventHandler> handler) {
+void SocketServer::add_handler(std::unique_ptr<SocketEventHandler>&& handler) {
 	handler->register_event(m_epoll_fd);
 	m_handlers.insert(std::move(handler));
 }
