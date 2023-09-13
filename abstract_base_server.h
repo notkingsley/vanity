@@ -2,7 +2,7 @@
 #define VANITY_ABSTRACT_BASE_SERVER_H
 
 #include "instruction.h"
-#include "socket.h"
+#include "socket/socket.h"
 
 
 namespace vanity{
