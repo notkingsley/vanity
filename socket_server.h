@@ -47,19 +47,16 @@ public:
 	SocketServer& operator=(SocketServer&& other) noexcept;
 
 	// add a handler
-	void add_handler(std::unique_ptr<SocketEventHandler>&& handler);
+	void add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler);
 
 	// remove a handler
-	void remove_handler(SocketEventHandler& handler);
+	void remove_socket_handler(SocketEventHandler& handler);
 
 	// start listening on port
 	void listen(uint16_t port);
 
 	// start the server
 	void start();
-
-	// a message has been received from a client
-	void handle(const std::string& msg, const ClientSocket& socket) override;
 };
 
 } // namespace vanity

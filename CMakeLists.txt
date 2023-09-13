@@ -12,4 +12,5 @@ add_executable(vanity
         socket_connection_server.cpp
         socket_server.cpp
         vanity.cpp
+        instruction.cpp
 )
