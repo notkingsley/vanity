@@ -1,7 +1,6 @@
 #ifndef VANITY_ABSTRACT_BASE_SERVER_H
 #define VANITY_ABSTRACT_BASE_SERVER_H
 
-#include "instruction.h"
 #include "socket/socket.h"
 
 
@@ -19,8 +18,14 @@ public:
 	// a message was received from a client
 	virtual void handle(const std::string& msg, const ClientSocket& socket) = 0;
 
-	// handle an instruction
-	virtual void handle(const instruction_t& instruction, const ClientSocket& socket) = 0;
+	// a get instruction was received from a client
+	virtual void instruction_get(const ClientSocket& socket, std::string key, std::string value) = 0;
+
+	// a set instruction was received from a client
+	virtual void instruction_set(const ClientSocket& socket, std::string key, std::string value) = 0;
+
+	// a del instruction was received from a client
+	virtual void instruction_del(const ClientSocket& socket, std::string key) = 0;
 };
 
 } // namespace vanity

@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "instruction_server.h"
 #include "socket/socket_server.h"
 
 
@@ -8,49 +9,38 @@ namespace vanity {
 /*
  * Top Level server
  */
-class Server : public vanity::SocketServer
+class Server : public SocketServer, public InstructionServer
 {
-	// an instruction has been received from a client
-	void handle(const instruction_t& instruction, const ClientSocket& socket) override;
-
-	void handle(const std::string &msg, const ClientSocket &socket) override;
-};
-
-void Server::handle(const instruction_t &instruction, const ClientSocket &socket) {
-	std::string msg;
-	switch (instruction.type) {
-		case operation_t::GET:
-		{
-			auto *get_data = static_cast<get_data_t *>(instruction.data.get());
-			msg  = "GET: Key: " + get_data->key + ", Value: " + get_data->value + "\n";
-			break;
-		}
-		case operation_t::SET:
-		{
-			auto *set_data = static_cast<set_data_t *>(instruction.data.get());
-			msg = "SET: Key: " + set_data->key + ", Value: " + set_data->value + "\n";
-			break;
-		}
-		case operation_t::DEL:
-		{
-			auto *del_data = static_cast<del_data_t *>(instruction.data.get());
-			msg = "DEL: Key: " + del_data->key + "\n";
-			break;
-		}
+public:
+	// a message was received from a client
+	void handle(const std::string& msg, const ClientSocket& socket) override
+	{
+		std::cout << "Received: " << msg << std::endl;
+		InstructionServer::handle(msg, socket);
 	}
-	std::cout << msg;
-	socket.write(msg);
-}
 
-// a message was received from a client
-void Server::handle(const std::string& msg, const ClientSocket& socket)
-{
-	try {
-		handle(parse_instruction(msg), socket);
-	} catch (const InvalidInstruction& e) {
-		std::string err = "Invalid instruction: " + std::string{e.what()} + "\n";
-		socket.write(err);
-		std::cerr << err << std::endl;
+	// a get instruction was received from a client
+	void instruction_get(const ClientSocket& socket, std::string key, std::string value) override
+	{
+		std::string msg = "GET Key: " + key + ", Value: " + value + "\n";
+		std::cout << msg;
+		socket.write(msg);
+	}
+
+	// a set instruction was received from a client
+	void instruction_set(const ClientSocket& socket, std::string key, std::string value) override
+	{
+		std::string msg = "SET Key: " + key + ", Value: " + value + "\n";
+		std::cout << msg;
+		socket.write(msg);
+	}
+
+	// a del instruction was received from a client
+	void instruction_del(const ClientSocket& socket, std::string key) override
+	{
+		std::string msg = "DEL Key: " + key + ", Value: " + "\n";
+		std::cout << msg;
+		socket.write(msg);
 	}
 };
 
