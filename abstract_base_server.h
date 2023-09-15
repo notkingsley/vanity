@@ -6,8 +6,16 @@
 
 namespace vanity{
 
+// the constants used by the server
+struct server_constants
+{
+	static constexpr char const* const ok = "OK";
+	static constexpr char const* const error = "ERROR";
+	static constexpr char const* const null = "NULL";
+};
+
 /*
- * Am  AbstractBaseServer defines the basic interface for a server
+ * An AbstractBaseServer defines the basic interface for a server
  */
 class AbstractBaseServer
 {
@@ -19,13 +27,13 @@ public:
 	virtual void handle(const std::string& msg, const ClientSocket& socket) = 0;
 
 	// a get instruction was received from a client
-	virtual void instruction_get(const ClientSocket& socket, std::string key, std::string value) = 0;
+	virtual void instruction_get(const ClientSocket& socket, const std::string& key) = 0;
 
 	// a set instruction was received from a client
-	virtual void instruction_set(const ClientSocket& socket, std::string key, std::string value) = 0;
+	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const std::string& value) = 0;
 
 	// a del instruction was received from a client
-	virtual void instruction_del(const ClientSocket& socket, std::string key) = 0;
+	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
 };
 
 } // namespace vanity

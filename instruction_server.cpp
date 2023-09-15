@@ -109,8 +109,7 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 		switch (op) {
 			case operation_t::GET:
 			{
-				auto [key, value] = extract_key_value(msg, pos);
-				instruction_get(socket, key, value);
+				instruction_get(socket, extract_single_word(msg, pos));
 				break;
 			}
 			case operation_t::SET:

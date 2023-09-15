@@ -13,7 +13,7 @@ namespace vanity{
 /*
  * A SocketServer allows us to listen on one or more sockets, accept connections and read/write data
  */
-class SocketServer : public AbstractBaseServer
+class SocketServer : public virtual AbstractBaseServer
 {
 private:
 	// max number of events to process at once

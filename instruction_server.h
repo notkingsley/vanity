@@ -26,7 +26,7 @@ public:
  * A InstructionServer allows to handle incoming instructions
  * and dispatch them to the appropriate handler
  */
-class InstructionServer : public AbstractBaseServer
+class InstructionServer : public virtual AbstractBaseServer
 {
 public:
 	// a message was received from a client
