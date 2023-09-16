@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <memory>
 
-#include "abstract_base_server.h"
+#include "abstract_server.h"
 #include "socket.h"
 
 
@@ -13,7 +13,7 @@ namespace vanity{
 /*
  * A SocketServer allows us to listen on one or more sockets, accept connections and read/write data
  */
-class SocketServer : public virtual AbstractBaseServer
+class SocketServer : public virtual AbstractServer
 {
 private:
 	// max number of events to process at once

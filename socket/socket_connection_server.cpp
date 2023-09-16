@@ -20,7 +20,7 @@ void SocketConnectionServer::unregister_event(int epoll_fd) {
 	m_socket.unregister_event(epoll_fd);
 }
 
-bool SocketConnectionServer::ready(AbstractBaseServer& server) {
+bool SocketConnectionServer::ready(AbstractServer& server) {
 	auto ptr = std::make_unique<SocketReader>(m_socket.accept());
 	m_server.add_socket_handler(std::move(ptr));
 	return true; 	// TODO: handle errors if server socket is closed

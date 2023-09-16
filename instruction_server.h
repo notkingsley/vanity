@@ -6,7 +6,7 @@
 #define VANITY_INSTRUCTION_SERVER_H
 
 
-#include "abstract_base_server.h"
+#include "abstract_server.h"
 
 
 namespace vanity {
@@ -26,11 +26,20 @@ public:
  * A InstructionServer allows to handle incoming instructions
  * and dispatch them to the appropriate handler
  */
-class InstructionServer : public virtual AbstractBaseServer
+class InstructionServer : public virtual AbstractServer
 {
 public:
 	// a message was received from a client
 	void handle(const std::string& msg, const ClientSocket& socket) override;
+
+	// a get instruction was received from a client
+	virtual void instruction_get(const ClientSocket& socket, const std::string& key) = 0;
+
+	// a set instruction was received from a client
+	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const std::string& value) = 0;
+
+	// a del instruction was received from a client
+	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
 };
 
 } // namespace vanity

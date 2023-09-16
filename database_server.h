@@ -6,8 +6,8 @@
 #define VANITY_DATABASE_SERVER_H
 
 
-#include "abstract_base_server.h"
 #include "database.h"
+#include "instruction_server.h"
 
 
 namespace vanity {
@@ -15,7 +15,7 @@ namespace vanity {
 /*
  * A DatabaseServer allows us to respond to database requests
  */
-class DatabaseServer : public virtual AbstractBaseServer
+class DatabaseServer : public virtual InstructionServer
 {
 private:
 	// the database

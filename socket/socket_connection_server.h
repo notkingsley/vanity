@@ -35,7 +35,7 @@ public:
 
 	// the socket is ready for reading
 	// return true if the socket should be kept, false otherwise
-	bool ready(AbstractBaseServer& server) override;
+	bool ready(AbstractServer& server) override;
 };
 
 } // namespace vanity

@@ -1,7 +1,7 @@
 #ifndef VANITY_SOCKET_READER_H
 #define VANITY_SOCKET_READER_H
 
-#include "abstract_base_server.h"
+#include "abstract_server.h"
 #include "socket.h"
 #include "socket_event_handler.h"
 
@@ -37,7 +37,7 @@ public:
 	// Read once from the socket, buffering until the delimiter is found.
 	// transparently alerts the server when a message is read
 	// returns true if the socket is open, false if it is closed
-	bool ready(AbstractBaseServer& server) override;
+	bool ready(AbstractServer& server) override;
 
 	// register to epoll for events
 	void register_event(int epoll_fd) override;

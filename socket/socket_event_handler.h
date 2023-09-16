@@ -9,7 +9,7 @@
 #include <string>
 #include <sys/epoll.h>
 
-#include "abstract_base_server.h"
+#include "abstract_server.h"
 
 namespace vanity{
 
@@ -38,7 +38,7 @@ public:
 
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
-	virtual bool ready(AbstractBaseServer& server) = 0;
+	virtual bool ready(AbstractServer& server) = 0;
 };
 
 /*

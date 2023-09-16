@@ -6,7 +6,7 @@ namespace vanity{
 SocketReader::SocketReader(ClientSocket&& socket)
 	: m_socket(std::move(socket)) {}
 
-bool SocketReader::ready(AbstractBaseServer& server)
+bool SocketReader::ready(AbstractServer& server)
 {
 	char buffer[m_chunk_size];
 	buffer[0] = m_delimiter;

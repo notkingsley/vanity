@@ -17,7 +17,6 @@ namespace vanity {
  */
 class Server:
 	public DatabaseServer,
-	public InstructionServer,
 	public SocketServer
 { };
 
