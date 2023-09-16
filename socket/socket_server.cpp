@@ -4,6 +4,7 @@
 
 #include "socket_connection_server.h"
 #include "socket_server.h"
+#include "socket_writer.h"
 
 
 namespace vanity {
@@ -51,16 +52,22 @@ void SocketServer::start() {
 
 		for (int i = 0; i < n; ++i) {
 			auto *ready_handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
-			if (!ready_handler->ready(*this)){
+			if (!ready_handler->ready(*this))
 				remove_socket_handler(*ready_handler);
-				return;
-			}
 		}
 	}
 }
 
 void SocketServer::listen(uint16_t port) {
 	add_socket_handler(std::make_unique<SocketConnectionServer>(*this, port));
+}
+
+void SocketServer::send(const ClientSocket &client, const std::string& msg) {
+	// TODO: actually register SocketWriters for write events in a separate epoll
+	// add_socket_handler(std::make_unique<SocketWriter>(client, std::move(msg)));
+
+	SocketWriter writer{client, msg};
+	while (writer.ready(*this));
 }
 
 } // namespace vanity

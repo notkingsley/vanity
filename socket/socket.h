@@ -4,6 +4,7 @@
 #include <exception>
 #include <cerrno>
 #include <string>
+#include <utility>
 #include <netdb.h>
 #include <sys/epoll.h>
 
@@ -20,10 +21,11 @@ class SocketError : public std::exception
 {
 private:
 	std::string m_msg;
-
+	int m_errno;
 public:
-	explicit SocketError(const std::string& msg) : m_msg{"SocketError " + std::to_string(errno) + ": " + msg} {}
+	explicit SocketError(std::string msg) : m_msg{std::move(msg)}, m_errno{errno} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
+	int get_errno() const noexcept { return m_errno; }
 };
 
 /*
@@ -74,6 +76,9 @@ public:
 
 	// write a string to the socket
 	void write(const std::string& msg) const;
+
+	// write from a buffer to the socket
+	size_t write(const char* buffer, size_t buffer_size) const;
 };
 
 /*

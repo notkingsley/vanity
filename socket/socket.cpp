@@ -55,8 +55,14 @@ size_t ClientSocket::read(char* buffer, size_t buffer_size) const
 
 void ClientSocket::write(const std::string& msg) const
 {
-	if (::write(m_fd, msg.c_str(), msg.length()) < 0)
+	write(msg.c_str(), msg.length());
+}
+
+size_t ClientSocket::write(const char *buffer, size_t buffer_size) const {
+	auto bytes_written = ::write(m_fd, buffer, buffer_size);
+	if (bytes_written < 0)
 		throw SocketError("Could not write to the socket");
+	return bytes_written;
 }
 
 

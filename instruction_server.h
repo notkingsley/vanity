@@ -18,7 +18,7 @@ private:
 	std::string m_msg;
 
 public:
-	explicit InvalidInstruction(std::string  msg) : m_msg{"Invalid Instruction" + std::move(msg)} {}
+	explicit InvalidInstruction(std::string msg) : m_msg{"Invalid Instruction" + std::move(msg)} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
 };
 
@@ -29,6 +29,9 @@ public:
 class InstructionServer : public virtual AbstractServer
 {
 public:
+	// parse a string into a transferable message
+	static std::string make_message(const std::string& msg);
+
 	// a message was received from a client
 	void handle(const std::string& msg, const ClientSocket& socket) override;
 

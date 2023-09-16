@@ -25,6 +25,9 @@ public:
 
 	// a message was received from a client
 	virtual void handle(const std::string& msg, const ClientSocket& socket) = 0;
+
+	// send a message to a client
+	virtual void send(const ClientSocket& socket, const std::string& msg) = 0;
 };
 
 } // namespace vanity

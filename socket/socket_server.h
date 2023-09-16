@@ -57,6 +57,9 @@ public:
 
 	// start the server
 	void start();
+
+	// send a message to a client
+	void send(const ClientSocket& client, const std::string& msg) override;
 };
 
 } // namespace vanity

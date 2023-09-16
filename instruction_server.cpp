@@ -130,4 +130,20 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 	}
 }
 
+std::string InstructionServer::make_message(const std::string &msg) {
+	std::string ret {};
+	ret.reserve(msg.size() + 2);
+
+	ret += "\"";
+	for (char c : msg) {
+		if (c == '"')
+			ret += "\\\"";
+		else
+			ret += c;
+	}
+	ret += "\"";
+
+	return ret;
+}
+
 } // namespace vanity

@@ -13,5 +13,6 @@ add_executable(vanity
         socket/socket_connection_server.cpp
         socket/socket_reader.cpp
         socket/socket_server.cpp
+        socket/socket_writer.cpp
         vanity.cpp
 )
