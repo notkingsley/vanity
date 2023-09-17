@@ -51,9 +51,20 @@ void SocketServer::start() {
 			throw SocketError("Could not wait for epoll");
 
 		for (int i = 0; i < n; ++i) {
-			auto *ready_handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
-			if (!ready_handler->ready(*this))
-				remove_socket_handler(*ready_handler);
+			auto handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
+			try{
+				if (!handler->ready(*this))
+					remove_socket_handler(*handler);
+			}
+			catch (DestroyClient& e)
+			{
+				remove_socket_handler(*handler);
+			}
+			catch (DestroyServer& e)
+			{
+				m_handlers.clear();
+				return;
+			}
 		}
 	}
 }

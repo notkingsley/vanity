@@ -12,6 +12,8 @@ enum class operation_t{
 	GET,
 	SET,
 	DEL,
+	EXIT,
+	TERMINATE,
 };
 
 // increment pos until it is not a whitespace
@@ -25,22 +27,27 @@ static inline void skip_whitespace(const std::string& msg, size_t& pos)
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
 	skip_whitespace(msg, pos);
-	if (pos + 3 < msg.size()) {
-		if (msg[pos] == 'G' and msg[pos + 1] == 'E' and msg[pos + 2] == 'T') {
-			pos += 3;
-			return operation_t::GET;
-		}
-		if (msg[pos] == 'S' and msg[pos + 1] == 'E' and msg[pos + 2] == 'T') {
-			pos += 3;
-			return operation_t::SET;
-		}
-		if (msg[pos] == 'D' and msg[pos + 1] == 'E' and msg[pos + 2] == 'L') {
-			pos += 3;
-			return operation_t::DEL;
-		}
-		throw InvalidInstruction("invalid operation");
+	if (msg.compare(pos, 3, "GET") == 0) {
+		pos += 3;
+		return operation_t::GET;
 	}
-	throw InvalidInstruction("instruction too short");
+	if (msg.compare(pos, 3, "SET") == 0) {
+		pos += 3;
+		return operation_t::SET;
+	}
+	if (msg.compare(pos, 3, "DEL") == 0) {
+		pos += 3;
+		return operation_t::DEL;
+	}
+	if (msg.compare(pos, 4, "EXIT") == 0) {
+		pos += 4;
+		return operation_t::EXIT;
+	}
+	if (msg.compare(pos, 9, "TERMINATE") == 0){
+		pos += 9;
+		return operation_t::TERMINATE;
+	}
+	throw InvalidInstruction("invalid operation");
 }
 
 // extract a word from part of a message
@@ -72,17 +79,21 @@ static inline std::string extract_word(const std::string& msg, size_t& pos)
 	throw InvalidInstruction("word not closed with quotes");
 }
 
+// ensure we are at the end of the message
+static inline void ensure_end(const std::string& msg, size_t& pos)
+{
+	skip_whitespace(msg, pos);
+	if (pos < msg.size()) {
+		throw InvalidInstruction("unexpected character at end of message");
+	}
+}
+
 // extract exactly a single word from the rest of a message
 // throw if there is more than one word
 static inline std::string extract_single_word(const std::string& msg, size_t& pos)
 {
 	std::string word = extract_word(msg, pos);
-
-	skip_whitespace(msg, pos);
-	if (pos < msg.size()) {
-		throw InvalidInstruction("unexpected character at end of message");
-	}
-
+	ensure_end(msg, pos);
 	return word;
 }
 
@@ -92,12 +103,7 @@ static inline std::pair<std::string, std::string> extract_key_value(const std::s
 {
 	std::string key = extract_word(msg, pos);
 	std::string value = extract_word(msg, pos);
-
-	skip_whitespace(msg, pos);
-	if (pos < msg.size()) {
-		throw InvalidInstruction("unexpected character at end of message");
-	}
-
+	ensure_end(msg, pos);
 	return std::make_pair(key, value);
 }
 
@@ -123,10 +129,22 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 				instruction_del(socket, extract_single_word(msg, pos));
 				break;
 			}
+			case operation_t::EXIT:
+			{
+				ensure_end(msg, pos);
+				instruction_exit(socket);
+				break;
+			}
+			case operation_t::TERMINATE:
+			{
+				ensure_end(msg, pos);
+				instruction_terminate(socket);
+				break;
+			}
 		}
 	}
 	catch (const InvalidInstruction& e) {
-		socket.write(e.what());
+		send(socket, server_constants::error + make_message(e.what()));
 	}
 }
 

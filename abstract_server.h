@@ -14,6 +14,12 @@ struct server_constants
 	static constexpr char const* const null = "NULL";
 };
 
+// thrown from a ready() to indicate the client should be disconnected
+class DestroyClient : std::exception {};
+
+// thrown from a ready() to indicate the server should be stopped
+class DestroyServer : std::exception {};
+
 /*
  * An AbstractServer defines the basic interface for a server
  */

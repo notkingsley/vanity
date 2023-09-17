@@ -35,8 +35,8 @@ bool SocketWriter::ready(AbstractServer &server) {
 			return true;
 		else
 			throw;
+	}
 }
-	};
 
 void SocketWriter::register_event(int epoll_fd) {
 	m_socket.register_event(epoll_fd, *this);

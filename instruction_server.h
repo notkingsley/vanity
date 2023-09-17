@@ -18,7 +18,7 @@ private:
 	std::string m_msg;
 
 public:
-	explicit InvalidInstruction(std::string msg) : m_msg{"Invalid Instruction" + std::move(msg)} {}
+	explicit InvalidInstruction(std::string msg) : m_msg{"Invalid Instruction: " + std::move(msg)} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
 };
 
@@ -43,6 +43,16 @@ public:
 
 	// a del instruction was received from a client
 	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
+
+	// an exit instruction was received from a client
+	virtual void instruction_exit(const ClientSocket& socket) {
+		throw DestroyClient{};
+	};
+
+	// a terminate instruction was received from a client
+	virtual void instruction_terminate(const ClientSocket& socket) {
+		throw DestroyServer{};
+	};
 };
 
 } // namespace vanity
