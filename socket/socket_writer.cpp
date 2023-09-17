@@ -17,6 +17,9 @@ SocketWriter::SocketWriter(const ClientSocket &socket, const std::string& msg)
 			m_message.push_back(m_delimiter);
 	}
 	m_message.push_back(m_delimiter);
+
+	// ignored, but ensures delimiter is not the last char
+	m_message.push_back('\n');
 }
 
 bool SocketWriter::ready(AbstractServer &server) {
