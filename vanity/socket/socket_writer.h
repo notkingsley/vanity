@@ -6,7 +6,7 @@
 #define VANITY_SOCKET_WRITER_H
 
 
-#include "socket/socket_event_handler.h"
+#include "socket_event_handler.h"
 
 namespace vanity {
 

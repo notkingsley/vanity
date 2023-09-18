@@ -7,7 +7,7 @@ int main()
 {
 	try{
 		vanity::Server server{};
-		server.listen(9952);
+		server.listen(9955);
 		server.start();
 	}
 	catch (vanity::SocketError& e){
