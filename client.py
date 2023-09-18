@@ -1,93 +1,82 @@
-import socket
+from response import escape, Response
+from socket_client import SocketClient
 
 
-class SocketClosedError(Exception):
+class Client:
 	"""
-	An exception thrown when a socket is closed.
+	A Client provides a programmatic interface for interacting with a Vanity Server.
 	"""
-	pass
-
-
-class SocketClient:
-	"""
-	A SocketClient mirrors the underlying socket processing method
-	of a Vanity Server, allowing us to send and receive messages from
-	the server over a socket.
-	"""
-	DELIM = "~"
-	BUFFER_SIZE = 1024
-
 	def __init__(self, host: str, port: int):
-		self.sock = socket.create_connection((host, port))
-		self.buffer = str()
-		self.unprocessed = str()
-
-	def escape(self, msg: str):
-		"""
-		Escape the message to be sent.
-		:param msg: The message to escape.
-		:return: The escaped message.
-		"""
-		return f"{msg.replace(self.DELIM, self.DELIM * 2)}{self.DELIM}\n"
-
-	def send(self, msg: str):
-		"""
-		Send msg directly to the server.
-		:param msg: The message to send.
-		"""
-		self.sock.sendall(self.escape(msg).encode())
-
-	def recv(self):
-		"""
-		Read a message into the buffer.
-		:return: The message received.
-		"""
-		data = self.sock.recv(self.BUFFER_SIZE).decode()
-		data = self.unprocessed + data
-		self.unprocessed = str()
-
-		if not data:
-			raise SocketClosedError()
-
-		i = 0
-		while i < len(data):
-			if data[i] == self.DELIM:
-				if i == len(data) - 1:
-					# end of data, so we need to wait for more
-					self.unprocessed = self.DELIM
-					return None
-
-				else:
-					if data[i + 1] == self.DELIM:
-						# delim was escaped, so we need to keep going
-						self.buffer += self.DELIM
-						i += 1
-
-					else:
-						# delim was not escaped, so we have a full message
-						ret = self.buffer
-						self.buffer = str()
-						self.unprocessed = data[i + 1:]
-						return ret
-
-			else:
-				self.buffer += data[i]
-			i += 1
-
-		return None
-
-	def read_msg(self):
-		"""
-		Receive a message from the server.
-		:return: The message received.
-		"""
-		while True:
-			msg = self.recv()
-			if msg is not None:
-				return msg.strip()
-
+		self.sock = SocketClient(host, port)
+	
+	def __enter__(self):
+		return self
+	
+	def __exit__(self, exc_type, exc_val, exc_tb):
+		self.close()
+	
 	def close(self):
 		"""
-		Close the socket.
+		Close the connection to the server.
 		"""
 		self.sock.close()
+	
+	def send_command(self, command: str, *args):
+		"""
+		Send a command to the server.
+		:param command: The command to send.
+		:param args: The arguments to send.
+		"""
+		self.sock.send(f"{command} {' '.join(map(escape, args))}")
+	
+	def read_response(self) -> Response:
+		"""
+		Read a response from the server.
+		:return: The response from the server.
+		"""
+		return Response(self.sock.read_msg())
+	
+	def request(self, command: str, *args) -> Response:
+		"""
+		Send a request to the server.
+		:param command: The command to send.
+		:param args: The arguments to send.
+		:return: The response from the server.
+		"""
+		self.send_command(command, *args)
+		return self.read_response()
+	
+	def get(self, key: str):
+		"""
+		Get the value of a key.
+		:param key: The key to get.
+		:return: The value of the key.
+		"""
+		return self.request("GET", key)
+	
+	def set(self, key: str, value: str):
+		"""
+		Set the value of a key.
+		:param key: The key to set.
+		:param value: The value to set.
+		"""
+		return self.request("SET", key, value)
+	
+	def delete(self, key: str):
+		"""
+		Delete a key.
+		:param key: The key to delete.
+		"""
+		return self.request("DEL", key)
+	
+	def exit(self):
+		"""
+		Request to exit the session
+		"""
+		self.send_command("EXIT")
+	
+	def terminate(self):
+		"""
+		Terminate the server.
+		"""
+		self.send_command("TERMINATE")

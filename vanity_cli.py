@@ -1,6 +1,6 @@
 import sys
 
-from client import SocketClient, SocketClosedError
+from socket_client import SocketClient, SocketClosedError
 
 
 def cli_loop(host: str, port: int):
