@@ -47,8 +47,13 @@ void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
 void SocketServer::start() {
 	while (true) {
 		int n = epoll_wait(m_epoll_fd, m_events, MAX_EVENTS, EPOLL_TIMEOUT);
-		if (n < 0)
-			throw SocketError("Could not wait for epoll");
+		if (n < 0){
+			SocketError err{"Could not wait for epoll"};
+			if (err.get_errno() == EINTR)
+				continue;
+			else
+				throw std::move(err);
+		}
 
 		for (int i = 0; i < n; ++i) {
 			auto handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
