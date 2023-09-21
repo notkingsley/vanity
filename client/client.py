@@ -1,5 +1,5 @@
-from response import escape, Response
-from socket_client import SocketClient
+from client.response import escape, Response
+from client.socket_client import SocketClient
 
 
 class Client:
