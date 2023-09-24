@@ -44,6 +44,9 @@ public:
 	// a del instruction was received from a client
 	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
 
+	// a persist instruction was received from a client
+	virtual void instruction_persist(const ClientSocket& socket) = 0;
+
 	// an exit instruction was received from a client
 	virtual void instruction_exit(const ClientSocket& socket) {
 		throw DestroyClient{};

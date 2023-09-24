@@ -12,6 +12,7 @@ enum class operation_t{
 	GET,
 	SET,
 	DEL,
+	PERSIST,
 	EXIT,
 	TERMINATE,
 };
@@ -26,26 +27,20 @@ static inline void skip_whitespace(const std::string& msg, size_t& pos)
 // extract the operation from the message
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
+	static std::initializer_list <std::pair<operation_t, std::string>> operations {
+		{operation_t::GET, "GET"},
+		{operation_t::SET, "SET"},
+		{operation_t::DEL, "DEL"},
+		{operation_t::PERSIST, "PERSIST"},
+		{operation_t::EXIT, "EXIT"},
+		{operation_t::TERMINATE, "TERMINATE"},
+	};
 	skip_whitespace(msg, pos);
-	if (msg.compare(pos, 3, "GET") == 0) {
-		pos += 3;
-		return operation_t::GET;
-	}
-	if (msg.compare(pos, 3, "SET") == 0) {
-		pos += 3;
-		return operation_t::SET;
-	}
-	if (msg.compare(pos, 3, "DEL") == 0) {
-		pos += 3;
-		return operation_t::DEL;
-	}
-	if (msg.compare(pos, 4, "EXIT") == 0) {
-		pos += 4;
-		return operation_t::EXIT;
-	}
-	if (msg.compare(pos, 9, "TERMINATE") == 0){
-		pos += 9;
-		return operation_t::TERMINATE;
+	for (const auto& [op, str] : operations) {
+		if (msg.compare(pos, str.size(), str) == 0) {
+			pos += str.size();
+			return op;
+		}
 	}
 	throw InvalidInstruction("invalid operation");
 }
@@ -127,6 +122,12 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 			case operation_t::DEL:
 			{
 				instruction_del(socket, extract_single_word(msg, pos));
+				break;
+			}
+			case operation_t::PERSIST:
+			{
+				ensure_end(msg, pos);
+				instruction_persist(socket);
 				break;
 			}
 			case operation_t::EXIT:

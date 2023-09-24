@@ -5,34 +5,13 @@
 #ifndef VANITY_DATABASE_H
 #define VANITY_DATABASE_H
 
+#include <fstream>
 #include <string>
 #include <exception>
 #include <unordered_map>
 
 
 namespace vanity{
-
-/*
- * A Database is an abstraction for a database
- */
-class Database
-{
-public:
-	// create a database
-	Database() = default;
-
-	// destroy the database
-	virtual ~Database() = default;
-
-	// no copy
-	Database(const Database&) = delete;
-	Database& operator=(const Database&) = delete;
-
-	// move constructor
-	Database(Database&& other) noexcept = default;
-	Database& operator=(Database&& other) noexcept = default;
-};
-
 
 /*
  * A DatabaseException is thrown when an error occurs
@@ -56,54 +35,48 @@ public:
 };
 
 /*
- * A KeyValueDatabase is an abstraction for a key value database
+ * A StringDatabase is an abstraction for a key value database
  */
-class KeyValueDatabase : public Database
+class StringDatabase
 {
 private:
 	// the key value store
 	std::unordered_map<std::string, std::string> m_data;
 
 public:
+	using this_type = StringDatabase;
+
 	// create a key value database
-	KeyValueDatabase() = default;
+	StringDatabase() = default;
 
 	// destroy the key value database
-	~KeyValueDatabase() override = default;
+	~StringDatabase() = default;
 
 	// no copy
-	KeyValueDatabase(const KeyValueDatabase&) = delete;
-	KeyValueDatabase& operator=(const KeyValueDatabase&) = delete;
+	StringDatabase(const StringDatabase&) = delete;
+	StringDatabase& operator=(const StringDatabase&) = delete;
 
 	// move constructor
-	KeyValueDatabase(KeyValueDatabase&& other) noexcept = default;
-	KeyValueDatabase& operator=(KeyValueDatabase&& other) noexcept = default;
+	StringDatabase(StringDatabase&& other) noexcept = default;
+	StringDatabase& operator=(StringDatabase&& other) noexcept = default;
+
+	// persist the database to a file stream
+	void persist(std::ofstream &out);
+
+	// load the database from a file stream
+	static this_type from(std::ifstream &in);
 
 	// check if the key exists
-	bool has(const std::string& key) const
-	{
-		return m_data.contains(key);
-	};
+	bool has(const std::string& key) const;
 
 	// get the value for a key
-	const std::string& get(const std::string& key)
-	{
-		if (has(key)) {
-			return m_data.at(key);
-		}
-		throw DatabaseKeyNotFoundException("Key not found");
-	};
+	const std::string& get(const std::string& key);
 
 	// set the value for a key
-	void set(const std::string& key, const std::string& value)
-	{
-		m_data[key] = value;
-	};
+	void set(const std::string& key, const std::string& value);
 
 	// delete the value for a key
-	bool del(const std::string& key){
-		return m_data.erase(key);
-	};
+	bool del(const std::string& key);
 };
 
 } // namespace vanity

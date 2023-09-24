@@ -37,19 +37,17 @@ private:
 	std::map<std::string, std::string> m_kwargs;
 
 	// extract till a '=' is found
-	std::string extract_word(const std::string& arg, size_t& pos)
+	static std::string extract_word(const std::string& arg, size_t& pos)
 	{
 		std::string word;
 		for (; arg[pos]; ++pos) {
 			if (arg[pos] == '=')
 				break;
 
-			if (not(isalnum(arg[pos]) or arg[pos] == '-')){
-				throw MalformedArgument(
-					"unexpected character in argument after " + word
-				);
-			}
-			word += arg[pos];
+			if (arg[pos] == '-')
+				word += '_';
+			else
+				word += arg[pos];
 		}
 		return word;
 	}

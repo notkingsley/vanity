@@ -6,6 +6,9 @@
 #define VANITY_DATABASE_SERVER_H
 
 
+#include <filesystem>
+#include <optional>
+
 #include "database.h"
 #include "instruction_server.h"
 
@@ -19,9 +22,15 @@ class DatabaseServer : public virtual InstructionServer
 {
 private:
 	// the database
-	KeyValueDatabase m_database;
+	StringDatabase m_database;
+
+	// file to persist the database to, if any
+	const std::optional<std::filesystem::path> m_db_file;
 
 public:
+	// create a database server
+	explicit DatabaseServer(std::optional<std::filesystem::path> db_file) noexcept;
+
 	// a get request was received from a client
 	void instruction_get(const ClientSocket& socket, const std::string& key) override;
 
@@ -30,6 +39,9 @@ public:
 
 	// a del request was received from a client
 	void instruction_del(const ClientSocket& socket, const std::string& key) override;
+
+	// a persist request was received from a client
+	void instruction_persist(const ClientSocket& socket) override;
 };
 
 } // namespace vanity

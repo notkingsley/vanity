@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.22)
 project(vanity)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(.)
 
 add_executable(vanity
+        database.cpp
         database_server.cpp
         instruction_server.cpp
         socket/socket.cpp
