@@ -15,6 +15,7 @@ enum class operation_t{
 	PERSIST,
 	EXIT,
 	TERMINATE,
+	PING,
 };
 
 // increment pos until it is not a whitespace
@@ -34,6 +35,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::PERSIST, "PERSIST"},
 		{operation_t::EXIT, "EXIT"},
 		{operation_t::TERMINATE, "TERMINATE"},
+		{operation_t::PING, "PING"},
 	};
 	skip_whitespace(msg, pos);
 	for (const auto& [op, str] : operations) {
@@ -140,6 +142,11 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 			{
 				ensure_end(msg, pos);
 				instruction_terminate(socket);
+				break;
+			}
+			case operation_t::PING:
+			{
+				instruction_ping(socket, msg.substr(pos));
 				break;
 			}
 		}

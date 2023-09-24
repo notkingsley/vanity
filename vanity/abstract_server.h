@@ -12,6 +12,7 @@ struct server_constants
 	static constexpr char const* const ok = "OK";
 	static constexpr char const* const error = "ERROR";
 	static constexpr char const* const null = "NULL";
+	static constexpr char const* const pong = "PONG";
 };
 
 // thrown from a ready() to indicate the client should be disconnected

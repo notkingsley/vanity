@@ -56,6 +56,11 @@ public:
 	virtual void instruction_terminate(const ClientSocket& socket) {
 		throw DestroyServer{};
 	};
+
+	// a ping instruction was received from a client
+	virtual void instruction_ping(const ClientSocket& socket, const std::string& msg) {
+		send(socket, server_constants::pong + msg);
+	};
 };
 
 } // namespace vanity
