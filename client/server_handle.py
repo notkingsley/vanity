@@ -1,4 +1,5 @@
 import subprocess
+from time import sleep
 
 
 class ServerHandle:
@@ -7,6 +8,7 @@ class ServerHandle:
 	"""
 	EXECUTABLE_PATH = "vanity/cmake-build-debug/vanity"
 	DEFAULT_PORT = 9955
+	STARTUP_DELAY = 0.01
 
 	def __init__(
 		self,
@@ -53,6 +55,7 @@ class ServerHandle:
 		Start the server.
 		"""
 		self.process = subprocess.Popen(self.args)
+		sleep(self.STARTUP_DELAY)
 	
 
 	def stop(self):
@@ -62,3 +65,10 @@ class ServerHandle:
 		self.process.terminate()
 		self.process.wait()
 		self.process = None
+
+	def restart(self):
+		"""
+		Stop the instance and start another with the same arguments
+		"""
+		self.stop()
+		self.start()

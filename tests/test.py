@@ -1,20 +1,44 @@
+import os
 import unittest
 
 from client.client import Client
+from client.server_handle import ServerHandle
 
 
-TEST_HOST = "localhost"
-TEST_PORT = 9956
+TEST_PORT = 19955
+
+
+def make_client() -> Client:
+	"""
+	Make a client.
+	"""
+	return Client("localhost", TEST_PORT)
+
+
+def make_server_handle(port= TEST_PORT, **kwargs) -> ServerHandle:
+	"""
+	Make a server handle.
+	"""
+	return ServerHandle(port= port, **kwargs)
 
 
 class KeyValueStoreTest(unittest.TestCase):
-	def setUp(self):
-		self.client = Client(TEST_HOST, TEST_PORT)
-		self.client.reset()
+	server_handle: ServerHandle
+	client: Client
+
+	@classmethod
+	def setUpClass(cls) -> None:
+		cls.server_handle = make_server_handle()
+		cls.server_handle.start()
+		cls.client = make_client()
+	
+	@classmethod
+	def tearDownClass(cls) -> None:
+		cls.client.close()
+		cls.server_handle.stop()
 	
 	def tearDown(self):
 		self.client.reset()
-		self.client.close()
 
 	def test_set_get(self):
 		"""
@@ -89,3 +113,60 @@ class KeyValueStoreTest(unittest.TestCase):
 		self.client.reset()
 		response = self.client.get("test_reset")
 		self.assertTrue(response.is_null())
+
+
+class NoPersistenceTest(unittest.TestCase):
+	"""
+	Test no persistence across reboots
+	"""
+	def setUp(self) -> None:
+		self.server_handle = make_server_handle(no_persist= True)
+		self.server_handle.start()
+
+	def tearDown(self) -> None:
+		self.server_handle.stop()
+
+	def test_no_persist(self):
+		"""
+		Test that we can set a value on no_persist, restart the server, and get a null.
+		"""
+		with make_client() as client:
+			client.set("test_no_persist", "test_no_persist_value")
+
+		self.server_handle.restart()
+
+		with make_client() as client:
+			response = client.get("test_no_persist")
+			self.assertTrue(response.is_null())
+
+
+class PersistenceTest(unittest.TestCase):
+	"""
+	Test persistence across reboots
+	"""
+	TMP_FILE = os.getcwd() + "tmp.db"
+
+	def setUp(self) -> None:
+		self.server_handle = make_server_handle(
+			no_persist= False,
+			persist_file= self.TMP_FILE,
+		)
+		self.server_handle.start()
+
+	def tearDown(self) -> None:
+		self.server_handle.stop()
+
+	def test_persist(self):
+		"""
+		Test that we can set a value on persist, restart the server, and get the value.
+		"""
+		with make_client() as client:
+			client.set("test_persist", "test_persist_value")
+			response = client.persist()
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client() as client:
+			response = client.get("test_persist")
+			self.assertEqual(response.body, "test_persist_value")
