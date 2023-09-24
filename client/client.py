@@ -81,14 +81,20 @@ class Client:
 		"""
 		self.send_command("TERMINATE")
 	
-	def ping(self, msg: str = None):
+	def ping(self, msg = str()):
 		"""
 		Ping the server.
 		"""
-		return self.request("PING" + msg or "")
+		return self.request("PING" + msg)
 	
 	def persist(self):
 		"""
 		Persist the database.
 		"""
 		return self.request("PERSIST")
+	
+	def reset(self):
+		"""
+		Reset the database.
+		"""
+		return self.request("RESET")

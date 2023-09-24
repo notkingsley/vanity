@@ -4,14 +4,16 @@ from client.client import Client
 
 
 TEST_HOST = "localhost"
-TEST_PORT = 9955
+TEST_PORT = 9956
 
 
 class KeyValueStoreTest(unittest.TestCase):
 	def setUp(self):
 		self.client = Client(TEST_HOST, TEST_PORT)
+		self.client.reset()
 	
 	def tearDown(self):
+		self.client.reset()
 		self.client.close()
 
 	def test_set_get(self):
@@ -76,5 +78,14 @@ class KeyValueStoreTest(unittest.TestCase):
 		"""
 		Test that we can ping the server.
 		"""
-		response = self.client.request("PING")
+		response = self.client.ping()
 		self.assertTrue(response.is_pong())
+	
+	def test_reset(self):
+		"""
+		Test that we can reset the database.
+		"""
+		self.client.set("test_reset", "test_reset_value")
+		self.client.reset()
+		response = self.client.get("test_reset")
+		self.assertTrue(response.is_null())
