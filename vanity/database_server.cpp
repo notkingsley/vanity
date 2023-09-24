@@ -61,4 +61,9 @@ void DatabaseServer::instruction_persist(const ClientSocket & socket) {
 	}
 }
 
+void DatabaseServer::instruction_reset(const ClientSocket &socket) {
+	m_database.reset();
+	send(socket, server_constants::ok);
+}
+
 } // namespace vanity

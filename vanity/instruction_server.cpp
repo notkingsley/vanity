@@ -15,6 +15,7 @@ enum class operation_t{
 	PERSIST,
 	EXIT,
 	TERMINATE,
+	RESET,
 	PING,
 };
 
@@ -29,13 +30,14 @@ static inline void skip_whitespace(const std::string& msg, size_t& pos)
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
 	static std::initializer_list <std::pair<operation_t, std::string>> operations {
-		{operation_t::GET, "GET"},
-		{operation_t::SET, "SET"},
-		{operation_t::DEL, "DEL"},
-		{operation_t::PERSIST, "PERSIST"},
-		{operation_t::EXIT, "EXIT"},
+		{operation_t::GET,       "GET"},
+		{operation_t::SET,       "SET"},
+		{operation_t::DEL,       "DEL"},
+		{operation_t::PERSIST,   "PERSIST"},
+		{operation_t::EXIT,      "EXIT"},
 		{operation_t::TERMINATE, "TERMINATE"},
-		{operation_t::PING, "PING"},
+		{operation_t::RESET,     "RESET"},
+		{operation_t::PING,      "PING"},
 	};
 	skip_whitespace(msg, pos);
 	for (const auto& [op, str] : operations) {
@@ -142,6 +144,12 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 			{
 				ensure_end(msg, pos);
 				instruction_terminate(socket);
+				break;
+			}
+			case operation_t::RESET:
+			{
+				ensure_end(msg, pos);
+				instruction_reset(socket);
 				break;
 			}
 			case operation_t::PING:

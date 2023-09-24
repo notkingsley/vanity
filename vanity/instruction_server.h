@@ -47,6 +47,9 @@ public:
 	// a persist instruction was received from a client
 	virtual void instruction_persist(const ClientSocket& socket) = 0;
 
+	// a reset instruction was received from a client
+	virtual void instruction_reset(const ClientSocket& socket) = 0;
+
 	// an exit instruction was received from a client
 	virtual void instruction_exit(const ClientSocket& socket) {
 		throw DestroyClient{};

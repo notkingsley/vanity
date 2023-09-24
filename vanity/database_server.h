@@ -45,6 +45,9 @@ public:
 
 	// a persist request was received from a client
 	void instruction_persist(const ClientSocket& socket) override;
+
+	// a wipe request was received from a client
+	void instruction_reset(const ClientSocket& socket) override;
 };
 
 } // namespace vanity

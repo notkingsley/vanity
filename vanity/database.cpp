@@ -81,4 +81,8 @@ bool StringDatabase::del(const std::string &key) {
 	return m_data.erase(key);
 }
 
+void StringDatabase::reset() {
+	m_data.clear();
+}
+
 } // namespace vanity

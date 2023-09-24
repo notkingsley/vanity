@@ -66,6 +66,9 @@ public:
 	// load the database from a file stream
 	static this_type from(std::ifstream &in);
 
+	// reset the database
+	void reset();
+
 	// check if the key exists
 	bool has(const std::string& key) const;
 
