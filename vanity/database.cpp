@@ -46,7 +46,7 @@ static std::pair<std::string, std::string> read_pair(std::ifstream &in)
 	return std::make_pair(first, second);
 }
 
-void StringDatabase::persist(std::ofstream &out) {
+void StringDatabase::persist(std::ofstream &out) const{
 	write_size(out, m_data.size());
 	for (const auto &my_pair : m_data)
 		write_pair(out, my_pair);

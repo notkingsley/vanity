@@ -61,7 +61,7 @@ public:
 	StringDatabase& operator=(StringDatabase&& other) noexcept = default;
 
 	// persist the database to a file stream
-	void persist(std::ofstream &out);
+	void persist(std::ofstream &out) const;
 
 	// load the database from a file stream
 	static this_type from(std::ifstream &in);

@@ -31,6 +31,9 @@ public:
 	// create a database server
 	explicit DatabaseServer(std::optional<std::filesystem::path> db_file) noexcept;
 
+	// persist the database to the file
+	bool persist() const;
+
 	// a get request was received from a client
 	void instruction_get(const ClientSocket& socket, const std::string& key) override;
 

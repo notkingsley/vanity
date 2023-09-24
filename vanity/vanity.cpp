@@ -1,4 +1,5 @@
 #include <iostream>
+#include <pwd.h>
 
 #include "arguments.h"
 #include "server.h"
@@ -13,12 +14,21 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 		std::cout << "Error: --no-persist and --persist-file are mutually exclusive" << std::endl;
 		exit(1);
 	}
-	else if (args.has("no_persist"))
+	else if (args.has("no_persist")){
 		config.db_file = std::nullopt;
-	else if (args.has_kwarg("persist_file"))
+	}
+	else if (args.has_kwarg("persist_file")){
 		config.db_file = args.get_kwarg("persist_file");
-	else
-		config.db_file = "db.vanity";
+		if (not config.db_file->is_absolute())
+			std::cout << "Warning: persist file is not absolute" << std::endl;
+	}
+	else{
+		if (args.has("persist_to_cwd"))
+			config.db_file = std::filesystem::current_path();
+		else
+			config.db_file = getpwuid(getuid())->pw_dir;
+		config.db_file.value() /= "vanity.db";
+	}
 
 	if (args.has_kwarg("port"))
 		config.port = std::stoi(args.get_kwarg("port"));

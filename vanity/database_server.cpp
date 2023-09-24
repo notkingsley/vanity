@@ -18,6 +18,20 @@ DatabaseServer::DatabaseServer(std::optional<std::filesystem::path> db_file) noe
 	}
 }
 
+bool DatabaseServer::persist() const {
+	if (!m_db_file)
+		return false;
+
+	auto tmp {m_db_file.value()};
+	tmp.replace_filename("tmp." + tmp.filename().string());
+	std::ofstream out{tmp, std::ios::binary};
+	m_database.persist(out);
+	out.close();
+	std::filesystem::rename(tmp, m_db_file.value());
+
+	return true;
+}
+
 void DatabaseServer::instruction_get(const ClientSocket &socket, const std::string &key) {
 	if (m_database.has(key))
 		send(socket, InstructionServer::make_message(m_database.get(key)));
@@ -38,21 +52,13 @@ void DatabaseServer::instruction_del(const ClientSocket &socket, const std::stri
 }
 
 void DatabaseServer::instruction_persist(const ClientSocket & socket) {
-	if (!m_db_file){
+	if (persist()){
+		send(socket, server_constants::ok);
+	}
+	else{
 		static const std::string msg = std::string{server_constants::error} + ": Persistence disabled";
 		send(socket, msg);
-		return;
 	}
-
-	auto tmp {m_db_file.value()};
-	tmp.replace_filename("tmp." + tmp.filename().string());
-	{
-		std::ofstream out{tmp, std::ios::binary};
-		m_database.persist(out);
-		out.close();
-	}
-	std::filesystem::rename(tmp, m_db_file.value());
-	send(socket, server_constants::ok);
 }
 
 } // namespace vanity
