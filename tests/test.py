@@ -4,7 +4,7 @@ from client.client import Client
 
 
 TEST_HOST = "localhost"
-TEST_PORT = 9954
+TEST_PORT = 9955
 
 
 class KeyValueStoreTest(unittest.TestCase):
@@ -43,3 +43,38 @@ class KeyValueStoreTest(unittest.TestCase):
 		"""
 		response = self.client.delete("test_del_empty")
 		self.assertTrue(response.is_error())
+	
+	def test_set_overwrite(self):
+		"""
+		Test that we can overwrite a key.
+		"""
+		self.client.set("test_set_overwrite", "test_set_overwrite_value")
+		self.client.set("test_set_overwrite", "test_set_overwrite_value2")
+		response = self.client.get("test_set_overwrite")
+		self.assertEqual(response.body, "test_set_overwrite_value2")
+	
+	def test_set_delete_get(self):
+		"""
+		Test that we can set a value, delete it, and then get a null.
+		"""
+		self.client.set("test_set_delete_get", "test_set_delete_get_value")
+		self.client.delete("test_set_delete_get")
+		response = self.client.get("test_set_delete_get")
+		self.assertTrue(response.is_null())
+	
+	def test_set_delete_set_get(self):
+		"""
+		Test that we can set a value, delete it, set it again, and then get it.
+		"""
+		self.client.set("test_set_delete_set_get", "test_set_delete_set_get_value")
+		self.client.delete("test_set_delete_set_get")
+		self.client.set("test_set_delete_set_get", "test_set_delete_set_get_value2")
+		response = self.client.get("test_set_delete_set_get")
+		self.assertEqual(response.body, "test_set_delete_set_get_value2")
+	
+	def test_ping(self):
+		"""
+		Test that we can ping the server.
+		"""
+		response = self.client.request("PING")
+		self.assertTrue(response.is_pong())

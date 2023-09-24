@@ -80,3 +80,15 @@ class Client:
 		Terminate the server.
 		"""
 		self.send_command("TERMINATE")
+	
+	def ping(self, msg: str = None):
+		"""
+		Ping the server.
+		"""
+		return self.request("PING" + msg or "")
+	
+	def persist(self):
+		"""
+		Persist the database.
+		"""
+		return self.request("PERSIST")

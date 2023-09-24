@@ -8,6 +8,7 @@ class ServerConstant(Enum):
 	OK = "OK"
 	NULL = "NULL"
 	ERROR = "ERROR"
+	PONG = "PONG"
 
 
 class InvalidResponseError(Exception):
@@ -87,3 +88,9 @@ class Response:
 		:return: True if the response is OK, False otherwise.
 		"""
 		return self.status == ServerConstant.OK
+	
+	def is_pong(self) -> bool:
+		"""
+		:return: True if the response is PONG, False otherwise.
+		"""
+		return self.status == ServerConstant.PONG
