@@ -47,6 +47,12 @@ public:
 	// a set instruction was received from a client
 	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const std::string& value) = 0;
 
+	// a set instruction was received from a client
+	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const int64_t& value) = 0;
+
+	// a set instruction was received from a client
+	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const double& value) = 0;
+
 	// a del instruction was received from a client
 	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
 
@@ -70,6 +76,10 @@ public:
 	virtual void instruction_ping(const ClientSocket& socket, const std::string& msg) {
 		send(socket, server_constants::pong + msg);
 	};
+
+private:
+	// convenience function to dispatch a set instruction by type
+	void dispatch_set(const ClientSocket& socket, const std::string& msg, size_t& pos);
 };
 
 } // namespace vanity

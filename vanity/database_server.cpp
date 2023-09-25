@@ -54,6 +54,16 @@ void DatabaseServer::instruction_set(const ClientSocket &socket, const std::stri
 	send(socket, server_constants::ok);
 }
 
+void DatabaseServer::instruction_set(const ClientSocket &socket, const std::string &key, const int64_t &value) {
+	m_database.set(key, value);
+	send(socket, server_constants::ok);
+}
+
+void DatabaseServer::instruction_set(const ClientSocket &socket, const std::string &key, const double &value) {
+	m_database.set(key, value);
+	send(socket, server_constants::ok);
+}
+
 void DatabaseServer::instruction_del(const ClientSocket &socket, const std::string &key) {
 	if (m_database.del(key))
 		send(socket, server_constants::ok);
