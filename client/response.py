@@ -17,24 +17,22 @@ class InvalidResponseError(Exception):
 	"""
 	pass
 
-def escape(msg: str):
-	"""
-	Escape the quotes in the message to be sent.
-	:param msg: The message to escape.
-	:return: The escaped message.
-	"""
-	return '"' + msg.replace('"', r'\"') + '"'
 
-def unescape(msg: str) -> str:
+def parse(msg: str) -> str | int | float:
 	"""
-	Unecape the quotes in the message.
-	:param msg: The message to unescape.
-	:return: The unescaped message.
+	parse a message body received from the server.
+	Unecape the quotes in the message if it is a string.
+	:param msg: The message to parse.
+	:return: The parse message.
 	"""
 	if msg.startswith('"') and msg.endswith('"'):
 		return msg[1:-1].replace(r'\"', '"')
 	
-	raise InvalidResponseError("Message must be quoted.")
+	num = float(msg)
+	if num.is_integer():
+		num = int(num)
+	
+	return num
 
 
 class Response:
@@ -66,7 +64,7 @@ class Response:
 				break
 		
 		if raw:
-			self.body = unescape(raw)
+			self.body = parse(raw)
 
 		if self.status is None and self.body is None:
 			raise InvalidResponseError("Response is empty.")

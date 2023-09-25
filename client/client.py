@@ -1,5 +1,17 @@
-from client.response import escape, Response
+from client.response import Response
 from client.socket_client import SocketClient
+
+
+def format(msg: str | int | float) -> str:
+	"""
+	Format a message body to be sent to the server.
+	Escape the quotes in the message if it is a string
+	:param msg: The message to format.
+	:return: The formatted message.
+	"""
+	if isinstance(msg, (int, float)):
+		return str(msg)
+	return '"' + msg.replace('"', r'\"') + '"'
 
 
 class Client:
@@ -27,7 +39,7 @@ class Client:
 		:param command: The command to send.
 		:param args: The arguments to send.
 		"""
-		self.sock.send(f"{command} {' '.join(map(escape, args))}")
+		self.sock.send(f"{command} {' '.join(map(format, args))}")
 	
 	def read_response(self) -> Response:
 		"""
@@ -54,13 +66,19 @@ class Client:
 		"""
 		return self.request("GET", key)
 	
-	def set(self, key: str, value: str):
+	def set(self, key: str, value: str | int | float):
 		"""
 		Set the value of a key.
 		:param key: The key to set.
 		:param value: The value to set.
 		"""
-		return self.request("SET", key, value)
+		if isinstance(value, str):
+			command = "SET :STR"
+		elif isinstance(value, int):
+			command = "SET :INT"
+		elif isinstance(value, float):
+			command = "SET :FLOAT"
+		return self.request(command, key, value)
 	
 	def delete(self, key: str):
 		"""
