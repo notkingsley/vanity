@@ -201,7 +201,8 @@ static inline std::string extract_single_word(const std::string& msg, size_t& po
 
 std::string InstructionServer::prepare(const std::string &msg) {
 	std::string ret {};
-	ret.reserve(msg.size() + 2);
+	ret.reserve(msg.size() + 10);
+	ret += type_to_string<std::string>::value;
 
 	ret += "\"";
 	for (char c : msg) {
