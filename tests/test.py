@@ -113,7 +113,23 @@ class KeyValueStoreTest(unittest.TestCase):
 		self.client.reset()
 		response = self.client.get("test_reset")
 		self.assertTrue(response.is_null())
-
+	
+	def test_set_get_int(self):
+		"""
+		Test that we can set an integer value and then get it.
+		"""
+		self.client.set("test_set_get_int", 123)
+		response = self.client.get("test_set_get_int")
+		self.assertEqual(response.value, 123)
+	
+	def test_set_get_float(self):
+		"""
+		Test that we can set a float value and then get it.
+		"""
+		self.client.set("test_set_get_float", 123.456)
+		response = self.client.get("test_set_get_float")
+		self.assertEqual(response.value, 123.456)
+	
 
 class NoPersistenceTest(unittest.TestCase):
 	"""
@@ -132,6 +148,8 @@ class NoPersistenceTest(unittest.TestCase):
 		"""
 		with make_client() as client:
 			client.set("test_no_persist", "test_no_persist_value")
+			response = client.persist()
+			self.assertTrue(response.is_error())
 
 		self.server_handle.restart()
 
@@ -171,3 +189,33 @@ class PersistenceTest(unittest.TestCase):
 		with make_client() as client:
 			response = client.get("test_persist")
 			self.assertEqual(response.value, "test_persist_value")
+	
+	def test_persist_int(self):
+		"""
+		Test that we can set an integer value on persist, restart the server, and get the value.
+		"""
+		with make_client() as client:
+			client.set("test_persist_int", 123)
+			response = client.persist()
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client() as client:
+			response = client.get("test_persist_int")
+			self.assertEqual(response.value, 123)
+	
+	def test_persist_float(self):
+		"""
+		Test that we can set a float value on persist, restart the server, and get the value.
+		"""
+		with make_client() as client:
+			client.set("test_persist_float", 123.456)
+			response = client.persist()
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client() as client:
+			response = client.get("test_persist_float")
+			self.assertEqual(response.value, 123.456)
