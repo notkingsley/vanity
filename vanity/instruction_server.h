@@ -22,6 +22,25 @@ public:
 	const char* what() const noexcept override { return m_msg.c_str(); }
 };
 
+// to annotate a return value with the type
+template <typename T>
+struct type_to_string;
+
+template <>
+struct type_to_string<int64_t> {
+	static constexpr const char* value = ":INT ";
+};
+
+template <>
+struct type_to_string<double> {
+	static constexpr const char* value = ":FLOAT ";
+};
+
+template <>
+struct type_to_string<std::string> {
+	static constexpr const char* value = ":STR ";
+};
+
 /*
  * A InstructionServer allows to handle incoming instructions
  * and dispatch them to the appropriate handler
@@ -35,7 +54,7 @@ public:
 	// prepare a numeric value to be sent
 	template<typename T>
 	static std::enable_if_t<std::is_arithmetic_v<T>, std::string> prepare(T value){
-		return std::to_string(value);
+		return type_to_string<T>::value + std::to_string(value);
 	}
 
 	// a message was received from a client

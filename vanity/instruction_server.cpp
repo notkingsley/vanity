@@ -2,6 +2,7 @@
 // Created by kingsli on 9/14/23.
 //
 
+#include <stdexcept>
 #include "instruction_server.h"
 
 
@@ -129,10 +130,18 @@ template<>
 inline int64_t extract<object_t::INT>(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
-	size_t count = 0;
-	auto ret{std::stoll(msg.substr(pos), &count)};
-	pos += count;
-	return ret;
+	try{
+		size_t count = 0;
+		auto ret{std::stoll(msg.substr(pos), &count)};
+		pos += count;
+		return ret;
+	}
+	catch (const std::out_of_range& e) {
+		throw InvalidInstruction("integer out of range");
+	}
+	catch (const std::invalid_argument& e) {
+		throw InvalidInstruction("invalid integer");
+	}
 
 }
 
@@ -141,10 +150,18 @@ template<>
 inline double extract<object_t::FLOAT>(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
-	size_t count = 0;
-	auto ret{std::stod(msg.substr(pos), &count)};
-	pos += count;
-	return ret;
+	try{
+		size_t count = 0;
+		auto ret{std::stod(msg.substr(pos), &count)};
+		pos += count;
+		return ret;
+	}
+	catch (const std::out_of_range& e) {
+		throw InvalidInstruction("float out of range");
+	}
+	catch (const std::invalid_argument& e) {
+		throw InvalidInstruction("invalid float");
+	}
 }
 
 // extract a string from part of a message
@@ -251,7 +268,10 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 		}
 	}
 	catch (const InvalidInstruction& e) {
-		send(socket, server_constants::error + prepare(e.what()));
+		std::string err {server_constants::error};
+		err += ": ";
+		err += e.what();
+		send(socket, err);
 	}
 }
 
