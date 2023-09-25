@@ -18,22 +18,31 @@ class InvalidResponseError(Exception):
 	pass
 
 
-def parse(msg: str) -> str | int | float:
+def extract(msg: str) -> str | int | float | None:
 	"""
-	parse a message body received from the server.
-	Unecape the quotes in the message if it is a string.
-	:param msg: The message to parse.
-	:return: The parse message.
+	Extract a value from a response.
+	:param msg: The response to extract from.
+	:return: The extracted value, or None if no value could be deciphered.
 	"""
-	if msg.startswith('"') and msg.endswith('"'):
-		return msg[1:-1].replace(r'\"', '"')
+	if msg.startswith(":"):
+		msg = msg[1:].strip()
+		
+		if msg.startswith("STR"):
+			msg = msg[3:].strip()
+			if msg.startswith('"') and msg.endswith('"'):
+				return msg[1:-1].replace(r'\"', '"')
+		
+		elif msg.startswith("INT"):
+			msg = msg[3:].strip()
+			if msg.isdigit():
+				return int(msg)
+		
+		elif msg.startswith("FLOAT"):
+			msg = msg[5:].strip()
+			if msg.replace(".", "", 1).isdigit():
+				return float(msg)
 	
-	num = float(msg)
-	if num.is_integer():
-		num = int(num)
-	
-	return num
-
+	return None
 
 class Response:
 	def __init__(self, body: str) -> None:
@@ -43,9 +52,8 @@ class Response:
 	def __str__(self) -> str:
 		status = self.status.name if self.status else self.status
 		body = self.body
-		if self.body:
-			if len(self.body) > 30:
-				body = self.body[:30] + "..."
+		if self.body and len(self.body) > 30:
+			body = self.body[:30] + "..."
 
 		return f"<Response: status={status}, body={body}>"
 
@@ -64,7 +72,8 @@ class Response:
 				break
 		
 		if raw:
-			self.body = parse(raw)
+			self.body = raw
+			self.value = extract(self.body)
 
 		if self.status is None and self.body is None:
 			raise InvalidResponseError("Response is empty.")

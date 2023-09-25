@@ -46,7 +46,7 @@ class KeyValueStoreTest(unittest.TestCase):
 		"""
 		self.client.set("test_set_get_key", "test_set_get_value")
 		response = self.client.get("test_set_get_key")
-		self.assertEqual(response.body, "test_set_get_value")
+		self.assertEqual(response.value, "test_set_get_value")
 
 	def test_set_del(self):
 		"""
@@ -77,7 +77,7 @@ class KeyValueStoreTest(unittest.TestCase):
 		self.client.set("test_set_overwrite", "test_set_overwrite_value")
 		self.client.set("test_set_overwrite", "test_set_overwrite_value2")
 		response = self.client.get("test_set_overwrite")
-		self.assertEqual(response.body, "test_set_overwrite_value2")
+		self.assertEqual(response.value, "test_set_overwrite_value2")
 	
 	def test_set_delete_get(self):
 		"""
@@ -96,7 +96,7 @@ class KeyValueStoreTest(unittest.TestCase):
 		self.client.delete("test_set_delete_set_get")
 		self.client.set("test_set_delete_set_get", "test_set_delete_set_get_value2")
 		response = self.client.get("test_set_delete_set_get")
-		self.assertEqual(response.body, "test_set_delete_set_get_value2")
+		self.assertEqual(response.value, "test_set_delete_set_get_value2")
 	
 	def test_ping(self):
 		"""
@@ -170,4 +170,4 @@ class PersistenceTest(unittest.TestCase):
 
 		with make_client() as client:
 			response = client.get("test_persist")
-			self.assertEqual(response.body, "test_persist_value")
+			self.assertEqual(response.value, "test_persist_value")
