@@ -7,12 +7,16 @@ def cli_loop(host: str, port: int):
 	"""
 	Run as a command line interface.
 	"""
-	print("Welcome to Vanity!\nType \"exit\" to exit.")
-	sock = SocketClient(host, port)
+	try:
+		sock = SocketClient(host, port)
+	except Exception as e:
+		print(f"{e.__class__.__name__}: {e}")
+		return
 
+	print("Welcome to Vanity!\nType \"exit\" to exit.")
 	try:
 		while True:
-			msg = input(f"{host}:{port}> ")
+			msg = input(f"vanity@{host}:{port}> ")
 			if msg == "exit":
 				break
 			sock.send(msg)
