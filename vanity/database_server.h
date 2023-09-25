@@ -22,7 +22,7 @@ class DatabaseServer : public virtual InstructionServer
 {
 private:
 	// the database
-	StringDatabase m_database;
+	db::Database m_database;
 
 	// file to persist the database to, if any
 	const std::optional<std::filesystem::path> m_db_file;

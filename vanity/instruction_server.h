@@ -29,8 +29,14 @@ public:
 class InstructionServer : public virtual AbstractServer
 {
 public:
-	// parse a string into a transferable message
-	static std::string make_message(const std::string& msg);
+	// prepare a string to be sent
+	static std::string prepare(const std::string& msg);
+
+	// prepare a numeric value to be sent
+	template<typename T>
+	static std::enable_if_t<std::is_arithmetic_v<T>, std::string> prepare(T value){
+		return std::to_string(value);
+	}
 
 	// a message was received from a client
 	void handle(const std::string& msg, const ClientSocket& socket) override;

@@ -160,11 +160,11 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 		}
 	}
 	catch (const InvalidInstruction& e) {
-		send(socket, server_constants::error + make_message(e.what()));
+		send(socket, server_constants::error + prepare(e.what()));
 	}
 }
 
-std::string InstructionServer::make_message(const std::string &msg) {
+std::string InstructionServer::prepare(const std::string &msg) {
 	std::string ret {};
 	ret.reserve(msg.size() + 2);
 

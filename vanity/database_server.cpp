@@ -13,7 +13,7 @@ DatabaseServer::DatabaseServer(std::optional<std::filesystem::path> db_file) noe
 {
 	if(m_db_file and std::filesystem::exists(m_db_file.value())){
 		std::ifstream in{m_db_file.value(), std::ios::binary};
-		m_database = StringDatabase::from(in);
+		m_database = db::Database::from(in);
 		in.close();
 	}
 }
@@ -33,10 +33,20 @@ bool DatabaseServer::persist() const {
 }
 
 void DatabaseServer::instruction_get(const ClientSocket &socket, const std::string &key) {
-	if (m_database.has(key))
-		send(socket, InstructionServer::make_message(m_database.get(key)));
-	else
-		send(socket, server_constants::null);
+	if (!m_database.has(key))
+		return send(socket, server_constants::null);
+
+	auto value = m_database.get(key);
+	switch (value.index()) {
+		case 0:
+			return send(socket, InstructionServer::prepare(std::get<0>(value)));
+		case 1:
+			return send(socket, InstructionServer::prepare(std::get<1>(value)));
+		case 2:
+			return send(socket, InstructionServer::prepare(std::get<2>(value)));
+		default:
+			throw std::runtime_error("invalid type");
+	}
 }
 
 void DatabaseServer::instruction_set(const ClientSocket &socket, const std::string &key, const std::string &value) {

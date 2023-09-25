@@ -9,21 +9,22 @@
 #include <string>
 #include <exception>
 #include <unordered_map>
+#include <variant>
 
 
-namespace vanity{
+namespace vanity::db {
 
 /*
  * A DatabaseException is thrown when an error occurs
  */
-class DatabaseException : std::exception
-{
+class DatabaseException : std::exception {
 private:
 	std::string m_msg;
 
 public:
 	explicit DatabaseException(std::string msg) : m_msg{std::move(msg)} {}
-	const char* what() const noexcept override { return m_msg.c_str(); }
+
+	const char *what() const noexcept override { return m_msg.c_str(); }
 };
 
 /*
@@ -34,31 +35,33 @@ public:
 	explicit DatabaseKeyNotFoundException(std::string msg) : DatabaseException(std::move(msg)) {}
 };
 
-/*
- * A StringDatabase is an abstraction for a key value database
- */
-class StringDatabase
-{
-private:
-	// the key value store
-	std::unordered_map<std::string, std::string> m_data;
+using string_t = std::string;
+using int_t = int64_t;
+using float_t = double;
 
+/*
+ * A Database is an abstraction for a key value database
+ */
+class Database
+{
 public:
-	using this_type = StringDatabase;
+	using this_type = Database;
+	using key_type = string_t;
+	using mapped_type = std::variant<string_t, int_t, float_t>;
 
 	// create a key value database
-	StringDatabase() = default;
+	Database() = default;
 
 	// destroy the key value database
-	~StringDatabase() = default;
+	~Database() = default;
 
 	// no copy
-	StringDatabase(const StringDatabase&) = delete;
-	StringDatabase& operator=(const StringDatabase&) = delete;
+	Database(const Database&) = delete;
+	Database& operator=(const Database&) = delete;
 
 	// move constructor
-	StringDatabase(StringDatabase&& other) noexcept = default;
-	StringDatabase& operator=(StringDatabase&& other) noexcept = default;
+	Database(Database&& other) noexcept = default;
+	Database& operator=(Database&& other) noexcept = default;
 
 	// persist the database to a file stream
 	void persist(std::ofstream &out) const;
@@ -70,18 +73,22 @@ public:
 	void reset();
 
 	// check if the key exists
-	bool has(const std::string& key) const;
+	bool has(const key_type& key) const;
 
 	// get the value for a key
-	const std::string& get(const std::string& key);
+	const mapped_type& get(const key_type& key);
 
 	// set the value for a key
-	void set(const std::string& key, const std::string& value);
+	void set(const key_type& key, const mapped_type& value);
 
 	// delete the value for a key
-	bool del(const std::string& key);
+	bool del(const key_type& key);
+
+private:
+	// the key value store
+	std::unordered_map<key_type, mapped_type> m_data;
 };
 
-} // namespace vanity
+} // namespace vanity::db
 
 #endif //VANITY_DATABASE_H
