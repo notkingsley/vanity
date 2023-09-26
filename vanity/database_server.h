@@ -11,6 +11,7 @@
 
 #include "database.h"
 #include "instruction_server.h"
+#include "logging.h"
 
 
 namespace vanity {
@@ -18,7 +19,7 @@ namespace vanity {
 /*
  * A DatabaseServer allows us to respond to database requests
  */
-class DatabaseServer : public virtual InstructionServer
+class DatabaseServer : public virtual InstructionServer, protected virtual Logger
 {
 private:
 	// the database

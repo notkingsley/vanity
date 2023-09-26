@@ -15,6 +15,7 @@ DatabaseServer::DatabaseServer(std::optional<std::filesystem::path> db_file) noe
 		std::ifstream in{m_db_file.value(), std::ios::binary};
 		m_database = db::Database::from(in);
 		in.close();
+		logger().info("Loaded database from " + m_db_file.value().string());
 	}
 }
 
@@ -29,6 +30,7 @@ bool DatabaseServer::persist() const {
 	out.close();
 	std::filesystem::rename(tmp, m_db_file.value());
 
+	logger().info("Persisted database to " + m_db_file.value().string());
 	return true;
 }
 
@@ -83,6 +85,7 @@ void DatabaseServer::instruction_persist(const ClientSocket & socket) {
 
 void DatabaseServer::instruction_reset(const ClientSocket &socket) {
 	m_database.reset();
+	logger().info("Reset database");
 	send(socket, server_constants::ok);
 }
 

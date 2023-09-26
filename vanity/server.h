@@ -18,6 +18,8 @@ namespace vanity {
 struct ServerConfig
 {
 	std::optional<std::filesystem::path> db_file;
+	std::filesystem::path log_file;
+	LogLevel log_level;
 	int port;
 };
 
@@ -40,6 +42,7 @@ private:
 public:
 	// create a server
 	explicit Server(const ServerConfig& config) noexcept :
+		Logger(config.log_file, config.log_level),
 		DatabaseServer(config.db_file),
 		m_config(config) {};
 

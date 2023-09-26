@@ -10,8 +10,15 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 {
 	vanity::ServerConfig config{};
 
+
+	if (args.has_kwarg("port"))
+		config.port = std::stoi(args.get_kwarg("port"));
+	else
+		config.port = 9955;
+
+
 	if (args.has_kwarg("persist_file") and args.has("no_persist")){
-		std::cout << "Error: --no-persist and --persist-file are mutually exclusive" << std::endl;
+		std::cout << "Error: --no-persist and --persist-file are mutually exclusive\n";
 		exit(1);
 	}
 	else if (args.has("no_persist")){
@@ -30,10 +37,33 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 		config.db_file.value() /= "vanity.db";
 	}
 
-	if (args.has_kwarg("port"))
-		config.port = std::stoi(args.get_kwarg("port"));
+
+	if (args.has_kwarg("log_file"))
+		config.log_file = args.get_kwarg("log_file");
 	else
-		config.port = 9955;
+		config.log_file = std::filesystem::current_path() / "vanity.log";
+
+	if (args.has_kwarg("log_level")){
+		auto level = args.get_kwarg("log_level");
+		if (level == "debug")
+			config.log_level = vanity::LogLevel::DEBUG;
+		else if (level == "info")
+			config.log_level = vanity::LogLevel::INFO;
+		else if (level == "warning")
+			config.log_level = vanity::LogLevel::WARNING;
+		else if (level == "error")
+			config.log_level = vanity::LogLevel::ERROR;
+		else if (level == "critical")
+			config.log_level = vanity::LogLevel::CRITICAL;
+		else{
+			std::cout << "Error: invalid log level" << std::endl;
+			exit(1);
+		}
+	}
+
+	if (args.has("disable_logging"))
+		config.log_level = vanity::LogLevel::DISABLED;
+
 
 	return config;
 }
