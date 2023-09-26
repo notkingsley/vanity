@@ -1,5 +1,6 @@
 import subprocess
 from time import sleep
+from typing import Literal
 
 
 class ServerHandle:
@@ -18,6 +19,9 @@ class ServerHandle:
 		no_persist: bool = True,
 		persist_file: str = None,
 		persist_to_cwd: bool = False,
+		log_file: str = None,
+		log_level: str = Literal["debug", "info", "warning", "error", "critical"],
+		disable_logging: bool = False,
 	):
 		"""
 		Create a new ServerHandle.
@@ -39,6 +43,15 @@ class ServerHandle:
 				self.args.append(f"--persist-file={persist_file}")
 			elif persist_to_cwd:
 				self.args.append(f"--persist-to-cwd")
+		
+		if log_file:
+			self.args.append(f"--log-file={log_file}")
+		
+		if log_level:
+			self.args.append(f"--log-level={log_level}")
+		
+		if disable_logging:
+			self.args.append(f"--disable-logging")
 	
 
 	def __enter__(self):
