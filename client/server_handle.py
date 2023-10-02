@@ -20,8 +20,8 @@ class ServerHandle:
 		persist_file: str = None,
 		persist_to_cwd: bool = False,
 		log_file: str = None,
-		log_level: str = Literal["debug", "info", "warning", "error", "critical"],
-		disable_logging: bool = False,
+		log_level: Literal["debug", "info", "warning", "error", "critical"] = None,
+		disable_logging: bool = True,
 	):
 		"""
 		Create a new ServerHandle.
