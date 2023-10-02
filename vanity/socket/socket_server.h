@@ -3,33 +3,37 @@
 
 #include <unordered_set>
 #include <memory>
+#include <thread>
 
 #include "abstract_server.h"
+#include "event.h"
+#include "logging.h"
 #include "socket.h"
 
 
 namespace vanity{
 
 /*
- * A SocketServer allows us to listen on one or more sockets, accept connections and read/write data
+ * A SocketServer allows us to listen on one or more sockets,
+ * accept connections and read/write data
  */
-class SocketServer : public virtual AbstractServer
+class SocketServer : public virtual AbstractServer, public virtual Logger
 {
 private:
-	// max number of events to process at once
-	static constexpr int MAX_EVENTS = 10;
-
-	// epoll timeout in milliseconds
-	static constexpr int EPOLL_TIMEOUT = 1000;
-
-	// epoll events array
-	epoll_event m_events[MAX_EVENTS] {};
-
-	// epoll file descriptor
-	int m_epoll_fd;
-
 	// the current set of handlers
 	std::unordered_set<std::unique_ptr<SocketEventHandler>> m_handlers;
+
+	// the poll thread
+	std::thread m_poll_thread {};
+
+	// whether the reported socket_ready has been polled
+	event m_polled {};
+
+	// epoll file descriptor
+	int m_epoll_fd {};
+
+	// whether the polling thread is still running
+	bool m_running {false};
 
 public:
 	// create a socket server
@@ -52,14 +56,28 @@ public:
 	// remove a handler
 	void remove_socket_handler(SocketEventHandler& handler);
 
-	// start listening on port
-	void listen(uint16_t port);
-
-	// start the server
-	void start();
+	// bind to and start listening on port
+	void bind(uint16_t port);
 
 	// send a message to a client
 	void send(const ClientSocket& client, const std::string& msg) override;
+
+protected:
+	// start polling as a background task
+	void start();
+
+	// some polled socket is ready
+	void socket_ready();
+
+	// the server is being exited. this stops and joins the poll thread
+	// and deletes the socket handlers (and the sockets themselves)
+	void stop();
+
+private:
+	// block on epoll on a separate thread.
+	// yield server_event::socket_ready to the
+	// event queue when some socket is ready
+	void poll();
 };
 
 } // namespace vanity

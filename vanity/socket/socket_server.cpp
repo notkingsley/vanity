@@ -44,38 +44,43 @@ void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
 	ptr.release();
 }
 
-void SocketServer::start() {
+void SocketServer::socket_ready() {
+	constexpr int poll_size = 10;
+	epoll_event events[poll_size] {};
+
 	while (true) {
-		int n = epoll_wait(m_epoll_fd, m_events, MAX_EVENTS, EPOLL_TIMEOUT);
+		int n = epoll_wait(m_epoll_fd, events, poll_size, 0);
+
 		if (n < 0){
-			SocketError err{"Could not wait for epoll"};
-			if (err.get_errno() == EINTR)
-				continue;
-			else
-				throw std::move(err);
+			SocketError err{{}};
+			logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
+			break;
 		}
 
+		if (n == 0)
+			break;
+
 		for (int i = 0; i < n; ++i) {
-			auto handler = static_cast<SocketEventHandler *>(m_events[i].data.ptr);
+			auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
 			try{
-				if (!handler->ready(*this))
+				if (!handler->ready(*this)){
 					remove_socket_handler(*handler);
+					logger().debug("Client Socket closed");
+				}
 			}
 			catch (DestroyClient& e)
 			{
 				remove_socket_handler(*handler);
-			}
-			catch (DestroyServer& e)
-			{
-				m_handlers.clear();
-				return;
+				logger().debug("Client destroyed.");
 			}
 		}
 	}
+	m_polled.set();
 }
 
-void SocketServer::listen(uint16_t port) {
+void SocketServer::bind(uint16_t port) {
 	add_socket_handler(std::make_unique<SocketConnectionServer>(*this, port));
+	logger().info("Listening on port " + std::to_string(port));
 }
 
 void SocketServer::send(const ClientSocket &client, const std::string& msg) {
@@ -84,6 +89,45 @@ void SocketServer::send(const ClientSocket &client, const std::string& msg) {
 
 	SocketWriter writer{client, msg};
 	while (writer.ready(*this));
+}
+
+void SocketServer::poll() {
+	constexpr int poll_size = 1;
+	epoll_event events[poll_size] {};
+
+	while (true) {
+		int n = epoll_wait(m_epoll_fd, events, poll_size, M_MAX_TIMEOUT);
+
+		if (n < 0){
+			SocketError err{{}};
+			if (err.get_errno() == EINTR)
+				continue;
+			else
+				logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
+		}
+
+		if (n == 0 and not m_running)
+			break;
+
+		if (n > 0){
+			m_event_queue.push(server_event::socket_ready);
+			m_polled.wait();
+		}
+
+		if (not m_running)
+			m_polled.clear();
+	}
+}
+
+void SocketServer::start() {
+	m_running = true;
+	m_poll_thread = std::thread{&SocketServer::poll, this};
+}
+
+void SocketServer::stop() {
+	m_running = false;
+	m_poll_thread.join();
+	m_handlers.clear();
 }
 
 } // namespace vanity

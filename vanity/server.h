@@ -24,7 +24,7 @@ struct ServerConfig
 };
 
 /*
- * Top Level server
+ * Top level server
  */
 class Server:
 	public DatabaseServer,
@@ -34,10 +34,19 @@ private:
 	// the configuration
 	ServerConfig m_config;
 
-	// listen for incoming connections
-	void listen(){
-		SocketServer::listen(m_config.port);
-	};
+	// start background server tasks
+	void start(){
+		SocketServer::bind(m_config.port);
+		SocketServer::start();
+		logger().info("Started server");
+	}
+
+	// stop any running tasks and exit the server
+	void stop(){
+		DatabaseServer::persist();
+		SocketServer::stop();
+		logger().info("Stopped server");
+	}
 
 public:
 	// create a server
@@ -48,8 +57,24 @@ public:
 
 	// run the server with the given configuration
 	void run(){
-		listen();
 		start();
+		try{
+			while (true) {
+				switch (m_event_queue.get()) {
+					case server_event::socket_ready: {
+						SocketServer::socket_ready();
+						break;
+					}
+					case server_event::persist: {
+						DatabaseServer::persist();
+						break;
+					}
+				}
+			}
+		}
+		catch (DestroyServer&) {
+			stop();
+		}
 	};
 };
 

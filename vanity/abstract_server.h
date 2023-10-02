@@ -1,6 +1,7 @@
 #ifndef VANITY_ABSTRACT_SERVER_H
 #define VANITY_ABSTRACT_SERVER_H
 
+#include "queue.h"
 #include "socket/socket.h"
 
 
@@ -21,11 +22,24 @@ class DestroyClient : std::exception {};
 // thrown from a ready() to indicate the server should be stopped
 class DestroyServer : std::exception {};
 
+// some type of sever event that should be completed
+enum class server_event{
+	socket_ready,
+	persist,
+};
+
 /*
  * An AbstractServer defines the basic interface for a server
  */
 class AbstractServer
 {
+protected:
+	// max timeout in seconds for any blocking event
+	static constexpr int M_MAX_TIMEOUT = 10;
+
+	// events that need attention are sent through here
+	queue<server_event> m_event_queue;
+
 public:
 	AbstractServer() = default;
 	virtual ~AbstractServer() = default;
