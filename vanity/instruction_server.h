@@ -88,7 +88,7 @@ public:
 
 	// a terminate instruction was received from a client
 	virtual void instruction_terminate(const ClientSocket& socket) {
-		throw DestroyServer{};
+		terminate();
 	};
 
 	// a ping instruction was received from a client

@@ -19,9 +19,6 @@ struct server_constants
 // thrown from a ready() to indicate the client should be disconnected
 class DestroyClient : std::exception {};
 
-// thrown from a ready() to indicate the server should be stopped
-class DestroyServer : std::exception {};
-
 // some type of sever event that should be completed
 enum class server_event{
 	socket_ready,

@@ -72,12 +72,8 @@ int main(int argc, char **argv)
 {
 	vanity::Arguments args{argc, argv};
 
-	try{
-		vanity::Server server{extract_config(args)};
-		server.run();
-	}
-	catch (vanity::SocketError& e){
-		std::cout << e.what() << e.get_errno() << std::endl;
-	}
+	vanity::Server server{extract_config(args)};
+	server.run();
+
 	return 0;
 }

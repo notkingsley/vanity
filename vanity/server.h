@@ -68,27 +68,22 @@ public:
 	// run the server with the given configuration
 	void run(){
 		start();
-		try{
-			while (true) {
-				switch (m_event_queue.get()) {
-					case server_event::socket_ready: {
-						SocketServer::socket_ready();
-						break;
-					}
-					case server_event::persist: {
-						PersistentDBServer::persist();
-						break;
-					}
-					case server_event::terminate:
-						stop();
-						return;
+
+		while (true) {
+			switch (m_event_queue.get()) {
+				case server_event::socket_ready: {
+					SocketServer::socket_ready();
+					break;
 				}
+				case server_event::persist: {
+					PersistentDBServer::persist();
+					break;
+				}
+				case server_event::terminate:
+					return stop();
 			}
 		}
-		catch (DestroyServer&) {
-			stop();
-		}
-	};
+	}
 };
 
 } // namespace vanity
