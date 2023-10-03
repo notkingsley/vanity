@@ -7,33 +7,6 @@
 
 namespace vanity {
 
-DatabaseServer::DatabaseServer(std::optional<std::filesystem::path> db_file) noexcept
-	: m_database{}
-	, m_db_file{std::move(db_file)}
-{
-	if(m_db_file and std::filesystem::exists(m_db_file.value())){
-		std::ifstream in{m_db_file.value(), std::ios::binary};
-		m_database = db::Database::from(in);
-		in.close();
-		logger().info("Loaded database from " + m_db_file.value().string());
-	}
-}
-
-bool DatabaseServer::persist() const {
-	if (!m_db_file)
-		return false;
-
-	auto tmp {m_db_file.value()};
-	tmp.replace_filename("tmp." + tmp.filename().string());
-	std::ofstream out{tmp, std::ios::binary};
-	m_database.persist(out);
-	out.close();
-	std::filesystem::rename(tmp, m_db_file.value());
-
-	logger().info("Persisted database to " + m_db_file.value().string());
-	return true;
-}
-
 void DatabaseServer::instruction_get(const ClientSocket &socket, const std::string &key) {
 	if (!m_database.has(key))
 		return send(socket, server_constants::null);
@@ -71,16 +44,6 @@ void DatabaseServer::instruction_del(const ClientSocket &socket, const std::stri
 		send(socket, server_constants::ok);
 	else
 		send(socket, server_constants::error);
-}
-
-void DatabaseServer::instruction_persist(const ClientSocket & socket) {
-	if (persist()){
-		send(socket, server_constants::ok);
-	}
-	else{
-		static const std::string msg = std::string{server_constants::error} + ": Persistence disabled";
-		send(socket, msg);
-	}
 }
 
 void DatabaseServer::instruction_reset(const ClientSocket &socket) {

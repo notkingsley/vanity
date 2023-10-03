@@ -9,6 +9,7 @@ add_executable(vanity
         database.cpp
         database_server.cpp
         instruction_server.cpp
+        persistentdb_server.cpp
         socket/socket.cpp
         socket/socket_event_handler.cpp
         socket/socket_connection_server.cpp

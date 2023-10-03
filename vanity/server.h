@@ -5,7 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "database_server.h"
+#include "persistentdb_server.h"
 #include "instruction_server.h"
 #include "socket/socket_server.h"
 
@@ -27,7 +27,7 @@ struct ServerConfig
  * Top level server
  */
 class Server:
-	public DatabaseServer,
+	public PersistentDBServer,
 	public SocketServer
 {
 private:
@@ -43,7 +43,7 @@ private:
 
 	// stop any running tasks and exit the server
 	void stop(){
-		DatabaseServer::persist();
+		PersistentDBServer::persist();
 		SocketServer::stop();
 		logger().info("Stopped server");
 	}
@@ -52,7 +52,7 @@ public:
 	// create a server
 	explicit Server(const ServerConfig& config) noexcept :
 		Logger(config.log_file, config.log_level),
-		DatabaseServer(config.db_file),
+		PersistentDBServer(config.db_file),
 		m_config(config) {};
 
 	// run the server with the given configuration
@@ -66,7 +66,7 @@ public:
 						break;
 					}
 					case server_event::persist: {
-						DatabaseServer::persist();
+						PersistentDBServer::persist();
 						break;
 					}
 				}
