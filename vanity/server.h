@@ -38,12 +38,13 @@ private:
 	void start(){
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
+		PersistentDBServer::start();
 		logger().info("Started server");
 	}
 
 	// stop any running tasks and exit the server
 	void stop(){
-		PersistentDBServer::persist();
+		PersistentDBServer::stop();
 		SocketServer::stop();
 		logger().info("Stopped server");
 	}

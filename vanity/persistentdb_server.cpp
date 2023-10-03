@@ -42,4 +42,26 @@ void PersistentDBServer::instruction_persist(const ClientSocket & socket) {
 	}
 }
 
+void PersistentDBServer::start() {
+	if (not m_db_file)
+		return;
+
+	m_stopped.clear();
+	m_persist_loop_thread = std::thread(&PersistentDBServer::persist_loop, this);
+}
+
+void PersistentDBServer::stop() {
+	if (not m_db_file)
+		return;
+
+	persist();
+	m_stopped.set();
+	m_persist_loop_thread.join();
+}
+
+void PersistentDBServer::persist_loop() {
+	while (not m_stopped.wait(M_PERSIST_INTERVAL))
+		m_event_queue.push(server_event::persist);
+}
+
 } // namespace vanity
