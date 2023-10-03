@@ -34,6 +34,13 @@ public:
 		return val;
 	}
 
+	// check if the queue is empty
+	bool empty()
+	{
+		std::lock_guard lock(m_mutex);
+		return m_queue.empty();
+	}
+
 	// push an item onto the queue
 	void push(T item) {
 		{
