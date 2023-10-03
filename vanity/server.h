@@ -5,8 +5,9 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "persistentdb_server.h"
 #include "instruction_server.h"
+#include "persistentdb_server.h"
+#include "signals.h"
 #include "socket/socket_server.h"
 
 
@@ -36,9 +37,12 @@ private:
 
 	// start background server tasks
 	void start(){
+		signal::set_server(this);
+
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
 		PersistentDBServer::start();
+
 		logger().info("Started server");
 	}
 
@@ -56,6 +60,11 @@ public:
 		PersistentDBServer(config.db_file),
 		m_config(config) {};
 
+	// request to terminate the server
+	void terminate() override {
+		m_event_queue.push(server_event::terminate);
+	}
+
 	// run the server with the given configuration
 	void run(){
 		start();
@@ -70,6 +79,9 @@ public:
 						PersistentDBServer::persist();
 						break;
 					}
+					case server_event::terminate:
+						stop();
+						return;
 				}
 			}
 		}

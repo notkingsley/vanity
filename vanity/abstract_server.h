@@ -26,6 +26,7 @@ class DestroyServer : std::exception {};
 enum class server_event{
 	socket_ready,
 	persist,
+	terminate,
 };
 
 /*
@@ -49,6 +50,9 @@ public:
 
 	// send a message to a client
 	virtual void send(const ClientSocket& socket, const std::string& msg) = 0;
+
+	// request the server to terminate
+	virtual void terminate() = 0;
 };
 
 } // namespace vanity
