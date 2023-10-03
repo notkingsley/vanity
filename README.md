@@ -16,8 +16,8 @@ Obviously, we've a long way to go. A very long way, really.
 ## Targets
 Here are the major features I plan to implement, in order (hopefully):
 
-- Persistence
-- Session Authorization/authentication
+- Persistence *- implemented* 
+- Session init (handshaking phase on connection to allow selecting db index to use and maybe auth)
 - Atomicity (or transactional behaviour, of sorts)
 - Read/write guarantees (to some unspecified degree)
 - Distribution/Clustering (this is the fun part)
