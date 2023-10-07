@@ -22,6 +22,24 @@ private:
 	std::condition_variable m_cond;
 
 public:
+	// default constructor
+	queue() = default;
+
+	// move constructor
+	queue(queue&& other) noexcept
+	{
+		std::scoped_lock lock{m_mutex, other.m_mutex};
+		m_queue = std::move(other.m_queue);
+	}
+
+	// move assignment
+	queue& operator=(queue&& other) noexcept
+	{
+		std::scoped_lock lock{m_mutex, other.m_mutex};
+		m_queue = std::move(other.m_queue);
+		return *this;
+	}
+
 	// get an element from the queue, blocking till one is available
 	T get()
 	{

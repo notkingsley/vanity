@@ -21,8 +21,23 @@ private:
 	bool m_state = false;
 
 public:
+	// default constructor
+	event() = default;
+
+	// move constructor
+	event(event&& other) noexcept{
+		m_state = other.m_state; // copy state
+	}
+
+	// move assignment
+	event& operator=(event&& other) noexcept{
+		std::lock_guard lock{m_mutex};
+		m_state = other.m_state; // copy state
+		return *this;
+	}
+
 	// check if the event is set
-	bool is_set() {
+	bool is_set() const {
 		return m_state;
 	}
 	
