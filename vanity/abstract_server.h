@@ -42,6 +42,10 @@ public:
 	AbstractServer() = default;
 	virtual ~AbstractServer() = default;
 
+	// move constructor
+	AbstractServer(AbstractServer&& other) noexcept = default;
+	AbstractServer& operator=(AbstractServer&& other) noexcept = default;
+
 	// a message was received from a client
 	virtual void handle(const std::string& msg, const ClientSocket& socket) = 0;
 

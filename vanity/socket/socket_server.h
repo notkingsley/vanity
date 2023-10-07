@@ -6,9 +6,11 @@
 #include <thread>
 
 #include "abstract_server.h"
+#include "epoll.h"
 #include "event.h"
 #include "logging.h"
 #include "socket.h"
+#include "socket_event_handler.h"
 
 
 namespace vanity{
@@ -29,26 +31,26 @@ private:
 	// whether the reported socket_ready has been polled
 	event m_polled {};
 
-	// epoll file descriptor
-	int m_epoll_fd {};
+	// the epoll instance
+	Epoll m_epoll;
 
 	// whether the polling thread is still running
 	bool m_running {false};
 
 public:
 	// create a socket server
-	SocketServer();
+	SocketServer() {};
 
 	// destroy the socket server
-	~SocketServer() override;
+	~SocketServer() override = default;
 
 	// no copy
 	SocketServer(const SocketServer&) = delete;
 	SocketServer& operator=(const SocketServer&) = delete;
 
-	// move constructor
-	SocketServer(SocketServer&& other) noexcept;
-	SocketServer& operator=(SocketServer&& other) noexcept;
+	// no move
+	SocketServer(SocketServer&& other) noexcept = delete;
+	SocketServer& operator=(SocketServer&& other) noexcept = delete;
 
 	// add a handler
 	void add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler);

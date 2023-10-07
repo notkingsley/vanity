@@ -10,6 +10,7 @@ add_executable(vanity
         db/database_server.cpp
         db/persistentdb_server.cpp
         instruction_server.cpp
+        socket/epoll.cpp
         socket/socket.cpp
         socket/socket_event_handler.cpp
         socket/socket_connection_server.cpp

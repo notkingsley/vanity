@@ -9,38 +9,15 @@
 
 namespace vanity {
 
-SocketServer::SocketServer() {
-	m_epoll_fd = epoll_create1(0);
-	if (m_epoll_fd < 0)
-		throw SocketError("Could not create epoll");
-}
-
-SocketServer::SocketServer(SocketServer &&other) noexcept {
-	m_epoll_fd = other.m_epoll_fd;
-	other.m_epoll_fd = -1;
-}
-
-SocketServer &SocketServer::operator=(SocketServer &&other) noexcept {
-	m_epoll_fd = other.m_epoll_fd;
-	other.m_epoll_fd = -1;
-	return *this;
-}
-
-SocketServer::~SocketServer() {
-	if (m_epoll_fd >= 0)
-		close(m_epoll_fd);
-}
-
 void SocketServer::add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler) {
-	handler->register_event(m_epoll_fd);
+	m_epoll.add(*handler);
 	m_handlers.insert(std::move(handler));
 }
 
 void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
-	handler.unregister_event(m_epoll_fd);
+	m_epoll.remove(handler);
 	auto ptr = static_cast<const std::unique_ptr<SocketEventHandler>>(&handler);
-	m_handlers.erase(ptr);
-	// object is already destroyed here
+	m_handlers.erase(ptr); // object is destroyed here
 	ptr.release();
 }
 
@@ -49,7 +26,7 @@ void SocketServer::socket_ready() {
 	epoll_event events[poll_size] {};
 
 	while (true) {
-		int n = epoll_wait(m_epoll_fd, events, poll_size, 0);
+		int n = m_epoll.wait(events, poll_size, 0);
 
 		if (n < 0){
 			SocketError err{{}};
@@ -96,7 +73,7 @@ void SocketServer::poll() {
 	epoll_event events[poll_size] {};
 
 	while (true) {
-		int n = epoll_wait(m_epoll_fd, events, poll_size, M_MAX_TIMEOUT);
+		int n = m_epoll.wait(events, poll_size, M_MAX_TIMEOUT);
 
 		if (n < 0){
 			SocketError err{{}};
