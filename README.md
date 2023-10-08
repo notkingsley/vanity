@@ -17,10 +17,12 @@ Obviously, we've a long way to go. A very long way, really.
 Here are the major features I plan to implement, in order (hopefully):
 
 - Persistence *- implemented* 
-- Session init (handshaking phase on connection to allow selecting db index to use and maybe auth)
+- Permissions (block or allow certain commands to certain users)
+- Sessions (handshaking phase on connection to allow selecting db index to use and other things)
+- Key expiry (TTL)
 - Atomicity (or transactional behaviour, of sorts)
-- Read/write guarantees (to some unspecified degree)
-- Distribution/Clustering (this is the fun part)
+- Read/write guarantees (to some yet unspecified degree)
+- Distribution/Clustering (this is, by far, the fun part, and the reason I'm doing this at all)
 
 I imagine the biggest challenge by far will come in ensuring consistency of transactions (or locks) across the distributed system. *How is locking to be implemented over a distributed system* for example.  
 In truth, I do not know, but I'm REALLY looking forward to finding out.
@@ -73,4 +75,4 @@ client.exit()
 ```
 
 This is work in progress, so I'd expect a lot of changes to come.  
-**Vanity** is *NOT* production ready, look at [Redis](https://redis.io) instead.
+**Vanity** is *NOT* production ready, see [Redis](https://redis.io) instead.
