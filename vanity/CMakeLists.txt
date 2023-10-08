@@ -5,17 +5,15 @@ set(CMAKE_CXX_STANDARD 20)
 
 include_directories(.)
 
+add_subdirectory(db)
+add_subdirectory(socket)
+
 add_executable(vanity
-        db/database.cpp
-        db/database_server.cpp
-        db/persistentdb_server.cpp
-        instruction_server.cpp
-        socket/epoll.cpp
-        socket/socket.cpp
-        socket/socket_event_handler.cpp
-        socket/socket_connection_server.cpp
-        socket/socket_reader.cpp
-        socket/socket_server.cpp
-        socket/socket_writer.cpp
-        vanity.cpp
+    instruction_server.cpp
+    vanity.cpp
+)
+
+target_link_libraries(vanity
+    vanity_db
+    vanity_socket
 )
