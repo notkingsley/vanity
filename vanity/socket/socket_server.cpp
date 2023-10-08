@@ -9,7 +9,6 @@
 
 namespace vanity {
 
-
 SocketServer::SocketServer() {
 	m_super_epoll.add(m_read_epoll);
 	m_super_epoll.add(m_write_epoll);
@@ -45,50 +44,18 @@ void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
 
 void SocketServer::socket_ready() {
 	constexpr int super_poll_size = 2;
-	epoll_event super_events[super_poll_size] {};
+	epoll_event events[super_poll_size] {};
 
-	constexpr int poll_size = 10;
-	epoll_event events[poll_size] {};
+	int n = m_super_epoll.wait(events, super_poll_size, 0);
 
-	int super_n = m_super_epoll.wait(super_events, super_poll_size, 0);
-	if (super_n < 0)
-	{
+	if (n < 0) {
 		SocketError err{{}};
 		logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
 	}
-	else
-	{
-		for (int super_i = 0; super_i < super_n; ++super_i) {
-			auto epoll = static_cast<Epoll *>(super_events[super_i].data.ptr);
 
-			while (true) {
-				int n = epoll->wait(events, poll_size, 0);
-
-				if (n < 0){
-					SocketError err{{}};
-					logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
-					break;
-				}
-
-				if (n == 0)
-					break;
-
-				for (int i = 0; i < n; ++i) {
-					auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
-					try{
-						if (!handler->ready(*this)){
-							remove_socket_handler(*handler);
-							logger().debug("Client Socket closed");
-						}
-					}
-					catch (DestroyClient& e)
-					{
-						remove_socket_handler(*handler);
-						logger().debug("Client destroyed.");
-					}
-				}
-			}
-		}
+	for (int i = 0; i < n; ++i) {
+		auto epoll = static_cast<Epoll *>(events[i].data.ptr);
+		epoll_ready(*epoll);
 	}
 
 	m_polled.set();
@@ -140,6 +107,44 @@ void SocketServer::stop() {
 	m_running = false;
 	m_poll_thread.join();
 	m_handlers.clear();
+}
+
+void SocketServer::epoll_ready(Epoll &epoll) {
+	constexpr int poll_size = 10;
+	epoll_event events[poll_size] {};
+
+	while (true) {
+		int n = epoll.wait(events, poll_size, 0);
+
+		if (n < 0){
+			SocketError err{{}};
+			logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
+			break;
+		}
+
+		if (n == 0)
+			break;
+
+		for (int i = 0; i < n; ++i) {
+			auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
+			handler_ready(handler);
+		}
+	}
+
+}
+
+void SocketServer::handler_ready(SocketEventHandler* handler) {
+	try{
+		if (!handler->ready(*this)){
+			remove_socket_handler(*handler);
+			logger().debug("Client Socket closed");
+		}
+	}
+	catch (DestroyClient& e)
+	{
+		remove_socket_handler(*handler);
+		logger().debug("Client destroyed.");
+	}
 }
 
 } // namespace vanity

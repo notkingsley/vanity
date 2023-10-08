@@ -86,6 +86,12 @@ private:
 	// yield server_event::socket_ready to the
 	// event queue when some socket is ready
 	void poll();
+
+	// this epoll instance is ready
+	void epoll_ready(Epoll& epoll);
+
+	// this handler is ready
+	void handler_ready(SocketEventHandler* handler);
 };
 
 } // namespace vanity
