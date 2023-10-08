@@ -2,6 +2,7 @@
 // Created by kingsli on 9/16/23.
 //
 
+#include "socket.h"
 #include "socket_writer.h"
 
 

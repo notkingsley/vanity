@@ -9,9 +9,10 @@
 #include <string>
 #include <sys/epoll.h>
 
-#include "abstract_server.h"
-
 namespace vanity{
+
+// forward declaration
+class AbstractServer;
 
 /*
  * A SocketEventHandler is the common interface for registering for events

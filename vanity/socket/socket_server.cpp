@@ -99,8 +99,8 @@ void SocketServer::bind(uint16_t port) {
 	logger().info("Listening on port " + std::to_string(port));
 }
 
-void SocketServer::send(const ClientSocket &client, const std::string& msg) {
-	 add_socket_handler(std::make_unique<SocketWriter>(client, msg));
+void SocketServer::send(const Client &client, const std::string& msg) {
+	 add_socket_handler(std::make_unique<SocketWriter>(client.socket(), msg));
 }
 
 void SocketServer::poll() {

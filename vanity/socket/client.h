@@ -2,10 +2,9 @@
 // Created by kingsli on 10/8/23.
 //
 
-#ifndef VANITY_SOCKET_CLIENT_H
-#define VANITY_SOCKET_CLIENT_H
+#ifndef VANITY_CLIENT_H
+#define VANITY_CLIENT_H
 
-#include "abstract_server.h"
 #include "socket.h"
 #include "socket_event_handler.h"
 #include "socket_reader.h"
@@ -57,4 +56,4 @@ public:
 
 } // namespace vanity
 
-#endif //VANITY_SOCKET_CLIENT_H
+#endif //VANITY_CLIENT_H

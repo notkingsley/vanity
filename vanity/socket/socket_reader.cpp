@@ -1,3 +1,4 @@
+#include "abstract_server.h"
 #include "client.h"
 #include "socket_reader.h"
 
@@ -29,7 +30,7 @@ bool SocketReader::read(AbstractServer& server, const Client& client)
 					m_message += m_delimiter;
 					++i;
 				} else { // end of message
-					server.handle(m_message, client.socket());
+					server.handle(m_message, client);
 					m_message.clear();
 				}
 			}

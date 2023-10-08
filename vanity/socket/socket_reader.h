@@ -1,13 +1,15 @@
 #ifndef VANITY_SOCKET_READER_H
 #define VANITY_SOCKET_READER_H
 
-#include "abstract_server.h"
 #include "socket.h"
 
 namespace vanity{
 
 // forward declaration
 class Client;
+
+// forward declaration
+class AbstractServer;
 
 /*
 A SocketReader reads and buffers text from a ClientSocket,

@@ -58,47 +58,47 @@ public:
 	}
 
 	// a message was received from a client
-	void handle(const std::string& msg, const ClientSocket& socket) override;
+	void handle(const std::string& msg, const Client& client) override;
 
 	// a get instruction was received from a client
-	virtual void instruction_get(const ClientSocket& socket, const std::string& key) = 0;
+	virtual void instruction_get(const Client& client, const std::string& key) = 0;
 
 	// a set instruction was received from a client
-	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const std::string& value) = 0;
+	virtual void instruction_set(const Client& client, const std::string& key, const std::string& value) = 0;
 
 	// a set instruction was received from a client
-	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const int64_t& value) = 0;
+	virtual void instruction_set(const Client& client, const std::string& key, const int64_t& value) = 0;
 
 	// a set instruction was received from a client
-	virtual void instruction_set(const ClientSocket& socket, const std::string& key, const double& value) = 0;
+	virtual void instruction_set(const Client& client, const std::string& key, const double& value) = 0;
 
 	// a del instruction was received from a client
-	virtual void instruction_del(const ClientSocket& socket, const std::string& key) = 0;
+	virtual void instruction_del(const Client& client, const std::string& key) = 0;
 
 	// a persist instruction was received from a client
-	virtual void instruction_persist(const ClientSocket& socket) = 0;
+	virtual void instruction_persist(const Client& client) = 0;
 
 	// a reset instruction was received from a client
-	virtual void instruction_reset(const ClientSocket& socket) = 0;
+	virtual void instruction_reset(const Client& client) = 0;
 
 	// an exit instruction was received from a client
-	virtual void instruction_exit(const ClientSocket& socket) {
+	virtual void instruction_exit(const Client& client) {
 		throw DestroyClient{};
 	};
 
 	// a terminate instruction was received from a client
-	virtual void instruction_terminate(const ClientSocket& socket) {
+	virtual void instruction_terminate(const Client& client) {
 		terminate();
 	};
 
 	// a ping instruction was received from a client
-	virtual void instruction_ping(const ClientSocket& socket, const std::string& msg) {
-		send(socket, server_constants::pong + msg);
+	virtual void instruction_ping(const Client& client, const std::string& msg) {
+		send(client, server_constants::pong + msg);
 	};
 
 private:
 	// convenience function to dispatch a set instruction by type
-	void dispatch_set(const ClientSocket& socket, const std::string& msg, size_t& pos);
+	void dispatch_set(const Client& client, const std::string& msg, size_t& pos);
 };
 
 } // namespace vanity

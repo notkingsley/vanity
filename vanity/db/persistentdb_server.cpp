@@ -32,13 +32,13 @@ bool PersistentDBServer::persist() const {
 	return true;
 }
 
-void PersistentDBServer::instruction_persist(const ClientSocket & socket) {
+void PersistentDBServer::instruction_persist(const Client & client) {
 	if (persist()){
-		send(socket, server_constants::ok);
+		send(client, server_constants::ok);
 	}
 	else{
 		static const std::string msg = std::string{server_constants::error} + ": Persistence disabled";
-		send(socket, msg);
+		send(client, msg);
 	}
 }
 

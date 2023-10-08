@@ -68,7 +68,7 @@ public:
 	void bind(uint16_t port);
 
 	// send a message to a client
-	void send(const ClientSocket& client, const std::string& msg) override;
+	void send(const Client& client, const std::string& msg) override;
 
 protected:
 	// start polling as a background task

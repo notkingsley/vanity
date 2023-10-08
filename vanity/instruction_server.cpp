@@ -216,7 +216,7 @@ std::string InstructionServer::prepare(const std::string &msg) {
 	return ret;
 }
 
-void InstructionServer::handle(const std::string& msg, const ClientSocket& socket) {
+void InstructionServer::handle(const std::string& msg, const Client& client) {
 	try{
 		size_t pos = 0;
 		operation_t op = extract_operation(msg, pos);
@@ -224,46 +224,46 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 		switch (op) {
 			case operation_t::GET:
 			{
-				instruction_get(socket, extract_single_word(msg, pos));
+				instruction_get(client, extract_single_word(msg, pos));
 				break;
 			}
 			case operation_t::SET:
 			{
-				dispatch_set(socket, msg, pos);
+				dispatch_set(client, msg, pos);
 				break;
 			}
 			case operation_t::DEL:
 			{
-				instruction_del(socket, extract_single_word(msg, pos));
+				instruction_del(client, extract_single_word(msg, pos));
 				break;
 			}
 			case operation_t::PERSIST:
 			{
 				ensure_end(msg, pos);
-				instruction_persist(socket);
+				instruction_persist(client);
 				break;
 			}
 			case operation_t::EXIT:
 			{
 				ensure_end(msg, pos);
-				instruction_exit(socket);
+				instruction_exit(client);
 				break;
 			}
 			case operation_t::TERMINATE:
 			{
 				ensure_end(msg, pos);
-				instruction_terminate(socket);
+				instruction_terminate(client);
 				break;
 			}
 			case operation_t::RESET:
 			{
 				ensure_end(msg, pos);
-				instruction_reset(socket);
+				instruction_reset(client);
 				break;
 			}
 			case operation_t::PING:
 			{
-				instruction_ping(socket, msg.substr(pos));
+				instruction_ping(client, msg.substr(pos));
 				break;
 			}
 		}
@@ -272,30 +272,30 @@ void InstructionServer::handle(const std::string& msg, const ClientSocket& socke
 		std::string err {server_constants::error};
 		err += ": ";
 		err += e.what();
-		send(socket, err);
+		send(client, err);
 	}
 }
 
-void InstructionServer::dispatch_set(const ClientSocket &socket, const std::string &msg, size_t &pos) {
+void InstructionServer::dispatch_set(const Client &client, const std::string &msg, size_t &pos) {
 	object_t obj = extract_object_t(msg, pos);
 	std::string key = extract<object_t::STR>(msg, pos);
 	switch (obj) {
 		case object_t::STR:{
 			auto value {extract<object_t::STR>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(socket, key, value);
+			instruction_set(client, key, value);
 			break;
 		}
 		case object_t::INT:{
 			auto value {extract<object_t::INT>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(socket, key, value);
+			instruction_set(client, key, value);
 			break;
 		}
 		case object_t::FLOAT:{
 			auto value {extract<object_t::FLOAT>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(socket, key, value);
+			instruction_set(client, key, value);
 			break;
 		}
 	}

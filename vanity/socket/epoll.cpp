@@ -2,6 +2,8 @@
 // Created by kingsli on 10/7/23.
 //
 
+#include <unistd.h>
+
 #include "epoll.h"
 #include "socket_event_handler.h"
 

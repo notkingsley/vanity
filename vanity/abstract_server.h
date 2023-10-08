@@ -2,7 +2,7 @@
 #define VANITY_ABSTRACT_SERVER_H
 
 #include "queue.h"
-#include "socket/socket.h"
+#include "socket/client.h"
 
 
 namespace vanity{
@@ -47,10 +47,10 @@ public:
 	AbstractServer& operator=(AbstractServer&& other) noexcept = default;
 
 	// a message was received from a client
-	virtual void handle(const std::string& msg, const ClientSocket& socket) = 0;
+	virtual void handle(const std::string& msg, const Client& client) = 0;
 
 	// send a message to a client
-	virtual void send(const ClientSocket& socket, const std::string& msg) = 0;
+	virtual void send(const Client& client, const std::string& msg) = 0;
 
 	// request the server to terminate
 	virtual void terminate() = 0;
