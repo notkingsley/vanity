@@ -43,7 +43,7 @@ public:
  */
 class Epoll : public EpollBase
 {
-	friend class EpollEpoll;
+	friend class SuperEpoll;
 
 public:
 	// add an object to the epoll
@@ -56,7 +56,7 @@ public:
 /*
  * An epoll that can poll for other ready epoll
  */
-class EpollEpoll : public EpollBase
+class SuperEpoll : public EpollBase
 {
 public:
 	// add an epoll to the epoll

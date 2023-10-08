@@ -9,49 +9,88 @@
 
 namespace vanity {
 
+
+SocketServer::SocketServer() {
+	m_super_epoll.add(m_read_epoll);
+	m_super_epoll.add(m_write_epoll);
+}
+
 void SocketServer::add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler) {
-	m_epoll.add(*handler);
+	if (dynamic_cast<SocketReadHandler*>(handler.get()))
+		m_read_epoll.add(*handler);
+	else if (dynamic_cast<SocketWriteHandler*>(handler.get()))
+		m_write_epoll.add(*handler);
+	else
+		return logger().error(
+			"SocketEventHandler must be either SocketReadHandler or SocketWriteHandler"
+		);
+
 	m_handlers.insert(std::move(handler));
 }
 
 void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
-	m_epoll.remove(handler);
+	if (dynamic_cast<SocketReadHandler*>(&handler))
+		m_read_epoll.remove(handler);
+	else if (dynamic_cast<SocketWriteHandler*>(&handler))
+		m_write_epoll.remove(handler);
+	else
+		return logger().error(
+			"SocketEventHandler must be either SocketReadHandler or SocketWriteHandler"
+		);
+
 	auto ptr = static_cast<const std::unique_ptr<SocketEventHandler>>(&handler);
 	m_handlers.erase(ptr); // object is destroyed here
 	ptr.release();
 }
 
 void SocketServer::socket_ready() {
+	constexpr int super_poll_size = 2;
+	epoll_event super_events[super_poll_size] {};
+
 	constexpr int poll_size = 10;
 	epoll_event events[poll_size] {};
 
-	while (true) {
-		int n = m_epoll.wait(events, poll_size, 0);
+	int super_n = m_super_epoll.wait(super_events, super_poll_size, 0);
+	if (super_n < 0)
+	{
+		SocketError err{{}};
+		logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
+	}
+	else
+	{
+		for (int super_i = 0; super_i < super_n; ++super_i) {
+			auto epoll = static_cast<Epoll *>(super_events[super_i].data.ptr);
 
-		if (n < 0){
-			SocketError err{{}};
-			logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
-			break;
-		}
+			while (true) {
+				int n = epoll->wait(events, poll_size, 0);
 
-		if (n == 0)
-			break;
-
-		for (int i = 0; i < n; ++i) {
-			auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
-			try{
-				if (!handler->ready(*this)){
-					remove_socket_handler(*handler);
-					logger().debug("Client Socket closed");
+				if (n < 0){
+					SocketError err{{}};
+					logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
+					break;
 				}
-			}
-			catch (DestroyClient& e)
-			{
-				remove_socket_handler(*handler);
-				logger().debug("Client destroyed.");
+
+				if (n == 0)
+					break;
+
+				for (int i = 0; i < n; ++i) {
+					auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
+					try{
+						if (!handler->ready(*this)){
+							remove_socket_handler(*handler);
+							logger().debug("Client Socket closed");
+						}
+					}
+					catch (DestroyClient& e)
+					{
+						remove_socket_handler(*handler);
+						logger().debug("Client destroyed.");
+					}
+				}
 			}
 		}
 	}
+
 	m_polled.set();
 }
 
@@ -61,11 +100,7 @@ void SocketServer::bind(uint16_t port) {
 }
 
 void SocketServer::send(const ClientSocket &client, const std::string& msg) {
-	// TODO: actually register SocketWriters for write events in a separate epoll
-	// add_socket_handler(std::make_unique<SocketWriter>(client, std::move(msg)));
-
-	SocketWriter writer{client, msg};
-	while (writer.ready(*this));
+	 add_socket_handler(std::make_unique<SocketWriter>(client, msg));
 }
 
 void SocketServer::poll() {
@@ -73,7 +108,7 @@ void SocketServer::poll() {
 	epoll_event events[poll_size] {};
 
 	while (true) {
-		int n = m_epoll.wait(events, poll_size, M_MAX_TIMEOUT);
+		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT);
 
 		if (n < 0){
 			SocketError err{{}};

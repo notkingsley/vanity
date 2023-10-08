@@ -44,7 +44,7 @@ void Epoll::remove(SocketEventHandler &handler) const {
 }
 
 
-void EpollEpoll::add(Epoll &epoll) const {
+void SuperEpoll::add(Epoll &epoll) const {
 	epoll_event event{};
 	event.events = EPOLLIN;
 	event.data.ptr = &epoll;
@@ -53,7 +53,7 @@ void EpollEpoll::add(Epoll &epoll) const {
 		throw SocketError("Could not add epoll to epoll");
 }
 
-void EpollEpoll::remove(Epoll &epoll) const {
+void SuperEpoll::remove(Epoll &epoll) const {
 	int ctl = epoll_ctl(m_fd, EPOLL_CTL_DEL, epoll.m_fd, nullptr);
 	if (ctl < 0)
 		throw SocketError("Could not remove epoll from epoll");

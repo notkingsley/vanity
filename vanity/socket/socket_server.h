@@ -31,15 +31,21 @@ private:
 	// whether the reported socket_ready has been polled
 	event m_polled {};
 
-	// the epoll instance
-	Epoll m_epoll;
+	// the epoll instance for reading
+	Epoll m_read_epoll;
+
+	// the epoll instance for writing
+	Epoll m_write_epoll;
+
+	// the epoll instance for polling the other epoll instances
+	SuperEpoll m_super_epoll;
 
 	// whether the polling thread is still running
 	bool m_running {false};
 
 public:
 	// create a socket server
-	SocketServer() {};
+	SocketServer();
 
 	// destroy the socket server
 	~SocketServer() override = default;
