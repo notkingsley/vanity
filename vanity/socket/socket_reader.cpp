@@ -1,18 +1,16 @@
+#include "client.h"
 #include "socket_reader.h"
 
 
 namespace vanity{
 
-SocketReader::SocketReader(ClientSocket&& socket)
-	: m_socket(std::move(socket)) {}
-
-bool SocketReader::ready(AbstractServer& server)
+bool SocketReader::read(AbstractServer& server, const Client& client)
 {
 	char buffer[m_chunk_size];
 	buffer[0] = m_delimiter;
 	int offset = m_delimiter_read ? 1 : 0;
 
-	size_t bytes_read = m_socket.read(
+	size_t bytes_read = client.socket().read(
 			buffer + offset,
 			m_chunk_size - offset
 	);
@@ -31,7 +29,7 @@ bool SocketReader::ready(AbstractServer& server)
 					m_message += m_delimiter;
 					++i;
 				} else { // end of message
-					server.handle(m_message, m_socket);
+					server.handle(m_message, client.socket());
 					m_message.clear();
 				}
 			}
@@ -40,14 +38,6 @@ bool SocketReader::ready(AbstractServer& server)
 	}
 
 	return true;
-}
-
-void SocketReader::register_event(int epoll_fd) {
-	m_socket.register_event(epoll_fd, *this);
-}
-
-void SocketReader::unregister_event(int epoll_fd) {
-	m_socket.unregister_event(epoll_fd);
 }
 
 } // namespace vanity

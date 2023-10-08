@@ -3,7 +3,7 @@
 //
 
 #include "socket_connection_server.h"
-#include "socket_reader.h"
+#include "client.h"
 
 
 namespace vanity{
@@ -21,7 +21,7 @@ void SocketConnectionServer::unregister_event(int epoll_fd) {
 }
 
 bool SocketConnectionServer::ready(AbstractServer& server) {
-	auto ptr = std::make_unique<SocketReader>(m_socket.accept());
+	auto ptr = std::make_unique<Client>(m_socket.accept());
 	m_server.add_socket_handler(std::move(ptr));
 	return true; 	// TODO: handle errors if server socket is closed
 }

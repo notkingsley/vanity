@@ -3,16 +3,17 @@
 
 #include "abstract_server.h"
 #include "socket.h"
-#include "socket_event_handler.h"
-
 
 namespace vanity{
+
+// forward declaration
+class Client;
 
 /*
 A SocketReader reads and buffers text from a ClientSocket,
 emitting a message if the delimiter is encountered
 */
-class SocketReader : public SocketReadHandler
+class SocketReader
 {
 private:
 	// characters read at a time from the socket
@@ -24,26 +25,14 @@ private:
 	// buffer for message read
 	std::string m_message;
 
-	// the socket to read from
-	ClientSocket m_socket;
-
 	// if the delimiter was found at the end of the last read
 	bool m_delimiter_read = false;
 
 public:
-	// create a SocketReader
-	explicit SocketReader(ClientSocket&& socket);
-
-	// Read once from the socket, buffering until the delimiter is found.
+	// Read once from the client's socket, buffering until the delimiter is found.
 	// transparently alerts the server when a message is read
 	// returns true if the socket is open, false if it is closed
-	bool ready(AbstractServer& server) override;
-
-	// register to epoll for events
-	void register_event(int epoll_fd) override;
-
-	// unregister from epoll for events
-	void unregister_event(int epoll_fd) override;
+	bool read(AbstractServer& server, const Client& client);
 };
 
 } // namespace vanity
