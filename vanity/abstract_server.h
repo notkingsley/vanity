@@ -2,7 +2,7 @@
 #define VANITY_ABSTRACT_SERVER_H
 
 #include "queue.h"
-#include "socket/client.h"
+#include "client.h"
 
 
 namespace vanity{

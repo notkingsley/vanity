@@ -3,7 +3,7 @@
 //
 
 #include "socket_connection_server.h"
-#include "client.h"
+#include "../client.h"
 
 
 namespace vanity{

@@ -2,8 +2,8 @@
 // Created by kingsli on 10/8/23.
 //
 
-#ifndef VANITY_CLIENT_H
-#define VANITY_CLIENT_H
+#ifndef VANITY_SOCKET_CLIENT_H
+#define VANITY_SOCKET_CLIENT_H
 
 #include "socket.h"
 #include "socket_event_handler.h"
@@ -13,12 +13,12 @@
 namespace vanity {
 
 /*
- * A Client is a handle for an active connection,
+ * A SocketClient is a handle for an active connection,
  * and a handler for socket read events
  */
-class Client : public SocketReadHandler
+class SocketClient : public SocketReadHandler
 {
-private:
+protected:
 	// the socket to read from
 	ClientSocket m_socket;
 
@@ -27,18 +27,12 @@ private:
 
 public:
 	// create a client
-	explicit Client(ClientSocket&& socket) : m_socket(std::move(socket)) {};
+	explicit SocketClient(ClientSocket&& socket) : m_socket(std::move(socket)) {};
 
 	// get the socket
 	const ClientSocket& socket() const
 	{
 		return m_socket;
-	}
-
-	// the client has sent a message, and it is ready to be read
-	bool ready(AbstractServer& server) override
-	{
-		return m_reader.read(server, *this);
 	}
 
 	// register to epoll for events
@@ -56,4 +50,4 @@ public:
 
 } // namespace vanity
 
-#endif //VANITY_CLIENT_H
+#endif //VANITY_SOCKET_CLIENT_H
