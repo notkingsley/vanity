@@ -7,6 +7,7 @@
 
 #include "db/persistent_server.h"
 #include "signals.h"
+#include "session_server.h"
 #include "socket/socket_server.h"
 
 
@@ -28,6 +29,7 @@ struct ServerConfig
  */
 class Server:
 	public PersistentServer,
+	public SessionServer,
 	public SocketServer
 {
 private:

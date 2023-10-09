@@ -67,6 +67,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::GET,       "GET"},
 		{operation_t::SET,       "SET"},
 		{operation_t::DEL,       "DEL"},
+		{operation_t::SWITCH_DB, "SWITCH_DB"},
 		{operation_t::PERSIST,   "PERSIST"},
 		{operation_t::EXIT,      "EXIT"},
 		{operation_t::TERMINATE, "TERMINATE"},
@@ -178,13 +179,22 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 	throw InvalidRequest("word not closed with quotes");
 }
 
-// extract exactly a single word from the rest of a message
-// throw if there is more than one word
-static inline std::string extract_single_word(const std::string& msg, size_t& pos)
+// extract exactly a single string from the rest of a message
+// throw if there is more than one string
+static inline std::string extract_single_string(const std::string& msg, size_t& pos)
 {
 	std::string word = extract<object_t::STR>(msg, pos);
 	ensure_end(msg, pos);
 	return word;
+}
+
+// extract exactly a single int64_t from the rest of a message
+// throw if there is more than one int64_t
+static inline int64_t extract_single_int(const std::string& msg, size_t& pos)
+{
+	int64_t value = extract<object_t::INT>(msg, pos);
+	ensure_end(msg, pos);
+	return value;
 }
 
 std::string RequestServer::prepare(const std::string &msg) {
@@ -215,7 +225,7 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 		switch (op) {
 			case operation_t::GET:
 			{
-				request_get(client, extract_single_word(msg, pos));
+				request_get(client, extract_single_string(msg, pos));
 				break;
 			}
 			case operation_t::SET:
@@ -225,7 +235,12 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 			}
 			case operation_t::DEL:
 			{
-				request_del(client, extract_single_word(msg, pos));
+				request_del(client, extract_single_string(msg, pos));
+				break;
+			}
+			case operation_t::SWITCH_DB:
+			{
+				request_switch_db(client, extract_single_int(msg, pos));
 				break;
 			}
 			case operation_t::PERSIST:

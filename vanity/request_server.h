@@ -81,6 +81,9 @@ public:
 	// a reset request was received from a client
 	virtual void request_reset(const Client& client) = 0;
 
+	// a switch_db request was received from a client
+	virtual void request_switch_db(const Client& client, int64_t index) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(const Client& client) {
 		throw DestroyClient{};

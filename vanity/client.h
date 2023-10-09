@@ -17,7 +17,7 @@ class Client : public SocketClient
 {
 private:
 	// the client's session info
-	session_info m_session_info;
+	mutable session_info m_session_info;
 
 public:
 	// create a client
@@ -33,6 +33,12 @@ public:
 	bool has_perm(operation_t op) const
 	{
 		return is_permitted(op, m_session_info.auth);
+	}
+
+	// set the client's active database index
+	void set_db(int db) const
+	{
+		m_session_info.database = db;
 	}
 };
 
