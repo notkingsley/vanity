@@ -7,7 +7,7 @@
 
 
 #include "database.h"
-#include "instruction_server.h"
+#include "request_server.h"
 #include "logging.h"
 
 
@@ -16,7 +16,7 @@ namespace vanity {
 /*
  * A DatabaseServer allows us to respond to database requests
  */
-class DatabaseServer : public virtual InstructionServer, protected virtual Logger
+class DatabaseServer : public virtual RequestServer, protected virtual Logger
 {
 protected:
 	// the database
@@ -24,22 +24,22 @@ protected:
 
 public:
 	// a get request was received from a client
-	void instruction_get(const Client& client, const std::string& key) override;
+	void request_get(const Client& client, const std::string& key) override;
 
 	// a set request was received from a client
-	void instruction_set(const Client& client, const std::string& key, const std::string& value) override;
+	void request_set(const Client& client, const std::string& key, const std::string& value) override;
 
 	// a set request was received from a client
-	void instruction_set(const Client& client, const std::string& key, const int64_t& value) override;
+	void request_set(const Client& client, const std::string& key, const int64_t& value) override;
 
 	// a set request was received from a client
-	void instruction_set(const Client& client, const std::string& key, const double& value) override;
+	void request_set(const Client& client, const std::string& key, const double& value) override;
 
 	// a del request was received from a client
-	void instruction_del(const Client& client, const std::string& key) override;
+	void request_del(const Client& client, const std::string& key) override;
 
 	// a wipe request was received from a client
-	void instruction_reset(const Client& client) override;
+	void request_reset(const Client& client) override;
 };
 
 } // namespace vanity

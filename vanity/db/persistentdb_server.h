@@ -46,7 +46,7 @@ public:
 	void stop();
 
 	// a persist request was received from a client
-	void instruction_persist(const Client& client) override;
+	void request_persist(const Client& client) override;
 
 private:
 	// run in a separate thread, yielding server_event::persist

@@ -5,7 +5,6 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "instruction_server.h"
 #include "db/persistentdb_server.h"
 #include "signals.h"
 #include "socket/socket_server.h"

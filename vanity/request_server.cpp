@@ -3,7 +3,7 @@
 //
 
 #include <stdexcept>
-#include "instruction_server.h"
+#include "request_server.h"
 
 
 namespace vanity {
@@ -61,7 +61,7 @@ static inline void ensure_end(const std::string& msg, size_t& pos)
 {
 	skip_whitespace(msg, pos);
 	if (pos < msg.size())
-		throw InvalidInstruction("unexpected character at end of message");
+		throw InvalidRequest("unexpected character at end of message");
 }
 
 // ensure we are not at the end of the message
@@ -69,7 +69,7 @@ static inline void ensure_not_end(const std::string& msg, size_t& pos)
 {
 	skip_whitespace(msg, pos);
 	if (pos >= msg.size())
-		throw InvalidInstruction("unexpected end of message");
+		throw InvalidRequest("unexpected end of message");
 }
 
 // extract the operation from the message
@@ -92,7 +92,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			return op;
 		}
 	}
-	throw InvalidInstruction("invalid operation");
+	throw InvalidRequest("invalid operation");
 }
 
 // extract the object type from the message
@@ -107,7 +107,7 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 
 	skip_whitespace(msg, pos);
 	if (msg[pos] != object_separator) {
-		throw InvalidInstruction("expected object type");
+		throw InvalidRequest("expected object type");
 	}
 	++pos;
 
@@ -118,7 +118,7 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 			return obj;
 		}
 	}
-	throw InvalidInstruction("invalid object type");
+	throw InvalidRequest("invalid object type");
 }
 
 // extract an object from part of a message
@@ -137,10 +137,10 @@ inline int64_t extract<object_t::INT>(const std::string& msg, size_t& pos)
 		return ret;
 	}
 	catch (const std::out_of_range& e) {
-		throw InvalidInstruction("integer out of range");
+		throw InvalidRequest("integer out of range");
 	}
 	catch (const std::invalid_argument& e) {
-		throw InvalidInstruction("invalid integer");
+		throw InvalidRequest("invalid integer");
 	}
 
 }
@@ -157,10 +157,10 @@ inline double extract<object_t::FLOAT>(const std::string& msg, size_t& pos)
 		return ret;
 	}
 	catch (const std::out_of_range& e) {
-		throw InvalidInstruction("float out of range");
+		throw InvalidRequest("float out of range");
 	}
 	catch (const std::invalid_argument& e) {
-		throw InvalidInstruction("invalid float");
+		throw InvalidRequest("invalid float");
 	}
 }
 
@@ -170,7 +170,7 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
 	if (msg[pos] != '"') {
-		throw InvalidInstruction("word not opened with quotes");
+		throw InvalidRequest("word not opened with quotes");
 	}
 	++pos;
 
@@ -187,7 +187,7 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 		++pos;
 	}
 
-	throw InvalidInstruction("word not closed with quotes");
+	throw InvalidRequest("word not closed with quotes");
 }
 
 // extract exactly a single word from the rest of a message
@@ -199,7 +199,7 @@ static inline std::string extract_single_word(const std::string& msg, size_t& po
 	return word;
 }
 
-std::string InstructionServer::prepare(const std::string &msg) {
+std::string RequestServer::prepare(const std::string &msg) {
 	std::string ret {};
 	ret.reserve(msg.size() + 10);
 	ret += type_to_string<std::string>::value;
@@ -216,7 +216,7 @@ std::string InstructionServer::prepare(const std::string &msg) {
 	return ret;
 }
 
-void InstructionServer::handle(const std::string& msg, const Client& client) {
+void RequestServer::handle(const std::string& msg, const Client& client) {
 	try{
 		size_t pos = 0;
 		operation_t op = extract_operation(msg, pos);
@@ -224,7 +224,7 @@ void InstructionServer::handle(const std::string& msg, const Client& client) {
 		switch (op) {
 			case operation_t::GET:
 			{
-				instruction_get(client, extract_single_word(msg, pos));
+				request_get(client, extract_single_word(msg, pos));
 				break;
 			}
 			case operation_t::SET:
@@ -234,41 +234,41 @@ void InstructionServer::handle(const std::string& msg, const Client& client) {
 			}
 			case operation_t::DEL:
 			{
-				instruction_del(client, extract_single_word(msg, pos));
+				request_del(client, extract_single_word(msg, pos));
 				break;
 			}
 			case operation_t::PERSIST:
 			{
 				ensure_end(msg, pos);
-				instruction_persist(client);
+				request_persist(client);
 				break;
 			}
 			case operation_t::EXIT:
 			{
 				ensure_end(msg, pos);
-				instruction_exit(client);
+				request_exit(client);
 				break;
 			}
 			case operation_t::TERMINATE:
 			{
 				ensure_end(msg, pos);
-				instruction_terminate(client);
+				request_terminate(client);
 				break;
 			}
 			case operation_t::RESET:
 			{
 				ensure_end(msg, pos);
-				instruction_reset(client);
+				request_reset(client);
 				break;
 			}
 			case operation_t::PING:
 			{
-				instruction_ping(client, msg.substr(pos));
+				request_ping(client, msg.substr(pos));
 				break;
 			}
 		}
 	}
-	catch (const InvalidInstruction& e) {
+	catch (const InvalidRequest& e) {
 		std::string err {server_constants::error};
 		err += ": ";
 		err += e.what();
@@ -276,26 +276,26 @@ void InstructionServer::handle(const std::string& msg, const Client& client) {
 	}
 }
 
-void InstructionServer::dispatch_set(const Client &client, const std::string &msg, size_t &pos) {
+void RequestServer::dispatch_set(const Client &client, const std::string &msg, size_t &pos) {
 	object_t obj = extract_object_t(msg, pos);
 	std::string key = extract<object_t::STR>(msg, pos);
 	switch (obj) {
 		case object_t::STR:{
 			auto value {extract<object_t::STR>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(client, key, value);
+			request_set(client, key, value);
 			break;
 		}
 		case object_t::INT:{
 			auto value {extract<object_t::INT>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(client, key, value);
+			request_set(client, key, value);
 			break;
 		}
 		case object_t::FLOAT:{
 			auto value {extract<object_t::FLOAT>(msg, pos)};
 			ensure_end(msg, pos);
-			instruction_set(client, key, value);
+			request_set(client, key, value);
 			break;
 		}
 	}

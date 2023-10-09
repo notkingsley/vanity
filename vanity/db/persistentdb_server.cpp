@@ -32,7 +32,7 @@ bool PersistentDBServer::persist() const {
 	return true;
 }
 
-void PersistentDBServer::instruction_persist(const Client & client) {
+void PersistentDBServer::request_persist(const Client & client) {
 	if (persist()){
 		send(client, server_constants::ok);
 	}
