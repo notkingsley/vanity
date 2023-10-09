@@ -5,6 +5,7 @@
 #ifndef VANITY_CLIENT_H
 #define VANITY_CLIENT_H
 
+#include "permissions.h"
 #include "socket/socket_client.h"
 
 namespace vanity {
@@ -14,6 +15,10 @@ namespace vanity {
  */
 class Client : public SocketClient
 {
+private:
+	// the client's session info
+	session_info m_session_info;
+
 public:
 	// create a client
 	explicit Client(ClientSocket&& socket) : SocketClient(std::move(socket)) {};
@@ -22,6 +27,12 @@ public:
 	bool ready(AbstractServer& server) override
 	{
 		return m_reader.read(server, *this);
+	}
+
+	// check if the client has permission to perform an op
+	bool has_perm(operation_t op) const
+	{
+		return is_permitted(op, m_session_info.auth);
 	}
 };
 

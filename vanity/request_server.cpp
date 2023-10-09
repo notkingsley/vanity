@@ -8,18 +8,6 @@
 
 namespace vanity {
 
-// all the possible operations
-enum class operation_t{
-	GET,
-	SET,
-	DEL,
-	PERSIST,
-	EXIT,
-	TERMINATE,
-	RESET,
-	PING,
-};
-
 // all object types
 enum class object_t{
 	STR,
@@ -220,6 +208,9 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 	try{
 		size_t pos = 0;
 		operation_t op = extract_operation(msg, pos);
+
+		if (not client.has_perm(op))
+			return send(client, server_constants::denied);
 
 		switch (op) {
 			case operation_t::GET:
