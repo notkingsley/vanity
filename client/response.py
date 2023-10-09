@@ -9,6 +9,7 @@ class ServerConstant(Enum):
 	NULL = "NULL"
 	ERROR = "ERROR"
 	PONG = "PONG"
+	DENIED = "DENIED"
 
 
 class InvalidResponseError(Exception):
@@ -101,3 +102,9 @@ class Response:
 		:return: True if the response is PONG, False otherwise.
 		"""
 		return self.status == ServerConstant.PONG
+	
+	def is_denied(self) -> bool:
+		"""
+		:return: True if the response is DENIED, False otherwise.
+		"""
+		return self.status == ServerConstant.DENIED
