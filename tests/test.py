@@ -1,21 +1,30 @@
 import os
+import socket
 import unittest
 
 from client.client import Client
 from client.server_handle import ServerHandle
 
 
-TEST_PORT = 19955
+def get_free_port():
+	"""
+	Get a (likely) free port number.
+	"""
+	s = socket.socket()
+	s.bind(('', 0))
+	port = s.getsockname()[1]
+	s.close()
+	return port
 
 
-def make_client() -> Client:
+def make_client(port) -> Client:
 	"""
 	Make a client.
 	"""
-	return Client("localhost", TEST_PORT)
+	return Client("localhost", port)
 
 
-def make_server_handle(port= TEST_PORT, **kwargs) -> ServerHandle:
+def make_server_handle(port, **kwargs) -> ServerHandle:
 	"""
 	Make a server handle.
 	"""
@@ -28,9 +37,10 @@ class KeyValueStoreTest(unittest.TestCase):
 
 	@classmethod
 	def setUpClass(cls) -> None:
-		cls.server_handle = make_server_handle()
+		port = get_free_port()
+		cls.server_handle = make_server_handle(port)
 		cls.server_handle.start()
-		cls.client = make_client()
+		cls.client = make_client(port)
 	
 	@classmethod
 	def tearDownClass(cls) -> None:
@@ -136,7 +146,8 @@ class NoPersistenceTest(unittest.TestCase):
 	Test no persistence across reboots
 	"""
 	def setUp(self) -> None:
-		self.server_handle = make_server_handle(no_persist= True)
+		self.port = get_free_port()
+		self.server_handle = make_server_handle(port= self.port, no_persist= True)
 		self.server_handle.start()
 
 	def tearDown(self) -> None:
@@ -146,14 +157,14 @@ class NoPersistenceTest(unittest.TestCase):
 		"""
 		Test that we can set a value on no_persist, restart the server, and get a null.
 		"""
-		with make_client() as client:
+		with make_client(self.port) as client:
 			client.set("test_no_persist", "test_no_persist_value")
 			response = client.persist()
 			self.assertTrue(response.is_error())
 
 		self.server_handle.restart()
 
-		with make_client() as client:
+		with make_client(self.port) as client:
 			response = client.get("test_no_persist")
 			self.assertTrue(response.is_null())
 
@@ -165,7 +176,9 @@ class PersistenceTest(unittest.TestCase):
 	TMP_FILE = os.getcwd() + "/" + "tmp.db"
 
 	def setUp(self) -> None:
+		self.port = get_free_port()
 		self.server_handle = make_server_handle(
+			port= self.port,
 			no_persist= False,
 			persist_file= self.TMP_FILE,
 		)
@@ -179,14 +192,14 @@ class PersistenceTest(unittest.TestCase):
 		"""
 		Test that we can set a value on persist, restart the server, and get the value.
 		"""
-		with make_client() as client:
+		with make_client(self.port) as client:
 			client.set("test_persist", "test_persist_value")
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 
 		self.server_handle.restart()
 
-		with make_client() as client:
+		with make_client(self.port) as client:
 			response = client.get("test_persist")
 			self.assertEqual(response.value, "test_persist_value")
 	
@@ -194,14 +207,14 @@ class PersistenceTest(unittest.TestCase):
 		"""
 		Test that we can set an integer value on persist, restart the server, and get the value.
 		"""
-		with make_client() as client:
+		with make_client(self.port) as client:
 			client.set("test_persist_int", 123)
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 
 		self.server_handle.restart()
 
-		with make_client() as client:
+		with make_client(self.port) as client:
 			response = client.get("test_persist_int")
 			self.assertEqual(response.value, 123)
 	
@@ -209,13 +222,13 @@ class PersistenceTest(unittest.TestCase):
 		"""
 		Test that we can set a float value on persist, restart the server, and get the value.
 		"""
-		with make_client() as client:
+		with make_client(self.port) as client:
 			client.set("test_persist_float", 123.456)
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 
 		self.server_handle.restart()
 
-		with make_client() as client:
+		with make_client(self.port) as client:
 			response = client.get("test_persist_float")
 			self.assertEqual(response.value, 123.456)
