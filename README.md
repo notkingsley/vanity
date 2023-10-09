@@ -17,7 +17,7 @@ Obviously, we've a long way to go. A very long way, really.
 Here are the major features I plan to implement, in order (hopefully):
 
 - Persistence *- implemented* 
-- Permissions (block or allow certain commands to certain users)
+- Permissions *- implemented*
 - Sessions (handshaking phase on connection to allow selecting db index to use and other things)
 - Key expiry (TTL)
 - Atomicity (or transactional behaviour, of sorts)
