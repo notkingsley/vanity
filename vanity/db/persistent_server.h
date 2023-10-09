@@ -2,8 +2,8 @@
 // Created by kingsli on 10/3/23.
 //
 
-#ifndef VANITY_PERSISTENTDB_SERVER_H
-#define VANITY_PERSISTENTDB_SERVER_H
+#ifndef VANITY_PERSISTENT_SERVER_H
+#define VANITY_PERSISTENT_SERVER_H
 
 #include <filesystem>
 #include <optional>
@@ -17,7 +17,7 @@ namespace vanity {
 /*
  * A database that handles persistence to disk
  */
-class PersistentDBServer : public virtual DatabaseServer
+class PersistentServer : public virtual DatabaseServer
 {
 private:
 	// time between automatic persistence calls in microseconds
@@ -34,7 +34,7 @@ private:
 
 public:
 	// create a Persistent Database Server with an optional persistence file
-	explicit PersistentDBServer(std::optional<std::filesystem::path> db_file) noexcept;
+	explicit PersistentServer(std::optional<std::filesystem::path> db_file) noexcept;
 
 	// persist the database to the file
 	bool persist() const;
@@ -56,4 +56,4 @@ private:
 
 } // namespace vanity
 
-#endif //VANITY_PERSISTENTDB_SERVER_H
+#endif //VANITY_PERSISTENT_SERVER_H

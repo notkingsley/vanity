@@ -2,11 +2,11 @@
 // Created by kingsli on 10/3/23.
 //
 
-#include "persistentdb_server.h"
+#include "persistent_server.h"
 
 namespace vanity{
 
-PersistentDBServer::PersistentDBServer(std::optional<std::filesystem::path> db_file) noexcept
+PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file) noexcept
 	: m_db_file{std::move(db_file)}
 {
 	if(m_db_file and std::filesystem::exists(m_db_file.value())){
@@ -17,7 +17,7 @@ PersistentDBServer::PersistentDBServer(std::optional<std::filesystem::path> db_f
 	}
 }
 
-bool PersistentDBServer::persist() const {
+bool PersistentServer::persist() const {
 	if (!m_db_file)
 		return false;
 
@@ -32,7 +32,7 @@ bool PersistentDBServer::persist() const {
 	return true;
 }
 
-void PersistentDBServer::request_persist(const Client & client) {
+void PersistentServer::request_persist(const Client & client) {
 	if (persist()){
 		send(client, server_constants::ok);
 	}
@@ -42,15 +42,15 @@ void PersistentDBServer::request_persist(const Client & client) {
 	}
 }
 
-void PersistentDBServer::start() {
+void PersistentServer::start() {
 	if (not m_db_file)
 		return;
 
 	m_stopped.clear();
-	m_persist_loop_thread = std::thread(&PersistentDBServer::persist_loop, this);
+	m_persist_loop_thread = std::thread(&PersistentServer::persist_loop, this);
 }
 
-void PersistentDBServer::stop() {
+void PersistentServer::stop() {
 	if (not m_db_file)
 		return;
 
@@ -59,7 +59,7 @@ void PersistentDBServer::stop() {
 	m_persist_loop_thread.join();
 }
 
-void PersistentDBServer::persist_loop() {
+void PersistentServer::persist_loop() {
 	while (not m_stopped.wait(M_PERSIST_INTERVAL))
 		m_event_queue.push(server_event::persist);
 }

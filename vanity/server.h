@@ -5,7 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "db/persistentdb_server.h"
+#include "db/persistent_server.h"
 #include "signals.h"
 #include "socket/socket_server.h"
 
@@ -27,7 +27,7 @@ struct ServerConfig
  * Top level server
  */
 class Server:
-	public PersistentDBServer,
+	public PersistentServer,
 	public SocketServer
 {
 private:
@@ -40,14 +40,14 @@ private:
 
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
-		PersistentDBServer::start();
+		PersistentServer::start();
 
 		logger().info("Started server");
 	}
 
 	// stop any running tasks and exit the server
 	void stop(){
-		PersistentDBServer::stop();
+		PersistentServer::stop();
 		SocketServer::stop();
 		logger().info("Stopped server");
 	}
@@ -55,9 +55,9 @@ private:
 public:
 	// create a server
 	explicit Server(const ServerConfig& config) noexcept :
-		Logger(config.log_file, config.log_level),
-		PersistentDBServer(config.db_file),
-		m_config(config) {};
+			Logger(config.log_file, config.log_level),
+			PersistentServer(config.db_file),
+			m_config(config) {};
 
 	// request to terminate the server
 	void terminate() override {
@@ -75,7 +75,7 @@ public:
 					break;
 				}
 				case server_event::persist: {
-					PersistentDBServer::persist();
+					PersistentServer::persist();
 					break;
 				}
 				case server_event::terminate:
