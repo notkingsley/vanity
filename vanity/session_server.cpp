@@ -13,7 +13,7 @@ void SessionServer::request_switch_db(const Client &client, int64_t db) {
 		throw InvalidRequest("db index must be less than " + std::to_string(M_DB_NUM));
 
 	client.set_db(db);
-	send(client, server_constants::ok);
+	send_ok(client);
 }
 
 } // namespace vanity

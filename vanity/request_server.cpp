@@ -250,7 +250,7 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 		operation_t op = extract_operation(msg, pos);
 
 		if (not client.has_perm(op))
-			return send(client, server_constants::denied);
+			return send_denied(client);
 
 		using object_t::STR, object_t::INT, object_t::FLOAT;
 		switch (op) {
@@ -336,10 +336,7 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 		}
 	}
 	catch (const InvalidRequest& e) {
-		std::string err {server_constants::error};
-		err += ": ";
-		err += e.what();
-		send(client, err);
+		send_error(client, e.what());
 	}
 }
 

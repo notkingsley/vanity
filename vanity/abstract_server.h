@@ -53,6 +53,66 @@ public:
 	// send a message to a client
 	virtual void send(const Client& client, const std::string& msg) = 0;
 
+	// send an OK message to a client
+	virtual void send_ok(const Client& client)
+	{
+		send(client, server_constants::ok);
+	}
+
+	// send an OK message to a client
+	virtual void send_ok(const Client& client, const std::string& msg)
+	{
+		send(client, server_constants::ok + msg);
+	}
+
+	// send an ERROR message to a client
+	virtual void send_error(const Client& client)
+	{
+		send(client, server_constants::error);
+	}
+
+	// send an ERROR message to a client
+	virtual void send_error(const Client& client, const std::string& msg)
+	{
+		send(client, server_constants::error + msg);
+	}
+
+	// send a NULL message to a client
+	virtual void send_null(const Client& client)
+	{
+		send(client, server_constants::null);
+	}
+
+	// send a NULL message to a client
+	virtual void send_null(const Client& client, const std::string& msg)
+	{
+		send(client, server_constants::null + msg);
+	}
+
+	// send a PONG message to a client
+	virtual void send_pong(const Client& client)
+	{
+		send(client, server_constants::pong);
+	}
+
+	// send a PONG message to a client
+	virtual void send_pong(const Client& client, const std::string& msg)
+	{
+		send(client, server_constants::pong + msg);
+	}
+
+	// send a DENIED message to a client
+	virtual void send_denied(const Client& client)
+	{
+		send(client, server_constants::denied);
+	}
+
+	// send a DENIED message to a client
+	virtual void send_denied(const Client& client, const std::string& msg)
+	{
+		send(client, server_constants::denied + msg);
+	}
+
 	// request the server to terminate
 	virtual void terminate() = 0;
 };

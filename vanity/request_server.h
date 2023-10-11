@@ -18,7 +18,7 @@ private:
 	std::string m_msg;
 
 public:
-	explicit InvalidRequest(std::string msg) : m_msg{"Invalid request: " + std::move(msg)} {}
+	explicit InvalidRequest(std::string msg) : m_msg{" Invalid request: " + std::move(msg)} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
 };
 
@@ -111,7 +111,7 @@ public:
 
 	// a ping request was received from a client
 	virtual void request_ping(const Client& client, const std::string& msg) {
-		send(client, server_constants::pong + msg);
+		send_pong(client, msg);
 	};
 
 private:

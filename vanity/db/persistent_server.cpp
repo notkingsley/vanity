@@ -33,13 +33,10 @@ bool PersistentServer::persist() const {
 }
 
 void PersistentServer::request_persist(const Client & client) {
-	if (persist()){
-		send(client, server_constants::ok);
-	}
-	else{
-		static const std::string msg = std::string{server_constants::error} + ": Persistence disabled";
-		send(client, msg);
-	}
+	if (persist())
+		send_ok(client);
+	else
+		send_error(client, ": Persistence disabled");
 }
 
 void PersistentServer::start() {
