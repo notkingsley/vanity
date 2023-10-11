@@ -18,8 +18,29 @@ class Client:
 	"""
 	A Client provides a programmatic interface for interacting with a Vanity Server.
 	"""
-	def __init__(self, host: str, port: int):
+	DEFAULT_ADMIN_USERNAME = "vanity"
+	DEFAULT_ADMIN_PASSWORD = "vanity"
+
+	def __init__(
+		self,
+		host: str,
+		port: int,
+		*,
+		no_login: bool = False,
+		username: str | None = DEFAULT_ADMIN_USERNAME,
+		password: str | None = DEFAULT_ADMIN_PASSWORD,
+	):
+		"""
+		Connect to a Vanity Server.
+		:param host: The host to connect to.
+		:param port: The port to connect to.
+		:param no_login: Whether to skip the login process.
+		:param username: The username to login with.
+		:param password: The password to login with.
+		"""
 		self.sock = SocketClient(host, port)
+		if not no_login:
+			self.auth(username, password)
 	
 	def __enter__(self):
 		return self
@@ -116,3 +137,11 @@ class Client:
 		Reset the database.
 		"""
 		return self.request("RESET")
+	
+	def auth(self, username: str, password: str):
+		"""
+		Authenticate with the server.
+		:param username: The username to authenticate with.
+		:param password: The password to authenticate with.
+		"""
+		return self.request("AUTH", username, password)

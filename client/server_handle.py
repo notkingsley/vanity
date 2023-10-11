@@ -31,6 +31,9 @@ class ServerHandle:
 		:param persist_file: The file to persist to if no_persist is False.
 		:param persist_to_cwd: if present and persist_file is None, persists to the 
 		current working directory of the executable instead of user's home directory.
+		:param log_file: The file to log to.
+		:param log_level: The level to log at.
+		:param disable_logging: Whether to disable logging.
 		"""
 		self.args = [executable_path]
 		if port is not None:
@@ -52,7 +55,6 @@ class ServerHandle:
 		
 		if disable_logging:
 			self.args.append(f"--disable-logging")
-	
 
 	def __enter__(self):
 		self.start()
