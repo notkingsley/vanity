@@ -1,8 +1,20 @@
+from enum import Enum
+
 from client.response import Response
 from client.socket_client import SocketClient
 
 
-def format(msg: str | int | float) -> str:
+class AuthLevel(Enum):
+	"""
+	Auth levels for users.
+	"""
+	UNKNOWN = "UNKNOWN"
+	USER = "USER"
+	PEER = "PEER"
+	ADMIN = "ADMIN"
+
+
+def format(msg: str | int | float | AuthLevel) -> str:
 	"""
 	Format a message body to be sent to the server.
 	Escape the quotes in the message if it is a string
@@ -11,7 +23,10 @@ def format(msg: str | int | float) -> str:
 	"""
 	if isinstance(msg, (int, float)):
 		return str(msg)
-	return '"' + msg.replace('"', r'\"') + '"'
+	elif isinstance(msg, AuthLevel):
+		return msg.value
+	else:
+		return '"' + msg.replace('"', r'\"') + '"'
 
 
 class Client:
@@ -145,3 +160,33 @@ class Client:
 		:param password: The password to authenticate with.
 		"""
 		return self.request("AUTH", username, password)
+	
+	def switch_db(self, db: int):
+		"""
+		Switch to a different database index
+		:param db: The database to switch to.
+		"""
+		return self.request("SWITCH_DB", db)
+	
+	def add_user(self, username: str, password: str):
+		"""
+		Add a user to the server.
+		:param username: The username to add.
+		:param password: The password to add.
+		"""
+		return self.request("ADD_USER", username, password)
+	
+	def edit_user(self, username: str, auth_level: AuthLevel):
+		"""
+		Edit a user's auth level on the server.
+		:param username: The username to edit.
+		:param auth_level: The new auth level.
+		"""
+		return self.request("EDIT_USER", username, auth_level)
+	
+	def del_user(self, username: str):
+		"""
+		Delete a user from the server.
+		:param username: The username to delete.
+		"""
+		return self.request("DEL_USER", username)
