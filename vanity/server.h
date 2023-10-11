@@ -5,6 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
+#include "auth_server.h"
 #include "db/persistent_server.h"
 #include "signals.h"
 #include "session_server.h"
@@ -28,9 +29,10 @@ struct ServerConfig
  * Top level server
  */
 class Server:
-	public PersistentServer,
-	public SessionServer,
-	public SocketServer
+	public virtual AuthServer,
+	public virtual PersistentServer,
+	public virtual SessionServer,
+	public virtual SocketServer
 {
 private:
 	// the configuration

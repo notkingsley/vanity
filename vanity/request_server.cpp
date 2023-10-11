@@ -64,10 +64,15 @@ static inline void ensure_not_end(const std::string& msg, size_t& pos)
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
 	static std::initializer_list <std::pair<operation_t, std::string>> operations {
+		{operation_t::ADD_USER,  "ADD_USER"},
+		{operation_t::EDIT_USER, "EDIT_USER"},
+		{operation_t::DEL_USER,  "DEL_USER"},
 		{operation_t::GET,       "GET"},
 		{operation_t::SET,       "SET"},
 		{operation_t::DEL,       "DEL"},
 		{operation_t::SWITCH_DB, "SWITCH_DB"},
+		{operation_t::AUTH,      "AUTH"},
+		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
 		{operation_t::PERSIST,   "PERSIST"},
 		{operation_t::EXIT,      "EXIT"},
 		{operation_t::TERMINATE, "TERMINATE"},
@@ -108,6 +113,26 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 		}
 	}
 	throw InvalidRequest("invalid object type");
+}
+
+// extract thea client auth level from the message
+static inline client_auth extract_client_auth(const std::string& msg, size_t& pos)
+{
+	static std::initializer_list <std::pair<client_auth, std::string>> auths {
+		{client_auth::UNKNOWN,     "UNKNOWN"},
+		{client_auth::USER,        "USER"},
+		{client_auth::ADMIN,       "ADMIN"},
+		{client_auth::PEER,        "PEER"},
+	};
+
+	skip_whitespace(msg, pos);
+	for (const auto& [auth, str] : auths) {
+		if (msg.compare(pos, str.size(), str) == 0) {
+			pos += str.size();
+			return auth;
+		}
+	}
+	throw InvalidRequest("invalid auth level");
 }
 
 // extract an object from part of a message
@@ -188,6 +213,16 @@ static inline std::string extract_single_string(const std::string& msg, size_t& 
 	return word;
 }
 
+// extract exactly two strings from the rest of a message
+// throw if there are more than two strings
+static inline std::pair<std::string, std::string> extract_two_strings(const std::string& msg, size_t& pos)
+{
+	std::string word1 = extract<object_t::STR>(msg, pos);
+	std::string word2 = extract<object_t::STR>(msg, pos);
+	ensure_end(msg, pos);
+	return {word1, word2};
+}
+
 // extract exactly a single int64_t from the rest of a message
 // throw if there is more than one int64_t
 static inline int64_t extract_single_int(const std::string& msg, size_t& pos)
@@ -241,6 +276,36 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 			case operation_t::SWITCH_DB:
 			{
 				request_switch_db(client, extract_single_int(msg, pos));
+				break;
+			}
+			case operation_t::ADD_USER:
+			{
+				auto [username, password] = extract_two_strings(msg, pos);
+				request_add_user(client, username, password);
+				break;
+			}
+			case operation_t::EDIT_USER:
+			{
+				auto username = extract<object_t::STR>(msg, pos);
+				auto auth = extract_client_auth(msg, pos);
+				ensure_end(msg, pos);
+				request_edit_user(client, username, auth);
+				break;
+			}
+			case operation_t::DEL_USER:
+			{
+				request_del_user(client, extract_single_string(msg, pos));
+				break;
+			}
+			case operation_t::AUTH:
+			{
+				auto [username, password] = extract_two_strings(msg, pos);
+				request_auth(client, username, password);
+				break;
+			}
+			case operation_t::CHANGE_PASSWORD:
+			{
+				request_change_password(client, extract_single_string(msg, pos));
 				break;
 			}
 			case operation_t::PERSIST:

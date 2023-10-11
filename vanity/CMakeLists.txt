@@ -9,6 +9,7 @@ add_subdirectory(db)
 add_subdirectory(socket)
 
 add_executable(vanity
+	auth_server.cpp
 	request_server.cpp
 	session_server.cpp
     vanity.cpp

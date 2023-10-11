@@ -84,6 +84,21 @@ public:
 	// a switch_db request was received from a client
 	virtual void request_switch_db(const Client& client, int64_t index) = 0;
 
+	// an add_user request was received from a client
+	virtual void request_add_user(const Client& client, const std::string& username, const std::string& password) = 0;
+
+	// an edit_user request was received from a client
+	virtual void request_edit_user(const Client& client, const std::string& username, client_auth auth_level) = 0;
+
+	// a del_user request was received from a client
+	virtual void request_del_user(const Client& client, const std::string& username) = 0;
+
+	// an auth request was received from a client
+	virtual void request_auth(const Client& client, const std::string& username, const std::string& password) = 0;
+
+	// a change_password request was received from a client
+	virtual void request_change_password(const Client& client, const std::string& password) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(const Client& client) {
 		throw DestroyClient{};

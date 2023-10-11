@@ -40,6 +40,24 @@ public:
 	{
 		m_session_info.database = db;
 	}
+
+	// update the client's auth level
+	void set_auth(const client_auth& auth) const
+	{
+		m_session_info.auth = auth;
+	}
+
+	// set the client's username
+	void username(const std::string& username) const
+	{
+		m_session_info.username = username;
+	}
+
+	// get the client's username
+	const std::string& username() const
+	{
+		return m_session_info.username;
+	}
 };
 
 } // namespace vanity
