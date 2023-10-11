@@ -52,7 +52,10 @@ void AuthServer::request_del_user(const Client &client, const std::string &usern
 	if (username == client.username())
 		return send_error(client, "cannot delete self");
 
-	m_logins.erase(username); // TODO: disconnect all connected clients
+	m_logins.erase(username);
+	for (auto& c : m_logins[username].active)
+		c->close();
+
 	logger().info("deleted user: " + username);
 	send_ok(client);
 }
@@ -70,6 +73,7 @@ void AuthServer::request_auth(const Client &client, const std::string &username,
 	client.username(username);
 	client.set_auth(m_logins[username].auth);
 	m_logins[username].active.push_back(&client);
+
 	logger().info("authenticated user: " + username);
 	send_ok(client);
 }

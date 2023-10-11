@@ -19,6 +19,9 @@ private:
 	// the client's session info
 	mutable session_info m_session_info;
 
+	// if this client has been requested to be closed
+	mutable bool m_close = false;
+
 public:
 	// create a client
 	explicit Client(ClientSocket&& socket) : SocketClient(std::move(socket)) {};
@@ -26,6 +29,8 @@ public:
 	// the client has sent a message, and it is ready to be read
 	bool ready(AbstractServer& server) override
 	{
+		if (m_close)
+			return false;
 		return m_reader.read(server, *this);
 	}
 
@@ -57,6 +62,13 @@ public:
 	const std::string& username() const
 	{
 		return m_session_info.username;
+	}
+
+	// request to close the client, not effective immediately
+	// but when the client makes a request
+	void close() const
+	{
+		m_close = true;
 	}
 };
 
