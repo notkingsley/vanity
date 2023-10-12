@@ -87,3 +87,10 @@ class ServerHandle:
 		"""
 		self.stop()
 		self.start()
+	
+	def is_running(self) -> bool:
+		"""
+		Whether the server is running.
+		:return: True if the server is running, False otherwise.
+		"""
+		return self.process is not None and self.process.poll() is None
