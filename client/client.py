@@ -44,6 +44,7 @@ class Client:
 		no_login: bool = False,
 		username: str | None = DEFAULT_ADMIN_USERNAME,
 		password: str | None = DEFAULT_ADMIN_PASSWORD,
+		db_index: int | None = None,
 	):
 		"""
 		Connect to a Vanity Server.
@@ -52,10 +53,15 @@ class Client:
 		:param no_login: Whether to skip the login process.
 		:param username: The username to login with.
 		:param password: The password to login with.
+		:param db_index: The database index to switch to.
 		"""
 		self.sock = SocketClient(host, port)
+
 		if not no_login:
 			self.auth(username, password)
+
+		if db_index is not None:
+			self.switch_db(db_index)
 	
 	def __enter__(self):
 		return self
