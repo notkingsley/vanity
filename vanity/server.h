@@ -5,7 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "auth_server.h"
+#include "auth/auth_server.h"
 #include "db/persistent_server.h"
 #include "signals.h"
 #include "session_server.h"
