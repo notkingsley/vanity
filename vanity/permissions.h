@@ -62,11 +62,11 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::DEL:
 		case operation_t::SWITCH_DB:
 		case operation_t::CHANGE_PASSWORD:
-		case operation_t::AUTH:
 		case operation_t::PERSIST:
 		case operation_t::EXIT:
 		case operation_t::PING:
 			return true;
+		case operation_t::AUTH:
 		case operation_t::TERMINATE:
 		case operation_t::RESET:
 		default:
@@ -102,7 +102,23 @@ inline bool peer_is_permitted(operation_t operation)
 // check if an operation is permitted for an admin
 inline bool admin_is_permitted(operation_t operation)
 {
-	return true;
+	switch (operation)
+	{
+		case operation_t::GET:
+		case operation_t::SET:
+		case operation_t::DEL:
+		case operation_t::SWITCH_DB:
+		case operation_t::CHANGE_PASSWORD:
+		case operation_t::PERSIST:
+		case operation_t::EXIT:
+		case operation_t::PING:
+		case operation_t::TERMINATE:
+		case operation_t::RESET:
+			return true;
+		case operation_t::AUTH:
+		default:
+			return false;
+	}
 }
 
 // check if an op is permitted for a given client_auth
