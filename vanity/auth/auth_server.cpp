@@ -16,7 +16,7 @@ void AuthServer::request_add_user(const Client &client, const std::string &usern
 	if (m_logins.contains(username))
 		return send_error(client, "user already exists");
 
-	m_logins[username] = {m_hash_function(password), client_auth::USER};
+	m_logins[username] = {make_hash(password), client_auth::USER};
 	logger().info("added user: " + username);
 	send_ok(client);
 }
@@ -52,9 +52,9 @@ void AuthServer::request_del_user(const Client &client, const std::string &usern
 	if (username == client.username())
 		return send_error(client, "cannot delete self");
 
-	m_logins.erase(username);
 	for (auto& c : m_logins[username].active)
 		c->close();
+	m_logins.erase(username);
 
 	logger().info("deleted user: " + username);
 	send_ok(client);
@@ -67,7 +67,7 @@ void AuthServer::request_auth(const Client &client, const std::string &username,
 	if (not m_logins.contains(username))
 		return send_error(client, "user does not exist");
 
-	if (m_logins[username].hash != m_hash_function(password))
+	if (not check_hash(password, m_logins[username].hash))
 		return send_error(client, "incorrect password");
 
 	client.username(username);
@@ -85,7 +85,7 @@ void AuthServer::request_change_password(const Client &client, const std::string
 	if (not m_logins.contains(client.username()))
 		return send_error(client, "user does not exist");
 
-	m_logins[client.username()].hash = m_hash_function(new_password);
+	m_logins[client.username()].hash = make_hash(new_password);
 	logger().info("changed password for user: " + client.username());
 	send_ok(client);
 }

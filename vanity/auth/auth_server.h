@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "hasher.h"
 #include "logging.h"
 #include "request_server.h"
 
@@ -15,12 +16,10 @@ namespace vanity {
 /*
  * An AuthServer allows authentication of clients/peers and related operations
  */
-class AuthServer : public virtual RequestServer, protected virtual Logger
+class AuthServer : public virtual RequestServer, protected virtual Logger, private Hasher
 {
 private:
-	using hash_type = unsigned long;
-
-	using hash_function_t = std::hash<std::string>;
+	using hash_type = std::string;
 
 	struct login_info_t {
 		hash_type hash;
@@ -40,13 +39,10 @@ private:
 	// minimum password length
 	static constexpr int M_MIN_PASSWORD_LENGTH = 4;
 
-	// the hash function to use
-	static constexpr hash_function_t m_hash_function{};
-
 	// this is a map of currently recognized logins
 	// it maps a username to the hash of a password
 	std::unordered_map<std::string, login_info_t> m_logins = {
-		{M_DEFAULT_USERNAME, {m_hash_function(M_DEFAULT_PASSWORD), client_auth::ADMIN}}
+		{M_DEFAULT_USERNAME, {make_hash(M_DEFAULT_PASSWORD), client_auth::ADMIN}}
 	};
 
 public:
