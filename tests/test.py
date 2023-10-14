@@ -335,6 +335,13 @@ class UnknownUserTest(unittest.TestCase):
 		response = self.client.del_user("test_del_user_no_login")
 		self.assertTrue(response.is_denied())
 
+	def test_change_password_no_login(self):
+		"""
+		Test that we can't change a user's password if we don't login.
+		"""
+		response = self.client.change_password("test_change_password_no_login")
+		self.assertTrue(response.is_denied())
+
 
 class UserAuthTest(unittest.TestCase):
 	"""
@@ -410,6 +417,37 @@ class UserAuthTest(unittest.TestCase):
 		"""
 		response = self.client.switch_db(1)
 		self.assertTrue(response.is_ok())
+	
+	def test_add_user(self):
+		"""
+		Test that we can't add a user if we login.
+		"""
+		response = self.client.add_user("test_add_user", "test_add_user_password")
+		self.assertTrue(response.is_denied())
+	
+	def test_edit_user(self):
+		"""
+		Test that we can't edit a user if we login.
+		"""
+		response = self.client.edit_user("test_edit_user", AuthLevel.ADMIN)
+		self.assertTrue(response.is_denied())
+	
+	def test_del_user(self):
+		"""
+		Test that we can't delete a user if we login.
+		"""
+		response = self.client.del_user("test_del_user")
+		self.assertTrue(response.is_denied())
+	
+	def test_change_password(self):
+		"""
+		Test that we can change the password if we login.
+		"""
+		response = self.client.change_password("test_change_password")
+		self.assertTrue(response.is_ok())
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_user_auth", "test_change_password")
+			self.assertTrue(response.is_ok())
 
 
 class DefaultAuthTest(unittest.TestCase):
