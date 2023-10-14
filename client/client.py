@@ -196,3 +196,10 @@ class Client:
 		:param username: The username to delete.
 		"""
 		return self.request("DEL_USER", username)
+	
+	def change_password(self, password: str):
+		"""
+		Change the current client's password.
+		:param password: The new password.
+		"""
+		return self.request("CHANGE_PASSWORD", password)
