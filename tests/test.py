@@ -173,20 +173,19 @@ class PersistenceTest(unittest.TestCase):
 	"""
 	Test persistence across reboots
 	"""
-	TMP_FILE = os.getcwd() + "/" + "tmp.db"
-
 	def setUp(self) -> None:
+		self.tmp_file = os.getcwd() + "/" + "tmp.db"
 		self.port = get_free_port()
 		self.server_handle = make_server_handle(
 			port= self.port,
 			no_persist= False,
-			persist_file= self.TMP_FILE,
+			persist_file= self.tmp_file,
 		)
 		self.server_handle.start()
 
 	def tearDown(self) -> None:
 		self.server_handle.stop()
-		os.remove(self.TMP_FILE)
+		os.remove(self.tmp_file)
 
 	def test_persist(self):
 		"""
