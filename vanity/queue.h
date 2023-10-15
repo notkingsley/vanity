@@ -6,8 +6,9 @@
 #define VANITY_QUEUE_H
 
 #include <condition_variable>
-#include <queue>
 #include <mutex>
+#include <optional>
+#include <queue>
 
 
 namespace vanity {
@@ -52,10 +53,34 @@ public:
 		return val;
 	}
 
+	// get an element from the queue, blocking till one is available
+	// or timeout in microseconds
+	std::optional<T> get(long timeout)
+	{
+		using namespace std::chrono;
+		auto end = steady_clock::now() + microseconds{timeout};
+		std::unique_lock<std::mutex> lock {m_mutex};
+		if (not m_cond.wait_until(lock, end, [&](){return not this->empty();}))
+			return std::nullopt;
+
+		T val{std::move(m_queue.front())};
+		m_queue.pop();
+		return val;
+	}
+
+	// wait for timeout in microseconds for an element
+	// return false on timeout, true otherwise
+	// a get() is not guaranteed to succeed after a wait() returns true
+	bool wait(long timeout) {
+		using namespace std::chrono;
+		auto end = steady_clock::now() + microseconds{timeout};
+		std::unique_lock<std::mutex> lock {m_mutex};
+		return m_cond.wait_until(lock, end, [&](){return not this->empty();});
+	}
+
 	// check if the queue is empty
 	bool empty()
 	{
-		std::lock_guard lock(m_mutex);
 		return m_queue.empty();
 	}
 
