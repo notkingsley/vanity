@@ -69,6 +69,9 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::AUTH:
 		case operation_t::TERMINATE:
 		case operation_t::RESET:
+		case operation_t::ADD_USER:
+		case operation_t::EDIT_USER:
+		case operation_t::DEL_USER:
 		default:
 			return false;
 	}
@@ -114,6 +117,9 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::PING:
 		case operation_t::TERMINATE:
 		case operation_t::RESET:
+		case operation_t::ADD_USER:
+		case operation_t::EDIT_USER:
+		case operation_t::DEL_USER:
 			return true;
 		case operation_t::AUTH:
 		default:
