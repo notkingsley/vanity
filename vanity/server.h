@@ -5,7 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "auth/auth_server.h"
+#include "auth/serial_auth_server.h"
 #include "db/persistent_server.h"
 #include "signals.h"
 #include "session_server.h"
@@ -29,8 +29,8 @@ struct ServerConfig
  * Top level server
  */
 class Server:
-	public virtual AuthServer,
 	public virtual PersistentServer,
+	public virtual SerialAuthServer,
 	public virtual SessionServer,
 	public virtual SocketServer
 {
@@ -44,6 +44,7 @@ private:
 
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
+		SerialAuthServer::start();
 		PersistentServer::start();
 
 		logger().info("Started server");
@@ -52,7 +53,9 @@ private:
 	// stop any running tasks and exit the server
 	void stop(){
 		PersistentServer::stop();
+		SerialAuthServer::stop();
 		SocketServer::stop();
+
 		logger().info("Stopped server");
 	}
 
