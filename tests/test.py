@@ -24,21 +24,11 @@ def make_client(port, **kwargs) -> Client:
 	return Client("localhost", port, **kwargs)
 
 
-def make_server_handle(port, **kwargs) -> ServerHandle:
-	"""
-	Make a server handle.
-	"""
-	return ServerHandle(port= port, **kwargs)
-
-
 class KeyValueStoreTest(unittest.TestCase):
-	server_handle: ServerHandle
-	client: Client
-
 	@classmethod
 	def setUpClass(cls) -> None:
 		port = get_free_port()
-		cls.server_handle = make_server_handle(port)
+		cls.server_handle = ServerHandle(port= port)
 		cls.server_handle.start()
 		cls.client = make_client(port)
 	
@@ -147,7 +137,7 @@ class NoPersistenceTest(unittest.TestCase):
 	"""
 	def setUp(self) -> None:
 		self.port = get_free_port()
-		self.server_handle = make_server_handle(port= self.port, no_persist= True)
+		self.server_handle = ServerHandle(port= self.port, no_persist= True)
 		self.server_handle.start()
 
 	def tearDown(self) -> None:
@@ -176,7 +166,7 @@ class PersistenceTest(unittest.TestCase):
 	def setUp(self) -> None:
 		self.tmp_file = os.getcwd() + "/" + "tmp.db"
 		self.port = get_free_port()
-		self.server_handle = make_server_handle(
+		self.server_handle = ServerHandle(
 			port= self.port,
 			no_persist= False,
 			persist_file= self.tmp_file,
@@ -242,7 +232,7 @@ class UnknownUserTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.port = get_free_port()
-		cls.server_handle = make_server_handle(cls.port)
+		cls.server_handle = ServerHandle(port= cls.port)
 		cls.server_handle.start()
 
 	@classmethod
@@ -349,7 +339,7 @@ class UserAuthTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.port = get_free_port()
-		cls.server_handle = make_server_handle(cls.port)
+		cls.server_handle = ServerHandle(port= cls.port)
 		cls.server_handle.start()
 		cls.admin_client = make_client(cls.port)
 		cls.admin_client.add_user("test_user_auth", "test_user_auth_password")
@@ -456,7 +446,7 @@ class DefaultAuthTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.port = get_free_port()
-		cls.server_handle = make_server_handle(cls.port)
+		cls.server_handle = ServerHandle(port= cls.port)
 		cls.server_handle.start()
 
 	@classmethod
@@ -503,7 +493,7 @@ class SwitchDBTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.port = get_free_port()
-		cls.server_handle = make_server_handle(cls.port)
+		cls.server_handle = ServerHandle(port= cls.port)
 		cls.server_handle.start()
 
 	@classmethod
@@ -586,7 +576,7 @@ class AccountsTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		cls.port = get_free_port()
-		cls.server_handle = make_server_handle(cls.port)
+		cls.server_handle = ServerHandle(port= cls.port)
 		cls.server_handle.start()
 		cls.client = make_client(cls.port)
 
@@ -731,3 +721,108 @@ class AccountsTest(unittest.TestCase):
 		"""
 		response = self.client.del_user("test_del_user_fail_if_self")
 		self.assertTrue(response.is_error())
+
+
+class AuthPersistenceTests(unittest.TestCase):
+	"""
+	Test that authentication is persisted across reboots
+	"""
+	def setUp(self) -> None:
+		self.tmp_file = os.getcwd() + "/" + "users_tmp.db"
+		self.port = get_free_port()
+		self.server_handle = ServerHandle(
+			port= self.port,
+			no_persist= False,
+			users_file= self.tmp_file,
+		)
+		self.server_handle.start()
+
+	def tearDown(self) -> None:
+		self.server_handle.stop()
+		os.remove(self.tmp_file)
+		
+	def test_add_user_persist(self):
+		"""
+		Test that we can add a user, restart the server, 
+		and still authenticate with the server as that user.
+		"""
+		with make_client(self.port) as client:
+			response = client.add_user("test_add_user_persist", "test_add_user_persist_password")
+			self.assertTrue(response.is_ok())
+		
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_add_user_persist", "test_add_user_persist_password")
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_add_user_persist", "test_add_user_persist_password")
+			self.assertTrue(response.is_ok())
+	
+	def test_change_password_persist(self):
+		"""
+		Test that we can change a user's password, restart the server,
+		and still authenticate with the server as that user.
+		"""
+		with make_client(self.port) as client:
+			response = client.add_user("test_change_password_persist", "test_change_password_persist_password")
+			self.assertTrue(response.is_ok())
+		
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_change_password_persist", "test_change_password_persist_password")
+			self.assertTrue(response.is_ok())
+			response = client.change_password("test_change_password_persist_new_password")
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_change_password_persist", "test_change_password_persist_new_password")
+			self.assertTrue(response.is_ok())
+	
+	def test_make_admin_persist(self):
+		"""
+		Test that we can make a user an admin, restart the server,
+		and still authenticate with the server as that user.
+		"""
+		with make_client(self.port) as client:
+			response = client.add_user("test_make_admin_persist", "test_make_admin_persist_password")
+			self.assertTrue(response.is_ok())
+			response = client.edit_user("test_make_admin_persist", AuthLevel.ADMIN)
+			self.assertTrue(response.is_ok())
+		
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_make_admin_persist", "test_make_admin_persist_password")
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_make_admin_persist", "test_make_admin_persist_password")
+			self.assertTrue(response.is_ok())
+			response = client.edit_user("invalid_username", AuthLevel.ADMIN)
+			self.assertFalse(response.is_denied())
+	
+	def test_delete_user_persist(self):
+		"""
+		Test that we can delete a user, restart the server,
+		and not be able to authenticate with the server as that user.
+		"""
+		with make_client(self.port) as client:
+			response = client.add_user("test_delete_user_persist", "test_delete_user_persist_password")
+			self.assertTrue(response.is_ok())
+		
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_delete_user_persist", "test_delete_user_persist_password")
+			self.assertTrue(response.is_ok())
+		
+		with make_client(self.port) as client:
+			response = client.del_user("test_delete_user_persist")
+			self.assertTrue(response.is_ok())
+		
+		self.server_handle.restart()
+
+		with make_client(self.port, no_login= True) as client:
+			response = client.auth("test_delete_user_persist", "test_delete_user_persist_password")
+			self.assertTrue(response.is_error())
