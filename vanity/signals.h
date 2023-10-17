@@ -15,7 +15,6 @@ namespace vanity::signal{
 // server to send signals to
 AbstractServer* _server = nullptr;
 
-#include <iostream>
 // signal handler
 void handle(int signal)
 {
