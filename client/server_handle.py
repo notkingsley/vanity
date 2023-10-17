@@ -18,22 +18,24 @@ class ServerHandle:
 		executable_path: str = EXECUTABLE_PATH,
 		no_persist: bool = True,
 		persist_file: str = None,
-		persist_to_cwd: bool = False,
+		use_cwd: bool = False,
 		log_file: str = None,
 		log_level: Literal["debug", "info", "warning", "error", "critical"] = None,
 		disable_logging: bool = True,
+		users_file: str = None,
 	):
 		"""
 		Create a new ServerHandle.
 		:param port: The port to run the server on, use server default if None
 		:param executable_path: The path to the server executable.
-		:param no_persist: Whether to disable persistence.
-		:param persist_file: The file to persist to if no_persist is False.
-		:param persist_to_cwd: if present and persist_file is None, persists to the 
+		:param no_persist: Whether to disable persistence, for both db and users.
+		:param persist_file: The file to persist the database to if no_persist is False.
+		:param use_cwd: if True, persist the db and users file (if not absolute) to the
 		current working directory of the executable instead of user's home directory.
 		:param log_file: The file to log to.
 		:param log_level: The level to log at.
 		:param disable_logging: Whether to disable logging.
+		:param users_file: The file to store user's login info in.
 		"""
 		self.args = [executable_path]
 		if port is not None:
@@ -44,8 +46,11 @@ class ServerHandle:
 		else:
 			if persist_file:
 				self.args.append(f"--persist-file={persist_file}")
-			elif persist_to_cwd:
-				self.args.append(f"--persist-to-cwd")
+			elif use_cwd:
+				self.args.append(f"--use-cwd")
+			
+			if users_file:
+				self.args.append(f"--users-file={users_file}")
 		
 		if log_file:
 			self.args.append(f"--log-file={log_file}")
