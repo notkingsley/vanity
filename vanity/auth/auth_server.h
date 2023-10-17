@@ -13,20 +13,18 @@
 
 namespace vanity {
 
+struct auth_info {
+	std::string hash;
+	client_auth auth;
+	std::vector<const Client*> active;
+};
+
 /*
  * An AuthServer allows authentication of clients/peers and related operations
  */
 class AuthServer : public virtual RequestServer, protected virtual Logger, private Hasher
 {
 private:
-	using hash_type = std::string;
-
-	struct login_info_t {
-		hash_type hash;
-		client_auth auth;
-		std::vector<const Client*> active;
-	};
-
 	// the default username
 	static constexpr const char* M_DEFAULT_USERNAME = "vanity";
 
@@ -41,11 +39,17 @@ private:
 
 	// this is a map of currently recognized logins
 	// it maps a username to the hash of a password
-	std::unordered_map<std::string, login_info_t> m_logins = {
+	std::unordered_map<std::string, auth_info> m_logins = {
 		{M_DEFAULT_USERNAME, {make_hash(M_DEFAULT_PASSWORD), client_auth::ADMIN}}
 	};
 
+	// file to persist the database to, if any
+	const std::optional<std::filesystem::path> m_users_db;
+
 public:
+	// create an AuthServer with an optional persistence file
+	explicit AuthServer(std::optional<std::filesystem::path> users_db) noexcept;
+
 	// an add_user request was received from a client
 	void request_add_user(const Client& client, const std::string& username, const std::string& password) override;
 

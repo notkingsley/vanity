@@ -19,6 +19,7 @@ namespace vanity {
  */
 struct ServerConfig
 {
+	std::optional<std::filesystem::path> users_db;
 	std::optional<std::filesystem::path> db_file;
 	std::filesystem::path log_file;
 	LogLevel log_level;
@@ -64,6 +65,7 @@ public:
 	explicit Server(const ServerConfig& config) noexcept :
 			Logger(config.log_file, config.log_level),
 			PersistentServer(config.db_file),
+			AuthServer(config.users_db),
 			m_config(config) {};
 
 	// request to terminate the server
