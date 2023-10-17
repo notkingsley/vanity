@@ -18,7 +18,7 @@ Here are the major features I plan to implement, in order (hopefully):
 
 - Persistence *- implemented* 
 - Permissions *- implemented*
-- Sessions (handshaking phase on connection to allow selecting db index to use and other things)
+- Sessions (auth etc) *- implemented*
 - Key expiry (TTL)
 - Atomicity (or transactional behaviour, of sorts)
 - Read/write guarantees (to some yet unspecified degree)
@@ -35,43 +35,51 @@ But I'm here for the fun, so ***Let Fall the Iron Rain***
 ### Syntax
 **Vanity** bypasses all communication protocols and uses sockets for communication. The client abstracts this away  
 The overhead of HTTP is unnecessary here, so that's what we have. 
-A lightweight WebSocket implementation would also serve here, and I might even consider it in the future. 
+A lightweight WebSocket implementation would also serve here, but it's still not really needed. 
 
 Nothwithstanding, the primitive communication is still message-oriented. Something of a request-response like HTTP, but reusing the same socket connection. This might change still, so I'm retaining the event-oriented advantage (potentially).  
 
 
-The current underlying syntax (used over the sockets and expected by the cli) looks like:  
-> GET "foo"  
->> NULL
+The client abstracts most of it, so you can do:
+```python
+>>> from client import Client
+>>> client = Client("localhost", 9955)
+>>> response = client.set("foo", "bar")
+>>> response.is_ok()
+True
+>>> response = client.get("foo")
+>>> response.value
+'bar'
+>>> client.exit()
+```
+
+The underlying syntax (used over the sockets and expected by the cli) is less appealing and looks like:  
+```bash
+> AUTH "vanity" "vanity"
+OK
+
+> GET "foo"
+NULL
 
 > SET :STR "foo" "bar"
->> OK
+OK
 
->GET "foo"
->> :STR "bar"
+> GET "foo"
+:STR "bar"
 
 > DEL "double"
->> ERROR
+ERROR
 
 > SET :FLOAT "double" 123.456
->> OK
+OK
 
 > DEL "foo"
->> OK
+OK
 
 > GET "double"
->> :FLOAT 123.456
+:FLOAT 123.456
 
 > EXIT
-
-
-The client abstracts this away, so you can just do:
-```python
-from client import Client
-client = Client("localhost", 9955)
-client.set("foo", "bar")
-print(client.get("foo"))
-client.exit()
 ```
 
 This is work in progress, so I'd expect a lot of changes to come.  
