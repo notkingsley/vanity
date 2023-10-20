@@ -50,7 +50,7 @@ public:
 	void add(SocketEventHandler& handler) const;
 
 	// remove an object from the epoll
-	void remove(SocketEventHandler& handler) const;
+	void remove(const SocketEventHandler& handler) const;
 };
 
 /*

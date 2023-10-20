@@ -11,9 +11,13 @@
 #include "logging.h"
 #include "socket.h"
 #include "socket_event_handler.h"
+#include "socket_connection_server.h"
 
 
 namespace vanity{
+
+// forward declaration
+class SocketConnectionServer;
 
 /*
  * A SocketServer allows us to listen on one or more sockets,
@@ -22,8 +26,11 @@ namespace vanity{
 class SocketServer : public virtual AbstractServer, public virtual Logger
 {
 private:
-	// the current set of handlers
-	std::unordered_set<std::unique_ptr<SocketEventHandler>> m_handlers;
+	// the current set of clients
+	std::unordered_set<Client> m_clients;
+
+	// active SocketConnectionServers
+	std::vector<SocketConnectionServer> m_connection_servers;
 
 	// the poll thread
 	std::thread m_poll_thread {};
@@ -58,17 +65,23 @@ public:
 	SocketServer(SocketServer&& other) noexcept = delete;
 	SocketServer& operator=(SocketServer&& other) noexcept = delete;
 
-	// add a handler
-	void add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler);
-
-	// remove a handler
-	void remove_socket_handler(SocketEventHandler& handler);
+	// send a message to a client
+	void send(const Client& client, const std::string& msg) override;
 
 	// bind to and start listening on port
 	void bind(uint16_t port);
 
-	// send a message to a client
-	void send(const Client& client, const std::string& msg) override;
+	// add a new client
+	void add_client(Client&& client);
+
+	// remove a client
+	void remove_client(const Client& client);
+
+	// add a socket writer
+	void add_socket_writer(SocketWriter& writer);
+
+	// remove a socket writer
+	void remove_socket_writer(SocketWriter& writer);
 
 protected:
 	// start polling as a background task
@@ -89,9 +102,6 @@ private:
 
 	// this epoll instance is ready
 	void epoll_ready(Epoll& epoll);
-
-	// this handler is ready
-	void handler_ready(SocketEventHandler* handler);
 };
 
 } // namespace vanity

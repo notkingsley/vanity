@@ -41,7 +41,7 @@ void Epoll::add(SocketEventHandler& handler) const {
 	handler.register_event(m_fd);
 }
 
-void Epoll::remove(SocketEventHandler &handler) const {
+void Epoll::remove(const SocketEventHandler &handler) const {
 	handler.unregister_event(m_fd);
 }
 

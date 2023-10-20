@@ -20,58 +20,48 @@ private:
 	mutable session_info m_session_info;
 
 	// if this client has been requested to be closed
-	mutable bool m_close = false;
+	mutable bool m_closed = false;
 
 public:
 	// create a client
-	explicit Client(ClientSocket&& socket) : SocketClient(std::move(socket)) {};
+	explicit Client(ClientSocket&& socket);
 
 	// the client has sent a message, and it is ready to be read
-	bool ready(AbstractServer& server) override
-	{
-		if (m_close)
-			return false;
-		return m_reader.read(server, *this);
-	}
+	void ready(SocketServer& server) override;
 
 	// check if the client has permission to perform an op
-	bool has_perm(operation_t op) const
-	{
-		return is_permitted(op, m_session_info.auth);
-	}
+	bool has_perm(operation_t op) const;
 
 	// set the client's active database index
-	void set_db(int db) const
-	{
-		m_session_info.database = db;
-	}
+	void set_db(int db) const;
 
 	// update the client's auth level
-	void set_auth(const client_auth& auth) const
-	{
-		m_session_info.auth = auth;
-	}
+	void set_auth(const client_auth& auth) const;
 
 	// set the client's username
-	void username(const std::string& username) const
-	{
-		m_session_info.username = username;
-	}
+	void username(const std::string& username) const;
 
 	// get the client's username
-	const std::string& username() const
-	{
-		return m_session_info.username;
-	}
+	const std::string& username() const;
 
 	// request to close the client, not effective immediately
 	// but when the client makes a request
-	void close() const
-	{
-		m_close = true;
-	}
+	void close() const;
 };
+
+bool operator==(const Client& lhs, const Client& rhs);
 
 } // namespace vanity
 
-#endif //VANITY_CLIENT_H
+namespace std {
+
+template<>
+struct hash<vanity::Client> : public hash<const vanity::Client*> {
+	size_t operator()(const vanity::Client &c) const {
+		return hash<const vanity::Client*>::operator()(&c);
+	}
+};
+
+} // namespace std
+
+#endif // VANITY_CLIENT_H

@@ -4,7 +4,6 @@
 
 #include "socket_connection_server.h"
 #include "socket_server.h"
-#include "socket_writer.h"
 
 
 namespace vanity {
@@ -12,34 +11,6 @@ namespace vanity {
 SocketServer::SocketServer() {
 	m_super_epoll.add(m_read_epoll);
 	m_super_epoll.add(m_write_epoll);
-}
-
-void SocketServer::add_socket_handler(std::unique_ptr<SocketEventHandler>&& handler) {
-	if (dynamic_cast<SocketReadHandler*>(handler.get()))
-		m_read_epoll.add(*handler);
-	else if (dynamic_cast<SocketWriteHandler*>(handler.get()))
-		m_write_epoll.add(*handler);
-	else
-		return logger().error(
-			"SocketEventHandler must be either SocketReadHandler or SocketWriteHandler"
-		);
-
-	m_handlers.insert(std::move(handler));
-}
-
-void SocketServer::remove_socket_handler(SocketEventHandler &handler) {
-	if (dynamic_cast<SocketReadHandler*>(&handler))
-		m_read_epoll.remove(handler);
-	else if (dynamic_cast<SocketWriteHandler*>(&handler))
-		m_write_epoll.remove(handler);
-	else
-		return logger().error(
-			"SocketEventHandler must be either SocketReadHandler or SocketWriteHandler"
-		);
-
-	auto ptr = static_cast<const std::unique_ptr<SocketEventHandler>>(&handler);
-	m_handlers.erase(ptr); // object is destroyed here
-	ptr.release();
 }
 
 void SocketServer::socket_ready() {
@@ -62,12 +33,13 @@ void SocketServer::socket_ready() {
 }
 
 void SocketServer::bind(uint16_t port) {
-	add_socket_handler(std::make_unique<SocketConnectionServer>(*this, port));
+	m_connection_servers.emplace_back(port);
+	m_read_epoll.add(m_connection_servers.back());
 	logger().info("Listening on port " + std::to_string(port));
 }
 
 void SocketServer::send(const Client &client, const std::string& msg) {
-	 add_socket_handler(std::make_unique<SocketWriter>(client.socket(), msg));
+	const_cast<Client&>(client).write(*this, msg); // TODO: remove const_cast
 }
 
 void SocketServer::poll() {
@@ -75,7 +47,7 @@ void SocketServer::poll() {
 	epoll_event events[poll_size] {};
 
 	while (true) {
-		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT);
+		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT); // * 1000
 
 		if (n < 0){
 			SocketError err{{}};
@@ -106,7 +78,8 @@ void SocketServer::start() {
 void SocketServer::stop() {
 	m_running = false;
 	m_poll_thread.join();
-	m_handlers.clear();
+	m_clients.clear();
+	m_connection_servers.clear();
 }
 
 void SocketServer::epoll_ready(Epoll &epoll) {
@@ -125,26 +98,29 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 		if (n == 0)
 			break;
 
-		for (int i = 0; i < n; ++i) {
+		for (int i = 0; i < n; ++i){
 			auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
-			handler_ready(handler);
+			handler->ready(*this);
 		}
 	}
-
 }
 
-void SocketServer::handler_ready(SocketEventHandler* handler) {
-	try{
-		if (!handler->ready(*this)){
-			remove_socket_handler(*handler);
-			logger().debug("Client Socket closed");
-		}
-	}
-	catch (DestroyClient& e)
-	{
-		remove_socket_handler(*handler);
-		logger().debug("Client destroyed.");
-	}
+void SocketServer::add_client(Client &&client) {
+	auto it = m_clients.emplace(std::move(client)).first;
+	m_read_epoll.add(const_cast<Client&>((*it)));
+}
+
+void SocketServer::remove_client(const Client &client) {
+	m_read_epoll.remove(client);
+	m_clients.erase(client);
+}
+
+void SocketServer::add_socket_writer(SocketWriter &writer) {
+	m_write_epoll.add(writer);
+}
+
+void SocketServer::remove_socket_writer(SocketWriter &writer) {
+	m_write_epoll.remove(writer);
 }
 
 } // namespace vanity

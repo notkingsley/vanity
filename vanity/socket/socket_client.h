@@ -8,6 +8,7 @@
 #include "socket.h"
 #include "socket_event_handler.h"
 #include "socket_reader.h"
+#include "socket_writer.h"
 
 
 namespace vanity {
@@ -25,12 +26,23 @@ protected:
 	// the reader for the socket
 	SocketReader m_reader;
 
+	// the writer for the socket
+	SocketWriter m_writer;
+
 public:
 	// create a client
-	explicit SocketClient(ClientSocket&& socket) : m_socket(std::move(socket)) {};
+	explicit SocketClient(ClientSocket&& socket)
+		: m_socket(std::move(socket)), m_writer(m_socket) {};
+
+	// move constructor
+	SocketClient(SocketClient&& other) noexcept
+		: m_socket(std::move(other.m_socket)), m_writer(m_socket) {};
+
+	// move assignment
+	SocketClient& operator=(SocketClient&& other) noexcept = delete;
 
 	// get the socket
-	const ClientSocket& socket() const
+	const ClientSocket& socket() const // remove
 	{
 		return m_socket;
 	}
@@ -42,9 +54,15 @@ public:
 	}
 
 	// unregister from epoll for events
-	void unregister_event(int epoll_fd) override
+	void unregister_event(int epoll_fd) const override
 	{
 		m_socket.unregister_event(epoll_fd);
+	}
+
+	// write a message to the socket
+	void write(SocketServer& server, const std::string& msg)
+	{
+		m_writer.register_write(server, msg);
 	}
 };
 

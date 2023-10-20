@@ -14,6 +14,7 @@ add_executable(vanity
 	request_server.cpp
 	session_server.cpp
     vanity.cpp
+	client.cpp
 )
 
 target_link_libraries(vanity

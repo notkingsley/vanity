@@ -12,7 +12,7 @@
 namespace vanity{
 
 // forward declaration
-class AbstractServer;
+class SocketServer;
 
 /*
  * A SocketEventHandler is the common interface for registering for events
@@ -32,14 +32,14 @@ public:
 	static void unregister_event(int epoll_fd, int socket_fd);
 
 	// unregister from epoll for events
-	virtual void unregister_event(int epoll_fd) = 0;
+	virtual void unregister_event(int epoll_fd) const = 0;
 
 	// get the event bit mask
 	virtual uint32_t get_event_mask() const = 0;
 
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
-	virtual bool ready(AbstractServer& server) = 0;
+	virtual void ready(SocketServer& server) = 0;
 };
 
 /*

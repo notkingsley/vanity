@@ -8,7 +8,7 @@
 
 namespace vanity{
 
-SocketConnectionServer::SocketConnectionServer(SocketServer& server, uint16_t port) : m_server{server} {
+SocketConnectionServer::SocketConnectionServer(uint16_t port) {
 	m_socket.listen(port);
 }
 
@@ -16,14 +16,13 @@ void SocketConnectionServer::register_event(int epoll_fd) {
 	m_socket.register_event(epoll_fd, *this);
 }
 
-void SocketConnectionServer::unregister_event(int epoll_fd) {
+void SocketConnectionServer::unregister_event(int epoll_fd) const {
 	m_socket.unregister_event(epoll_fd);
 }
 
-bool SocketConnectionServer::ready(AbstractServer& server) {
-	auto ptr = std::make_unique<Client>(m_socket.accept());
-	m_server.add_socket_handler(std::move(ptr));
-	return true; 	// TODO: handle errors if server socket is closed
+void SocketConnectionServer::ready(SocketServer& server) {
+	// assumed to never fail
+	server.add_client(Client{m_socket.accept()});
 }
 
 } // namespace vanity
