@@ -137,25 +137,25 @@ class NoPersistenceTest(unittest.TestCase):
 	"""
 	def setUp(self) -> None:
 		self.port = get_free_port()
-		self.server_handle = ServerHandle(port= self.port, no_persist= True)
+		self.server_handle = ServerHandle(port= self.port, no_db_persist= True)
 		self.server_handle.start()
 
 	def tearDown(self) -> None:
 		self.server_handle.stop()
 
-	def test_no_persist(self):
+	def test_no_db_persist(self):
 		"""
-		Test that we can set a value on no_persist, restart the server, and get a null.
+		Test that we can set a value on no_db_persist, restart the server, and get a null.
 		"""
 		with make_client(self.port) as client:
-			client.set("test_no_persist", "test_no_persist_value")
+			client.set("test_no_db_persist", "test_no_db_persist_value")
 			response = client.persist()
 			self.assertTrue(response.is_error())
 
 		self.server_handle.restart()
 
 		with make_client(self.port) as client:
-			response = client.get("test_no_persist")
+			response = client.get("test_no_db_persist")
 			self.assertTrue(response.is_null())
 
 
@@ -168,7 +168,7 @@ class PersistenceTest(unittest.TestCase):
 		self.port = get_free_port()
 		self.server_handle = ServerHandle(
 			port= self.port,
-			no_persist= False,
+			no_db_persist= False,
 			persist_file= self.tmp_file,
 		)
 		self.server_handle.start()
@@ -732,7 +732,7 @@ class AuthPersistenceTests(unittest.TestCase):
 		self.port = get_free_port()
 		self.server_handle = ServerHandle(
 			port= self.port,
-			no_persist= False,
+			no_users_persist= False,
 			users_file= self.tmp_file,
 		)
 		self.server_handle.start()

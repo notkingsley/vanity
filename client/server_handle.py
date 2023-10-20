@@ -16,41 +16,48 @@ class ServerHandle:
 		*,
 		port: int | None = DEFAULT_PORT,
 		executable_path: str = EXECUTABLE_PATH,
-		no_persist: bool = True,
+		no_db_persist: bool = True,
+		no_users_persist: bool = True,
 		persist_file: str = None,
 		use_cwd: bool = False,
 		log_file: str = None,
 		log_level: Literal["debug", "info", "warning", "error", "critical"] = None,
-		disable_logging: bool = True,
+		no_logging: bool = True,
 		users_file: str = None,
 	):
 		"""
 		Create a new ServerHandle.
 		:param port: The port to run the server on, use server default if None
 		:param executable_path: The path to the server executable.
-		:param no_persist: Whether to disable persistence, for both db and users.
-		:param persist_file: The file to persist the database to if no_persist is False.
+		:param no_db_persist: Whether to persist the database.
+		:param no_users_persist: Whether to persist the users file.
+		:param persist_file: The file to persist the database to if no_db_persist is False.
 		:param use_cwd: if True, persist the db and users file (if not absolute) to the
 		current working directory of the executable instead of user's home directory.
 		:param log_file: The file to log to.
 		:param log_level: The level to log at.
-		:param disable_logging: Whether to disable logging.
-		:param users_file: The file to store user's login info in.
+		:param users_file: The file to store user's login info in if no_users_persist is False.
 		"""
 		self.args = [executable_path]
+
 		if port is not None:
 			self.args.append(f"--port={port}")
 
-		if no_persist:
-			self.args.append(f"--no-persist")
+		if use_cwd:
+			self.args.append(f"--use-cwd")
+
+		if no_db_persist:
+			self.args.append(f"--no-db-persist")
 		else:
 			if persist_file:
 				self.args.append(f"--persist-file={persist_file}")
-			elif use_cwd:
-				self.args.append(f"--use-cwd")
-			
+		
+		if no_users_persist:
+			self.args.append(f"--no-users-persist")
+		else:
 			if users_file:
 				self.args.append(f"--users-file={users_file}")
+			
 		
 		if log_file:
 			self.args.append(f"--log-file={log_file}")
@@ -58,8 +65,8 @@ class ServerHandle:
 		if log_level:
 			self.args.append(f"--log-level={log_level}")
 		
-		if disable_logging:
-			self.args.append(f"--disable-logging")
+		if no_logging:
+			self.args.append(f"--no-logging")
 
 	def __enter__(self):
 		self.start()

@@ -10,12 +10,6 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 	vanity::ServerConfig config{};
 
 
-	if (args.has_kwarg("port"))
-		config.port = std::stoi(args.get_kwarg("port"));
-	else
-		config.port = 9955;
-
-
 	auto root_dir = std::filesystem::current_path();
 	if (not args.has("use_cwd")){
 		root_dir = getpwuid(getuid())->pw_dir;
@@ -24,9 +18,14 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 	}
 
 
-	if (args.has("no_persist")) {
+	if (args.has_kwarg("port"))
+		config.port = std::stoi(args.get_kwarg("port"));
+	else
+		config.port = 9955;
+
+
+	if (args.has("no_db_persist")) {
 		config.db_file = std::nullopt;
-		config.users_db = std::nullopt;
 	}
 	else {
 		if (args.has_kwarg("persist_file")){
@@ -39,6 +38,13 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 		else
 			config.db_file = root_dir / "vanity.db";
 
+	}
+
+
+	if (args.has("no_users_persist")) {
+		config.users_db = std::nullopt;
+	}
+	else {
 		if (args.has_kwarg("users_file")){
 			std::filesystem::path users_file = args.get_kwarg("users_file");
 			if (users_file.is_relative())
@@ -51,7 +57,7 @@ static inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 	}
 
 
-	if (args.has("disable_logging")) {
+	if (args.has("no_logging")) {
 		config.log_file = std::filesystem::path{};
 		config.log_level = vanity::LogLevel::DISABLED;
 	}
