@@ -34,7 +34,7 @@ public:
 	// Read once from the client's socket, buffering until the delimiter is found.
 	// transparently alerts the server when a message is read
 	// returns true if the socket is open, false if it is closed
-	bool read(AbstractServer& server, const Client& client);
+	bool read(AbstractServer& server, Client& client);
 };
 
 } // namespace vanity

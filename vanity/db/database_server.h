@@ -24,22 +24,22 @@ protected:
 
 public:
 	// a get request was received from a client
-	void request_get(const Client& client, const std::string& key) override;
+	void request_get(Client& client, const std::string& key) override;
 
 	// a set request was received from a client
-	void request_set(const Client& client, const std::string& key, const std::string& value) override;
+	void request_set(Client& client, const std::string& key, const std::string& value) override;
 
 	// a set request was received from a client
-	void request_set(const Client& client, const std::string& key, const int64_t& value) override;
+	void request_set(Client& client, const std::string& key, const int64_t& value) override;
 
 	// a set request was received from a client
-	void request_set(const Client& client, const std::string& key, const double& value) override;
+	void request_set(Client& client, const std::string& key, const double& value) override;
 
 	// a del request was received from a client
-	void request_del(const Client& client, const std::string& key) override;
+	void request_del(Client& client, const std::string& key) override;
 
 	// a wipe request was received from a client
-	void request_reset(const Client& client) override;
+	void request_reset(Client& client) override;
 };
 
 } // namespace vanity

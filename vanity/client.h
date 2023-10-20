@@ -33,20 +33,20 @@ public:
 	bool has_perm(operation_t op) const;
 
 	// set the client's active database index
-	void set_db(int db) const;
+	void set_db(int db);
 
 	// update the client's auth level
-	void set_auth(const client_auth& auth) const;
+	void set_auth(const client_auth& auth);
 
 	// set the client's username
-	void username(const std::string& username) const;
+	void username(const std::string& username);
 
 	// get the client's username
 	const std::string& username() const;
 
 	// request to close the client, not effective immediately
 	// but when the client makes a request
-	void close() const;
+	void close();
 };
 
 bool operator==(const Client& lhs, const Client& rhs);

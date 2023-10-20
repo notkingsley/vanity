@@ -22,11 +22,11 @@ struct serial_auth_server_types {
 		CHANGE_PASSWORD,
 	};
 
-	using auth_type = std::tuple<const Client&, std::string, std::string>;
-	using add_user_type = std::tuple<const Client&, std::string, std::string>;
-	using edit_user_type = std::tuple<const Client&, std::string, client_auth>;
-	using del_user_type = std::tuple<const Client&, std::string>;
-	using change_password_type = std::tuple<const Client&, std::string>;
+	using auth_type = std::tuple<Client&, std::string, std::string>;
+	using add_user_type = std::tuple<Client&, std::string, std::string>;
+	using edit_user_type = std::tuple<Client&, std::string, client_auth>;
+	using del_user_type = std::tuple<Client&, std::string>;
+	using change_password_type = std::tuple<Client&, std::string>;
 
 	using data_type = std::variant<
 		auth_type,
@@ -66,19 +66,19 @@ public:
 	void stop();
 
 	// an add_user request was received from a client
-	void request_add_user(const Client& client, const std::string& username, const std::string& password) override;
+	void request_add_user(Client& client, const std::string& username, const std::string& password) override;
 
 	// an edit_user request was received from a client
-	void request_edit_user(const Client& client, const std::string& username, client_auth auth_level) override;
+	void request_edit_user(Client& client, const std::string& username, client_auth auth_level) override;
 
 	// a del_user request was received from a client
-	void request_del_user(const Client& client, const std::string& username) override;
+	void request_del_user(Client& client, const std::string& username) override;
 
 	// an auth request was received from a client
-	void request_auth(const Client& client, const std::string& username, const std::string& password) override;
+	void request_auth(Client& client, const std::string& username, const std::string& password) override;
 
 	// a change_password request was received from a client
-	void request_change_password(const Client& client, const std::string& new_password) override;
+	void request_change_password(Client& client, const std::string& new_password) override;
 };
 
 } // namespace vanity

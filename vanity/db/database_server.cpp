@@ -7,7 +7,7 @@
 
 namespace vanity {
 
-void DatabaseServer::request_get(const Client &client, const std::string &key) {
+void DatabaseServer::request_get(Client &client, const std::string &key) {
 	if (!m_database.has(key))
 		return send_null(client);
 
@@ -24,29 +24,29 @@ void DatabaseServer::request_get(const Client &client, const std::string &key) {
 	}
 }
 
-void DatabaseServer::request_set(const Client &client, const std::string &key, const std::string &value) {
+void DatabaseServer::request_set(Client &client, const std::string &key, const std::string &value) {
 	m_database.set(key, value);
 	send_ok(client);
 }
 
-void DatabaseServer::request_set(const Client &client, const std::string &key, const int64_t &value) {
+void DatabaseServer::request_set(Client &client, const std::string &key, const int64_t &value) {
 	m_database.set(key, value);
 	send_ok(client);
 }
 
-void DatabaseServer::request_set(const Client &client, const std::string &key, const double &value) {
+void DatabaseServer::request_set(Client &client, const std::string &key, const double &value) {
 	m_database.set(key, value);
 	send_ok(client);
 }
 
-void DatabaseServer::request_del(const Client &client, const std::string &key) {
+void DatabaseServer::request_del(Client &client, const std::string &key) {
 	if (m_database.del(key))
 		send_ok(client);
 	else
 		send_error(client);
 }
 
-void DatabaseServer::request_reset(const Client &client) {
+void DatabaseServer::request_reset(Client &client) {
 	m_database.reset();
 	logger().info("Reset database");
 	send_ok(client);

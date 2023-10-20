@@ -38,8 +38,8 @@ void SocketServer::bind(uint16_t port) {
 	logger().info("Listening on port " + std::to_string(port));
 }
 
-void SocketServer::send(const Client &client, const std::string& msg) {
-	const_cast<Client&>(client).write(*this, msg); // TODO: remove const_cast
+void SocketServer::send(Client &client, const std::string& msg) {
+	client.write(*this, msg);
 }
 
 void SocketServer::poll() {
@@ -110,7 +110,7 @@ void SocketServer::add_client(Client &&client) {
 	m_read_epoll.add(const_cast<Client&>((*it)));
 }
 
-void SocketServer::remove_client(const Client &client) {
+void SocketServer::remove_client(Client &client) {
 	m_read_epoll.remove(client);
 	m_clients.erase(client);
 }

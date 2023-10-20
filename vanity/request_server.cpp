@@ -244,7 +244,7 @@ std::string RequestServer::prepare(const std::string &msg) {
 	return ret;
 }
 
-void RequestServer::handle(const std::string& msg, const Client& client) {
+void RequestServer::handle(const std::string& msg, Client& client) {
 	try{
 		size_t pos = 0;
 		operation_t op = extract_operation(msg, pos);
@@ -340,7 +340,7 @@ void RequestServer::handle(const std::string& msg, const Client& client) {
 	}
 }
 
-void RequestServer::dispatch_set(const Client &client, const std::string &msg, size_t &pos) {
+void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos) {
 	using object_t::STR, object_t::INT, object_t::FLOAT;
 
 	object_t obj = extract_object_t(msg, pos);

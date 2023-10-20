@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-void SessionServer::request_switch_db(const Client &client, int64_t db) {
+void SessionServer::request_switch_db(Client &client, int64_t db) {
 	if (db < 0)
 		throw InvalidRequest("db index must be non-negative");
 	if (db >= M_DB_NUM)

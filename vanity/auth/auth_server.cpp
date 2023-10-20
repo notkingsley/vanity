@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-void AuthServer::request_add_user(const Client &client, const std::string &username, const std::string &password) {
+void AuthServer::request_add_user(Client &client, const std::string &username, const std::string &password) {
 	if (username.length() < M_MIN_USERNAME_LENGTH)
 		return send_error(client, "username too short");
 
@@ -23,7 +23,7 @@ void AuthServer::request_add_user(const Client &client, const std::string &usern
 	send_ok(client);
 }
 
-void AuthServer::request_edit_user(const Client &client, const std::string &username, client_auth auth_level) {
+void AuthServer::request_edit_user(Client &client, const std::string &username, client_auth auth_level) {
 	if (not m_logins.contains(username))
 		return send_error(client, "user does not exist");
 
@@ -47,7 +47,7 @@ void AuthServer::request_edit_user(const Client &client, const std::string &user
 	send_ok(client);
 }
 
-void AuthServer::request_del_user(const Client &client, const std::string &username) {
+void AuthServer::request_del_user(Client &client, const std::string &username) {
 	if (not m_logins.contains(username))
 		return send_error(client, "user does not exist");
 
@@ -63,7 +63,7 @@ void AuthServer::request_del_user(const Client &client, const std::string &usern
 	send_ok(client);
 }
 
-void AuthServer::request_auth(const Client &client, const std::string &username, const std::string &password) {
+void AuthServer::request_auth(Client &client, const std::string &username, const std::string &password) {
 	if (password.length() < M_MIN_PASSWORD_LENGTH)
 		return send_error(client, "password too short");
 
@@ -81,7 +81,7 @@ void AuthServer::request_auth(const Client &client, const std::string &username,
 	send_ok(client);
 }
 
-void AuthServer::request_change_password(const Client &client, const std::string &new_password) {
+void AuthServer::request_change_password(Client &client, const std::string &new_password) {
 	if (new_password.length() < M_MIN_PASSWORD_LENGTH)
 		return send_error(client, "password too short");
 

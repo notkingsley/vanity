@@ -50,23 +50,23 @@ void SerialAuthServer::stop() {
 }
 
 void
-SerialAuthServer::request_add_user(const Client &client, const std::string &username, const std::string &password) {
+SerialAuthServer::request_add_user(Client &client, const std::string &username, const std::string &password) {
 	send_task(task_type::ADD_USER, add_user_type{client, username, password});
 }
 
-void SerialAuthServer::request_edit_user(const Client &client, const std::string &username, client_auth auth_level) {
+void SerialAuthServer::request_edit_user(Client &client, const std::string &username, client_auth auth_level) {
 	send_task(task_type::EDIT_USER, edit_user_type{client, username, auth_level});
 }
 
-void SerialAuthServer::request_del_user(const Client &client, const std::string &username) {
+void SerialAuthServer::request_del_user(Client &client, const std::string &username) {
 	send_task(task_type::DEL_USER, del_user_type{client, username});
 }
 
-void SerialAuthServer::request_auth(const Client &client, const std::string &username, const std::string &password) {
+void SerialAuthServer::request_auth(Client &client, const std::string &username, const std::string &password) {
 	send_task(task_type::AUTH, auth_type{client, username, password});
 }
 
-void SerialAuthServer::request_change_password(const Client &client, const std::string &new_password) {
+void SerialAuthServer::request_change_password(Client &client, const std::string &new_password) {
 	send_task(task_type::CHANGE_PASSWORD, change_password_type{client, new_password});
 }
 

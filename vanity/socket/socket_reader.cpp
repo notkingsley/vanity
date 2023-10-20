@@ -5,7 +5,7 @@
 
 namespace vanity{
 
-bool SocketReader::read(AbstractServer& server, const Client& client)
+bool SocketReader::read(AbstractServer& server, Client& client)
 {
 	char buffer[m_chunk_size];
 	buffer[0] = m_delimiter;

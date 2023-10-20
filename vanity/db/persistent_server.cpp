@@ -32,7 +32,7 @@ bool PersistentServer::persist() const {
 	return true;
 }
 
-void PersistentServer::request_persist(const Client & client) {
+void PersistentServer::request_persist(Client & client) {
 	if (persist())
 		send_ok(client);
 	else

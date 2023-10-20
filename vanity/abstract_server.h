@@ -48,67 +48,67 @@ public:
 	AbstractServer& operator=(AbstractServer&& other) noexcept = default;
 
 	// a message was received from a client
-	virtual void handle(const std::string& msg, const Client& client) = 0;
+	virtual void handle(const std::string& msg, Client& client) = 0;
 
 	// send a message to a client
-	virtual void send(const Client& client, const std::string& msg) = 0;
+	virtual void send(Client& client, const std::string& msg) = 0;
 
 	// send an OK message to a client
-	virtual void send_ok(const Client& client)
+	virtual void send_ok(Client& client)
 	{
 		send(client, server_constants::ok);
 	}
 
 	// send an OK message to a client
-	virtual void send_ok(const Client& client, const std::string& msg)
+	virtual void send_ok(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::ok + msg);
 	}
 
 	// send an ERROR message to a client
-	virtual void send_error(const Client& client)
+	virtual void send_error(Client& client)
 	{
 		send(client, server_constants::error);
 	}
 
 	// send an ERROR message to a client
-	virtual void send_error(const Client& client, const std::string& msg)
+	virtual void send_error(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::error + msg);
 	}
 
 	// send a NULL message to a client
-	virtual void send_null(const Client& client)
+	virtual void send_null(Client& client)
 	{
 		send(client, server_constants::null);
 	}
 
 	// send a NULL message to a client
-	virtual void send_null(const Client& client, const std::string& msg)
+	virtual void send_null(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::null + msg);
 	}
 
 	// send a PONG message to a client
-	virtual void send_pong(const Client& client)
+	virtual void send_pong(Client& client)
 	{
 		send(client, server_constants::pong);
 	}
 
 	// send a PONG message to a client
-	virtual void send_pong(const Client& client, const std::string& msg)
+	virtual void send_pong(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::pong + msg);
 	}
 
 	// send a DENIED message to a client
-	virtual void send_denied(const Client& client)
+	virtual void send_denied(Client& client)
 	{
 		send(client, server_constants::denied);
 	}
 
 	// send a DENIED message to a client
-	virtual void send_denied(const Client& client, const std::string& msg)
+	virtual void send_denied(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::denied + msg);
 	}

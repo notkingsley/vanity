@@ -25,15 +25,15 @@ bool Client::has_perm(operation_t op) const {
 	return is_permitted(op, m_session_info.auth);
 }
 
-void Client::set_db(int db) const {
+void Client::set_db(int db) {
 	m_session_info.database = db;
 }
 
-void Client::set_auth(const client_auth &auth) const {
+void Client::set_auth(const client_auth &auth) {
 	m_session_info.auth = auth;
 }
 
-void Client::username(const std::string &username) const {
+void Client::username(const std::string &username) {
 	m_session_info.username = username;
 }
 
@@ -41,7 +41,7 @@ const std::string &Client::username() const {
 	return m_session_info.username;
 }
 
-void Client::close() const {
+void Client::close() {
 	m_closed = true;
 }
 

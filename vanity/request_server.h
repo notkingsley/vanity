@@ -58,65 +58,65 @@ public:
 	}
 
 	// a message was received from a client
-	void handle(const std::string& msg, const Client& client) override;
+	void handle(const std::string& msg, Client& client) override;
 
 	// a get request was received from a client
-	virtual void request_get(const Client& client, const std::string& key) = 0;
+	virtual void request_get(Client& client, const std::string& key) = 0;
 
 	// a set request was received from a client
-	virtual void request_set(const Client& client, const std::string& key, const std::string& value) = 0;
+	virtual void request_set(Client& client, const std::string& key, const std::string& value) = 0;
 
 	// a set request was received from a client
-	virtual void request_set(const Client& client, const std::string& key, const int64_t& value) = 0;
+	virtual void request_set(Client& client, const std::string& key, const int64_t& value) = 0;
 
 	// a set request was received from a client
-	virtual void request_set(const Client& client, const std::string& key, const double& value) = 0;
+	virtual void request_set(Client& client, const std::string& key, const double& value) = 0;
 
 	// a del request was received from a client
-	virtual void request_del(const Client& client, const std::string& key) = 0;
+	virtual void request_del(Client& client, const std::string& key) = 0;
 
 	// a persist request was received from a client
-	virtual void request_persist(const Client& client) = 0;
+	virtual void request_persist(Client& client) = 0;
 
 	// a reset request was received from a client
-	virtual void request_reset(const Client& client) = 0;
+	virtual void request_reset(Client& client) = 0;
 
 	// a switch_db request was received from a client
-	virtual void request_switch_db(const Client& client, int64_t index) = 0;
+	virtual void request_switch_db(Client& client, int64_t index) = 0;
 
 	// an add_user request was received from a client
-	virtual void request_add_user(const Client& client, const std::string& username, const std::string& password) = 0;
+	virtual void request_add_user(Client& client, const std::string& username, const std::string& password) = 0;
 
 	// an edit_user request was received from a client
-	virtual void request_edit_user(const Client& client, const std::string& username, client_auth auth_level) = 0;
+	virtual void request_edit_user(Client& client, const std::string& username, client_auth auth_level) = 0;
 
 	// a del_user request was received from a client
-	virtual void request_del_user(const Client& client, const std::string& username) = 0;
+	virtual void request_del_user(Client& client, const std::string& username) = 0;
 
 	// an auth request was received from a client
-	virtual void request_auth(const Client& client, const std::string& username, const std::string& password) = 0;
+	virtual void request_auth(Client& client, const std::string& username, const std::string& password) = 0;
 
 	// a change_password request was received from a client
-	virtual void request_change_password(const Client& client, const std::string& password) = 0;
+	virtual void request_change_password(Client& client, const std::string& password) = 0;
 
 	// an exit request was received from a client
-	virtual void request_exit(const Client& client) {
+	virtual void request_exit(Client& client) {
 		throw DestroyClient{};
 	};
 
 	// a terminate request was received from a client
-	virtual void request_terminate(const Client& client) {
+	virtual void request_terminate(Client& client) {
 		terminate();
 	};
 
 	// a ping request was received from a client
-	virtual void request_ping(const Client& client, const std::string& msg) {
+	virtual void request_ping(Client& client, const std::string& msg) {
 		send_pong(client, msg);
 	};
 
 private:
 	// convenience function to dispatch a set request by type
-	void dispatch_set(const Client& client, const std::string& msg, size_t& pos);
+	void dispatch_set(Client& client, const std::string& msg, size_t& pos);
 };
 
 } // namespace vanity

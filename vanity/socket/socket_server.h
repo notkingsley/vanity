@@ -66,7 +66,7 @@ public:
 	SocketServer& operator=(SocketServer&& other) noexcept = delete;
 
 	// send a message to a client
-	void send(const Client& client, const std::string& msg) override;
+	void send(Client& client, const std::string& msg) override;
 
 	// bind to and start listening on port
 	void bind(uint16_t port);
@@ -75,7 +75,7 @@ public:
 	void add_client(Client&& client);
 
 	// remove a client
-	void remove_client(const Client& client);
+	void remove_client(Client& client);
 
 	// add a socket writer
 	void add_socket_writer(SocketWriter& writer);

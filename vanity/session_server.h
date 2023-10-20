@@ -19,7 +19,7 @@ public:
 	static constexpr int M_DB_NUM = 16;
 
 	// a switch_db request was received from a client
-	void request_switch_db(const Client& client, int64_t db) override;
+	void request_switch_db(Client& client, int64_t db) override;
 };
 
 } // namespace vanity
