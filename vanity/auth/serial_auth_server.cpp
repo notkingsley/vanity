@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-void SerialAuthServer::perform(SerialAuthServer::task_type t, SerialAuthServer::data_type data) {
+void SerialAuthServer::perform(SerialAuthServer::task_type t, SerialAuthServer::data_type data, std::promise<void>) {
 	switch (t) {
 		case task_type::AUTH:
 		{

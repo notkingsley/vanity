@@ -43,7 +43,8 @@ class SerialAuthServer :
 	private serial_auth_server_types,
 	private TaskSerializer<
 		serial_auth_server_types::task_type,
-		serial_auth_server_types::data_type
+		serial_auth_server_types::data_type,
+		void
 	>
 {
 private:
@@ -56,7 +57,7 @@ private:
 	using serial_auth_server_types::change_password_type;
 
 	// perform a task that was sent from another thread
-	void perform(task_type t, data_type data) override;
+	void perform(task_type t, data_type data, std::promise<void>) override;
 
 public:
 	// start the server

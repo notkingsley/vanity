@@ -5,6 +5,7 @@
 #ifndef VANITY_TASK_SERIALIZER_H
 #define VANITY_TASK_SERIALIZER_H
 
+#include <future>
 #include <thread>
 
 #include "queue.h"
@@ -17,11 +18,11 @@ namespace vanity {
  * You most likely do NOT want to inherit this virtually: the same virtual base
  * class will serialize all tasks to the same thread
  */
-template<typename task_type, typename data_type>
+template<typename task_type, typename data_type, typename ret_type>
 class TaskSerializer
 {
 private:
-	queue<std::pair<task_type, data_type>> m_queue;
+	queue<std::tuple<task_type, data_type, std::promise<ret_type>>> m_queue;
 	std::thread m_run_thread;
 	bool m_running {false};
 
@@ -31,9 +32,12 @@ public:
 	virtual ~TaskSerializer() = default;
 
 	// send a task to the operation thread
-	void send_task(task_type t, data_type&& data)
+	auto send_task(task_type&& t, data_type&& data)
 	{
-		m_queue.emplace(t, std::move(data));
+		std::promise<ret_type> promise;
+		auto future = promise.get_future();
+		m_queue.emplace(std::move(t), std::move(data), std::move(promise));
+		return future;
 	}
 
 	// start the serializer thread.
@@ -50,7 +54,7 @@ public:
 
 protected:
 	// actually perform some task that was sent
-	virtual void perform(task_type t, data_type data) = 0;
+	virtual void perform(task_type t, data_type data, std::promise<ret_type>) = 0;
 
 private:
 	// run the serial thread
@@ -58,8 +62,8 @@ private:
 	void run(long max_timeout){
 		while (true){
 			if (m_queue.wait(max_timeout)){
-				auto [t, data] = m_queue.get();
-				perform(t, std::move(data));
+				auto [t, data, promise] = m_queue.get();
+				perform(std::move(t), std::move(data), std::move(promise));
 			}
 			if (not m_running)
 				break;
