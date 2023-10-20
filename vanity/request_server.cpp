@@ -338,6 +338,15 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 	catch (const InvalidRequest& e) {
 		send_error(client, e.what());
 	}
+	catch (const Exception& e) {
+		send_internal_error(client, e.what());
+	}
+	catch (const std::exception& e) {
+		send_internal_error(client, e.what());
+	}
+	catch (...) {
+		send_internal_error(client, ": unknown error");
+	}
 }
 
 void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos) {

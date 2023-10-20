@@ -11,29 +11,10 @@
 #include <unordered_map>
 #include <variant>
 
+#include "exceptions.h"
+
 
 namespace vanity::db {
-
-/*
- * A DatabaseException is thrown when an error occurs
- */
-class DatabaseException : std::exception {
-private:
-	std::string m_msg;
-
-public:
-	explicit DatabaseException(std::string msg) : m_msg{std::move(msg)} {}
-
-	const char *what() const noexcept override { return m_msg.c_str(); }
-};
-
-/*
- * A DatabaseKeyNotFoundException is thrown when a key is not found
- */
-class DatabaseKeyNotFoundException : DatabaseException {
-public:
-	explicit DatabaseKeyNotFoundException(std::string msg) : DatabaseException(std::move(msg)) {}
-};
 
 using string_t = std::string;
 using int_t = int64_t;

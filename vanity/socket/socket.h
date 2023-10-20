@@ -8,25 +8,13 @@
 #include <netdb.h>
 #include <sys/epoll.h>
 
+#include "exceptions.h"
+
 
 namespace vanity{
 
 // forward declaration
 class SocketEventHandler;
-
-/*
-There was a connection related error
-*/
-class SocketError : public std::exception
-{
-private:
-	std::string m_msg;
-	int m_errno;
-public:
-	explicit SocketError(std::string msg) : m_msg{std::move(msg)}, m_errno{errno} {}
-	const char* what() const noexcept override { return m_msg.c_str(); }
-	int get_errno() const noexcept { return m_errno; }
-};
 
 /*
 A socket holding a connection

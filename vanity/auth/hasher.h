@@ -8,23 +8,10 @@
 #include <string>
 
 #include "auth/bcrypt/bcrypt.h"
+#include "exceptions.h"
 
 
 namespace vanity {
-
-// thrown when an error occurs in the hashing process
-class HashError : public std::exception {
-	std::string m_msg{"HashError: "};
-public:
-	explicit HashError(const std::string& msg) {
-		m_msg += msg;
-	};
-	~HashError() override = default;
-
-	const char *what() const noexcept override {
-		return "HashError";
-	}
-};
 
 /*
  * A stateless hasher that can hash a string,

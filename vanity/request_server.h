@@ -11,17 +11,6 @@
 
 namespace vanity {
 
-// the message received was invalid
-class InvalidRequest : std::exception
-{
-private:
-	std::string m_msg;
-
-public:
-	explicit InvalidRequest(std::string msg) : m_msg{" Invalid request: " + std::move(msg)} {}
-	const char* what() const noexcept override { return m_msg.c_str(); }
-};
-
 // to annotate a return value with the type
 template <typename T>
 struct type_to_string;

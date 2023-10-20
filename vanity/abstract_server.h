@@ -1,8 +1,9 @@
 #ifndef VANITY_ABSTRACT_SERVER_H
 #define VANITY_ABSTRACT_SERVER_H
 
-#include "queue.h"
 #include "client.h"
+#include "exceptions.h"
+#include "queue.h"
 
 
 namespace vanity{
@@ -15,10 +16,8 @@ struct server_constants
 	static constexpr char const* const null = "NULL";
 	static constexpr char const* const pong = "PONG";
 	static constexpr char const* const denied = "DENIED";
+	static constexpr char const* const internal_error = "INTERNAL_ERROR";
 };
-
-// thrown from a ready() to indicate the client should be disconnected
-class DestroyClient : std::exception {};
 
 // some type of sever event that should be completed
 enum class server_event{
@@ -111,6 +110,18 @@ public:
 	virtual void send_denied(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::denied + msg);
+	}
+
+	// send an INTERNAL_ERROR to a client
+	virtual void send_internal_error(Client& client)
+	{
+		send(client, server_constants::internal_error);
+	}
+
+	// send an INTERNAL_ERROR to a client
+	virtual void send_internal_error(Client& client, const std::string& msg)
+	{
+		send(client, server_constants::internal_error + msg);
 	}
 
 	// request the server to terminate
