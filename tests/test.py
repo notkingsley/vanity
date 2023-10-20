@@ -506,7 +506,6 @@ class SwitchDBTest(unittest.TestCase):
 	def tearDown(self) -> None:
 		self.client.close()
 	
-	@unittest.skip("Not implemented")
 	def test_switch_db(self):
 		"""
 		Test that we can switch databases.
