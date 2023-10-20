@@ -33,7 +33,10 @@ public:
 	bool has_perm(operation_t op) const;
 
 	// set the client's active database index
-	void set_db(int db);
+	void db(int db);
+
+	// get the client's active database index
+	int db() const;
 
 	// update the client's auth level
 	void set_auth(const client_auth& auth);

@@ -5,19 +5,16 @@
 #ifndef VANITY_SESSION_SERVER_H
 #define VANITY_SESSION_SERVER_H
 
-#include "request_server.h"
+#include "db/database_server.h"
 
 namespace vanity {
 
 /*
  * A SessionServer allows a client to update its session info
  */
-class SessionServer : public virtual RequestServer
+class SessionServer : public virtual DatabaseServer
 {
 public:
-	// the number of databases (doesn't belong here)
-	static constexpr int M_DB_NUM = 16;
-
 	// a switch_db request was received from a client
 	void request_switch_db(Client& client, int64_t db) override;
 };

@@ -11,24 +11,29 @@ PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file)
 {
 	if(m_db_file and std::filesystem::exists(m_db_file.value())){
 		std::ifstream in{m_db_file.value(), std::ios::binary};
-		m_database = db::Database::from(in);
+		for (auto& db : m_databases)
+			db = db::Database::from(in);
 		in.close();
-		logger().info("Loaded database from " + m_db_file.value().string());
+
+		logger().info("Loaded databases from " + m_db_file.value().string());
 	}
 }
 
 bool PersistentServer::persist() {
 	if (!m_db_file)
 		return false;
-
-	auto tmp {m_db_file.value()};
-	tmp.replace_filename("tmp." + tmp.filename().string());
-	std::ofstream out{tmp, std::ios::binary};
-	m_database.persist(out);
-	out.close();
-	std::filesystem::rename(tmp, m_db_file.value());
-
-	logger().info("Persisted database to " + m_db_file.value().string());
+	{
+		auto tmp{m_db_file.value()};
+		tmp.replace_filename("tmp." + tmp.filename().string());
+		{
+			std::ofstream out{tmp, std::ios::binary};
+			for (auto& db : m_databases)
+				db.persist(out);
+			out.close();
+		}
+		std::filesystem::rename(tmp, m_db_file.value());
+	}
+	logger().info("Persisted databases to " + m_db_file.value().string());
 	return true;
 }
 

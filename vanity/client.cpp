@@ -25,8 +25,12 @@ bool Client::has_perm(operation_t op) const {
 	return is_permitted(op, m_session_info.auth);
 }
 
-void Client::set_db(int db) {
+void Client::db(int db) {
 	m_session_info.database = db;
+}
+
+int Client::db() const {
+	return m_session_info.database;
 }
 
 void Client::set_auth(const client_auth &auth) {

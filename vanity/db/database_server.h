@@ -5,6 +5,7 @@
 #ifndef VANITY_DATABASE_SERVER_H
 #define VANITY_DATABASE_SERVER_H
 
+#include <array>
 
 #include "serial_database.h"
 #include "request_server.h"
@@ -19,8 +20,11 @@ namespace vanity {
 class DatabaseServer : public virtual RequestServer, protected virtual Logger
 {
 protected:
-	// the database
-	db::SerialDatabase m_database;
+	// number of databases
+	static constexpr size_t M_NUM_DATABASES = 16;
+
+	// the databases
+	std::array<db::SerialDatabase, M_NUM_DATABASES> m_databases;
 
 public:
 	// start the database threads
@@ -28,6 +32,9 @@ public:
 
 	// stop the database threads
 	void stop();
+
+	// get the client's current selected database
+	db::SerialDatabase& database(Client& client);
 
 	// a get request was received from a client
 	void request_get(Client& client, const std::string& key) override;
@@ -44,7 +51,7 @@ public:
 	// a del request was received from a client
 	void request_del(Client& client, const std::string& key) override;
 
-	// a wipe request was received from a client
+	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };
 
