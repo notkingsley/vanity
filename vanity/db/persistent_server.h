@@ -37,7 +37,7 @@ public:
 	explicit PersistentServer(std::optional<std::filesystem::path> db_file) noexcept;
 
 	// persist the database to the file
-	bool persist() const;
+	bool persist();
 
 	// start auto persistence as a background task
 	void start();

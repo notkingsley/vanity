@@ -17,7 +17,7 @@ PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file)
 	}
 }
 
-bool PersistentServer::persist() const {
+bool PersistentServer::persist() {
 	if (!m_db_file)
 		return false;
 

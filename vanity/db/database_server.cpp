@@ -7,6 +7,14 @@
 
 namespace vanity {
 
+void DatabaseServer::start() {
+	m_database.start(M_MAX_TIMEOUT);
+}
+
+void DatabaseServer::stop() {
+	m_database.stop();
+}
+
 void DatabaseServer::request_get(Client &client, const std::string &key) {
 	if (!m_database.has(key))
 		return send_null(client);

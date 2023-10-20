@@ -46,6 +46,7 @@ private:
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
 		SerialAuthServer::start();
+		DatabaseServer::start();
 		PersistentServer::start();
 
 		logger().info("Started server");
@@ -54,6 +55,7 @@ private:
 	// stop any running tasks and exit the server
 	void stop(){
 		PersistentServer::stop();
+		DatabaseServer::stop();
 		SerialAuthServer::stop();
 		SocketServer::stop();
 

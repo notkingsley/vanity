@@ -6,7 +6,7 @@
 #define VANITY_DATABASE_SERVER_H
 
 
-#include "database.h"
+#include "serial_database.h"
 #include "request_server.h"
 #include "logging.h"
 
@@ -20,9 +20,15 @@ class DatabaseServer : public virtual RequestServer, protected virtual Logger
 {
 protected:
 	// the database
-	db::Database m_database;
+	db::SerialDatabase m_database;
 
 public:
+	// start the database threads
+	void start();
+
+	// stop the database threads
+	void stop();
+
 	// a get request was received from a client
 	void request_get(Client& client, const std::string& key) override;
 
