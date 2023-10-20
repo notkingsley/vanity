@@ -115,8 +115,8 @@ void Database::persist(std::ofstream &out) const{
 		write<pair_type>(out, pair);
 }
 
-auto Database::from(std::ifstream &in) -> this_type {
-	this_type db;
+Database Database::from(std::ifstream &in) {
+	Database db;
 
 	size_t size = read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
@@ -129,11 +129,10 @@ bool Database::has(const key_type& key) const {
 	return m_data.contains(key);
 }
 
-auto Database::get(const key_type& key) -> const mapped_type& {
-	if (has(key)) {
+auto Database::get(const key_type& key) -> std::optional<const mapped_type> {
+	if (m_data.contains(key))
 		return m_data.at(key);
-	}
-	throw DatabaseKeyNotFoundException("Key not found");
+	return std::nullopt;
 }
 
 void Database::set(const key_type& key, const mapped_type& value) {

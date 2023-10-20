@@ -16,17 +16,18 @@ void DatabaseServer::stop() {
 }
 
 void DatabaseServer::request_get(Client &client, const std::string &key) {
-	if (!m_database.has(key))
+	auto value = m_database.get(key);
+	if (not value.has_value())
 		return send_null(client);
 
-	auto value = m_database.get(key);
-	switch (value.index()) {
+	auto data = value.value();
+	switch (data.index()) {
 		case 0:
-			return send_ok(client, prepare(std::get<0>(value)));
+			return send_ok(client, prepare(std::get<0>(data)));
 		case 1:
-			return send_ok(client, prepare(std::get<1>(value)));
+			return send_ok(client, prepare(std::get<1>(data)));
 		case 2:
-			return send_ok(client, prepare(std::get<2>(value)));
+			return send_ok(client, prepare(std::get<2>(data)));
 		default:
 			throw std::runtime_error("invalid type");
 	}

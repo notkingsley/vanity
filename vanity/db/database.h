@@ -5,11 +5,12 @@
 #ifndef VANITY_DATABASE_H
 #define VANITY_DATABASE_H
 
-#include <fstream>
-#include <string>
 #include <exception>
-#include <unordered_map>
+#include <fstream>
+#include <optional>
+#include <string>
 #include <variant>
+#include <unordered_map>
 
 #include "exceptions.h"
 
@@ -26,7 +27,6 @@ using float_t = double;
 class Database
 {
 public:
-	using this_type = Database;
 	using key_type = string_t;
 	using mapped_type = std::variant<string_t, int_t, float_t>;
 
@@ -48,7 +48,7 @@ public:
 	void persist(std::ofstream &out) const;
 
 	// load the database from a file stream
-	static this_type from(std::ifstream &in);
+	static Database from(std::ifstream &in);
 
 	// reset the database
 	void reset();
@@ -57,7 +57,7 @@ public:
 	bool has(const key_type& key) const;
 
 	// get the value for a key
-	const mapped_type& get(const key_type& key);
+	std::optional<const mapped_type> get(const key_type& key);
 
 	// set the value for a key
 	void set(const key_type& key, const mapped_type& value);

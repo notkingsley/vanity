@@ -80,8 +80,8 @@ bool SerialDatabase::has(const Database::key_type &key) {
 	return std::get<bool>(send_task(task_type::HAS, key).get());
 }
 
-const Database::mapped_type SerialDatabase::get(const Database::key_type &key) {
-	return std::get<Database::mapped_type>(send_task(task_type::GET, key).get());
+std::optional<Database::mapped_type> SerialDatabase::get(const Database::key_type &key) {
+	return std::get<std::optional<Database::mapped_type>>(send_task(task_type::GET, key).get());
 }
 
 void SerialDatabase::set(const Database::key_type &key, const Database::mapped_type &value) {

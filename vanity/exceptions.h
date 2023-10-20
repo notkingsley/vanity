@@ -34,21 +34,6 @@ public:
 // thrown from a ready() to indicate the client should be disconnected
 class DestroyClient : Exception {};
 
-/*
- * A DatabaseException is thrown when a database related error occurs
- */
-class DatabaseKeyNotFoundException : Exception {
-private:
-	std::string m_msg{" DatabaseKeyNotFound: "};
-
-public:
-	explicit DatabaseKeyNotFoundException(const std::string& msg) {
-		m_msg += msg;
-	}
-
-	const char *what() const noexcept override { return m_msg.c_str(); }
-};
-
 // the message received was invalid
 class InvalidRequest : Exception
 {

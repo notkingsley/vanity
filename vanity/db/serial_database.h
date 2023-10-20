@@ -36,7 +36,7 @@ struct serial_database_types {
 		std::monostate
 	>;
 	using ret_type = std::variant<
-		Database::mapped_type,
+		std::optional<Database::mapped_type>,
 		bool,
 		std::monostate
 	>;
@@ -101,7 +101,7 @@ public:
 	bool has(const key_type& key);
 
 	// get the value for a key
-	const mapped_type get(const key_type& key);
+	std::optional<Database::mapped_type> get(const key_type& key);
 
 	// set the value for a key
 	void set(const key_type& key, const mapped_type& value);
