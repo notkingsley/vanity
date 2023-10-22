@@ -203,3 +203,19 @@ class Client:
 		:param password: The new password.
 		"""
 		return self.request("CHANGE_PASSWORD", password)
+	
+	def type(self, key: str):
+		"""
+		Get the type of a key.
+		:param key: The key to get the type of.
+		:return: The type of the key.
+		"""
+		return self.request("TYPE", key)
+	
+	def exists(self, key: str):
+		"""
+		Check if a key exists.
+		:param key: The key to check.
+		:return: Whether the key exists.
+		"""
+		return self.request("EXISTS", key)

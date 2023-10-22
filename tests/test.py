@@ -130,6 +130,90 @@ class KeyValueStoreTest(unittest.TestCase):
 		response = self.client.get("test_set_get_float")
 		self.assertEqual(response.value, 123.456)
 	
+	def test_get_type_str(self):
+		"""
+		Test that the type of a string is str.
+		"""
+		self.client.set("test_type_str", "test_type_str_value")
+		response = self.client.get("test_type_str")
+		self.assertEqual(response.type, str)
+	
+	def test_get_type_int(self):
+		"""
+		Test that the type of an integer is int.
+		"""
+		self.client.set("test_type_int", 123)
+		response = self.client.get("test_type_int")
+		self.assertEqual(response.type, int)
+	
+	def test_get_type_float(self):
+		"""
+		Test that the type of a float is float.
+		"""
+		self.client.set("test_type_float", 123.456)
+		response = self.client.get("test_type_float")
+		self.assertEqual(response.type, float)
+	
+	def test_get_type_null(self):
+		"""
+		Test that the type of a null is None.
+		"""
+		response = self.client.get("test_type_null")
+		self.assertEqual(response.type, None)
+	
+	def test_type_str(self):
+		"""
+		Test that we can check if a value is a string.
+		"""
+		self.client.set("test_type_str", "test_type_str_value")
+		response = self.client.type("test_type_str")
+		self.assertEqual(response.type, str)
+		self.assertIsNone(response.value)
+	
+	def test_type_int(self):
+		"""
+		Test that we can check if a value is an integer.
+		"""
+		self.client.set("test_type_int", 123)
+		response = self.client.type("test_type_int")
+		self.assertEqual(response.type, int)
+		self.assertIsNone(response.value)
+	
+	def test_type_float(self):
+		"""
+		Test that we can check if a value is a float.
+		"""
+		self.client.set("test_type_float", 123.456)
+		response = self.client.type("test_type_float")
+		self.assertEqual(response.type, float)
+		self.assertIsNone(response.value)
+	
+	def test_exists(self):
+		"""
+		Test that we can check if a key exists.
+		"""
+		self.client.set("test_exists", "test_exists_value")
+		response = self.client.exists("test_exists")
+		self.assertTrue(response.is_ok())
+	
+	def test_exists_not(self):
+		"""
+		Test that we can check if a key doesn't exist.
+		"""
+		response = self.client.exists("test_exists_not")
+		self.assertTrue(response.is_null())
+	
+	def test_exists_delete(self):
+		"""
+		Test that we can check if a key exists after deleting it.
+		"""
+		response = self.client.set("test_exists_delete", "test_exists_delete_value")
+		self.assertTrue(response.is_ok())
+		response = self.client.delete("test_exists_delete")
+		self.assertTrue(response.is_ok())
+		response = self.client.exists("test_exists_delete")
+		self.assertTrue(response.is_null())
+	
 
 class NoPersistenceTest(unittest.TestCase):
 	"""
@@ -266,6 +350,20 @@ class UnknownUserTest(unittest.TestCase):
 		response = self.client.delete("test_delete_no_login")
 		self.assertTrue(response.is_denied())
 	
+	def test_type_no_login(self):
+		"""
+		Test that we can't check the type of a value if we don't login.
+		"""
+		response = self.client.type("test_type_no_login")
+		self.assertTrue(response.is_denied())
+	
+	def test_exists_no_login(self):
+		"""
+		Test that we can't check if a key exists if we don't login.
+		"""
+		response = self.client.exists("test_exists_no_login")
+		self.assertTrue(response.is_denied())
+	
 	def test_persist_no_login(self):
 		"""
 		Test that we can't persist data on the server if we don't login.
@@ -376,6 +474,20 @@ class UserAuthTest(unittest.TestCase):
 		"""
 		response = self.client.delete("test_delete")
 		self.assertTrue(response.is_error())
+	
+	def test_type(self):
+		"""
+		Test that we can check the type of a value if we login.
+		"""
+		response = self.client.type("test_type")
+		self.assertTrue(response.is_null())
+	
+	def test_exists(self):
+		"""
+		Test that we can check if a key exists if we login.
+		"""
+		response = self.client.exists("test_exists")
+		self.assertTrue(response.is_null())
 	
 	def test_reset(self):
 		"""
