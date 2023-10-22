@@ -42,7 +42,7 @@ void SerialAuthServer::perform(SerialAuthServer::task_type t, SerialAuthServer::
 }
 
 void SerialAuthServer::start() {
-	TaskSerializer::start(M_MAX_TIMEOUT);
+	TaskSerializer::start(M_MAX_TIMEOUT * 1000 * 1000);
 }
 
 void SerialAuthServer::stop() {

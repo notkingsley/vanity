@@ -47,7 +47,7 @@ void SocketServer::poll() {
 	epoll_event events[poll_size] {};
 
 	while (true) {
-		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT); // * 1000
+		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT * 1000);
 
 		if (n < 0){
 			SocketError err{{}};

@@ -89,7 +89,7 @@ class ServerHandle:
 		"""
 		Stop the server.
 		"""
-		self.process.terminate()
+		self.process.kill()
 		self.process.wait()
 		self.process = None
 

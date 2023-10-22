@@ -9,7 +9,7 @@ namespace vanity {
 
 void DatabaseServer::start() {
 	for (auto &database : m_databases)
-		database.start(M_MAX_TIMEOUT);
+		database.start(M_MAX_TIMEOUT * 1000 * 1000);
 }
 
 void DatabaseServer::stop() {
