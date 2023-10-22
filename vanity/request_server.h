@@ -67,6 +67,9 @@ public:
 	// a type request was received from a client
 	virtual void request_type(Client& client, const std::string& key) = 0;
 
+	// an exists request was received from a client
+	virtual void request_exists(Client& client, const std::string& key) = 0;
+
 	// a persist request was received from a client
 	virtual void request_persist(Client& client) = 0;
 

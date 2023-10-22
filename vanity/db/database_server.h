@@ -54,6 +54,9 @@ public:
 	// a type request was received from a client
 	void request_type(Client& client, const std::string& key) override;
 
+	// an exists request was received from a client
+	void request_exists(Client& client, const std::string& key) override;
+
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };

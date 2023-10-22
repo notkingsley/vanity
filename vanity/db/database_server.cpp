@@ -84,4 +84,11 @@ void DatabaseServer::request_reset(Client &client) {
 	send_ok(client);
 }
 
+void DatabaseServer::request_exists(Client &client, const std::string &key) {
+	if (database(client).has(key))
+		send_ok(client);
+	else
+		send_null(client);
+}
+
 } // namespace vanity
