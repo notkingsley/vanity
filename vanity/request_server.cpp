@@ -80,6 +80,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::GET,       "GET"},
 		{operation_t::SET,       "SET"},
 		{operation_t::DEL,       "DEL"},
+		{operation_t::TYPE,      "TYPE"},
 		{operation_t::SWITCH_DB, "SWITCH_DB"},
 		{operation_t::AUTH,      "AUTH"},
 		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
@@ -267,6 +268,11 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 			case operation_t::DEL:
 			{
 				request_del(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::TYPE:
+			{
+				request_type(client, extract_exact<STR>(msg, pos));
 				break;
 			}
 			case operation_t::SWITCH_DB:

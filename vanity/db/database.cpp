@@ -4,15 +4,8 @@
 
 #include "database.h"
 
+
 namespace vanity::db {
-
-using mapped_type = Database::mapped_type;
-
-using pair_type = std::pair<string_t, mapped_type>;
-
-template<size_t I>
-using index_t = typename std::variant_alternative_t<I, mapped_type>;
-
 
 // write something to an output stream
 template<typename T>
@@ -57,11 +50,11 @@ string_t read<string_t>(std::ifstream &in)
 	return str;
 }
 
-// write a mapped_type to the output stream
+// write a db_data_type to the output stream
 template<>
-void write<mapped_type>(std::ofstream &out, const mapped_type& value)
+void write<db_data_type>(std::ofstream &out, const db_data_type& value)
 {
-	// int8_t saves us 7 bytes per mapped_type since we'll never have > 256 types
+	// int8_t saves us 7 bytes per db_data_type since we'll never have > 256 types
 	auto index = static_cast<int8_t>(value.index());
 	write(out, index);
 	switch (index) {
@@ -76,17 +69,17 @@ void write<mapped_type>(std::ofstream &out, const mapped_type& value)
 	}
 }
 
-// read a mapped_type from the input stream
+// read a db_data_type from the input stream
 template<>
-mapped_type read<mapped_type>(std::ifstream &in)
+db_data_type read<db_data_type>(std::ifstream &in)
 {
 	switch (read<int8_t>(in)) {
 		case 0:
-			return read<index_t<0>>(in);
+			return read<db_index_t<0>>(in);
 		case 1:
-			return read<index_t<1>>(in);
+			return read<db_index_t<1>>(in);
 		case 2:
-			return read<index_t<2>>(in);
+			return read<db_index_t<2>>(in);
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -104,8 +97,8 @@ void write<pair_type>(std::ofstream &out, const pair_type& value)
 template<>
 pair_type read<pair_type>(std::ifstream &in)
 {
-	string_t first = read<string_t>(in);
-	mapped_type second = read<mapped_type>(in);
+	db_key_type first = read<db_key_type>(in);
+	db_data_type second = read<db_data_type>(in);
 	return std::make_pair(first, second);
 }
 
@@ -129,13 +122,13 @@ bool Database::has(const key_type& key) const {
 	return m_data.contains(key);
 }
 
-auto Database::get(const key_type& key) -> std::optional<const mapped_type> {
+auto Database::get(const key_type& key) -> std::optional<const data_type> {
 	if (m_data.contains(key))
 		return m_data.at(key);
 	return std::nullopt;
 }
 
-void Database::set(const key_type& key, const mapped_type& value) {
+void Database::set(const key_type& key, const data_type& value) {
 	m_data[key] = value;
 }
 
@@ -145,6 +138,12 @@ bool Database::del(const key_type& key) {
 
 void Database::reset() {
 	m_data.clear();
+}
+
+std::optional<int> Database::type(const Database::key_type &key) {
+	if (m_data.contains(key))
+		return m_data.at(key).index();
+	return std::nullopt;
 }
 
 } // namespace vanity::db

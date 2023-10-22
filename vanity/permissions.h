@@ -15,6 +15,7 @@ enum class operation_t{
 	SET,
 	DEL,
 	SWITCH_DB,
+	TYPE,
 	ADD_USER,
 	EDIT_USER,
 	DEL_USER,
@@ -39,6 +40,7 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::GET:
 		case operation_t::SET:
 		case operation_t::DEL:
+		case operation_t::TYPE:
 		case operation_t::SWITCH_DB:
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -60,6 +62,7 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::GET:
 		case operation_t::SET:
 		case operation_t::DEL:
+		case operation_t::TYPE:
 		case operation_t::SWITCH_DB:
 		case operation_t::CHANGE_PASSWORD:
 		case operation_t::PERSIST:
@@ -85,6 +88,7 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::GET:
 		case operation_t::SET:
 		case operation_t::DEL:
+		case operation_t::TYPE:
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
 		case operation_t::EXIT:
@@ -110,6 +114,7 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::GET:
 		case operation_t::SET:
 		case operation_t::DEL:
+		case operation_t::TYPE:
 		case operation_t::SWITCH_DB:
 		case operation_t::CHANGE_PASSWORD:
 		case operation_t::PERSIST:

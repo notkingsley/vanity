@@ -51,6 +51,9 @@ public:
 	// a del request was received from a client
 	void request_del(Client& client, const std::string& key) override;
 
+	// a type request was received from a client
+	void request_type(Client& client, const std::string& key) override;
+
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };

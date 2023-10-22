@@ -28,7 +28,7 @@ class Database
 {
 public:
 	using key_type = string_t;
-	using mapped_type = std::variant<string_t, int_t, float_t>;
+	using data_type = std::variant<string_t, int_t, float_t>;
 
 	// create a key value database
 	Database() = default;
@@ -57,18 +57,30 @@ public:
 	bool has(const key_type& key) const;
 
 	// get the value for a key
-	std::optional<const mapped_type> get(const key_type& key);
+	std::optional<const data_type> get(const key_type& key);
 
 	// set the value for a key
-	void set(const key_type& key, const mapped_type& value);
+	void set(const key_type& key, const data_type& value);
 
 	// delete the value for a key
 	bool del(const key_type& key);
 
+	// get the type of key as an index
+	std::optional<int> type(const key_type& key);
+
 private:
 	// the key value store
-	std::unordered_map<key_type, mapped_type> m_data;
+	std::unordered_map<key_type, data_type> m_data;
 };
+
+using db_key_type = Database::key_type;
+
+using db_data_type = Database::data_type;
+
+using pair_type = std::pair<db_key_type , db_data_type>;
+
+template<size_t I>
+using db_index_t = typename std::variant_alternative_t<I, db_data_type>;
 
 } // namespace vanity::db
 

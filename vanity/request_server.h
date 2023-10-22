@@ -64,6 +64,9 @@ public:
 	// a del request was received from a client
 	virtual void request_del(Client& client, const std::string& key) = 0;
 
+	// a type request was received from a client
+	virtual void request_type(Client& client, const std::string& key) = 0;
+
 	// a persist request was received from a client
 	virtual void request_persist(Client& client) = 0;
 

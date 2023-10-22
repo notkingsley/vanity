@@ -61,6 +61,23 @@ void DatabaseServer::request_del(Client &client, const std::string &key) {
 		send_error(client);
 }
 
+void DatabaseServer::request_type(Client &client, const std::string &key) {
+	auto type = database(client).type(key);
+	if (not type.has_value())
+		return send_null(client);
+
+	switch (type.value()) {
+		case 0:
+			return send_ok(client, type_to_string<db::db_index_t<0>>::value);
+		case 1:
+			return send_ok(client, type_to_string<db::db_index_t<1>>::value);
+		case 2:
+			return send_ok(client, type_to_string<db::db_index_t<2>>::value);
+		default:
+			throw std::runtime_error("invalid type");
+	}
+}
+
 void DatabaseServer::request_reset(Client &client) {
 	database(client).reset();
 	logger().info("Reset database");

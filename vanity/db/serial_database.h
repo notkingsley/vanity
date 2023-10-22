@@ -17,13 +17,14 @@ struct serial_database_types {
 		GET,
 		SET,
 		DEL,
+		TYPE,
 		HAS,
 		RESET,
 		PERSIST,
 	};
 
 	using get_type = Database::key_type;
-	using set_type = std::tuple<Database::key_type, Database::mapped_type>;
+	using set_type = std::tuple<Database::key_type, Database::data_type>;
 	using del_type = Database::key_type;
 	using has_type = Database::key_type;
 	using reset_type = void;
@@ -36,7 +37,8 @@ struct serial_database_types {
 		std::monostate
 	>;
 	using ret_type = std::variant<
-		std::optional<Database::mapped_type>,
+		std::optional<Database::data_type>,
+		std::optional<int>,
 		bool,
 		std::monostate
 	>;
@@ -101,13 +103,16 @@ public:
 	bool has(const key_type& key);
 
 	// get the value for a key
-	std::optional<Database::mapped_type> get(const key_type& key);
+	std::optional<Database::data_type> get(const key_type& key);
 
 	// set the value for a key
-	void set(const key_type& key, const mapped_type& value);
+	void set(const key_type& key, const db_data_type& value);
 
 	// delete the value for a key
 	bool del(const key_type& key);
+
+	// get the type of key as an index
+	std::optional<int> type(const key_type& key);
 };
 
 } // namespace vanity::db

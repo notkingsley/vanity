@@ -34,6 +34,12 @@ void SerialDatabase::perform(task_type task, data_type data, std::promise<ret_ty
 			promise.set_value(Database::del(key));
 			break;
 		}
+		case task_type::TYPE:
+		{
+			auto& key = std::get<get_type>(data);
+			promise.set_value(Database::type(key));
+			break;
+		}
 		case task_type::HAS:
 		{
 			auto& key = std::get<has_type>(data);
@@ -80,16 +86,21 @@ bool SerialDatabase::has(const Database::key_type &key) {
 	return std::get<bool>(send_task(task_type::HAS, key).get());
 }
 
-std::optional<Database::mapped_type> SerialDatabase::get(const Database::key_type &key) {
-	return std::get<std::optional<Database::mapped_type>>(send_task(task_type::GET, key).get());
+std::optional<Database::data_type> SerialDatabase::get(const Database::key_type &key) {
+	return std::get<std::optional<Database::data_type>>(send_task(task_type::GET, key).get());
 }
 
-void SerialDatabase::set(const Database::key_type &key, const Database::mapped_type &value) {
+void SerialDatabase::set(const Database::key_type &key, const Database::data_type &value) {
 	send_task(task_type::SET, std::make_tuple(key, value)).wait();
 }
 
 bool SerialDatabase::del(const Database::key_type &key) {
 	return std::get<bool>(send_task(task_type::DEL, key).get());
 }
+
+std::optional<int> SerialDatabase::type(const Database::key_type &key) {
+	return std::get<std::optional<int>>(send_task(task_type::TYPE, key).get());
+}
+
 
 } // namespace vanity::db
