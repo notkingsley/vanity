@@ -3,7 +3,22 @@ import sys
 from socket_client import SocketClient, SocketClosedError
 
 
-def cli_loop(host: str, port: int):
+def get_default_auth():
+	"""
+	Get the default authentication string.
+	"""
+	return """AUTH "vanity" "vanity" """
+
+
+def get_prompt(host: str, port: int) -> str:
+	"""
+	Get the prompt for the command line interface.
+	"""
+	if len(host) > 15:
+		host = host[:12] + "..."
+	return f"vanity@{host}:{port}> "
+
+def cli_loop(host: str, port: int, no_auth: bool = False):
 	"""
 	Run as a command line interface.
 	"""
@@ -15,8 +30,13 @@ def cli_loop(host: str, port: int):
 
 	print("Welcome to Vanity!\nType \"exit\" to exit.")
 	try:
+		if not no_auth:
+			sock.send(get_default_auth())
+			sock.read_msg()
+
+		prompt = get_prompt(host, port)
 		while True:
-			msg = input(f"vanity@{host}:{port}> ")
+			msg = input(prompt)
 			if msg == "exit":
 				break
 			sock.send(msg)
@@ -33,9 +53,18 @@ def cli_loop(host: str, port: int):
 
 
 if __name__ == "__main__":
+	if len(sys.argv) == 4:
+		if sys.argv[3] != "no-auth":
+			print("Usage: python client.py [host] port [no-auth]")
+			sys.exit(1)
+		cli_loop(sys.argv[1], int(sys.argv[2]), True)
 	if len(sys.argv) == 3:
-		cli_loop(sys.argv[1], int(sys.argv[2]))
+		if sys.argv[2] == "no-auth":
+			cli_loop("localhost", int(sys.argv[1]), True)
+		else:
+			cli_loop(sys.argv[1], int(sys.argv[2]))
 	elif len(sys.argv) == 2:
 		cli_loop("localhost", int(sys.argv[1]))
 	else:
-		print("Usage: python client.py [host] port")
+		print("Usage: python client.py [host] port [no-auth]")
+		sys.exit(1)
