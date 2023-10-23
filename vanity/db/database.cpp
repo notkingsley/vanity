@@ -178,4 +178,11 @@ std::optional<float_t> Database::incr_float(const Database::key_type &key, float
 	}
 }
 
+std::optional<int_t> Database::len_str(const Database::key_type &key) {
+	if (m_data.contains(key) and std::holds_alternative<string_t>(m_data.at(key)))
+		return std::get<string_t>(m_data.at(key)).size();
+	else
+		return std::nullopt;
+}
+
 } // namespace vanity::db

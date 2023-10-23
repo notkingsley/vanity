@@ -107,4 +107,12 @@ void DatabaseServer::request_incr_float(Client &client, const std::string &key, 
 	send_ok(client, prepare(result.value()));
 }
 
+void DatabaseServer::request_len_str(Client &client, const std::string &key) {
+	auto result = database(client).len_str(key);
+	if (not result.has_value())
+		return send_bad_type(client);
+
+	send_ok(client, prepare(result.value()));
+}
+
 } // namespace vanity

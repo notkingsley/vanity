@@ -19,6 +19,7 @@ enum class operation_t{
 	EXISTS,
 	INCR_INT,
 	INCR_FLOAT,
+	LEN_STR,
 	ADD_USER,
 	EDIT_USER,
 	DEL_USER,
@@ -47,6 +48,7 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::EXISTS:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
+		case operation_t::LEN_STR:
 		case operation_t::SWITCH_DB:
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -72,6 +74,7 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::EXISTS:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
+		case operation_t::LEN_STR:
 		case operation_t::SWITCH_DB:
 		case operation_t::CHANGE_PASSWORD:
 		case operation_t::PERSIST:
@@ -101,6 +104,7 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::EXISTS:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
+		case operation_t::LEN_STR:
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
 		case operation_t::EXIT:
@@ -130,6 +134,7 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::EXISTS:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
+		case operation_t::LEN_STR:
 		case operation_t::SWITCH_DB:
 		case operation_t::CHANGE_PASSWORD:
 		case operation_t::PERSIST:

@@ -76,6 +76,9 @@ public:
 	// an incr_float request was received from a client
 	virtual void request_incr_float(Client& client, const std::string& key, double value) = 0;
 
+	// a len_str request was received from a client
+	virtual void request_len_str(Client& client, const std::string& key) = 0;
+
 	// a persist request was received from a client
 	virtual void request_persist(Client& client) = 0;
 

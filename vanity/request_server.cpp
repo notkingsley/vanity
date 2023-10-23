@@ -84,6 +84,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::EXISTS,    "EXISTS"},
 		{operation_t::INCR_INT,  "INCR_INT"},
 		{operation_t::INCR_FLOAT,"INCR_FLOAT"},
+		{operation_t::LEN_STR,   "LEN_STR"},
 		{operation_t::SWITCH_DB, "SWITCH_DB"},
 		{operation_t::AUTH,      "AUTH"},
 		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
@@ -183,7 +184,6 @@ inline int64_t extract<object_t::INT>(const std::string& msg, size_t& pos)
 	catch (const std::invalid_argument& e) {
 		throw InvalidRequest("invalid integer");
 	}
-
 }
 
 // extract a double from part of a message
@@ -293,6 +293,11 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 			{
 				auto [key, value] = extract_exact<STR, FLOAT>(msg, pos);
 				request_incr_float(client, key, value);
+				break;
+			}
+			case operation_t::LEN_STR:
+			{
+				request_len_str(client, extract_exact<STR>(msg, pos));
 				break;
 			}
 			case operation_t::SWITCH_DB:

@@ -63,6 +63,9 @@ public:
 	// an incr_float request was received from a client
 	void request_incr_float(Client& client, const std::string& key, db::float_t value) override;
 
+	// a len_str request was received from a client
+	void request_len_str(Client& client, const std::string& key) override;
+
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };

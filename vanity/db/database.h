@@ -76,6 +76,11 @@ public:
 	// returns the new value, or std::nullopt if the value is not a float
 	std::optional<float_t> incr_float(const Database::key_type &key, float_t value);
 
+	// get the length of a string key
+	// returns the length, or std::nullopt
+	// if the value does not exist or is not a string
+	std::optional<int_t> len_str(const Database::key_type &key);
+
 private:
 	// the key value store
 	std::unordered_map<key_type, data_type> m_data;

@@ -21,10 +21,12 @@ struct serial_database_types {
 		HAS,
 		INCR_INT,
 		INCR_FLOAT,
+		LEN_STR,
 		RESET,
 		PERSIST,
 	};
 
+	// parameter types
 	using get_type = Database::key_type;
 	using set_type = std::tuple<Database::key_type, Database::data_type>;
 	using del_type = Database::key_type;
@@ -32,6 +34,7 @@ struct serial_database_types {
 	using type_type = Database::key_type;
 	using incr_int_type = std::tuple<Database::key_type, int_t>;
 	using incr_float_type = std::tuple<Database::key_type, float_t>;
+	using len_str_type = Database::key_type;
 	using reset_type = void;
 	using persist_type = std::tuple<std::ofstream&>;
 
@@ -122,6 +125,11 @@ public:
 	// increment the value for a float key, or set it to 0 if it doesn't exist
 	// returns the new value, or std::nullopt if the value is not a float
 	std::optional<float_t> incr_float(const Database::key_type &key, float_t value);
+
+	// get the length of a string key
+	// returns the length, or std::nullopt
+	// if the value does not exist or is not a string
+	std::optional<int_t> len_str(const Database::key_type &key);
 };
 
 } // namespace vanity::db
