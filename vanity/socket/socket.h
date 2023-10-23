@@ -24,15 +24,13 @@ class Socket
 protected:
 	// the file descriptor of the socket
 	int m_fd{};
-	sockaddr_in m_addr{};
-	socklen_t m_addr_size = sizeof(m_addr);
 
 	// can't be instantiated directly
 	Socket() = default;
 
 public:
 	// close the connection
-	virtual ~Socket();
+	~Socket();
 
 	// no copy
 	Socket(const Socket&) = delete;
@@ -61,9 +59,6 @@ public:
 
 	// read a string from the socket
 	size_t read(char* buffer, size_t buffer_size) const;
-
-	// write a string to the socket
-	void write(const std::string& msg) const;
 
 	// write from a buffer to the socket
 	size_t write(const char* buffer, size_t buffer_size) const;
