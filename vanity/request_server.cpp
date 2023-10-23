@@ -362,7 +362,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 		}
 	}
 	catch (const InvalidRequest& e) {
-		send_error(client, e.what());
+		send_bad_request(client, e.what());
 	}
 	catch (const DestroyClient& e) {
 		throw;

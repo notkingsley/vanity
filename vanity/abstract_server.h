@@ -17,6 +17,8 @@ struct server_constants
 	static constexpr char const* const pong = "PONG";
 	static constexpr char const* const denied = "DENIED";
 	static constexpr char const* const internal_error = "INTERNAL_ERROR";
+	static constexpr char const* const bad_type = "BAD_TYPE";
+	static constexpr char const* const bad_request = "BAD_REQUEST";
 };
 
 // some type of sever event that should be completed
@@ -122,6 +124,30 @@ public:
 	virtual void send_internal_error(Client& client, const std::string& msg)
 	{
 		send(client, server_constants::internal_error + msg);
+	}
+
+	// send a BAD_TYPE to a client
+	virtual void send_bad_type(Client& client)
+	{
+		send(client, server_constants::bad_type);
+	}
+
+	// send a BAD_TYPE to a client
+	virtual void send_bad_type(Client& client, const std::string& msg)
+	{
+		send(client, server_constants::bad_type + msg);
+	}
+
+	// send a BAD_REQUEST to a client
+	virtual void send_bad_request(Client& client)
+	{
+		send(client, server_constants::bad_request);
+	}
+
+	// send a BAD_REQUEST to a client
+	virtual void send_bad_request(Client& client, const std::string& msg)
+	{
+		send(client, server_constants::bad_request + msg);
 	}
 
 	// request the server to terminate
