@@ -219,3 +219,35 @@ class Client:
 		:return: Whether the key exists.
 		"""
 		return self.request("EXISTS", key)
+	
+	def incr_int(self, key: str, by: int = 1):
+		"""
+		Increment an integer value.
+		:param key: The key to increment.
+		:return: The incremented value.
+		"""
+		return self.request("INCR_INT", key, by)
+	
+	def decr_int(self, key: str, by: int = 1):
+		"""
+		Decrement an integer value.
+		:param key: The key to decrement.
+		:return: The decremented value.
+		"""
+		return self.incr_int(key, -by)
+	
+	def incr_float(self, key: str, by: float = 1.0):
+		"""
+		Increment a float value.
+		:param key: The key to increment.
+		:return: The incremented value.
+		"""
+		return self.request("INCR_FLOAT", key, by)
+	
+	def decr_float(self, key: str, by: float = 1.0):
+		"""
+		Decrement a float value.
+		:param key: The key to decrement.
+		:return: The decremented value.
+		"""
+		return self.incr_float(key, -by)

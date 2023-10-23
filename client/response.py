@@ -52,12 +52,12 @@ def extract_as(msg: str, type: type[int | float | str]):
 	if type is str:
 		return extract_str(msg)
 	
-	if type is int:
-		return int(msg) if msg.isdigit() else None
-	
-	if type is float:
-		return float(msg) if msg.replace(".", "", 1).isdigit() else None
-	
+	if type is int or type is float:
+		try:
+			return type(msg)
+		except ValueError:
+			return None
+
 
 def extract_type(msg: str) -> tuple[type[str | int | float] | None, str]:
 	"""
@@ -96,11 +96,6 @@ class Response:
 			body = self._raw[:30] + "..."
 
 		return f"<Response: status={status}, body={body}>"
-
-	def _parse(self):
-		"""
-		Parse the raw response.
-		"""
 
 	def is_null(self) -> bool:
 		"""

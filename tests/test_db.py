@@ -194,6 +194,121 @@ class DatabaseTest(unittest.TestCase):
 		response = self.client.exists("test_exists_delete")
 		self.assertTrue(response.is_null())
 	
+	def test_incr_int(self):
+		"""
+		Test that we can increment an integer value.
+		"""
+		self.client.set("test_incr_int", 123)
+		response = self.client.incr_int("test_incr_int", 456)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 579)
+		response = self.client.get("test_incr_int")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 579)
+	
+	def test_incr_int_non_existent(self):
+		"""
+		Test that we can increment a non-existent integer value.
+		"""
+		response = self.client.incr_int("test_incr_int_non_existent", 123)
+		self.assertEqual(response.value, 123)
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_incr_int_non_existent")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 123)
+	
+	def test_incr_float(self):
+		"""
+		Test that we can increment a float value.
+		"""
+		self.client.set("test_incr_float", 123.456)
+		response = self.client.incr_float("test_incr_float", 456.789)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 580.245)
+		response = self.client.get("test_incr_float")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 580.245)
+	
+	def test_incr_float_non_existent(self):
+		"""
+		Test that we can increment a non-existent float value.
+		"""
+		response = self.client.incr_float("test_incr_float_non_existent", 123.456)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 123.456)
+		response = self.client.get("test_incr_float_non_existent")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 123.456)
+	
+	def test_decr_int(self):
+		"""
+		Test that we can decrement an integer value.
+		"""
+		self.client.set("test_decr_int", 123)
+		response = self.client.decr_int("test_decr_int", 456)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -333)
+		response = self.client.get("test_decr_int")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -333)
+	
+	def test_decr_int_non_existent(self):
+		"""
+		Test that we can decrement a non-existent integer value.
+		"""
+		response = self.client.decr_int("test_decr_int_non_existent", 123)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -123)
+		response = self.client.get("test_decr_int_non_existent")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -123)
+	
+	def test_decr_float(self):
+		"""
+		Test that we can decrement a float value.
+		"""
+		self.client.set("test_decr_float", 123.456)
+		response = self.client.decr_float("test_decr_float", 456.789)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -333.333)
+		response = self.client.get("test_decr_float")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -333.333)
+	
+	def test_decr_float_non_existent(self):
+		"""
+		Test that we can decrement a non-existent float value.
+		"""
+		response = self.client.decr_float("test_decr_float_non_existent", 123.456)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -123.456)
+		response = self.client.get("test_decr_float_non_existent")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, -123.456)
+	
+	def test_incr_float_int(self):
+		"""
+		Test that we can increment a float value by an integer.
+		"""
+		self.client.set("test_incr_float_int", 123.456)
+		response = self.client.incr_float("test_incr_float_int", 456)
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 579.456)
+		response = self.client.get("test_incr_float_int")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 579.456)
+	
+	def test_incr_int_float(self):
+		"""
+		Test that we can't increment an integer value by a float.
+		"""
+		self.client.set("test_incr_int_float", 123)
+		response = self.client.incr_float("test_incr_int_float", 456.789)
+		self.assertTrue(response.is_null())
+		response = self.client.get("test_incr_int_float")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, 123)
+	
 
 class SwitchDBTest(unittest.TestCase):
 	"""
