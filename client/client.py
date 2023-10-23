@@ -251,3 +251,11 @@ class Client:
 		:return: The decremented value.
 		"""
 		return self.incr_float(key, -by)
+	
+	def len_str(self, key: str):
+		"""
+		Get the length of a string.
+		:param key: The key to get the length of.
+		:return: The length of the string.
+		"""
+		return self.request("LEN_STR", key)

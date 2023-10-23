@@ -309,6 +309,38 @@ class DatabaseTest(unittest.TestCase):
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, 123)
 	
+	def test_len_str(self):
+		"""
+		Test that we can get the length of a string.
+		"""
+		self.client.set("test_len_str", "test_len_str_value")
+		response = self.client.len_str("test_len_str")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, len("test_len_str_value"))
+	
+	def test_len_str_non_existent(self):
+		"""
+		Test that we can't get the length of a non-existent string.
+		"""
+		response = self.client.len_str("test_len_str_non_existent")
+		self.assertTrue(response.is_bad_type())
+	
+	def test_len_str_int(self):
+		"""
+		Test that we can't get the length of an integer.
+		"""
+		self.client.set("test_len_str_int", 123)
+		response = self.client.len_str("test_len_str_int")
+		self.assertTrue(response.is_bad_type())
+	
+	def test_len_str_float(self):
+		"""
+		Test that we can't get the length of a float.
+		"""
+		self.client.set("test_len_str_float", 123.456)
+		response = self.client.len_str("test_len_str_float")
+		self.assertTrue(response.is_bad_type())
+	
 
 class SwitchDBTest(unittest.TestCase):
 	"""
