@@ -10,6 +10,9 @@ class ServerConstant(Enum):
 	ERROR = "ERROR"
 	PONG = "PONG"
 	DENIED = "DENIED"
+	INTERNAL_ERROR = "INTERNAL_ERROR"
+	BAD_REQUEST = "BAD_REQUEST"
+	BAD_TYPE = "BAD_TYPE"
 
 
 class InvalidResponseError(Exception):
@@ -126,3 +129,21 @@ class Response:
 		:return: True if the response is DENIED, False otherwise.
 		"""
 		return self.status == ServerConstant.DENIED
+	
+	def is_internal_error(self) -> bool:
+		"""
+		:return: True if the response is INTERNAL_ERROR, False otherwise.
+		"""
+		return self.status == ServerConstant.INTERNAL_ERROR
+	
+	def is_bad_request(self) -> bool:
+		"""
+		:return: True if the response is BAD_REQUEST, False otherwise.
+		"""
+		return self.status == ServerConstant.BAD_REQUEST
+	
+	def is_bad_type(self) -> bool:
+		"""
+		:return: True if the response is BAD_TYPE, False otherwise.
+		"""
+		return self.status == ServerConstant.BAD_TYPE

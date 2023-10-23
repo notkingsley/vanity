@@ -304,7 +304,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_incr_int_float", 123)
 		response = self.client.incr_float("test_incr_int_float", 456.789)
-		self.assertTrue(response.is_null())
+		self.assertTrue(response.is_bad_type())
 		response = self.client.get("test_incr_int_float")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, 123)
