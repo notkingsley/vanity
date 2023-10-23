@@ -57,6 +57,12 @@ public:
 	// an exists request was received from a client
 	void request_exists(Client& client, const std::string& key) override;
 
+	// an incr_int request was received from a client
+	void request_incr_int(Client& client, const std::string& key, db::int_t value) override;
+
+	// an incr_float request was received from a client
+	void request_incr_float(Client& client, const std::string& key, db::float_t value) override;
+
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };

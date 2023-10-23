@@ -91,4 +91,20 @@ void DatabaseServer::request_exists(Client &client, const std::string &key) {
 		send_null(client);
 }
 
+void DatabaseServer::request_incr_int(Client &client, const std::string &key, db::int_t value) {
+	auto result = database(client).incr_int(key, value);
+	if (not result.has_value())
+		return send_null(client);
+
+	send_ok(client, prepare(result.value()));
+}
+
+void DatabaseServer::request_incr_float(Client &client, const std::string &key, db::float_t value) {
+	auto result = database(client).incr_float(key, value);
+	if (not result.has_value())
+		return send_null(client);
+
+	send_ok(client, prepare(result.value()));
+}
+
 } // namespace vanity

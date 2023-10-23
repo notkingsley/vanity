@@ -36,7 +36,7 @@ void SerialDatabase::perform(task_type task, data_type data, std::promise<ret_ty
 		}
 		case task_type::TYPE:
 		{
-			auto& key = std::get<get_type>(data);
+			auto& key = std::get<type_type>(data);
 			promise.set_value(Database::type(key));
 			break;
 		}
@@ -44,6 +44,18 @@ void SerialDatabase::perform(task_type task, data_type data, std::promise<ret_ty
 		{
 			auto& key = std::get<has_type>(data);
 			promise.set_value(Database::has(key));
+			break;
+		}
+		case task_type::INCR_INT:
+		{
+			auto& [key, value] = std::get<incr_int_type>(data);
+			promise.set_value(Database::incr_int(key, value));
+			break;
+		}
+		case task_type::INCR_FLOAT:
+		{
+			auto& [key, value] = std::get<incr_float_type>(data);
+			promise.set_value(Database::incr_float(key, value));
 			break;
 		}
 		case task_type::RESET:
@@ -100,6 +112,14 @@ bool SerialDatabase::del(const Database::key_type &key) {
 
 std::optional<int> SerialDatabase::type(const Database::key_type &key) {
 	return std::get<std::optional<int>>(send_task(task_type::TYPE, key).get());
+}
+
+std::optional<int_t> SerialDatabase::incr_int(const Database::key_type &key, int_t value) {
+	return std::get<std::optional<int_t>>(send_task(task_type::INCR_INT, std::make_tuple(key, value)).get());
+}
+
+std::optional<float_t> SerialDatabase::incr_float(const Database::key_type &key, float_t value) {
+	return std::get<std::optional<float_t>>(send_task(task_type::INCR_FLOAT, std::make_tuple(key, value)).get());
 }
 
 

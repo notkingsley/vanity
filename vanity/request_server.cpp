@@ -82,6 +82,8 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::DEL,       "DEL"},
 		{operation_t::TYPE,      "TYPE"},
 		{operation_t::EXISTS,    "EXISTS"},
+		{operation_t::INCR_INT,  "INCR_INT"},
+		{operation_t::INCR_FLOAT,"INCR_FLOAT"},
 		{operation_t::SWITCH_DB, "SWITCH_DB"},
 		{operation_t::AUTH,      "AUTH"},
 		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
@@ -279,6 +281,18 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 			case operation_t::EXISTS:
 			{
 				request_exists(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::INCR_INT:
+			{
+				auto [key, value] = extract_exact<STR, INT>(msg, pos);
+				request_incr_int(client, key, value);
+				break;
+			}
+			case operation_t::INCR_FLOAT:
+			{
+				auto [key, value] = extract_exact<STR, FLOAT>(msg, pos);
+				request_incr_float(client, key, value);
 				break;
 			}
 			case operation_t::SWITCH_DB:

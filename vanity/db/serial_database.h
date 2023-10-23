@@ -19,6 +19,8 @@ struct serial_database_types {
 		DEL,
 		TYPE,
 		HAS,
+		INCR_INT,
+		INCR_FLOAT,
 		RESET,
 		PERSIST,
 	};
@@ -27,18 +29,25 @@ struct serial_database_types {
 	using set_type = std::tuple<Database::key_type, Database::data_type>;
 	using del_type = Database::key_type;
 	using has_type = Database::key_type;
+	using type_type = Database::key_type;
+	using incr_int_type = std::tuple<Database::key_type, int_t>;
+	using incr_float_type = std::tuple<Database::key_type, float_t>;
 	using reset_type = void;
 	using persist_type = std::tuple<std::ofstream&>;
 
 	using data_type = std::variant<
 		get_type,
 		set_type,
+		incr_int_type,
+		incr_float_type,
 		persist_type,
 		std::monostate
 	>;
 	using ret_type = std::variant<
 		std::optional<Database::data_type>,
 		std::optional<int>,
+		std::optional<int_t>,
+		std::optional<float_t>,
 		bool,
 		std::monostate
 	>;
@@ -57,15 +66,7 @@ class SerialDatabase :
 	>
 {
 private:
-	using serial_database_types::task_type;
 	using serial_database_types::data_type;
-	using serial_database_types::get_type;
-	using serial_database_types::set_type;
-	using serial_database_types::del_type;
-	using serial_database_types::has_type;
-	using serial_database_types::reset_type;
-	using serial_database_types::persist_type;
-	using serial_database_types::ret_type;
 
 	// perform a task that was sent from another thread
 	void perform(task_type task, data_type data, std::promise<ret_type> promise) override;
@@ -113,6 +114,14 @@ public:
 
 	// get the type of key as an index
 	std::optional<int> type(const key_type& key);
+
+	// increment the value for an integer key, or set it to 0 if it doesn't exist
+	// returns the new value, or std::nullopt if the value is not an integer
+	std::optional<int_t> incr_int(const Database::key_type &key, int_t value);
+
+	// increment the value for a float key, or set it to 0 if it doesn't exist
+	// returns the new value, or std::nullopt if the value is not a float
+	std::optional<float_t> incr_float(const Database::key_type &key, float_t value);
 };
 
 } // namespace vanity::db

@@ -68,6 +68,14 @@ public:
 	// get the type of key as an index
 	std::optional<int> type(const key_type& key);
 
+	// increment the value for an integer key, or set it to 0 if it doesn't exist
+	// returns the new value, or std::nullopt if the value is not an integer
+	std::optional<int_t> incr_int(const Database::key_type &key, int_t value);
+
+	// increment the value for a float key, or set it to 0 if it doesn't exist
+	// returns the new value, or std::nullopt if the value is not a float
+	std::optional<float_t> incr_float(const Database::key_type &key, float_t value);
+
 private:
 	// the key value store
 	std::unordered_map<key_type, data_type> m_data;

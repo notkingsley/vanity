@@ -70,6 +70,12 @@ public:
 	// an exists request was received from a client
 	virtual void request_exists(Client& client, const std::string& key) = 0;
 
+	// an incr_int request was received from a client
+	virtual void request_incr_int(Client& client, const std::string& key, int64_t value) = 0;
+
+	// an incr_float request was received from a client
+	virtual void request_incr_float(Client& client, const std::string& key, double value) = 0;
+
 	// a persist request was received from a client
 	virtual void request_persist(Client& client) = 0;
 

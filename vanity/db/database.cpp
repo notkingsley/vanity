@@ -146,4 +146,36 @@ std::optional<int> Database::type(const Database::key_type &key) {
 	return std::nullopt;
 }
 
+std::optional<int_t> Database::incr_int(const Database::key_type &key, int_t value) {
+	if (m_data.contains(key)) {
+		if (std::holds_alternative<int_t>(m_data.at(key))){
+			auto& val = std::get<int_t>(m_data.at(key));
+			val += value;
+			return val;
+		}
+		else
+			return std::nullopt;
+	}
+	else {
+		m_data[key] = value;
+		return value;
+	}
+}
+
+std::optional<float_t> Database::incr_float(const Database::key_type &key, float_t value) {
+	if (m_data.contains(key)) {
+		if (std::holds_alternative<float_t>(m_data.at(key))){
+			auto& val = std::get<float_t>(m_data.at(key));
+			val += value;
+			return val;
+		}
+		else
+			return std::nullopt;
+	}
+	else {
+		m_data[key] = value;
+		return value;
+	}
+}
+
 } // namespace vanity::db
