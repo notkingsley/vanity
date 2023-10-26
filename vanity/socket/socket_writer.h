@@ -18,11 +18,15 @@ namespace vanity {
  */
 class SocketWriter : public SocketWriteHandler
 {
+private:
 	// the socket to write to
 	const ClientSocket& m_socket;
 
-	// the message_writers
-	std::queue<Response> m_responses;
+	// the messages to write
+	std::queue<std::string> m_messages;
+
+	// the index of the next character to write in the current message
+	size_t m_index = 0;
 
 public:
 	// create a SocketWriter
@@ -51,6 +55,11 @@ public:
 
 	// unregister from epoll for events
 	void unregister_event(int epoll_fd) const override;
+
+private:
+	// write to the socket
+	// return false when done, true otherwise
+	bool write();
 };
 
 } // namespace vanity

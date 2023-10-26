@@ -5,38 +5,33 @@
 #ifndef VANITY_RESPONSE_H
 #define VANITY_RESPONSE_H
 
+#include <netinet/in.h>
 #include <string>
 #include <queue>
-
-#include "socket/socket.h"
-
 
 namespace vanity {
 
 /*
- * A Response allows a dynamically efficient method to build a response
- * Responses are one-time use only, and are NOT thread-safe
+ * A Response allows a dynamically efficient method to compose a response
  */
 class Response
 {
 private:
 	// the size of the length field
-	static constexpr size_t M_LENGTH_SIZE = sizeof(decltype(htonl(0)));
+	static constexpr auto M_LENGTH_SIZE = sizeof(decltype(htonl(0)));
 
 	// the response data
 	std::string m_data;
 
-	// the index of the next character to write
-	size_t m_index = 0;
-
 public:
-	// create a Response
-	explicit Response(const std::string& data = {});
+	// default constructor
+	Response();
 
-	// write the response to the socket
-	// do not add data to the response after calling
-	// return false when done, true otherwise
-	bool write(const ClientSocket& socket);
+	// create a Response
+	explicit Response(const std::string& data);
+
+	// destructively extract the response data
+	std::string&& extract_data();
 
 	// add data to the response
 	Response& operator<<(const std::string& data);
