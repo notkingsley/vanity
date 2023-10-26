@@ -11,10 +11,11 @@ add_subdirectory(socket)
 
 add_executable(vanity
 	auth/auth_server.cpp
+	client.cpp
 	request_server.cpp
+	response.cpp
 	session_server.cpp
     vanity.cpp
-	client.cpp
 )
 
 target_link_libraries(vanity

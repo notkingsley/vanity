@@ -5,6 +5,7 @@
 #ifndef VANITY_SOCKET_CLIENT_H
 #define VANITY_SOCKET_CLIENT_H
 
+#include "response.h"
 #include "socket.h"
 #include "socket_event_handler.h"
 #include "socket_reader.h"
@@ -60,9 +61,9 @@ public:
 	}
 
 	// write a message to the socket
-	void write(SocketServer& server, const std::string& msg)
+	void write(SocketServer& server, Response&& response)
 	{
-		m_writer.register_write(server, msg);
+		m_writer.register_write(server, std::move(response));
 	}
 };
 

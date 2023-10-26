@@ -7,35 +7,11 @@
 
 #include <queue>
 
+#include "response.h"
 #include "socket_event_handler.h"
 
 
 namespace vanity {
-
-/*
- * A MessageWriter can write a single message to a socket
- */
-class MessageWriter
-{
-private:
-	// the message delimiter
-	static const char m_delimiter = '~';
-
-	// the message to write
-	std::string m_message;
-
-	// the index of the next character to write
-	size_t m_index = 0;
-
-public:
-	// create a MessageWriter
-	explicit MessageWriter(const std::string& msg);
-
-	// write once to the socket, stopping everytime the delimiter
-	// needs to be escaped
-	// return false when done, true otherwise
-	bool write(const ClientSocket& socket);
-};
 
 /*
  * A SocketWriter allows to write to a socket
@@ -46,7 +22,7 @@ class SocketWriter : public SocketWriteHandler
 	const ClientSocket& m_socket;
 
 	// the message_writers
-	std::queue<MessageWriter> m_message_writers;
+	std::queue<Response> m_responses;
 
 public:
 	// create a SocketWriter
@@ -64,8 +40,8 @@ public:
 	// copy assignment
 	SocketWriter& operator=(const SocketWriter& other) = delete;
 
-	// register to the server's epoll to write msg
-	void register_write(SocketServer& server, const std::string& msg);
+	// register to the server's epoll to write a response
+	void register_write(SocketServer& server, Response&& response);
 
 	// attempt to write all messages
 	void ready(SocketServer& server) override;

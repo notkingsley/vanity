@@ -9,47 +9,22 @@
 
 namespace vanity {
 
-MessageWriter::MessageWriter(const std::string &msg) {
-	auto size = htonl( msg.size());
-	m_message = {reinterpret_cast<const char *>(&size), sizeof(size)};
-	m_message += msg;
-}
-
-bool MessageWriter::write(const ClientSocket &socket) {
-	try{
-		m_index += socket.write(
-			m_message.c_str() + m_index,
-			m_message.size() - m_index
-		);
-		if (m_index == m_message.size())
-			return false;
-		return true;
-	}
-	catch (SocketError& e)
-	{
-		if (e.get_errno() == EAGAIN)
-			return true;
-		else
-			throw;
-	}
-}
-
 SocketWriter::SocketWriter(const ClientSocket &socket)
 	: m_socket{socket} { }
 
 SocketWriter::SocketWriter(SocketWriter &&other) noexcept
-	: m_socket{other.m_socket}, m_message_writers{std::move(other.m_message_writers)} {}
+	: m_socket{other.m_socket}, m_responses{std::move(other.m_responses)} {}
 
 SocketWriter::SocketWriter(const SocketWriter &other) : m_socket{other.m_socket} {
-	m_message_writers = other.m_message_writers;
+	m_responses = other.m_responses;
 }
 
 void SocketWriter::ready(SocketServer &server) {
-	while (!m_message_writers.empty()) {
-		auto& writer = m_message_writers.front();
-		if (writer.write(m_socket))
+	while (!m_responses.empty()) {
+		auto& response = m_responses.front();
+		if (response.write(m_socket))
 			return;
-		m_message_writers.pop();
+		m_responses.pop();
 	}
 	server.remove_socket_writer(*this);
 }
@@ -62,9 +37,9 @@ void SocketWriter::unregister_event(int epoll_fd) const {
 	m_socket.unregister_event(epoll_fd);
 }
 
-void SocketWriter::register_write(SocketServer &server, const std::string &msg) {
-	m_message_writers.emplace(msg);
-	if (m_message_writers.size() == 1)
+void SocketWriter::register_write(SocketServer &server, Response&& response) {
+	m_responses.emplace(std::move(response));
+	if (m_responses.size() == 1)
 		server.add_socket_writer(*this);
 }
 

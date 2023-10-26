@@ -39,7 +39,7 @@ void SocketServer::bind(uint16_t port) {
 }
 
 void SocketServer::send(Client &client, const std::string& msg) {
-	client.write(*this, msg);
+	client.write(*this, Response(msg));
 }
 
 void SocketServer::poll() {
