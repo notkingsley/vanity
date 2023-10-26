@@ -20,7 +20,7 @@ class SocketClient:
 	def __init__(self, host: str, port: int):
 		self.sock = socket.create_connection((host, port))
 		self.buffer = str()
-		self.unprocessed = str()
+		self._expected = int()
 
 	def escape(self, msg: str):
 		"""
@@ -37,54 +37,49 @@ class SocketClient:
 		"""
 		self.sock.sendall(self.escape(msg).encode())
 
+	def read_size(self):
+		"""
+		Read the size of the next message.
+		"""
+		size = self.sock.recv(4)
+		if not size:
+			raise SocketClosedError()
+		self._expected = int.from_bytes(size, "big")
+
 	def recv(self):
 		"""
 		Read a message into the buffer.
-		:return: The message received.
+		:return: The message received,
+		or None if the message is not yet complete.
 		"""
 		data = self.sock.recv(self.BUFFER_SIZE).decode()
-		data = self.unprocessed + data
-		self.unprocessed = str()
-
 		if not data:
 			raise SocketClosedError()
+		
+		self.buffer += data
+		if len(self.buffer) < self._expected:
+			return None
 
-		i = 0
-		while i < len(data):
-			if data[i] == self.DELIM:
-				if i == len(data) - 1:
-					# end of data, so we need to wait for more
-					self.unprocessed = self.DELIM
-					return None
-
-				else:
-					if data[i + 1] == self.DELIM:
-						# delim was escaped, so we need to keep going
-						self.buffer += self.DELIM
-						i += 1
-
-					else:
-						# delim was not escaped, so we have a full message
-						ret = self.buffer
-						self.buffer = str()
-						self.unprocessed = data[i + 1:]
-						return ret
-
-			else:
-				self.buffer += data[i]
-			i += 1
-
-		return None
-
+		if len(self.buffer) == self._expected:
+			ret = self.buffer
+			self.buffer = str()
+			return ret
+		
+		else:
+			ret = self.buffer[:self._expected]
+			self.buffer = self.buffer[self._expected:]
+			return ret
+	
 	def read_msg(self):
 		"""
 		Receive a message from the server.
 		:return: The message received.
 		"""
+		self.read_size()
 		while True:
 			msg = self.recv()
 			if msg is not None:
-				return msg.strip()
+				return msg
 
 	def close(self):
 		"""

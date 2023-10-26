@@ -10,23 +10,16 @@
 namespace vanity {
 
 MessageWriter::MessageWriter(const std::string &msg) {
-	m_message.reserve(msg.size() + 10);
-	for (char c : msg){
-		m_message.push_back(c);
-		if (c == m_delimiter)
-			m_message.push_back(m_delimiter);
-	}
-	m_message.push_back(m_delimiter);
-
-	// ignored, but ensures delimiter is not the last char
-	m_message.push_back('\n');
+	auto size = htonl( msg.size());
+	m_message = {reinterpret_cast<const char *>(&size), sizeof(size)};
+	m_message += msg;
 }
 
 bool MessageWriter::write(const ClientSocket &socket) {
 	try{
 		m_index += socket.write(
-		m_message.c_str() + m_index,
-		m_message.size() - m_index
+			m_message.c_str() + m_index,
+			m_message.size() - m_index
 		);
 		if (m_index == m_message.size())
 			return false;
