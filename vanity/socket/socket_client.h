@@ -41,12 +41,6 @@ public:
 	// move assignment
 	SocketClient& operator=(SocketClient&& other) noexcept = delete;
 
-	// get the socket
-	const ClientSocket& socket() const // remove
-	{
-		return m_socket;
-	}
-
 	// register to epoll for events
 	void register_event(int epoll_fd) override
 	{
@@ -57,6 +51,12 @@ public:
 	void unregister_event(int epoll_fd) const override
 	{
 		m_socket.unregister_event(epoll_fd);
+	}
+
+	// read from the socket
+	size_t read(char* buffer, size_t buffer_size) const
+	{
+		return m_socket.read(buffer, buffer_size);
 	}
 
 	// write a message to the socket

@@ -14,7 +14,6 @@ class SocketClient:
 	of a Vanity Server, allowing us to send and receive messages from
 	the server over a socket.
 	"""
-	DELIM = "~"
 	BUFFER_SIZE = 1024
 
 	def __init__(self, host: str, port: int):
@@ -22,20 +21,13 @@ class SocketClient:
 		self.buffer = str()
 		self._expected = int()
 
-	def escape(self, msg: str):
-		"""
-		Escape the message to be sent.
-		:param msg: The message to escape.
-		:return: The escaped message.
-		"""
-		return f"{msg.replace(self.DELIM, self.DELIM * 2)}{self.DELIM}\n"
-
 	def send(self, msg: str):
 		"""
 		Send msg directly to the server.
 		:param msg: The message to send.
 		"""
-		self.sock.sendall(self.escape(msg).encode())
+		size = len(msg).to_bytes(4, "big")
+		self.sock.sendall(size + msg.encode())
 
 	def read_size(self):
 		"""
@@ -86,3 +78,10 @@ class SocketClient:
 		Close the socket.
 		"""
 		self.sock.close()
+
+
+if __name__ == "__main__":
+	sock = SocketClient("localhost", 9954)
+	sock.send("PING")
+	print(sock.read_msg())
+	sock.close()

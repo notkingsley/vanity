@@ -1,5 +1,4 @@
 #include "abstract_server.h"
-#include "client.h"
 #include "socket_reader.h"
 
 
@@ -7,35 +6,25 @@ namespace vanity{
 
 bool SocketReader::read(AbstractServer& server, Client& client)
 {
-	char buffer[m_chunk_size];
-	buffer[0] = m_delimiter;
-	int offset = m_delimiter_read ? 1 : 0;
+	if (m_message_left == 0) {
+		uint32_t size = 0;
+		if (client.read((char*)&size, sizeof(size)) == 0)
+			return false;
+		m_message_left = ntohl(size);
+		m_message.resize(m_message_left);
+	}
 
-	size_t bytes_read = client.socket().read(
-			buffer + offset,
-			m_chunk_size - offset
+	size_t bytes_read = client.read(
+		m_message.data() + m_message.size() - m_message_left,
+		m_message_left
 	);
 	if (bytes_read == 0)
 		return false;
 
-	bytes_read += offset;
-	m_delimiter_read = false;
-
-	for (size_t i = 0; i < bytes_read; ++i){
-		if (buffer[i] == m_delimiter)
-			if (i == bytes_read - 1){ // end of the buffer
-				m_delimiter_read = true;
-			} else {
-				if (buffer[i + 1] == m_delimiter){ // escaped delimiter
-					m_message += m_delimiter;
-					++i;
-				} else { // end of message
-					server.handle(m_message, client);
-					m_message.clear();
-				}
-			}
-		else
-			m_message += buffer[i];
+	m_message_left -= bytes_read;
+	if (m_message_left == 0){
+		server.handle(m_message, client);
+		m_message.clear();
 	}
 
 	return true;
