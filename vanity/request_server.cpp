@@ -231,30 +231,13 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 	throw InvalidRequest("word not closed with quotes");
 }
 
-std::string RequestServer::prepare(const std::string &msg) {
-	std::string ret {};
-	ret.reserve(msg.size() + 10);
-	ret += type_to_string<std::string>::value;
-
-	ret += "\"";
-	for (char c : msg) {
-		if (c == '"')
-			ret += "\\\"";
-		else
-			ret += c;
-	}
-	ret += "\"";
-
-	return ret;
-}
-
 void RequestServer::handle(const std::string& msg, Client& client) {
 	try{
 		size_t pos = 0;
 		operation_t op = extract_operation(msg, pos);
 
 		if (not client.has_perm(op))
-			return send_denied(client);
+			return send(client, denied());
 
 		using object_t::STR, object_t::INT, object_t::FLOAT;
 		switch (op) {
@@ -367,19 +350,23 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 		}
 	}
 	catch (const InvalidRequest& e) {
-		send_bad_request(client, e.what());
+		send(client, bad_request());
 	}
 	catch (const DestroyClient& e) {
+		logger().debug("Client disconnecting");
 		throw;
 	}
 	catch (const Exception& e) {
-		send_internal_error(client, e.what());
+		logger().error(e.what());
+		send(client, internal_error(e.what()));
 	}
 	catch (const std::exception& e) {
-		send_internal_error(client, e.what());
+		logger().error(e.what());
+		send(client, internal_error(e.what()));
 	}
 	catch (...) {
-		send_internal_error(client, ": unknown error");
+		logger().error("unknown error with message: " + msg);
+		send(client, internal_error());
 	}
 }
 

@@ -39,9 +39,9 @@ bool PersistentServer::persist() {
 
 void PersistentServer::request_persist(Client & client) {
 	if (persist())
-		send_ok(client);
+		send(client, ok());
 	else
-		send_error(client, ": Persistence disabled");
+		send(client, error("Persistence disabled"));
 }
 
 void PersistentServer::start() {

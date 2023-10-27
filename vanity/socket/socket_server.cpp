@@ -38,8 +38,8 @@ void SocketServer::bind(uint16_t port) {
 	logger().info("Listening on port " + std::to_string(port));
 }
 
-void SocketServer::send(Client &client, const std::string& msg) {
-	client.write(*this, Response(msg));
+void SocketServer::send(Client &client, Response&& response) {
+	client.write(*this, std::move(response));
 }
 
 void SocketServer::poll() {

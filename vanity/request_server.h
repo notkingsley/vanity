@@ -7,45 +7,18 @@
 
 
 #include "abstract_server.h"
+#include "logging.h"
 
 
 namespace vanity {
-
-// to annotate a return value with the type
-template <typename T>
-struct type_to_string;
-
-template <>
-struct type_to_string<int64_t> {
-	static constexpr const char* value = ":INT ";
-};
-
-template <>
-struct type_to_string<double> {
-	static constexpr const char* value = ":FLOAT ";
-};
-
-template <>
-struct type_to_string<std::string> {
-	static constexpr const char* value = ":STR ";
-};
 
 /*
  * A RequestServer allows to process incoming requests
  * and dispatch them to the appropriate handler
  */
-class RequestServer : public virtual AbstractServer
+class RequestServer : public virtual AbstractServer, public virtual Logger
 {
 public:
-	// prepare a string to be sent
-	static std::string prepare(const std::string& msg);
-
-	// prepare a numeric value to be sent
-	template<typename T>
-	static std::enable_if_t<std::is_arithmetic_v<T>, std::string> prepare(T value){
-		return type_to_string<T>::value + std::to_string(value);
-	}
-
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;
 
@@ -115,7 +88,7 @@ public:
 
 	// a ping request was received from a client
 	virtual void request_ping(Client& client, const std::string& msg) {
-		send_pong(client, msg);
+		send(client, pong(msg));
 	};
 
 private:

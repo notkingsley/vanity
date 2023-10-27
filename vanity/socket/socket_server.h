@@ -66,7 +66,7 @@ public:
 	SocketServer& operator=(SocketServer&& other) noexcept = delete;
 
 	// send a message to a client
-	void send(Client& client, const std::string& msg) override;
+	void send(Client& client, Response&& response) override;
 
 	// bind to and start listening on port
 	void bind(uint16_t port);

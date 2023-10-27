@@ -8,31 +8,32 @@ namespace vanity {
 
 void AuthServer::request_add_user(Client &client, const std::string &username, const std::string &password) {
 	if (username.length() < M_MIN_USERNAME_LENGTH)
-		return send_error(client, "username too short");
+		return send(client, error("username too short"));
 
 	if (password.length() < M_MIN_PASSWORD_LENGTH)
-		return send_error(client, "password too short");
+		return send(client, error("password too short"));
 
 	if (m_logins.contains(username))
-		return send_error(client, "user already exists");
+		return send(client, error("user already exists"));
+
 
 	m_logins[username] = {make_hash(password), client_auth::USER};
 	persist_logins();
 
 	logger().info("added user: " + username);
-	send_ok(client);
+	return send(client, ok());
 }
 
 void AuthServer::request_edit_user(Client &client, const std::string &username, client_auth auth_level) {
 	if (not m_logins.contains(username))
-		return send_error(client, "user does not exist");
+		return send(client, error("user does not exist"));
 
 	switch (auth_level) {
 		case client_auth::USER:
 		case client_auth::ADMIN:
 			break;
 		default:
-			return send_error(client, "invalid auth level");
+			return send(client, error("invalid auth level"));
 	}
 
 	m_logins[username].auth = auth_level;
@@ -44,15 +45,15 @@ void AuthServer::request_edit_user(Client &client, const std::string &username, 
 		logger().info("User " + client.username() + " made " + username + " a USER");
 	else
 		logger().info("User " + client.username() + " made " + username + " an ADMIN");
-	send_ok(client);
+	send(client, ok());
 }
 
 void AuthServer::request_del_user(Client &client, const std::string &username) {
 	if (not m_logins.contains(username))
-		return send_error(client, "user does not exist");
+		return send(client, error("user does not exist"));
 
 	if (username == client.username())
-		return send_error(client, "cannot delete self");
+		return send(client, error("cannot delete self"));
 
 	for (auto& c : m_logins[username].active)
 		c->close();
@@ -60,39 +61,39 @@ void AuthServer::request_del_user(Client &client, const std::string &username) {
 	persist_logins();
 
 	logger().info("deleted user: " + username);
-	send_ok(client);
+	send(client, ok());
 }
 
 void AuthServer::request_auth(Client &client, const std::string &username, const std::string &password) {
 	if (password.length() < M_MIN_PASSWORD_LENGTH)
-		return send_error(client, "password too short");
+		return send(client, error("password too short"));
 
 	if (not m_logins.contains(username))
-		return send_error(client, "user does not exist");
+		return send(client, error("user does not exist"));
 
 	if (not check_hash(password, m_logins[username].hash))
-		return send_error(client, "incorrect password");
+		return send(client, error("incorrect password"));
 
 	client.username(username);
 	client.set_auth(m_logins[username].auth);
 	m_logins[username].active.push_back(&client);
 
 	logger().info("authenticated user: " + username);
-	send_ok(client);
+	send(client, ok());
 }
 
 void AuthServer::request_change_password(Client &client, const std::string &new_password) {
 	if (new_password.length() < M_MIN_PASSWORD_LENGTH)
-		return send_error(client, "password too short");
+		return send(client, error("password too short"));
 
 	if (not m_logins.contains(client.username()))
-		return send_error(client, "user does not exist");
+		return send(client, error("user does not exist"));
 
 	m_logins[client.username()].hash = make_hash(new_password);
 	persist_logins();
 
 	logger().info("changed password for user: " + client.username());
-	send_ok(client);
+	send(client, ok());
 }
 
 // write something to an output stream

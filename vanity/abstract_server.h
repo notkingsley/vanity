@@ -8,19 +8,6 @@
 
 namespace vanity{
 
-// the constants used by the server
-struct server_constants
-{
-	static constexpr char const* const ok = "OK";
-	static constexpr char const* const error = "ERROR";
-	static constexpr char const* const null = "NULL";
-	static constexpr char const* const pong = "PONG";
-	static constexpr char const* const denied = "DENIED";
-	static constexpr char const* const internal_error = "INTERNAL_ERROR";
-	static constexpr char const* const bad_type = "BAD_TYPE";
-	static constexpr char const* const bad_request = "BAD_REQUEST";
-};
-
 // some type of sever event that should be completed
 enum class server_event{
 	socket_ready,
@@ -51,104 +38,8 @@ public:
 	// a message was received from a client
 	virtual void handle(const std::string& msg, Client& client) = 0;
 
-	// send a message to a client
-	virtual void send(Client& client, const std::string& msg) = 0;
-
-	// send an OK message to a client
-	virtual void send_ok(Client& client)
-	{
-		send(client, server_constants::ok);
-	}
-
-	// send an OK message to a client
-	virtual void send_ok(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::ok + msg);
-	}
-
-	// send an ERROR message to a client
-	virtual void send_error(Client& client)
-	{
-		send(client, server_constants::error);
-	}
-
-	// send an ERROR message to a client
-	virtual void send_error(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::error + msg);
-	}
-
-	// send a NULL message to a client
-	virtual void send_null(Client& client)
-	{
-		send(client, server_constants::null);
-	}
-
-	// send a NULL message to a client
-	virtual void send_null(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::null + msg);
-	}
-
-	// send a PONG message to a client
-	virtual void send_pong(Client& client)
-	{
-		send(client, server_constants::pong);
-	}
-
-	// send a PONG message to a client
-	virtual void send_pong(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::pong + msg);
-	}
-
-	// send a DENIED message to a client
-	virtual void send_denied(Client& client)
-	{
-		send(client, server_constants::denied);
-	}
-
-	// send a DENIED message to a client
-	virtual void send_denied(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::denied + msg);
-	}
-
-	// send an INTERNAL_ERROR to a client
-	virtual void send_internal_error(Client& client)
-	{
-		send(client, server_constants::internal_error);
-	}
-
-	// send an INTERNAL_ERROR to a client
-	virtual void send_internal_error(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::internal_error + msg);
-	}
-
-	// send a BAD_TYPE to a client
-	virtual void send_bad_type(Client& client)
-	{
-		send(client, server_constants::bad_type);
-	}
-
-	// send a BAD_TYPE to a client
-	virtual void send_bad_type(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::bad_type + msg);
-	}
-
-	// send a BAD_REQUEST to a client
-	virtual void send_bad_request(Client& client)
-	{
-		send(client, server_constants::bad_request);
-	}
-
-	// send a BAD_REQUEST to a client
-	virtual void send_bad_request(Client& client, const std::string& msg)
-	{
-		send(client, server_constants::bad_request + msg);
-	}
+	// send a response to a client
+	virtual void send(Client& client, Response&& response) = 0;
 
 	// request the server to terminate
 	virtual void terminate() = 0;
