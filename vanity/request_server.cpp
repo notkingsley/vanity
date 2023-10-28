@@ -245,25 +245,13 @@ template<>
 inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
-	if (msg[pos] != '"') {
-		throw InvalidRequest("word not opened with quotes");
-	}
-	++pos;
+	size_t len = extract_len(msg, pos);
+	if (pos + len > msg.size())
+		throw InvalidRequest("string length mismatch");
 
-	std::string word;
-	while (pos < msg.size()) {
-		if (msg[pos] == '"') {
-			++pos;
-			return word;
-		}
-		if (msg[pos] == '\\' and pos + 1 < msg.size() and msg[pos + 1] == '"') {
-			++pos;
-		}
-		word += msg[pos];
-		++pos;
-	}
-
-	throw InvalidRequest("word not closed with quotes");
+	std::string ret = msg.substr(pos, len);
+	pos += len;
+	return ret;
 }
 
 // extract a vector of strings from part of a message

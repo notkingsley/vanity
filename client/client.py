@@ -28,7 +28,7 @@ def format(msg: str | int | float | list | AuthLevel) -> str:
 	elif isinstance(msg, list):
 		return f"({len(msg)})[" + "".join(map(format, msg)) + "]"
 	elif isinstance(msg, str):
-		return '"' + msg.replace('"', r'\"') + '"'
+		return f"({len(msg)})" + msg
 	else:
 		raise TypeError(f"Cannot format {msg}.")
 
