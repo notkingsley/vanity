@@ -87,7 +87,7 @@ db_data_type read<db_data_type>(std::ifstream &in)
 
 // write a value to the output stream
 template<>
-void write<pair_type>(std::ofstream &out, const pair_type& value)
+void write<db_pair_type>(std::ofstream &out, const db_pair_type& value)
 {
 	write(out, value.first);
 	write(out, value.second);
@@ -95,7 +95,7 @@ void write<pair_type>(std::ofstream &out, const pair_type& value)
 
 // read a pair from the input stream
 template<>
-pair_type read<pair_type>(std::ifstream &in)
+db_pair_type read<db_pair_type>(std::ifstream &in)
 {
 	db_key_type first = read<db_key_type>(in);
 	db_data_type second = read<db_data_type>(in);
@@ -105,7 +105,7 @@ pair_type read<pair_type>(std::ifstream &in)
 void Database::persist(std::ofstream &out) const{
 	write(out, m_data.size());
 	for (const auto& pair : m_data)
-		write<pair_type>(out, pair);
+		write<db_pair_type>(out, pair);
 }
 
 Database Database::from(std::ifstream &in) {
@@ -113,7 +113,7 @@ Database Database::from(std::ifstream &in) {
 
 	size_t size = read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
-		db.m_data.insert(read<pair_type>(in));
+		db.m_data.insert(read<db_pair_type>(in));
 
 	return db;
 }
@@ -183,6 +183,19 @@ std::optional<int_t> Database::len_str(const Database::key_type &key) {
 		return std::get<string_t>(m_data.at(key)).size();
 	else
 		return std::nullopt;
+}
+
+std::vector<std::optional<Database::data_type>> Database::many_get(const std::vector<key_type>& keys) {
+	std::vector<std::optional<data_type>> values;
+	values.reserve(keys.size());
+	for (const auto &key: keys)
+		values.emplace_back(get(key));
+	return values;
+}
+
+void Database::many_set(std::vector<std::pair<key_type, data_type>> pairs) {
+	for (auto& pair: pairs)
+		m_data.emplace(std::move(pair));
 }
 
 } // namespace vanity::db

@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <variant>
+#include <vector>
 #include <unordered_map>
 
 #include "exceptions.h"
@@ -81,6 +82,12 @@ public:
 	// if the value does not exist or is not a string
 	std::optional<int_t> len_str(const Database::key_type &key);
 
+	// get the value for many keys
+	std::vector<std::optional<data_type>> many_get(const std::vector<key_type>& keys);
+
+	// set the value for many keys
+	void many_set(std::vector<std::pair<key_type, data_type>> pairs);
+
 private:
 	// the key value store
 	std::unordered_map<key_type, data_type> m_data;
@@ -90,7 +97,7 @@ using db_key_type = Database::key_type;
 
 using db_data_type = Database::data_type;
 
-using pair_type = std::pair<db_key_type , db_data_type>;
+using db_pair_type = std::pair<db_key_type , db_data_type>;
 
 template<size_t I>
 using db_index_t = typename std::variant_alternative_t<I, db_data_type>;

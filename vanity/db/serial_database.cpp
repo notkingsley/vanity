@@ -13,7 +13,7 @@ SerialDatabase &SerialDatabase::operator=(Database &&other) noexcept {
 	return *this;
 }
 
-void SerialDatabase::perform(task_type task, data_type data, std::promise<ret_type> promise) {
+void SerialDatabase::perform(task_type task, task_data_type data, std::promise<ret_type> promise) {
 	switch (task) {
 		case task_type::GET:
 		{
@@ -77,6 +77,19 @@ void SerialDatabase::perform(task_type task, data_type data, std::promise<ret_ty
 			promise.set_value(std::monostate{});
 			break;
 		}
+		case task_type::MANY_GET:
+		{
+			auto& keys = std::get<many_get_type>(data);
+			promise.set_value(Database::many_get(keys));
+			break;
+		}
+		case task_type::MANY_SET:
+		{
+			auto& keys = std::get<many_set_type>(data);
+			Database::many_set(std::move(keys));
+			promise.set_value(std::monostate{});
+			break;
+		}
 	}
 }
 
@@ -101,11 +114,11 @@ void SerialDatabase::reset() {
 }
 
 bool SerialDatabase::has(const Database::key_type &key) {
-	return std::get<bool>(send_task(task_type::HAS, key).get());
+	return std::get<has_ret_type>(send_task(task_type::HAS, key).get());
 }
 
 std::optional<Database::data_type> SerialDatabase::get(const Database::key_type &key) {
-	return std::get<std::optional<Database::data_type>>(send_task(task_type::GET, key).get());
+	return std::get<get_ret_type>(send_task(task_type::GET, key).get());
 }
 
 void SerialDatabase::set(const Database::key_type &key, const Database::data_type &value) {
@@ -113,24 +126,31 @@ void SerialDatabase::set(const Database::key_type &key, const Database::data_typ
 }
 
 bool SerialDatabase::del(const Database::key_type &key) {
-	return std::get<bool>(send_task(task_type::DEL, key).get());
+	return std::get<del_ret_type>(send_task(task_type::DEL, key).get());
 }
 
 std::optional<int> SerialDatabase::type(const Database::key_type &key) {
-	return std::get<std::optional<int>>(send_task(task_type::TYPE, key).get());
+	return std::get<type_ret_type>(send_task(task_type::TYPE, key).get());
 }
 
 std::optional<int_t> SerialDatabase::incr_int(const Database::key_type &key, int_t value) {
-	return std::get<std::optional<int_t>>(send_task(task_type::INCR_INT, std::make_tuple(key, value)).get());
+	return std::get<incr_int_ret_type>(send_task(task_type::INCR_INT, std::make_tuple(key, value)).get());
 }
 
 std::optional<float_t> SerialDatabase::incr_float(const Database::key_type &key, float_t value) {
-	return std::get<std::optional<float_t>>(send_task(task_type::INCR_FLOAT, std::make_tuple(key, value)).get());
+	return std::get<incr_float_ret_type>(send_task(task_type::INCR_FLOAT, std::make_tuple(key, value)).get());
 }
 
 std::optional<int_t> SerialDatabase::len_str(const Database::key_type &key) {
-	return std::get<std::optional<int_t>>(send_task(task_type::LEN_STR, key).get());
+	return std::get<len_str_ret_type>(send_task(task_type::LEN_STR, key).get());
 }
 
+std::vector<std::optional<Database::data_type>> SerialDatabase::many_get(const std::vector<key_type> &keys) {
+	return std::get<many_get_ret_type>(send_task(task_type::MANY_GET, keys).get());
+}
+
+void SerialDatabase::many_set(std::vector<std::pair<db_key_type, db_data_type>> keys) {
+	send_task(task_type::MANY_SET, std::move(keys)).wait();
+}
 
 } // namespace vanity::db
