@@ -121,21 +121,43 @@ Response &Response::operator<<(const char *data) {
 	return *this;
 }
 
-std::string serialize(const std::string &data) {
-	std::string ret {};
-	ret.reserve(data.size() + 10);
-	ret += serialize_type<std::string>();
-	ret += '(' + std::to_string(data.size()) + ")";
-	ret += data;
-	return ret;
+void serialize(const std::string &data, std::string& str) {
+	str.reserve(str.size() + data.size() + 10);
+	str += serialize_type<std::string>();
+	str += '(' + std::to_string(data.size()) + ")";
+	str += data;
 }
 
-std::string serialize(int64_t data) {
-	return serialize_type<int64_t>() + std::to_string(data);
+void serialize(int64_t data, std::string& str) {
+	str += serialize_type<int64_t>();
+	str += std::to_string(data);
 }
 
-std::string serialize(double data) {
-	return serialize_type<double>() + std::to_string(data);
+void serialize(double data, std::string& str) {
+	str += serialize_type<double>();
+	str += std::to_string(data);
+}
+
+void serialize(const std::variant<std::string, int64_t , double>& data, std::string& str) {
+	switch (data.index()) {
+		case 0:
+		{
+			serialize(std::get<0>(data), str);
+			break;
+		}
+		case 1:
+		{
+			serialize(std::get<1>(data), str);
+			break;
+		}
+		case 2:
+		{
+			serialize(std::get<2>(data), str);
+			break;
+		}
+		default:
+			throw std::runtime_error("invalid type");
+	}
 }
 
 } // namespace vanity

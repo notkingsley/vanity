@@ -118,4 +118,9 @@ void DatabaseServer::request_len_str(Client &client, const std::string &key) {
 		send(client, bad_type());
 }
 
+void DatabaseServer::request_many_get(Client &client, const std::vector<std::string> &keys) {
+	auto result = database(client).many_get(keys);
+	send(client, ok(serialize(result)));
+}
+
 } // namespace vanity

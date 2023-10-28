@@ -7,8 +7,10 @@
 
 #include <array>
 #include <netinet/in.h>
+#include <optional>
 #include <string>
-#include <queue>
+#include <variant>
+#include <vector>
 
 namespace vanity {
 
@@ -134,6 +136,16 @@ struct type_to_string<std::string> {
 	static constexpr const char* value = ":STR ";
 };
 
+template <>
+struct type_to_string<std::monostate> {
+	static constexpr const char* value = ":NULL ";
+};
+
+template <typename T>
+struct type_to_string<std::vector<T>> {
+	static constexpr const char* value = ":ARR ";
+};
+
 // serialize a type to a string
 template<typename T>
 constexpr auto serialize_type()
@@ -142,13 +154,48 @@ constexpr auto serialize_type()
 }
 
 // serialize a string object to a string
-std::string serialize(const std::string& data);
+void serialize(const std::string& data, std::string& str);
 
 // serialize an int object to a string
-std::string serialize(int64_t data);
+void serialize(int64_t data, std::string& str);
 
 // serialize a double object to a string
-std::string serialize(double data);
+void serialize(double data, std::string& str);
+
+// serialize a primitive variant to a string
+void serialize(const std::variant<std::string, int64_t , double>& data, std::string& str);
+
+// serialize an optional object to a string
+template<typename T>
+void serialize(const std::optional<T>& data, std::string& str)
+{
+	if (data.has_value())
+		serialize(data.value(), str);
+	else
+		str += serialize_type<std::monostate>();
+}
+
+// serialize a vector to a string
+template<typename T>
+void serialize(const std::vector<T>& data, std::string& str)
+{
+	str += serialize_type<std::vector<T>>();
+	str += '(' + std::to_string(data.size()) + ")";
+
+	str += '[';
+	for (const auto& s : data)
+		serialize(s, str);
+	str += ']';
+}
+
+// serialize some object to a string
+template<typename T>
+std::string serialize(const T& data)
+{
+	std::string ret {};
+	serialize(data, ret);
+	return ret;
+}
 
 // make an OK response
 template<typename... Args>

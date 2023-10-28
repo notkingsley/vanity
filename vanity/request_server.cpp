@@ -15,6 +15,7 @@ enum class object_t{
 	STR,
 	INT,
 	FLOAT,
+	ARR,
 };
 
 template<object_t _obj>
@@ -33,6 +34,11 @@ struct concrete_traits<object_t::INT> {
 template<>
 struct concrete_traits<object_t::FLOAT> {
 	using type = double;
+};
+
+template<>
+struct concrete_traits<object_t::ARR> {
+	using type = std::vector<std::string>;
 };
 
 template <object_t ...Args> struct concrete {
@@ -73,7 +79,7 @@ static inline void ensure_not_end(const std::string& msg, size_t& pos)
 // extract the operation from the message
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
-	static std::initializer_list <std::pair<operation_t, std::string>> operations {
+	static const std::initializer_list <std::pair<operation_t, std::string>> operations {
 		{operation_t::ADD_USER,  "ADD_USER"},
 		{operation_t::EDIT_USER, "EDIT_USER"},
 		{operation_t::DEL_USER,  "DEL_USER"},
@@ -85,6 +91,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::INCR_INT,  "INCR_INT"},
 		{operation_t::INCR_FLOAT,"INCR_FLOAT"},
 		{operation_t::LEN_STR,   "LEN_STR"},
+		{operation_t::MANY_GET,  "MANY_GET"},
 		{operation_t::SWITCH_DB, "SWITCH_DB"},
 		{operation_t::AUTH,      "AUTH"},
 		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
@@ -107,11 +114,12 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 // extract the object type from the message
 static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 {
-	static char object_separator = ':';
-	static std::initializer_list <std::pair<object_t, std::string>> objects {
+	static const char object_separator = ':';
+	static const std::initializer_list <std::pair<object_t, std::string>> objects {
 		{object_t::STR,   "STR"},
 		{object_t::INT,   "INT"},
 		{object_t::FLOAT, "FLOAT"},
+		{object_t::ARR,   "ARR"},
 	};
 
 	skip_whitespace(msg, pos);
@@ -133,7 +141,7 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 // extract thea client auth level from the message
 static inline client_auth extract_client_auth(const std::string& msg, size_t& pos)
 {
-	static std::initializer_list <std::pair<client_auth, std::string>> auths {
+	static const std::initializer_list <std::pair<client_auth, std::string>> auths {
 		{client_auth::UNKNOWN,     "UNKNOWN"},
 		{client_auth::USER,        "USER"},
 		{client_auth::ADMIN,       "ADMIN"},
@@ -148,6 +156,33 @@ static inline client_auth extract_client_auth(const std::string& msg, size_t& po
 		}
 	}
 	throw InvalidRequest("invalid auth level");
+}
+
+// extract a (len) from part of a message
+static inline size_t extract_len(const std::string& msg, size_t& pos)
+{
+	ensure_not_end(msg, pos);
+	if (msg[pos] != '(') {
+		throw InvalidRequest("expected length specifier");
+	}
+	++pos;
+
+	try{
+		size_t count = 0;
+		size_t len = std::stoull(msg.substr(pos), &count);
+		pos += count;
+		if (msg[pos] != ')') {
+			throw InvalidRequest("expected length specifier");
+		}
+		++pos;
+		return len;
+	}
+	catch (const std::out_of_range& e) {
+		throw InvalidRequest("length out of range");
+	}
+	catch (const std::invalid_argument& e) {
+		throw InvalidRequest("invalid length");
+	}
 }
 
 // extract an object from part of a message
@@ -231,6 +266,33 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 	throw InvalidRequest("word not closed with quotes");
 }
 
+// extract a vector of strings from part of a message
+template<>
+inline std::vector<std::string> extract<object_t::ARR>(const std::string& msg, size_t& pos)
+{
+	ensure_not_end(msg, pos);
+	if (msg[pos] != '[') {
+		throw InvalidRequest("array not opened with bracket");
+	}
+	++pos;
+
+	std::vector<std::string> arr;
+	while (pos < msg.size()) {
+		if (msg[pos] == ']') {
+			++pos;
+			return arr;
+		}
+		if (msg[pos] == ',') {
+			++pos;
+			continue;
+		}
+		arr.emplace_back(extract<object_t::STR>(msg, pos));
+	}
+
+	throw InvalidRequest("array not closed with bracket");
+}
+
+
 void RequestServer::handle(const std::string& msg, Client& client) {
 	try{
 		size_t pos = 0;
@@ -239,7 +301,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 		if (not client.has_perm(op))
 			return send(client, denied());
 
-		using object_t::STR, object_t::INT, object_t::FLOAT;
+		using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
 		switch (op) {
 			case operation_t::GET:
 			{
@@ -281,6 +343,11 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 			case operation_t::LEN_STR:
 			{
 				request_len_str(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::MANY_GET:
+			{
+				request_many_get(client, extract_exact<ARR>(msg, pos));
 				break;
 			}
 			case operation_t::SWITCH_DB:
@@ -349,48 +416,60 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 			}
 		}
 	}
-	catch (const InvalidRequest& e) {
-		send(client, bad_request());
+	catch (const InvalidRequest& e)
+	{
+		send(client, bad_request(e.what()));
 	}
-	catch (const DestroyClient& e) {
+	catch (const DestroyClient& e)
+	{
 		logger().debug("Client disconnecting");
 		throw;
 	}
-	catch (const Exception& e) {
+	catch (const Exception& e)
+	{
 		logger().error(e.what());
 		send(client, internal_error(e.what()));
 	}
-	catch (const std::exception& e) {
+	catch (const std::exception& e)
+	{
 		logger().error(e.what());
 		send(client, internal_error(e.what()));
 	}
-	catch (...) {
+	catch (...)
+	{
 		logger().error("unknown error with message: " + msg);
-		send(client, internal_error());
+		send(client, internal_error("unknown error"));
 	}
 }
 
 void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos) {
-	using object_t::STR, object_t::INT, object_t::FLOAT;
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
 
 	object_t obj = extract_object_t(msg, pos);
 	std::string key = extract<STR>(msg, pos);
 
 	switch (obj) {
-		case STR:{
+		case STR:
+		{
 			auto value {extract_exact<STR>(msg, pos)};
 			request_set(client, key, value);
 			break;
 		}
-		case INT:{
+		case INT:
+		{
 			auto value {extract_exact<INT>(msg, pos)};
 			request_set(client, key, value);
 			break;
 		}
-		case FLOAT:{
+		case FLOAT:
+		{
 			auto value {extract_exact<FLOAT>(msg, pos)};
 			request_set(client, key, value);
 			break;
+		}
+		case ARR:
+		{
+			throw InvalidRequest("invalid object type: use MANY_SET or LIST_SET");
 		}
 	}
 }

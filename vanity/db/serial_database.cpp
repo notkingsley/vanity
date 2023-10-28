@@ -146,7 +146,7 @@ std::optional<int_t> SerialDatabase::len_str(const Database::key_type &key) {
 }
 
 std::vector<std::optional<Database::data_type>> SerialDatabase::many_get(const std::vector<key_type> &keys) {
-	return std::get<many_get_ret_type>(send_task(task_type::MANY_GET, keys).get());
+	return std::move(std::move(std::get<many_get_ret_type>(send_task(task_type::MANY_GET, keys).get())));
 }
 
 void SerialDatabase::many_set(std::vector<std::pair<db_key_type, db_data_type>> keys) {

@@ -52,6 +52,9 @@ public:
 	// a len_str request was received from a client
 	virtual void request_len_str(Client& client, const std::string& key) = 0;
 
+	// a many_get request was received from a client
+	virtual void request_many_get(Client& client, const std::vector<std::string>& keys) = 0;
+
 	// a persist request was received from a client
 	virtual void request_persist(Client& client) = 0;
 

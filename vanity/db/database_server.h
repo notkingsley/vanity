@@ -66,6 +66,9 @@ public:
 	// a len_str request was received from a client
 	void request_len_str(Client& client, const std::string& key) override;
 
+	// a many_get request was received from a client
+	void request_many_get(Client& client, const std::vector<std::string>& keys) override;
+
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
 };
