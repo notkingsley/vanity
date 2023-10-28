@@ -271,25 +271,21 @@ template<>
 inline std::vector<std::string> extract<object_t::ARR>(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
-	if (msg[pos] != '[') {
+	size_t len = extract_len(msg, pos);
+	if (msg[pos] != '[')
 		throw InvalidRequest("array not opened with bracket");
-	}
 	++pos;
 
 	std::vector<std::string> arr;
-	while (pos < msg.size()) {
-		if (msg[pos] == ']') {
-			++pos;
-			return arr;
-		}
-		if (msg[pos] == ',') {
-			++pos;
-			continue;
-		}
+	arr.reserve(len);
+	for (size_t i = 0; i < len; ++i)
 		arr.emplace_back(extract<object_t::STR>(msg, pos));
-	}
 
-	throw InvalidRequest("array not closed with bracket");
+	if (msg[pos] != ']')
+		throw InvalidRequest("array not closed with bracket");
+	++pos;
+
+	return arr;
 }
 
 
