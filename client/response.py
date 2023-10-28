@@ -29,7 +29,7 @@ def extract_status(msg: str) -> tuple[ServerConstant | None, str]:
 	"""
 	for constant in ServerConstant:
 		if msg.startswith(constant.value):
-			return constant, msg[len(constant.value):].strip()
+			return constant, msg[len(constant.value):].lstrip()
 	
 	return None, msg
 
@@ -40,8 +40,15 @@ def extract_str(msg: str) -> str | None:
 	:param msg: The response to extract from.
 	:return: The extracted string, or None if no string could be deciphered.
 	"""
-	if msg.startswith('"') and msg.endswith('"'):
-		return msg[1:-1].replace(r'\"', '"')
+	if msg.startswith("("):
+		num, msg = msg[1:].split(")", 1)
+		try:
+			num = int(num)
+		except ValueError:
+			return None
+		
+		string, remainder = msg[:num], msg[num:]
+		return string
 	
 	return None
 
@@ -68,20 +75,20 @@ def extract_type(msg: str) -> tuple[type[str | int | float] | None, str]:
 	Return the type, and the remaining message.
 	"""
 	if msg.startswith(":STR"):
-		return str, msg[4:].strip()
+		return str, msg[4:].lstrip()
 	
 	elif msg.startswith(":INT"):
-		return int, msg[4:].strip()
+		return int, msg[4:].lstrip()
 	
 	elif msg.startswith(":FLOAT"):
-		return float, msg[6:].strip()
+		return float, msg[6:].lstrip()
 
 	return None, msg
 
 
 class Response:
 	def __init__(self, body: str) -> None:
-		self._raw = body.strip()
+		self._raw = body
 
 		raw = self._raw
 		self.status, raw = extract_status(raw)

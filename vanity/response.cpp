@@ -125,16 +125,8 @@ std::string serialize(const std::string &data) {
 	std::string ret {};
 	ret.reserve(data.size() + 10);
 	ret += serialize_type<std::string>();
-
-	ret += "\"";
-	for (char c : data) {
-		if (c == '"')
-			ret += "\\\"";
-		else
-			ret += c;
-	}
-	ret += "\"";
-
+	ret += '(' + std::to_string(data.size()) + ")";
+	ret += data;
 	return ret;
 }
 
