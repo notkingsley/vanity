@@ -14,7 +14,7 @@ class AuthLevel(Enum):
 	ADMIN = "ADMIN"
 
 
-def format(msg: str | int | float | AuthLevel) -> str:
+def format(msg: str | int | float | list | AuthLevel) -> str:
 	"""
 	Format a message body to be sent to the server.
 	Escape the quotes in the message if it is a string
@@ -25,8 +25,12 @@ def format(msg: str | int | float | AuthLevel) -> str:
 		return str(msg)
 	elif isinstance(msg, AuthLevel):
 		return msg.value
-	else:
+	elif isinstance(msg, list):
+		return f"({len(msg)})[" + "".join(map(format, msg)) + "]"
+	elif isinstance(msg, str):
 		return '"' + msg.replace('"', r'\"') + '"'
+	else:
+		raise TypeError(f"Cannot format {msg}.")
 
 
 class Client:
@@ -259,3 +263,11 @@ class Client:
 		:return: The length of the string.
 		"""
 		return self.request("LEN_STR", key)
+	
+	def many_get(self, *keys):
+		"""
+		Get the values of many keys.
+		:param keys: The keys to get.
+		:return: The values of the keys.
+		"""
+		return self.request("MANY_GET", list(keys))

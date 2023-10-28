@@ -15,7 +15,7 @@ class ServerConstant(Enum):
 	BAD_TYPE = "BAD_TYPE"
 
 
-class InvalidResponseError(Exception):
+class InvalidResponse(Exception):
 	"""
 	An exception thrown when a response is invalid.
 	"""
@@ -34,42 +34,128 @@ def extract_status(msg: str) -> tuple[ServerConstant | None, str]:
 	return None, msg
 
 
-def extract_str(msg: str) -> str | None:
+def extract_len(msg: str):
 	"""
-	Extract a string from a response.
+	Extract a length from a response.
 	:param msg: The response to extract from.
-	:return: The extracted string, or None if no string could be deciphered.
+	:return: The extracted length, or None if no length could be deciphered.
 	"""
 	if msg.startswith("("):
 		num, msg = msg[1:].split(")", 1)
 		try:
-			num = int(num)
+			return int(num), msg
 		except ValueError:
-			return None
-		
-		string, remainder = msg[:num], msg[num:]
-		return string
+			raise InvalidResponse(f"Could not extract length from {num}.")
 	
-	return None
+	return None, msg
 
-def extract_as(msg: str, type: type[int | float | str]):
+def extract_str(msg: str) -> tuple[str, str]:
+	"""
+	Extract a string from a response.
+	:param msg: The response to extract from.
+	:return: The extracted string, or None if no int could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	return msg[:num], msg[num:]
+
+
+def extract_int(msg: str) -> tuple[int | None, str]:
+	"""
+	Extract an int from a response.
+	:param msg: The response to extract from.
+	:return: The extracted int, or None if no int could be deciphered.
+	"""
+	num = str()
+	for char in msg:
+		if char.isdigit() or char == "-":
+			num += char
+		else:
+			break
+
+	if not num:
+		return None, msg
+	try:
+		return int(num), msg[len(num):].lstrip()
+	except ValueError:
+		return None, msg
+
+
+def extract_float(msg: str):
+	"""
+	Extract a float from a response.
+	:param msg: The response to extract from.
+	:return: The extracted float, or None if no float could be deciphered.
+	"""
+	num = str()
+	for char in msg:
+		if char.isdigit() or char == "." or char == "-":
+			num += char
+		else:
+			break
+
+	if not num:
+		return None, msg
+	try:
+		return float(num), msg[len(num):].lstrip()
+	except ValueError:
+		return None, msg
+
+
+def extract_list(msg: str):
+	"""
+	Extract a list from a response.
+	:param msg: The response to extract from.
+	:return: The extracted list, or None if no list could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	if not msg.startswith("["):
+		return None, msg
+	msg = msg[1:].lstrip()
+	
+	elements = list()
+	for _ in range(num):
+		_type, msg = extract_type(msg)
+		if _type is None:
+			raise InvalidResponse(f"Could not extract type from {msg}.")
+		
+		element, msg = extract_as(msg, _type)
+		if element is None and _type is not type(None):
+			raise InvalidResponse(f"Could not extract element from {msg}.")
+		
+		elements.append(element)
+
+	if not msg.startswith("]"):
+		raise InvalidResponse(f"Message did not end with ']'.")
+	msg = msg[1:].lstrip()
+	
+	return elements, msg
+
+
+def extract_as(msg: str, _type: type[int | float | str | list | None]):
 	"""
 	Extract a value from a response as a given type.
 	:param msg: The response to extract from.
 	:param type: The type to extract as.
 	:return: The extracted value, or None if no value could be deciphered.
 	"""
-	if type is str:
+	if _type is str:
 		return extract_str(msg)
-	
-	if type is int or type is float:
-		try:
-			return type(msg)
-		except ValueError:
-			return None
+	if _type is int:
+		return extract_int(msg)
+	if _type is float:
+		return extract_float(msg)
+	if _type is list:
+		return extract_list(msg)
+	if _type is type(None):
+		return None, msg
 
 
-def extract_type(msg: str) -> tuple[type[str | int | float] | None, str]:
+def extract_type(msg: str) -> tuple[type[str | int | float | list | None] | None, str]:
 	"""
 	Extract the type of a response, if any.
 	Return the type, and the remaining message.
@@ -82,6 +168,12 @@ def extract_type(msg: str) -> tuple[type[str | int | float] | None, str]:
 	
 	elif msg.startswith(":FLOAT"):
 		return float, msg[6:].lstrip()
+	
+	elif msg.startswith(":NULL"):
+		return type(None), msg[5:].lstrip()
+	
+	elif msg.startswith(":ARR"):
+		return list, msg[4:].lstrip()
 
 	return None, msg
 
@@ -96,7 +188,9 @@ class Response:
 
 		self.value = None
 		if self.type:
-			self.value = extract_as(raw, self.type)
+			self.value, raw = extract_as(raw, self.type)
+			if raw:
+				print(f"Raw: {raw}")
 			return
 
 	def __str__(self) -> str:
