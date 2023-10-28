@@ -341,6 +341,70 @@ class DatabaseTest(unittest.TestCase):
 		response = self.client.len_str("test_len_str_float")
 		self.assertTrue(response.is_bad_type())
 	
+	def test_many_get(self):
+		"""
+		Test that we can get many values at once.
+		"""
+		self.client.set("test_many_get_1", "test_many_get_1_value")
+		self.client.set("test_many_get_2", "test_many_get_2_value")
+		self.client.set("test_many_get_3", "test_many_get_3_value")
+		response = self.client.many_get("test_many_get_1", "test_many_get_2", "test_many_get_3")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, ["test_many_get_1_value", "test_many_get_2_value", "test_many_get_3_value"])
+	
+	def test_many_get_non_existent(self):
+		"""
+		Test that we can get many values at once, some of which don't exist.
+		"""
+		self.client.set("test_many_get_non_existent_1", "test_many_get_non_existent_1_value")
+		self.client.set("test_many_get_non_existent_3", "test_many_get_non_existent_3_value")
+		response = self.client.many_get("test_many_get_non_existent_1", "test_many_get_non_existent_2", "test_many_get_non_existent_3")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, ["test_many_get_non_existent_1_value", None, "test_many_get_non_existent_3_value"])
+	
+	def test_many_get_empty(self):
+		"""
+		Test that we can get many values at once, none of which exist.
+		"""
+		response = self.client.many_get("test_many_get_empty_1", "test_many_get_empty_2", "test_many_get_empty_3")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, [None, None, None])
+	
+	def test_many_get_int(self):
+		"""
+		Test that we can get many values at once, some of which are integers.
+		"""
+		self.client.set("test_many_get_int_1", "test_many_get_int_1_value")
+		self.client.set("test_many_get_int_2", 123)
+		self.client.set("test_many_get_int_3", "test_many_get_int_3_value")
+		response = self.client.many_get("test_many_get_int_1", "test_many_get_int_2", "test_many_get_int_3")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, ["test_many_get_int_1_value", 123, "test_many_get_int_3_value"])
+	
+	def test_many_get_float(self):
+		"""
+		Test that we can get many values at once, some of which are floats.
+		"""
+		self.client.set("test_many_get_float_1", "test_many_get_float_1_value")
+		self.client.set("test_many_get_float_2", 123.456)
+		self.client.set("test_many_get_float_3", "test_many_get_float_3_value")
+		response = self.client.many_get("test_many_get_float_1", "test_many_get_float_2", "test_many_get_float_3")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, ["test_many_get_float_1_value", 123.456, "test_many_get_float_3_value"])
+	
+	def test_many_get_mixed(self):
+		"""
+		Test that we can get many values at once, some of which are integers and floats.
+		"""
+		self.client.set("test_many_get_mixed_1", "test_many_get_mixed_1_value")
+		self.client.set("test_many_get_mixed_2", 123)
+		self.client.set("test_many_get_mixed_3", 123.456)
+		self.client.set("test_many_get_mixed_4", "test_many_get_mixed_4_value")
+		self.client.set("test_many_get_mixed_5", 123.456)
+		response = self.client.many_get("test_many_get_mixed_1", "test_many_get_mixed_2", "test_invalid", "test_many_get_mixed_3", "test_many_get_mixed_4", "test_many_get_mixed_5")
+		self.assertTrue(response.is_ok())
+		self.assertEqual(response.value, ["test_many_get_mixed_1_value", 123, None, 123.456, "test_many_get_mixed_4_value", 123.456])
+
 
 class SwitchDBTest(unittest.TestCase):
 	"""
