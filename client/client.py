@@ -256,7 +256,7 @@ class Client:
 		"""
 		return self.incr_float(key, -by)
 	
-	def len_str(self, key: str):
+	def str_len(self, key: str):
 		"""
 		Get the length of a string.
 		:param key: The key to get the length of.
