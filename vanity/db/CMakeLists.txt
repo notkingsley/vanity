@@ -9,4 +9,8 @@ add_library(vanity_db STATIC
 	persistent_server.cpp
 	primitive_database_server.cpp
 	serial_database.cpp
+	base_database.cpp
+	base_database.h
+	primitive_database.cpp
+	primitive_database.h
 )
