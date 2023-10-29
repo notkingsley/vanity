@@ -29,7 +29,7 @@ class BaseDatabase
 {
 public:
 	using key_type = string_t;
-	using data_type = std::variant<string_t, int_t, float_t>;
+	using data_type = std::variant<string_t, int_t, float_t, list_t>;
 
 	// create a database
 	BaseDatabase() = default;

@@ -50,6 +50,26 @@ string_t read<string_t>(std::ifstream &in)
 	return str;
 }
 
+// write a list to the output stream
+template<>
+void write<list_t>(std::ofstream &out, const list_t& value)
+{
+	write(out, value.size());
+	for (const auto& s : value)
+		write(out, s);
+}
+
+// read a list from the input stream
+template<>
+list_t read<list_t>(std::ifstream &in)
+{
+	list_t list{};
+	std::streamsize size = read<std::streamsize>(in);
+	for (std::streamsize i = 0; i < size; ++i)
+		list.push_back(read<string_t>(in));
+	return list;
+}
+
 // write a db_data_type to the output stream
 template<>
 void write<db_data_type>(std::ofstream &out, const db_data_type& value)
@@ -64,6 +84,8 @@ void write<db_data_type>(std::ofstream &out, const db_data_type& value)
 			return write(out, std::get<1>(value));
 		case 2:
 			return write(out, std::get<2>(value));
+		case 3:
+			return write(out, std::get<3>(value));
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -80,6 +102,8 @@ db_data_type read<db_data_type>(std::ifstream &in)
 			return read<db_index_t<1>>(in);
 		case 2:
 			return read<db_index_t<2>>(in);
+		case 3:
+			return read<db_index_t<3>>(in);
 		default:
 			throw std::runtime_error("invalid type");
 	}

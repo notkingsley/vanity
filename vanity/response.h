@@ -6,6 +6,7 @@
 #define VANITY_RESPONSE_H
 
 #include <array>
+#include <list>
 #include <netinet/in.h>
 #include <optional>
 #include <string>
@@ -146,6 +147,11 @@ struct type_to_string<std::vector<T>> {
 	static constexpr const char* value = ":ARR ";
 };
 
+template <>
+struct type_to_string<std::list<std::string>> {
+	static constexpr const char* value = ":LIST ";
+};
+
 // serialize a type to a string
 template<typename T>
 constexpr auto serialize_type()
@@ -163,7 +169,10 @@ void serialize(int64_t data, std::string& str);
 void serialize(double data, std::string& str);
 
 // serialize a primitive variant to a string
-void serialize(const std::variant<std::string, int64_t , double>& data, std::string& str);
+void serialize(const std::variant<std::string, int64_t , double, std::list<std::string>>& data, std::string& str);
+
+// serialize a list to a string
+void serialize(const std::list<std::string>& data, std::string& str);
 
 // serialize an optional object to a string
 template<typename T>

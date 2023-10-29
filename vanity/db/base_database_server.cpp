@@ -39,6 +39,8 @@ void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
 			return send(client, ok(serialize_type<db::db_index_t<1>>()));
 		case 2:
 			return send(client, ok(serialize_type<db::db_index_t<2>>()));
+		case 3:
+			return send(client, ok(serialize_type<db::db_index_t<3>>()));
 		default:
 			throw std::runtime_error("invalid type");
 	}
