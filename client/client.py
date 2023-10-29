@@ -262,7 +262,7 @@ class Client:
 		:param key: The key to get the length of.
 		:return: The length of the string.
 		"""
-		return self.request("LEN_STR", key)
+		return self.request("STR_LEN", key)
 	
 	def many_get(self, *keys):
 		"""

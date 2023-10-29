@@ -58,10 +58,10 @@ void SerialDatabase::perform(task_type task, task_data_type data, std::promise<r
 			promise.set_value(Database::incr_float(key, value));
 			break;
 		}
-		case task_type::LEN_STR:
+		case task_type::STR_LEN:
 		{
-			auto& key = std::get<len_str_type>(data);
-			promise.set_value(Database::len_str(key));
+			auto& key = std::get<str_len_type>(data);
+			promise.set_value(Database::str_len(key));
 			break;
 		}
 		case task_type::RESET:
@@ -141,8 +141,8 @@ std::optional<float_t> SerialDatabase::incr_float(const Database::key_type &key,
 	return std::get<incr_float_ret_type>(send_task(task_type::INCR_FLOAT, std::make_tuple(key, value)).get());
 }
 
-std::optional<int_t> SerialDatabase::len_str(const Database::key_type &key) {
-	return std::get<len_str_ret_type>(send_task(task_type::LEN_STR, key).get());
+std::optional<int_t> SerialDatabase::str_len(const key_type &key) {
+	return std::get<str_len_ret_type>(send_task(task_type::STR_LEN, key).get());
 }
 
 std::vector<std::optional<Database::data_type>> SerialDatabase::many_get(const std::vector<key_type> &keys) {

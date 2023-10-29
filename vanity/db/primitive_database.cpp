@@ -58,7 +58,7 @@ std::optional<float_t> PrimitiveDatabase::incr_float(const key_type &key, float_
 	}
 }
 
-std::optional<int_t> PrimitiveDatabase::len_str(const key_type &key) {
+std::optional<int_t> PrimitiveDatabase::str_len(const key_type &key) {
 	if (m_data.contains(key) and std::holds_alternative<string_t>(m_data.at(key)))
 		return std::get<string_t>(m_data.at(key)).size();
 	else

@@ -21,7 +21,7 @@ struct serial_database_types {
 		HAS,
 		INCR_INT,
 		INCR_FLOAT,
-		LEN_STR,
+		STR_LEN,
 		MANY_GET,
 		MANY_SET,
 		RESET,
@@ -36,7 +36,7 @@ struct serial_database_types {
 	using type_type = Database::key_type;
 	using incr_int_type = std::tuple<Database::key_type, int_t>;
 	using incr_float_type = std::tuple<Database::key_type, float_t>;
-	using len_str_type = Database::key_type;
+	using str_len_type = Database::key_type;
 	using many_get_type = std::vector<Database::key_type>;
 	using many_set_type = std::vector<std::pair<Database::key_type, Database::data_type>>;
 	using reset_type = void;
@@ -50,7 +50,7 @@ struct serial_database_types {
 	using type_ret_type = std::optional<int>;
 	using incr_int_ret_type = std::optional<int_t>;
 	using incr_float_ret_type = std::optional<float_t>;
-	using len_str_ret_type = std::optional<int_t>;
+	using str_len_ret_type = std::optional<int_t>;
 	using many_get_ret_type = std::vector<std::optional<Database::data_type>>;
 	using many_set_ret_type = void;
 	using reset_ret_type = void;
@@ -151,7 +151,7 @@ public:
 	// get the length of a string key
 	// returns the length, or std::nullopt
 	// if the value does not exist or is not a string
-	std::optional<int_t> len_str(const Database::key_type &key);
+	std::optional<int_t> str_len(const key_type &key);
 
 	// get the value for many keys
 	std::vector<std::optional<Database::data_type>> many_get(const std::vector<key_type>& keys);

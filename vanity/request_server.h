@@ -49,8 +49,8 @@ public:
 	// an incr_float request was received from a client
 	virtual void request_incr_float(Client& client, const std::string& key, double value) = 0;
 
-	// a len_str request was received from a client
-	virtual void request_len_str(Client& client, const std::string& key) = 0;
+	// a str_len request was received from a client
+	virtual void request_str_len(Client& client, const std::string& key) = 0;
 
 	// a many_get request was received from a client
 	virtual void request_many_get(Client& client, const std::vector<std::string>& keys) = 0;

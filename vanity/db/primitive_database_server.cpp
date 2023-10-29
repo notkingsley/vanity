@@ -57,8 +57,8 @@ void PrimitiveDatabaseServer::request_incr_float(Client &client, const std::stri
 		send(client, bad_type());
 }
 
-void PrimitiveDatabaseServer::request_len_str(Client &client, const std::string &key) {
-	auto result = database(client).len_str(key);
+void PrimitiveDatabaseServer::request_str_len(Client &client, const std::string &key) {
+	auto result = database(client).str_len(key);
 
 	if (result.has_value())
 		send(client, ok(serialize(result.value())));

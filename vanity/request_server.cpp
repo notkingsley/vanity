@@ -80,26 +80,26 @@ static inline void ensure_not_end(const std::string& msg, size_t& pos)
 static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 {
 	static const std::initializer_list <std::pair<operation_t, std::string>> operations {
-		{operation_t::ADD_USER,  "ADD_USER"},
-		{operation_t::EDIT_USER, "EDIT_USER"},
-		{operation_t::DEL_USER,  "DEL_USER"},
-		{operation_t::GET,       "GET"},
-		{operation_t::SET,       "SET"},
-		{operation_t::DEL,       "DEL"},
-		{operation_t::TYPE,      "TYPE"},
-		{operation_t::EXISTS,    "EXISTS"},
-		{operation_t::INCR_INT,  "INCR_INT"},
-		{operation_t::INCR_FLOAT,"INCR_FLOAT"},
-		{operation_t::LEN_STR,   "LEN_STR"},
-		{operation_t::MANY_GET,  "MANY_GET"},
-		{operation_t::SWITCH_DB, "SWITCH_DB"},
-		{operation_t::AUTH,      "AUTH"},
+		{operation_t::ADD_USER,        "ADD_USER"},
+		{operation_t::EDIT_USER,       "EDIT_USER"},
+		{operation_t::DEL_USER,        "DEL_USER"},
+		{operation_t::GET,             "GET"},
+		{operation_t::SET,             "SET"},
+		{operation_t::DEL,             "DEL"},
+		{operation_t::TYPE,            "TYPE"},
+		{operation_t::EXISTS,          "EXISTS"},
+		{operation_t::INCR_INT,        "INCR_INT"},
+		{operation_t::INCR_FLOAT,      "INCR_FLOAT"},
+		{operation_t::STR_LEN,         "STR_LEN"},
+		{operation_t::MANY_GET,        "MANY_GET"},
+		{operation_t::SWITCH_DB,       "SWITCH_DB"},
+		{operation_t::AUTH,            "AUTH"},
 		{operation_t::CHANGE_PASSWORD, "CHANGE_PASSWORD"},
-		{operation_t::PERSIST,   "PERSIST"},
-		{operation_t::EXIT,      "EXIT"},
-		{operation_t::TERMINATE, "TERMINATE"},
-		{operation_t::RESET,     "RESET"},
-		{operation_t::PING,      "PING"},
+		{operation_t::PERSIST,         "PERSIST"},
+		{operation_t::EXIT,            "EXIT"},
+		{operation_t::TERMINATE,       "TERMINATE"},
+		{operation_t::RESET,           "RESET"},
+		{operation_t::PING,            "PING"},
 	};
 	skip_whitespace(msg, pos);
 	for (const auto& [op, str] : operations) {
@@ -324,9 +324,9 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 				request_incr_float(client, key, value);
 				break;
 			}
-			case operation_t::LEN_STR:
+			case operation_t::STR_LEN:
 			{
-				request_len_str(client, extract_exact<STR>(msg, pos));
+				request_str_len(client, extract_exact<STR>(msg, pos));
 				break;
 			}
 			case operation_t::MANY_GET:

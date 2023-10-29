@@ -34,8 +34,8 @@ public:
 	// an incr_float request was received from a client
 	void request_incr_float(Client& client, const std::string& key, db::float_t value) override;
 
-	// a len_str request was received from a client
-	void request_len_str(Client& client, const std::string& key) override;
+	// a str_len request was received from a client
+	void request_str_len(Client& client, const std::string& key) override;
 
 	// a many_get request was received from a client
 	void request_many_get(Client& client, const std::vector<std::string>& keys) override;

@@ -47,7 +47,7 @@ public:
 	// get the length of a string key
 	// returns the length, or std::nullopt
 	// if the value does not exist or is not a string
-	std::optional<int_t> len_str(const key_type &key);
+	std::optional<int_t> str_len(const key_type &key);
 
 	// get the value for many keys
 	std::vector<std::optional<data_type>> many_get(const std::vector<key_type>& keys);
