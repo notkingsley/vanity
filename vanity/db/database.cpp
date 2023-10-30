@@ -130,10 +130,10 @@ Database &Database::operator=(Database &&other) noexcept
 {
 	BaseDatabase::operator=(std::move(other));
 	return *this;
-};
+}
 
 Database::Database(Database &&other) noexcept
-		: BaseDatabase(std::move(other)) { };
+		: BaseDatabase(std::move(other)) { }
 
 void Database::persist(std::ofstream &out) const{
 	write(out, m_data.size());

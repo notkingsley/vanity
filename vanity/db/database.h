@@ -6,6 +6,7 @@
 #define VANITY_DATABASE_H
 
 #include "primitive_database.h"
+#include "list_database.h"
 #include "exceptions.h"
 
 
@@ -14,7 +15,7 @@ namespace vanity::db {
 /*
  * A Database is an abstraction for a key value database
  */
-class Database : public virtual PrimitiveDatabase
+class Database : public PrimitiveDatabase, public ListDatabase
 {
 public:
 	// create a new database
