@@ -29,7 +29,7 @@ ListDatabase::list_len(const key_type &key) {
 }
 
 std::variant<std::string, ErrorKind>
-ListDatabase::list_get(const key_type &key, int index) {
+ListDatabase::list_get(const key_type &key, int64_t index) {
 	auto it_or_error = iterator_or_error(key, index);
 	if (std::holds_alternative<ErrorKind>(it_or_error))
 		return std::get<ErrorKind>(it_or_error);
@@ -37,7 +37,7 @@ ListDatabase::list_get(const key_type &key, int index) {
 }
 
 std::variant<bool, ErrorKind>
-ListDatabase::list_set(const key_type &key, int index, const std::string &value) {
+ListDatabase::list_set(const key_type &key, int64_t index, const std::string &value) {
 	auto it_or_error = iterator_or_error(key, index);
 	if (std::holds_alternative<ErrorKind>(it_or_error))
 		return std::get<ErrorKind>(it_or_error);
@@ -83,7 +83,7 @@ ListDatabase::list_push_right(const key_type &key, list_t values) {
 }
 
 std::variant<list_t, ErrorKind>
-ListDatabase::list_pop_left(const key_type &key, int n) {
+ListDatabase::list_pop_left(const key_type &key, int64_t n) {
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -105,7 +105,7 @@ ListDatabase::list_pop_left(const key_type &key, int n) {
 }
 
 std::variant<list_t, ErrorKind>
-ListDatabase::list_pop_right(const key_type &key, int n) {
+ListDatabase::list_pop_right(const key_type &key, int64_t n) {
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -127,7 +127,7 @@ ListDatabase::list_pop_right(const key_type &key, int n) {
 }
 
 std::variant<list_t, ErrorKind>
-ListDatabase::list_range(const key_type &key, int start, int end) {
+ListDatabase::list_range(const key_type &key, int64_t start, int64_t end) {
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -144,7 +144,7 @@ ListDatabase::list_range(const key_type &key, int start, int end) {
 }
 
 std::variant<size_t, ErrorKind>
-ListDatabase::list_trim(const key_type &key, int start, int end) {
+ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -170,7 +170,7 @@ ListDatabase::list_trim(const key_type &key, int start, int end) {
 }
 
 std::variant<size_t, ErrorKind>
-ListDatabase::list_remove(const key_type &key, const std::string &element, int count) {
+ListDatabase::list_remove(const key_type &key, const std::string &element, int64_t count) {
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -184,7 +184,7 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int c
 	if (count > 0) {
 		auto it = list.begin();
 		auto end_it = list.end();
-		for (int i = 0; i < count and it != end_it;)
+		for (int64_t i = 0; i < count and it != end_it;)
 			if (*it == element)
 				it = list.erase(it), ++i;
 			else
@@ -192,7 +192,7 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int c
 	} else if (count < 0) {
 		auto it = list.rbegin();
 		auto end_it = list.rend();
-		for (int i = 0; i > count and it != end_it;)
+		for (int64_t i = 0; i > count and it != end_it;)
 			if (*it == element)
 				it = std::make_reverse_iterator(list.erase(it.base())), --i;
 			else
@@ -215,7 +215,7 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int c
 };
 
 std::variant<list_t::iterator, ErrorKind>
-ListDatabase::iterator_or_error(const key_type &key, int index) {
+ListDatabase::iterator_or_error(const key_type &key, int64_t index) {
 	if (not m_data.contains(key))
 		return ErrorKind::OutOfRange;
 
@@ -231,7 +231,7 @@ ListDatabase::iterator_or_error(const key_type &key, int index) {
 }
 
 list_t::iterator
-ListDatabase::iterator_or_end(list_t& list, int index) {
+ListDatabase::iterator_or_end(list_t& list, int64_t index) {
 	const int64_t size = list.size();
 	int64_t idx = index;
 
@@ -247,7 +247,7 @@ ListDatabase::iterator_or_end(list_t& list, int index) {
 }
 
 list_t::reverse_iterator
-ListDatabase::reverse_iterator_or_rend(list_t &list, int index) {
+ListDatabase::reverse_iterator_or_rend(list_t &list, int64_t index) {
 	const int64_t size = list.size();
 	int64_t idx = index;
 
@@ -263,7 +263,7 @@ ListDatabase::reverse_iterator_or_rend(list_t &list, int index) {
 }
 
 std::pair<list_t::iterator, list_t::iterator>
-ListDatabase::iterator_pair_inclusive(list_t &list, int start, int end) {
+ListDatabase::iterator_pair_inclusive(list_t &list, int64_t start, int64_t end) {
 	auto it = iterator_or_end(list, start);
 	if (it == list.end() and start < 0)
 		it = list.begin(); // overflow on negative start, start at the beginning
@@ -277,7 +277,7 @@ ListDatabase::iterator_pair_inclusive(list_t &list, int start, int end) {
 	return {it, end_it};
 }
 
-bool ListDatabase::is_invalid_range(int start, int end) {
+bool ListDatabase::is_invalid_range(int64_t start, int64_t end) {
 	return (start > 0 and end > 0 and start > end) or (start < 0 and end < 0 and start > end);
 }
 

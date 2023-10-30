@@ -40,15 +40,15 @@ protected:
 
 	// list database
 	using list_len_type = key_type;
-	using list_get_type = std::tuple<key_type, int>;
-	using list_set_type = std::tuple<key_type, int, std::string>;
+	using list_get_type = std::tuple<key_type, int64_t>;
+	using list_set_type = std::tuple<key_type, int64_t, std::string>;
 	using list_push_left_type = std::tuple<key_type, list_t>;
 	using list_push_right_type = std::tuple<key_type, list_t>;
-	using list_pop_left_type = std::tuple<key_type, int>;
-	using list_pop_right_type = std::tuple<key_type, int>;
-	using list_range_type = std::tuple<key_type, int, int>;
-	using list_trim_type = std::tuple<key_type, int, int>;
-	using list_remove_type = std::tuple<key_type, std::string, int>;
+	using list_pop_left_type = std::tuple<key_type, int64_t>;
+	using list_pop_right_type = std::tuple<key_type, int64_t>;
+	using list_range_type = std::tuple<key_type, int64_t, int64_t>;
+	using list_trim_type = std::tuple<key_type, int64_t, int64_t>;
+	using list_remove_type = std::tuple<key_type, std::string, int64_t>;
 
 
 	// return types
@@ -120,7 +120,6 @@ public:
 
 		list_set_type,
 		list_push_left_type,
-		list_pop_left_type,
 		list_range_type,
 		list_remove_type,
 
@@ -238,12 +237,12 @@ public:
 	// get the value for a list key at a given index
 	// returns the value, or ErrorKind::NotList if the value is not a list
 	// or ErrorKind::OutOfRange if the index is out of range or if value does not exist
-	std::variant<std::string, ErrorKind> list_get(const key_type &key, int index);
+	std::variant<std::string, ErrorKind> list_get(const key_type &key, int64_t index);
 
 	// set the value for a list key at a given index
 	// returns true if the value was set, or ErrorKind::NotList if the value is not a list
 	// or ErrorKind::OutOfRange if the index is out of range or if value does not exist
-	std::variant<bool, ErrorKind> list_set(const key_type &key, int index, const std::string& value);
+	std::variant<bool, ErrorKind> list_set(const key_type &key, int64_t index, const std::string& value);
 
 	// push values to the top of a list
 	// returns the new length, or ErrorKind::NotList if the value is not a list
@@ -257,30 +256,30 @@ public:
 	// returns the values or ErrorKind::NotList if the value is not a list
 	// if the index is positive and out of range, returns the values up to the end of the list
 	// if the index is negative and out of range, returns an empty list
-	std::variant<list_t, ErrorKind> list_pop_left(const key_type &key, int n);
+	std::variant<list_t, ErrorKind> list_pop_left(const key_type &key, int64_t n);
 
 	// pop n values from the bottom of a list
 	// returns the values, or ErrorKind::NotList if the value is not a list
 	// if the index is positive and out of range, returns the values up to the end of the list
 	// if the index is negative and out of range, returns an empty list
-	std::variant<list_t, ErrorKind> list_pop_right(const key_type &key, int n);
+	std::variant<list_t, ErrorKind> list_pop_right(const key_type &key, int64_t n);
 
 	// get the value for a range of a list key inclusively
 	// returns the values, or ErrorKind::NotList if the value is not a list
 	// returns an empty list if the range is out of bounds or invalid
-	std::variant<list_t, ErrorKind> list_range(const key_type &key, int start, int end);
+	std::variant<list_t, ErrorKind> list_range(const key_type &key, int64_t start, int64_t end);
 
 	// trim the list stored at key, so that it will
 	// contain only the specified range of elements (inclusively)
 	// returns the number of trimmed elements
 	// or ErrorKind::NotList if the value is not a list
-	std::variant<size_t, ErrorKind> list_trim(const key_type &key, int start, int end);
+	std::variant<size_t, ErrorKind> list_trim(const key_type &key, int64_t start, int64_t end);
 
 	// remove a number of elements equal to count from the list stored at key
 	// that hold the value element
 	// returns the number of removed elements, or ErrorKind::NotList if the value is not a list
 	// removes from the end if count is negative or all elements if count is 0
-	std::variant<size_t, ErrorKind> list_remove(const key_type &key, const std::string& element, int count);
+	std::variant<size_t, ErrorKind> list_remove(const key_type &key, const std::string& element, int64_t count);
 };
 
 } // namespace vanity::db

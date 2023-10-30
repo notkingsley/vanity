@@ -223,11 +223,11 @@ auto SerialDatabase::list_len(const key_type &key) -> list_len_ret_type{
 	return std::get<list_len_ret_type>(send_task(LIST_LEN, key).get());
 }
 
-auto SerialDatabase::list_get(const key_type &key, int index) -> list_get_ret_type {
+auto SerialDatabase::list_get(const key_type &key, int64_t index) -> list_get_ret_type {
 	return std::get<list_get_ret_type>(send_task(LIST_GET, std::make_tuple(key, index)).get());
 }
 
-auto SerialDatabase::list_set(const key_type &key, int index, const std::string &value) -> list_set_ret_type {
+auto SerialDatabase::list_set(const key_type &key, int64_t index, const std::string &value) -> list_set_ret_type {
 	return std::get<list_set_ret_type>(send_task(LIST_SET, std::make_tuple(key, index, value)).get());
 }
 
@@ -239,23 +239,23 @@ auto SerialDatabase::list_push_right(const key_type &key, list_t values) -> list
 	return std::get<list_push_right_ret_type>(send_task(LIST_PUSH_RIGHT, std::make_tuple(key, std::move(values))).get());
 }
 
-auto SerialDatabase::list_pop_left(const key_type &key, int n) -> list_pop_left_ret_type {
+auto SerialDatabase::list_pop_left(const key_type &key, int64_t n) -> list_pop_left_ret_type {
 	return std::get<list_pop_left_ret_type>(send_task(LIST_POP_LEFT, std::make_tuple(key, n)).get());
 }
 
-auto SerialDatabase::list_pop_right(const key_type &key, int n) -> list_pop_right_ret_type {
+auto SerialDatabase::list_pop_right(const key_type &key, int64_t n) -> list_pop_right_ret_type {
 	return std::get<list_pop_right_ret_type>(send_task(LIST_POP_RIGHT, std::make_tuple(key, n)).get());
 }
 
-auto SerialDatabase::list_range(const key_type &key, int start, int stop) -> list_range_ret_type {
+auto SerialDatabase::list_range(const key_type &key, int64_t start, int64_t stop) -> list_range_ret_type {
 	return std::get<list_range_ret_type>(send_task(LIST_RANGE, std::make_tuple(key, start, stop)).get());
 }
 
-auto SerialDatabase::list_trim(const key_type &key, int start, int stop) -> list_trim_ret_type {
+auto SerialDatabase::list_trim(const key_type &key, int64_t start, int64_t stop) -> list_trim_ret_type {
 	return std::get<list_trim_ret_type>(send_task(LIST_TRIM, std::make_tuple(key, start, stop)).get());
 }
 
-auto SerialDatabase::list_remove(const key_type &key, const std::string &value, int count) -> list_remove_ret_type {
+auto SerialDatabase::list_remove(const key_type &key, const std::string &value, int64_t count) -> list_remove_ret_type {
 	return std::get<list_remove_ret_type>(send_task(LIST_REMOVE, std::make_tuple(key, value, count)).get());
 }
 
