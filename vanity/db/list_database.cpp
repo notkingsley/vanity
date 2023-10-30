@@ -49,6 +49,9 @@ ListDatabase::list_set(const key_type &key, int index, const std::string &value)
 
 std::variant<size_t, ErrorKind>
 ListDatabase::list_push_left(const key_type &key, list_t values) {
+	if (values.empty())
+		return 0ull;
+
 	if (not m_data.contains(key))
 		m_data[key] = list_t{};
 
@@ -64,6 +67,9 @@ ListDatabase::list_push_left(const key_type &key, list_t values) {
 
 std::variant<size_t, ErrorKind>
 ListDatabase::list_push_right(const key_type &key, list_t values) {
+	if (values.empty())
+		return 0ull;
+
 	if (not m_data.contains(key))
 		m_data[key] = list_t{};
 
@@ -92,6 +98,9 @@ ListDatabase::list_pop_left(const key_type &key, int n) {
 
 	list_t result;
 	result.splice(result.begin(), list, list.begin(), it);
+	if (list.empty())
+		m_data.erase(key);
+
 	return result;
 }
 
@@ -111,6 +120,9 @@ ListDatabase::list_pop_right(const key_type &key, int n) {
 
 	list_t result;
 	result.splice(result.begin(), list, rit.base(), list.end());
+	if (list.empty())
+		m_data.erase(key);
+
 	return result;
 }
 
@@ -149,7 +161,12 @@ ListDatabase::list_trim(const key_type &key, int start, int end) {
 
 	list.erase(list.begin(), it);
 	list.erase(end_it, list.end());
-	return list.size() - size;
+
+	auto ret = size - list.size();
+	if (list.empty())
+		m_data.erase(key);
+
+	return ret;
 }
 
 std::variant<size_t, ErrorKind>
@@ -190,7 +207,11 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int c
 				++it;
 	}
 
-	return list.size() - size;
+	auto ret = size - list.size();
+	if (list.empty())
+		m_data.erase(key);
+
+	return ret;
 };
 
 std::variant<list_t::iterator, ErrorKind>
@@ -259,7 +280,5 @@ ListDatabase::iterator_pair_inclusive(list_t &list, int start, int end) {
 bool ListDatabase::is_invalid_range(int start, int end) {
 	return (start > 0 and end > 0 and start > end) or (start < 0 and end < 0 and start > end);
 }
-
-
 
 } // namespace vanity::db
