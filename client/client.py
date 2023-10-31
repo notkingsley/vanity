@@ -271,3 +271,95 @@ class Client:
 		:return: The values of the keys.
 		"""
 		return self.request("MANY_GET", list(keys))
+	
+	def list_len(self, key: str):
+		"""
+		Get the length of a list.
+		:param key: The key to get the length of.
+		:return: The length of the list.
+		"""
+		return self.request("LIST_LEN", key)
+	
+	def list_get(self, key: str, index: int):
+		"""
+		Get an item from a list.
+		:param key: The key of the list.
+		:param index: The index of the item.
+		:return: The item at the index.
+		"""
+		return self.request("LIST_GET", key, index)
+	
+	def list_set(self, key: str, index: int, value: str):
+		"""
+		Set an item in a list.
+		:param key: The key of the list.
+		:param index: The index of the item.
+		:param value: The value to set.
+		"""
+		return self.request("LIST_SET", key, index, value)
+	
+	def list_push_left(self, key: str, list: list):
+		"""
+		Push items to the left of a list.
+		:param key: The key of the list.
+		:param list: The items to push.
+		:return: The number of items in the list.
+		"""
+		return self.request("LIST_PUSH_LEFT", key, list)
+	
+	def list_push_right(self, key: str, list: list):
+		"""
+		Push items to the right of a list.
+		:param key: The key of the list.
+		:param list: The items to push.
+		:return: The number of items in the list.
+		"""
+		return self.request("LIST_PUSH_RIGHT", key, list)
+	
+	def list_pop_left(self, key: str, count: int = 1):
+		"""
+		Pop items from the left of a list.
+		:param key: The key of the list.
+		:param count: The number of items to pop.
+		:return: The popped items.
+		"""
+		return self.request("LIST_POP_LEFT", key, count)
+	
+	def list_pop_right(self, key: str, count: int = 1):
+		"""
+		Pop items from the right of a list.
+		:param key: The key of the list.
+		:param count: The number of items to pop.
+		:return: The popped items.
+		"""
+		return self.request("LIST_POP_RIGHT", key, count)
+	
+	def list_range(self, key: str, start: int, end: int):
+		"""
+		Get a range of items from a list.
+		:param key: The key of the list.
+		:param start: The start index.
+		:param end: The end index.
+		:return: The items in the range.
+		"""
+		return self.request("LIST_RANGE", key, start, end)
+	
+	def list_trim(self, key: str, start: int, end: int):
+		"""
+		Trim a list.
+		:param key: The key of the list.
+		:param start: The start index.
+		:param end: The end index.
+		:return: The number of items trimmed.
+		"""
+		return self.request("LIST_TRIM", key, start, end)
+	
+	def list_remove(self, key: str, value: str, count: int = 1):
+		"""
+		Remove items from a list.
+		:param key: The key of the list.
+		:param value: The value to remove.
+		:param count: The number of items to remove.
+		:return: The number of items removed.
+		"""
+		return self.request("LIST_REMOVE", key, value, count)

@@ -1,4 +1,5 @@
 from enum import Enum
+from warnings import warn
 
 
 class ServerConstant(Enum):
@@ -14,6 +15,18 @@ class ServerConstant(Enum):
 	BAD_REQUEST = "BAD_REQUEST"
 	BAD_TYPE = "BAD_TYPE"
 
+
+class ServerType(Enum):
+	"""
+	Server response types.
+	"""
+	STRING = "STR"
+	INT = "INT"
+	FLOAT = "FLOAT"
+	ARRAY = "ARR"
+	LIST = "LIST"
+	NULL = "NULL"
+	
 
 class InvalidResponse(Exception):
 	"""
@@ -103,11 +116,11 @@ def extract_float(msg: str):
 		return None, msg
 
 
-def extract_list(msg: str):
+def extract_array(msg: str):
 	"""
-	Extract a list from a response.
+	Extract an array from a response.
 	:param msg: The response to extract from.
-	:return: The extracted list, or None if no list could be deciphered.
+	:return: The extracted array, or None if no array could be deciphered.
 	"""
 	num, msg = extract_len(msg)
 	if num is None:
@@ -124,7 +137,7 @@ def extract_list(msg: str):
 			raise InvalidResponse(f"Could not extract type from {msg}.")
 		
 		element, msg = extract_as(msg, _type)
-		if element is None and _type is not type(None):
+		if element is None and _type is not ServerType.NULL:
 			raise InvalidResponse(f"Could not extract element from {msg}.")
 		
 		elements.append(element)
@@ -136,44 +149,75 @@ def extract_list(msg: str):
 	return elements, msg
 
 
-def extract_as(msg: str, _type: type[int | float | str | list | None]):
+def extract_list(msg: str):
+	"""
+	Extract a list from a response.
+	:param msg: The response to extract from.
+	:return: The extracted list, or None if no list could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	if not msg.startswith("["):
+		return None, msg
+	msg = msg[1:].lstrip()
+	
+	elements = list()
+	for _ in range(num):
+		element, msg = extract_as(msg, ServerType.STRING)
+		elements.append(element)
+
+	if not msg.startswith("]"):
+		raise InvalidResponse(f"Message did not end with ']'.")
+	msg = msg[1:].lstrip()
+	
+	return elements, msg
+
+
+def extract_as(msg: str, _type: ServerType):
 	"""
 	Extract a value from a response as a given type.
 	:param msg: The response to extract from.
 	:param type: The type to extract as.
 	:return: The extracted value, or None if no value could be deciphered.
 	"""
-	if _type is str:
+	if _type == ServerType.STRING:
 		return extract_str(msg)
-	if _type is int:
+	if _type == ServerType.INT:
 		return extract_int(msg)
-	if _type is float:
+	if _type == ServerType.FLOAT:
 		return extract_float(msg)
-	if _type is list:
+	if _type == ServerType.ARRAY:
+		return extract_array(msg)
+	if _type == ServerType.LIST:
 		return extract_list(msg)
-	if _type is type(None):
+	if _type == ServerType.NULL:
 		return None, msg
 
 
-def extract_type(msg: str) -> tuple[type[str | int | float | list | None] | None, str]:
+def extract_type(msg: str) -> tuple[ServerType | None, str]:
 	"""
 	Extract the type of a response, if any.
 	Return the type, and the remaining message.
 	"""
 	if msg.startswith(":STR"):
-		return str, msg[4:].lstrip()
+		return ServerType.STRING, msg[4:].lstrip()
 	
 	elif msg.startswith(":INT"):
-		return int, msg[4:].lstrip()
+		return ServerType.INT, msg[4:].lstrip()
 	
 	elif msg.startswith(":FLOAT"):
-		return float, msg[6:].lstrip()
+		return ServerType.FLOAT, msg[6:].lstrip()
 	
 	elif msg.startswith(":NULL"):
-		return type(None), msg[5:].lstrip()
+		return ServerType.NULL, msg[5:].lstrip()
 	
 	elif msg.startswith(":ARR"):
-		return list, msg[4:].lstrip()
+		return ServerType.ARRAY, msg[4:].lstrip()
+
+	elif msg.startswith(":LIST"):
+		return ServerType.LIST, msg[5:].lstrip()
 
 	return None, msg
 
@@ -187,10 +231,10 @@ class Response:
 		self.type, raw = extract_type(raw)
 
 		self.value = None
-		if self.type:
+		if self.type is not None:
 			self.value, raw = extract_as(raw, self.type)
 			if raw:
-				print(f"Raw: {raw}")
+				warn(f"Response has trailing data: {raw}")
 			return
 
 	def __str__(self) -> str:
@@ -248,3 +292,39 @@ class Response:
 		:return: True if the response is BAD_TYPE, False otherwise.
 		"""
 		return self.status == ServerConstant.BAD_TYPE
+	
+	def type_is_str(self) -> bool:
+		"""
+		:return: True if the response is of type STRING, False otherwise.
+		"""
+		return self.type == ServerType.STRING
+	
+	def type_is_int(self) -> bool:
+		"""
+		:return: True if the response is of type INT, False otherwise.
+		"""
+		return self.type == ServerType.INT
+	
+	def type_is_float(self) -> bool:
+		"""
+		:return: True if the response is of type FLOAT, False otherwise.
+		"""
+		return self.type == ServerType.FLOAT
+	
+	def type_is_array(self) -> bool:
+		"""
+		:return: True if the response is of type ARRAY, False otherwise.
+		"""
+		return self.type == ServerType.ARRAY
+	
+	def type_is_null(self) -> bool:
+		"""
+		:return: True if the response is of type NULL, False otherwise.
+		"""
+		return self.type == ServerType.NULL
+	
+	def type_is_list(self) -> bool:
+		"""
+		:return: True if the response is of type LIST, False otherwise.
+		"""
+		return self.type == ServerType.LIST
