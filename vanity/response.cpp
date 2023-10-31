@@ -138,6 +138,10 @@ void serialize(int64_t data, std::string& str) {
 	str += std::to_string(data);
 }
 
+void serialize(size_t data, std::string& str) {
+	serialize(int64_t(data), str);
+}
+
 void serialize(double data, std::string& str) {
 	str += serialize_type<double>();
 	str += std::to_string(data);

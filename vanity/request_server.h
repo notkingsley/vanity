@@ -79,6 +79,36 @@ public:
 	// a change_password request was received from a client
 	virtual void request_change_password(Client& client, const std::string& password) = 0;
 
+	// a list_len request was received from a client
+	virtual void request_list_len(Client& client, const std::string& key) = 0;
+
+	// a list_get request was received from a client
+	virtual void request_list_get(Client& client, const std::string& key, int64_t index) = 0;
+
+	// a list_set request was received from a client
+	virtual void request_list_set(Client& client, const std::string& key, int64_t index, const std::string& value) = 0;
+
+	// a list_push_left request was received from a client
+	virtual void request_list_push_left(Client& client, const std::string& key, std::list<std::string> values) = 0;
+
+	// a list_push_right request was received from a client
+	virtual void request_list_push_right(Client& client, const std::string& key, std::list<std::string> values) = 0;
+
+	// a list_pop_left request was received from a client
+	virtual void request_list_pop_left(Client& client, const std::string& key, int64_t count) = 0;
+
+	// a list_pop_right request was received from a client
+	virtual void request_list_pop_right(Client& client, const std::string& key, int64_t count) = 0;
+
+	// a list_range request was received from a client
+	virtual void request_list_range(Client& client, const std::string& key, int64_t start, int64_t stop) = 0;
+
+	// a list_trim request was received from a client
+	virtual void request_list_trim(Client& client, const std::string& key, int64_t start, int64_t stop) = 0;
+
+	// a list_remove request was received from a client
+	virtual void request_list_remove(Client& client, const std::string& key, const std::string& value, int64_t count) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

@@ -165,6 +165,9 @@ void serialize(const std::string& data, std::string& str);
 // serialize an int object to a string
 void serialize(int64_t data, std::string& str);
 
+// serialize a size_t object to a string
+void serialize(size_t data, std::string& str);
+
 // serialize a double object to a string
 void serialize(double data, std::string& str);
 
