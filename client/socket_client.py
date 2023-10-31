@@ -78,10 +78,3 @@ class SocketClient:
 		Close the socket.
 		"""
 		self.sock.close()
-
-
-if __name__ == "__main__":
-	sock = SocketClient("localhost", 9954)
-	sock.send("PING")
-	print(sock.read_msg())
-	sock.close()

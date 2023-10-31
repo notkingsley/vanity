@@ -231,11 +231,15 @@ class Response:
 		self.type, raw = extract_type(raw)
 
 		self.value = None
+		self.body = None
+
 		if self.type is not None:
 			self.value, raw = extract_as(raw, self.type)
 			if raw:
 				warn(f"Response has trailing data: {raw}")
-			return
+		
+		else:
+			self.body = raw
 
 	def __str__(self) -> str:
 		status = self.status.name if self.status else self.status

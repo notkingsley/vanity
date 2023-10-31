@@ -4,7 +4,7 @@ from client.server_handle import ServerHandle
 from tests.utils import get_free_port, make_client
 
 
-class DatabaseTest(unittest.TestCase):
+class BaseDatabaseTest(unittest.TestCase):
 	@classmethod
 	def setUpClass(cls) -> None:
 		port = get_free_port()
@@ -20,6 +20,8 @@ class DatabaseTest(unittest.TestCase):
 	def tearDown(self):
 		self.client.reset()
 
+
+class PrimitiveDatabaseTest(BaseDatabaseTest):
 	def test_set_get(self):
 		"""
 		Test that we can set a value and then get it.
