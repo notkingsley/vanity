@@ -5,6 +5,7 @@
 #ifndef VANITY_REQUEST_SERVER_H
 #define VANITY_REQUEST_SERVER_H
 
+#include <list>
 
 #include "abstract_server.h"
 #include "logging.h"

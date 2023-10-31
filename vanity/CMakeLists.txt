@@ -14,6 +14,7 @@ add_executable(vanity
 	client.cpp
 	request_server.cpp
 	response.cpp
+	serialize.cpp
 	session_server.cpp
     vanity.cpp
 )

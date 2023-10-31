@@ -3,6 +3,7 @@
 //
 
 #include "base_database_server.h"
+#include "serialize.h"
 
 namespace vanity {
 
