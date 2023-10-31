@@ -7,7 +7,7 @@ def get_default_auth():
 	"""
 	Get the default authentication string.
 	"""
-	return """AUTH "vanity" "vanity" """
+	return """AUTH (6)vanity (6)vanity"""
 
 
 def get_prompt(host: str, port: int) -> str:
