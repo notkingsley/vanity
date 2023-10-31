@@ -116,7 +116,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_str", "test_type_str_value")
 		response = self.client.get("test_type_str")
-		self.assertEqual(response.type, str)
+		self.assertTrue(response.type_is_str())
 	
 	def test_get_type_int(self):
 		"""
@@ -124,7 +124,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_int", 123)
 		response = self.client.get("test_type_int")
-		self.assertEqual(response.type, int)
+		self.assertTrue(response.type_is_int())
 	
 	def test_get_type_float(self):
 		"""
@@ -132,7 +132,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_float", 123.456)
 		response = self.client.get("test_type_float")
-		self.assertEqual(response.type, float)
+		self.assertTrue(response.type_is_float())
 	
 	def test_get_type_null(self):
 		"""
@@ -147,7 +147,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_str", "test_type_str_value")
 		response = self.client.type("test_type_str")
-		self.assertEqual(response.type, str)
+		self.assertTrue(response.type_is_str())
 		self.assertIsNone(response.value)
 	
 	def test_type_int(self):
@@ -156,7 +156,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_int", 123)
 		response = self.client.type("test_type_int")
-		self.assertEqual(response.type, int)
+		self.assertTrue(response.type_is_int())
 		self.assertIsNone(response.value)
 	
 	def test_type_float(self):
@@ -165,7 +165,7 @@ class DatabaseTest(unittest.TestCase):
 		"""
 		self.client.set("test_type_float", 123.456)
 		response = self.client.type("test_type_float")
-		self.assertEqual(response.type, float)
+		self.assertTrue(response.type_is_float())
 		self.assertIsNone(response.value)
 	
 	def test_exists(self):
