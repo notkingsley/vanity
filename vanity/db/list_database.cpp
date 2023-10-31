@@ -194,7 +194,7 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int64
 		auto end_it = list.rend();
 		for (int64_t i = 0; i > count and it != end_it;)
 			if (*it == element)
-				it = std::make_reverse_iterator(list.erase(it.base())), --i;
+				it = std::make_reverse_iterator(list.erase((++it).base())), --i;
 			else
 				++it;
 	} else {
