@@ -13,6 +13,8 @@
 #include <variant>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
+
 
 namespace vanity::db {
 
@@ -21,6 +23,7 @@ using int_t = int64_t;
 using float_t = double;
 
 using list_t = std::list<string_t>;
+using set_t = std::unordered_set<string_t>;
 
 /*
  * A BaseDatabase is the base class for all databases
@@ -29,7 +32,7 @@ class BaseDatabase
 {
 public:
 	using key_type = string_t;
-	using data_type = std::variant<string_t, int_t, float_t, list_t>;
+	using data_type = std::variant<string_t, int_t, float_t, list_t, set_t>;
 
 	// create a database
 	BaseDatabase() = default;

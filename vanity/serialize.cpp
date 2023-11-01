@@ -35,7 +35,7 @@ void serialize(double data, std::string& str) {
 	str += std::to_string(data);
 }
 
-void serialize(const std::variant<std::string, int64_t , double, std::list<std::string>>& data, std::string& str) {
+void serialize(const primary_serialize_type& data, std::string& str) {
 	switch (data.index()) {
 		case 0:
 		{
@@ -57,6 +57,11 @@ void serialize(const std::variant<std::string, int64_t , double, std::list<std::
 			serialize(std::get<3>(data), str);
 			break;
 		}
+		case 4:
+		{
+			serialize(std::get<4>(data), str);
+			break;
+		}
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -70,6 +75,16 @@ void serialize(const std::list<std::string>& data, std::string& str) {
 	for (const auto& s : data)
 		serialize_body(s, str);
 	str += ']';
+}
+
+void serialize(const std::unordered_set<std::string>& data, std::string& str) {
+	str += serialize_type<std::unordered_set<std::string>>();
+	str += '(' + std::to_string(data.size()) + ")";
+
+	str += '{';
+	for (const auto &s: data)
+		serialize_body(s, str);
+	str += '}';
 }
 
 } // namespace vanity

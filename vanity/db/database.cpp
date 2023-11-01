@@ -70,11 +70,31 @@ list_t read<list_t>(std::ifstream &in)
 	return list;
 }
 
-// write a db_data_type to the output stream
+// write a set to the output stream
+template<>
+void write<set_t>(std::ofstream &out, const set_t& value)
+{
+	write(out, value.size());
+	for (const auto& s : value)
+		write(out, s);
+}
+
+// read a set from the input stream
+template<>
+set_t read<set_t>(std::ifstream &in)
+{
+	set_t set{};
+	std::streamsize size = read<std::streamsize>(in);
+	for (std::streamsize i = 0; i < size; ++i)
+		set.insert(read<string_t>(in));
+	return set;
+}
+
+// write a primary_serialize_type to the output stream
 template<>
 void write<db_data_type>(std::ofstream &out, const db_data_type& value)
 {
-	// int8_t saves us 7 bytes per db_data_type since we'll never have > 256 types
+	// int8_t saves us 7 bytes per primary_serialize_type since we'll never have > 256 types
 	auto index = static_cast<int8_t>(value.index());
 	write(out, index);
 	switch (index) {
@@ -86,12 +106,14 @@ void write<db_data_type>(std::ofstream &out, const db_data_type& value)
 			return write(out, std::get<2>(value));
 		case 3:
 			return write(out, std::get<3>(value));
+		case 4:
+			return write(out, std::get<4>(value));
 		default:
 			throw std::runtime_error("invalid type");
 	}
 }
 
-// read a db_data_type from the input stream
+// read a primary_serialize_type from the input stream
 template<>
 db_data_type read<db_data_type>(std::ifstream &in)
 {
@@ -104,6 +126,8 @@ db_data_type read<db_data_type>(std::ifstream &in)
 			return read<db_index_t<2>>(in);
 		case 3:
 			return read<db_index_t<3>>(in);
+		case 4:
+			return read<db_index_t<4>>(in);
 		default:
 			throw std::runtime_error("invalid type");
 	}
