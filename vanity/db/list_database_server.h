@@ -49,10 +49,10 @@ public:
 private:
 	// handle a variant result returned by a list request
 	template<class T>
-	void handle_result(Client& client, const std::variant<T, db::ErrorKind>& result);
+	void handle_result(Client& client, const std::variant<T, db::ListErrorKind>& result);
 
-	// send a db::ErrorKind to the client
-	void send_error(Client& client, db::ErrorKind kind);
+	// send a db::ListErrorKind to the client
+	void send_error(Client& client, db::ListErrorKind kind);
 };
 
 } // namespace vanity

@@ -16,7 +16,7 @@ ListDatabase &ListDatabase::operator=(ListDatabase &&other) noexcept {
 	return *this;
 }
 
-std::variant<size_t, ErrorKind>
+std::variant<size_t, ListErrorKind>
 ListDatabase::list_len(const key_type &key) {
 	if (not m_data.contains(key))
 		return 0ull;
@@ -25,29 +25,29 @@ ListDatabase::list_len(const key_type &key) {
 	if (std::holds_alternative<list_t>(value))
 		return std::get<list_t>(value).size();
 	else
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 }
 
-std::variant<std::string, ErrorKind>
+std::variant<std::string, ListErrorKind>
 ListDatabase::list_get(const key_type &key, int64_t index) {
 	auto it_or_error = iterator_or_error(key, index);
-	if (std::holds_alternative<ErrorKind>(it_or_error))
-		return std::get<ErrorKind>(it_or_error);
+	if (std::holds_alternative<ListErrorKind>(it_or_error))
+		return std::get<ListErrorKind>(it_or_error);
 	return *std::get<list_t::iterator>(it_or_error);
 }
 
-std::variant<bool, ErrorKind>
+std::variant<bool, ListErrorKind>
 ListDatabase::list_set(const key_type &key, int64_t index, const std::string &value) {
 	auto it_or_error = iterator_or_error(key, index);
-	if (std::holds_alternative<ErrorKind>(it_or_error))
-		return std::get<ErrorKind>(it_or_error);
+	if (std::holds_alternative<ListErrorKind>(it_or_error))
+		return std::get<ListErrorKind>(it_or_error);
 
 	auto& it = std::get<list_t::iterator>(it_or_error);
 	*it = value;
 	return true;
 }
 
-std::variant<size_t, ErrorKind>
+std::variant<size_t, ListErrorKind>
 ListDatabase::list_push_left(const key_type &key, list_t values) {
 	if (values.empty())
 		return 0ull;
@@ -57,7 +57,7 @@ ListDatabase::list_push_left(const key_type &key, list_t values) {
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	values.reverse();
@@ -65,7 +65,7 @@ ListDatabase::list_push_left(const key_type &key, list_t values) {
 	return list.size();
 }
 
-std::variant<size_t, ErrorKind>
+std::variant<size_t, ListErrorKind>
 ListDatabase::list_push_right(const key_type &key, list_t values) {
 	if (values.empty())
 		return 0ull;
@@ -75,21 +75,21 @@ ListDatabase::list_push_right(const key_type &key, list_t values) {
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	list.splice(list.end(), std::move(values));
 	return list.size();
 }
 
-std::variant<list_t, ErrorKind>
+std::variant<list_t, ListErrorKind>
 ListDatabase::list_pop_left(const key_type &key, int64_t n) {
 	if (not m_data.contains(key))
 		return list_t{};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	auto it = iterator_or_end(list, n);
@@ -104,14 +104,14 @@ ListDatabase::list_pop_left(const key_type &key, int64_t n) {
 	return result;
 }
 
-std::variant<list_t, ErrorKind>
+std::variant<list_t, ListErrorKind>
 ListDatabase::list_pop_right(const key_type &key, int64_t n) {
 	if (not m_data.contains(key))
 		return list_t{};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	auto rit = reverse_iterator_or_rend(list, n);
@@ -126,14 +126,14 @@ ListDatabase::list_pop_right(const key_type &key, int64_t n) {
 	return result;
 }
 
-std::variant<list_t, ErrorKind>
+std::variant<list_t, ListErrorKind>
 ListDatabase::list_range(const key_type &key, int64_t start, int64_t end) {
 	if (not m_data.contains(key))
 		return list_t{};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	if (is_invalid_range(start, end))
 		return list_t{};
@@ -143,14 +143,14 @@ ListDatabase::list_range(const key_type &key, int64_t start, int64_t end) {
 	return list_t{it, end_it};
 }
 
-std::variant<size_t, ErrorKind>
+std::variant<size_t, ListErrorKind>
 ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
 	if (not m_data.contains(key))
 		return 0ull;
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	if (is_invalid_range(start, end))
 		return 0ull;
@@ -169,14 +169,14 @@ ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
 	return ret;
 }
 
-std::variant<size_t, ErrorKind>
+std::variant<size_t, ListErrorKind>
 ListDatabase::list_remove(const key_type &key, const std::string &element, int64_t count) {
 	if (not m_data.contains(key))
 		return 0ull;
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	auto size = list.size();
@@ -214,19 +214,19 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int64
 	return ret;
 };
 
-std::variant<list_t::iterator, ErrorKind>
+std::variant<list_t::iterator, ListErrorKind>
 ListDatabase::iterator_or_error(const key_type &key, int64_t index) {
 	if (not m_data.contains(key))
-		return ErrorKind::OutOfRange;
+		return ListErrorKind::OutOfRange;
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<list_t>(value))
-		return ErrorKind::NotList;
+		return ListErrorKind::NotList;
 
 	auto& list = std::get<list_t>(value);
 	auto it = iterator_or_end(list, index);
 	if (it == list.end())
-		return ErrorKind::OutOfRange;
+		return ListErrorKind::OutOfRange;
 	return it;
 }
 

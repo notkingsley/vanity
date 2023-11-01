@@ -17,8 +17,8 @@ void ListDatabaseServer::request_list_get(Client &client, const std::string &key
 
 void ListDatabaseServer::request_list_set(Client &client, const std::string &key, int64_t index, const std::string &value) {
 	auto result = database(client).list_set(key, index, value);
-	if (std::holds_alternative<db::ErrorKind>(result))
-		send_error(client, std::get<db::ErrorKind>(result));
+	if (std::holds_alternative<db::ListErrorKind>(result))
+		send_error(client, std::get<db::ListErrorKind>(result));
 	else
 		send(client, ok());
 }
@@ -52,20 +52,20 @@ void ListDatabaseServer::request_list_remove(Client &client, const std::string &
 }
 
 template<class T>
-void ListDatabaseServer::handle_result(Client &client, const std::variant<T, db::ErrorKind> &result) {
-	if (std::holds_alternative<db::ErrorKind>(result))
-		send_error(client, std::get<db::ErrorKind>(result));
+void ListDatabaseServer::handle_result(Client &client, const std::variant<T, db::ListErrorKind> &result) {
+	if (std::holds_alternative<db::ListErrorKind>(result))
+		send_error(client, std::get<db::ListErrorKind>(result));
 	else
 		send(client, ok(serialize(std::get<T>(result))));
 }
 
-void ListDatabaseServer::send_error(Client &client, db::ErrorKind kind) {
+void ListDatabaseServer::send_error(Client &client, db::ListErrorKind kind) {
 	switch (kind) {
-		case db::ErrorKind::NotList:
+		case db::ListErrorKind::NotList:
 		{
 			return send(client, bad_type("not a list"));
 		}
-		case db::ErrorKind::OutOfRange:
+		case db::ListErrorKind::OutOfRange:
 		{
 			return send(client, error("index out of range"));
 		}

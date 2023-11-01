@@ -10,7 +10,7 @@
 
 namespace vanity::db {
 
-enum class ErrorKind {
+enum class ListErrorKind {
 	NotList,
 	OutOfRange,
 };
@@ -37,62 +37,62 @@ public:
 
 	// get the length of a list key
 	// returns the length, 0 if value does not exist or is empty,
-	// or ErrorKind::NotList if the value exists and is not a list
-	std::variant<size_t, ErrorKind> list_len(const key_type &key);
+	// or ListErrorKind::NotList if the value exists and is not a list
+	std::variant<size_t, ListErrorKind> list_len(const key_type &key);
 
 	// get the value for a list key at a given index
-	// returns the value, or ErrorKind::NotList if the value is not a list
-	// or ErrorKind::OutOfRange if the index is out of range or if value does not exist
-	std::variant<std::string, ErrorKind> list_get(const key_type &key, int64_t index);
+	// returns the value, or ListErrorKind::NotList if the value is not a list
+	// or ListErrorKind::OutOfRange if the index is out of range or if value does not exist
+	std::variant<std::string, ListErrorKind> list_get(const key_type &key, int64_t index);
 
 	// set the value for a list key at a given index
-	// returns true if the value was set, or ErrorKind::NotList if the value is not a list
-	// or ErrorKind::OutOfRange if the index is out of range or if value does not exist
-	std::variant<bool, ErrorKind> list_set(const key_type &key, int64_t index, const std::string& value);
+	// returns true if the value was set, or ListErrorKind::NotList if the value is not a list
+	// or ListErrorKind::OutOfRange if the index is out of range or if value does not exist
+	std::variant<bool, ListErrorKind> list_set(const key_type &key, int64_t index, const std::string& value);
 
 	// push values to the top of a list
-	// returns the new length, or ErrorKind::NotList if the value is not a list
-	std::variant<size_t, ErrorKind> list_push_left(const key_type &key, list_t values);
+	// returns the new length, or ListErrorKind::NotList if the value is not a list
+	std::variant<size_t, ListErrorKind> list_push_left(const key_type &key, list_t values);
 
 	// push values to the bottom of a list
-	// returns the new length, or ErrorKind::NotList if the value is not a list
-	std::variant<size_t, ErrorKind> list_push_right(const key_type &key, list_t values);
+	// returns the new length, or ListErrorKind::NotList if the value is not a list
+	std::variant<size_t, ListErrorKind> list_push_right(const key_type &key, list_t values);
 
 	// pop n value from the top of a list
-	// returns the values or ErrorKind::NotList if the value is not a list
+	// returns the values or ListErrorKind::NotList if the value is not a list
 	// if the index is positive and out of range, returns the values up to the end of the list
 	// if the index is negative and out of range, returns an empty list
-	std::variant<list_t, ErrorKind> list_pop_left(const key_type &key, int64_t n);
+	std::variant<list_t, ListErrorKind> list_pop_left(const key_type &key, int64_t n);
 
 	// pop n values from the bottom of a list
-	// returns the values, or ErrorKind::NotList if the value is not a list
+	// returns the values, or ListErrorKind::NotList if the value is not a list
 	// if the index is positive and out of range, returns the values up to the end of the list
 	// if the index is negative and out of range, returns an empty list
-	std::variant<list_t, ErrorKind> list_pop_right(const key_type &key, int64_t n);
+	std::variant<list_t, ListErrorKind> list_pop_right(const key_type &key, int64_t n);
 
 	// get the value for a range of a list key inclusively
-	// returns the values, or ErrorKind::NotList if the value is not a list
+	// returns the values, or ListErrorKind::NotList if the value is not a list
 	// returns an empty list if the range is out of bounds or invalid
-	std::variant<list_t, ErrorKind> list_range(const key_type &key, int64_t start, int64_t end);
+	std::variant<list_t, ListErrorKind> list_range(const key_type &key, int64_t start, int64_t end);
 
 	// trim the list stored at key, so that it will
 	// contain only the specified range of elements (inclusively)
 	// returns the number of trimmed elements
-	// or ErrorKind::NotList if the value is not a list
-	std::variant<size_t, ErrorKind> list_trim(const key_type &key, int64_t start, int64_t end);
+	// or ListErrorKind::NotList if the value is not a list
+	std::variant<size_t, ListErrorKind> list_trim(const key_type &key, int64_t start, int64_t end);
 
 	// remove a number of elements equal to count from the list stored at key
 	// that hold the value element
-	// returns the number of removed elements, or ErrorKind::NotList if the value is not a list
+	// returns the number of removed elements, or ListErrorKind::NotList if the value is not a list
 	// removes from the end if count is negative or all elements if count is 0
-	std::variant<size_t, ErrorKind> list_remove(const key_type &key, const std::string& element, int64_t count);
+	std::variant<size_t, ListErrorKind> list_remove(const key_type &key, const std::string& element, int64_t count);
 
 private:
 	// get the iterator for a list key at a given index
-	// returns the iterator, or ErrorKind::NotList if the value is not a list
-	// or ErrorKind::OutOfRange if the index is out of range or if value does not exist
+	// returns the iterator, or ListErrorKind::NotList if the value is not a list
+	// or ListErrorKind::OutOfRange if the index is out of range or if value does not exist
 	// index can be negative to get the element from the end of the list
-	std::variant<list_t::iterator, ErrorKind> iterator_or_error(const key_type &key, int64_t index);
+	std::variant<list_t::iterator, ListErrorKind> iterator_or_error(const key_type &key, int64_t index);
 
 	// get the iterator for a given list at a given index
 	// returns the iterator, or the end iterator if the index is out of range
