@@ -97,3 +97,19 @@ class PersistenceTest(unittest.TestCase):
 		with make_client(self.port) as client:
 			response = client.get("test_persist_float")
 			self.assertEqual(response.value, 123.456)
+	
+	def test_persist_list(self):
+		"""
+		Test that we can set a list value on persist,
+		restart the server, and get the value.
+		"""
+		with make_client(self.port) as client:
+			client.list_push_right("test_persist_list", ["red", "green", "blue"])
+			response = client.persist()
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client(self.port) as client:
+			response = client.list_range("test_persist_list", 0, -1)
+			self.assertEqual(response.value, ["red", "green", "blue"])
