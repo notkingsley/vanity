@@ -7,7 +7,7 @@
 
 #include "primitive_database.h"
 #include "list_database.h"
-#include "exceptions.h"
+#include "set_database.h"
 
 
 namespace vanity::db {
@@ -15,7 +15,7 @@ namespace vanity::db {
 /*
  * A Database is an abstraction for a key value database
  */
-class Database : public PrimitiveDatabase, public ListDatabase
+class Database : public PrimitiveDatabase, public ListDatabase, public SetDatabase
 {
 public:
 	// create a new database
