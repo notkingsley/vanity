@@ -153,6 +153,102 @@ void SerialDatabase::perform(task_type task, task_data_type data, std::promise<r
 			promise.set_value(Database::list_remove(key, value, count));
 			break;
 		}
+		case SET_ADD:
+		{
+			auto& [key, values] = std::get<set_add_type>(data);
+			promise.set_value(Database::set_add(key, std::move(values)));
+			break;
+		}
+		case SET_ALL:
+		{
+			auto& key = std::get<set_all_type>(data);
+			promise.set_value(Database::set_all(key));
+			break;
+		}
+		case SET_REMOVE:
+		{
+			auto& [key, count] = std::get<set_remove_type>(data);
+			promise.set_value(Database::set_remove(key, count));
+			break;
+		}
+		case SET_DISCARD:
+		{
+			auto& [key, values] = std::get<set_discard_type>(data);
+			promise.set_value(Database::set_discard(key, values));
+			break;
+		}
+		case SET_LEN:
+		{
+			auto& key = std::get<set_len_type>(data);
+			promise.set_value(Database::set_len(key));
+			break;
+		}
+		case SET_CONTAINS:
+		{
+			auto& [key, value] = std::get<set_contains_type>(data);
+			promise.set_value(Database::set_contains(key, value));
+			break;
+		}
+		case SET_MOVE:
+		{
+			auto& [source, dest, value] = std::get<set_move_type>(data);
+			promise.set_value(Database::set_move(source, dest, value));
+			break;
+		}
+		case SET_UNION:
+		{
+			auto& keys = std::get<set_union_type>(data);
+			promise.set_value(Database::set_union(keys));
+			break;
+		}
+		case SET_UNION_INTO:
+		{
+			auto& [dest, keys] = std::get<set_union_into_type>(data);
+			promise.set_value(Database::set_union_into(dest, keys));
+			break;
+		}
+		case SET_UNION_LEN:
+		{
+			auto& keys = std::get<set_union_len_type>(data);
+			promise.set_value(Database::set_union_len(keys));
+			break;
+		}
+		case SET_INTERSECTION:
+		{
+			auto& keys = std::get<set_intersection_type>(data);
+			promise.set_value(Database::set_intersection(keys));
+			break;
+		}
+		case SET_INTERSECTION_INTO:
+		{
+			auto& [dest, keys] = std::get<set_intersection_into_type>(data);
+			promise.set_value(Database::set_intersection_into(dest, keys));
+			break;
+		}
+		case SET_INTERSECTION_LEN:
+		{
+			auto& keys = std::get<set_intersection_len_type>(data);
+			promise.set_value(Database::set_intersection_len(keys));
+			break;
+		}
+		case SET_DIFFERENCE:
+		{
+			auto& [key1, key2] = std::get<set_difference_type>(data);
+			promise.set_value(Database::set_difference(key1, key2));
+			break;
+		}
+		case SET_DIFFERENCE_INTO:
+		{
+			auto& [dest, key1, key2] = std::get<set_difference_into_type>(data);
+			promise.set_value(Database::set_difference_into(dest, key1, key2));
+			break;
+		}
+		case SET_DIFFERENCE_LEN:
+		{
+			auto& [key1, key2] = std::get<set_difference_len_type>(data);
+			promise.set_value(Database::set_difference_len(key1, key2));
+			break;
+		}
 	}
 }
 
@@ -257,6 +353,71 @@ auto SerialDatabase::list_trim(const key_type &key, int64_t start, int64_t stop)
 
 auto SerialDatabase::list_remove(const key_type &key, const std::string &value, int64_t count) -> list_remove_ret_type {
 	return std::get<list_remove_ret_type>(send_task(LIST_REMOVE, std::make_tuple(key, value, count)).get());
+}
+
+
+auto SerialDatabase::set_add(const key_type &key, set_t values) -> set_add_ret_type {
+	return std::get<set_add_ret_type>(send_task(SET_ADD, std::make_tuple(key, std::move(values))).get());
+}
+
+auto SerialDatabase::set_all(const key_type &key) -> set_all_ret_type{
+	return std::get<set_all_ret_type>(send_task(SET_ALL, key).get());
+}
+
+auto SerialDatabase::set_remove(const key_type &key, size_t count) -> set_remove_ret_type {
+	return std::get<set_remove_ret_type>(send_task(SET_REMOVE, std::make_tuple(key, count)).get());
+}
+
+auto SerialDatabase::set_discard(const key_type &key, const set_t &values) -> set_discard_ret_type{
+	return std::get<set_discard_ret_type>(send_task(SET_DISCARD, std::make_tuple(key, values)).get());
+}
+
+auto SerialDatabase::set_len(const key_type &key) -> set_len_ret_type {
+	return std::get<set_len_ret_type>(send_task(SET_LEN, key).get());
+}
+
+auto SerialDatabase::set_contains(const key_type &key, const std::string &value) -> set_contains_ret_type {
+	return std::get<set_contains_ret_type>(send_task(SET_CONTAINS, std::make_tuple(key, value)).get());
+}
+
+auto SerialDatabase::set_move(const key_type &source, const key_type &dest, const std::string &value) -> set_move_ret_type {
+	return std::get<set_move_ret_type>(send_task(SET_MOVE, std::make_tuple(source, dest, value)).get());
+}
+
+auto SerialDatabase::set_union(const std::vector<key_type> &keys) -> set_union_ret_type {
+	return std::get<set_union_ret_type>(send_task(SET_UNION, keys).get());
+}
+
+auto SerialDatabase::set_union_into(const key_type &dest, const std::vector<key_type> &keys) -> set_union_into_ret_type {
+	return std::get<set_union_into_ret_type>(send_task(SET_UNION_INTO, std::make_tuple(dest, keys)).get());
+}
+
+auto SerialDatabase::set_union_len(const std::vector<key_type> &keys) -> set_union_len_ret_type {
+	return std::get<set_union_len_ret_type>(send_task(SET_UNION_LEN, keys).get());
+}
+
+auto SerialDatabase::set_intersection(const std::vector<key_type> &keys) -> set_intersection_ret_type {
+	return std::get<set_intersection_ret_type>(send_task(SET_INTERSECTION, keys).get());
+}
+
+auto SerialDatabase::set_intersection_into(const key_type &dest, const std::vector<key_type> &keys) -> set_intersection_into_ret_type {
+	return std::get<set_intersection_into_ret_type>(send_task(SET_INTERSECTION_INTO, std::make_tuple(dest, keys)).get());
+}
+
+auto SerialDatabase::set_intersection_len(const std::vector<key_type> &keys) -> set_intersection_len_ret_type {
+	return std::get<set_intersection_len_ret_type>(send_task(SET_INTERSECTION_LEN, keys).get());
+}
+
+auto SerialDatabase::set_difference(const key_type &key1, const key_type &key2) -> set_difference_ret_type {
+	return std::get<set_difference_ret_type>(send_task(SET_DIFFERENCE, std::make_tuple(key1, key2)).get());
+}
+
+auto SerialDatabase::set_difference_into(const key_type &dest, const key_type &key1, const key_type &key2) -> set_difference_into_ret_type {
+	return std::get<set_difference_into_ret_type>(send_task(SET_DIFFERENCE_INTO, std::make_tuple(dest, key1, key2)).get());
+}
+
+auto SerialDatabase::set_difference_len(const key_type &key1, const key_type &key2) -> set_difference_len_ret_type {
+	return std::get<set_difference_len_ret_type>(send_task(SET_DIFFERENCE_LEN, std::make_tuple(key1, key2)).get());
 }
 
 } // namespace vanity::db

@@ -50,6 +50,24 @@ protected:
 	using list_trim_type = std::tuple<key_type, int64_t, int64_t>;
 	using list_remove_type = std::tuple<key_type, std::string, int64_t>;
 
+	// set database
+	using set_add_type = std::tuple<key_type, set_t>;
+	using set_all_type = key_type;
+	using set_remove_type = std::tuple<key_type, size_t>;
+	using set_discard_type = std::tuple<key_type, const set_t&>;
+	using set_len_type = key_type;
+	using set_contains_type = std::tuple<key_type, std::string>;
+	using set_move_type = std::tuple<key_type, key_type, std::string>;
+	using set_union_type = std::vector<key_type>;
+	using set_union_into_type = std::tuple<key_type, std::vector<key_type>>;
+	using set_union_len_type = std::vector<key_type>;
+	using set_intersection_type = std::vector<key_type>;
+	using set_intersection_into_type = std::tuple<key_type, std::vector<key_type>>;
+	using set_intersection_len_type = std::vector<key_type>;
+	using set_difference_type = std::tuple<key_type, key_type>;
+	using set_difference_into_type = std::tuple<key_type, key_type, key_type>;
+	using set_difference_len_type = std::tuple<key_type, key_type>;
+
 
 	// return types
 	// base database
@@ -80,6 +98,24 @@ protected:
 	using list_trim_ret_type = std::variant<size_t, ListErrorKind>;
 	using list_remove_ret_type = std::variant<size_t, ListErrorKind>;
 
+	// set database
+	using set_add_ret_type = std::optional<size_t>;
+	using set_all_ret_type = std::optional<set_t>;
+	using set_remove_ret_type = std::optional<set_t>;
+	using set_discard_ret_type = std::optional<size_t>;
+	using set_len_ret_type = std::optional<size_t>;
+	using set_contains_ret_type = std::optional<bool>;
+	using set_move_ret_type = std::optional<bool>;
+	using set_union_ret_type = std::optional<set_t>;
+	using set_union_into_ret_type = std::optional<size_t>;
+	using set_union_len_ret_type = std::optional<size_t>;
+	using set_intersection_ret_type = std::optional<set_t>;
+	using set_intersection_into_ret_type = std::optional<size_t>;
+	using set_intersection_len_ret_type = std::optional<size_t>;
+	using set_difference_ret_type = std::optional<set_t>;
+	using set_difference_into_ret_type = std::optional<size_t>;
+	using set_difference_len_ret_type = std::optional<size_t>;
+
 public:
 	enum task_type {
 		RESET,
@@ -106,6 +142,23 @@ public:
 		LIST_RANGE,
 		LIST_TRIM,
 		LIST_REMOVE,
+
+		SET_ADD,
+		SET_ALL,
+		SET_REMOVE,
+		SET_DISCARD,
+		SET_LEN,
+		SET_CONTAINS,
+		SET_MOVE,
+		SET_UNION,
+		SET_UNION_INTO,
+		SET_UNION_LEN,
+		SET_INTERSECTION,
+		SET_INTERSECTION_INTO,
+		SET_INTERSECTION_LEN,
+		SET_DIFFERENCE,
+		SET_DIFFERENCE_INTO,
+		SET_DIFFERENCE_LEN,
 	};
 
 	using task_data_type = std::variant<
@@ -123,6 +176,13 @@ public:
 		list_range_type,
 		list_remove_type,
 
+		set_add_type,
+		set_remove_type,
+		set_discard_type,
+		set_union_into_type,
+		set_difference_type,
+		set_difference_into_type,
+
 		std::monostate
 	>;
 	using ret_type = std::variant<
@@ -139,12 +199,19 @@ public:
 		list_set_ret_type,
 		list_pop_left_ret_type,
 
+		set_add_ret_type,
+		set_all_ret_type,
+		set_contains_ret_type,
+
 		std::monostate
 	>;
 };
 
 /*
  * A SerialDatabase serializes all database operations to a single thread
+ *
+ * This is actually a very bad/inefficient implementation for thread safety
+ * Considering using simple locks instead
  */
 class SerialDatabase :
 	public Database,
@@ -280,6 +347,88 @@ public:
 	// returns the number of removed elements, or ListErrorKind::NotList if the value is not a list
 	// removes from the end if count is negative or all elements if count is 0
 	std::variant<size_t, ListErrorKind> list_remove(const key_type &key, const std::string& element, int64_t count);
+
+
+	// add elements to a set key
+	// creates the set if it does not exist
+	// returns the number of elements added,
+	// or std::nullopt if the value is not a set
+	std::optional<size_t> set_add(const key_type &key, set_t values);
+
+	// get all elements from a set key
+	// returns the elements,
+	// or std::nullopt if the value is not a set
+	std::optional<set_t> set_all(const key_type &key);
+
+	// randomly remove elements from a set key
+	// returns the elements removed,
+	// or std::nullopt if the value is not a set
+	std::optional<set_t> set_remove(const key_type &key, size_t count);
+
+	// discard elements from a set key
+	// return the number of elements discarded,
+	// or std::nullopt if the value is not a set
+	std::optional<size_t> set_discard(const key_type &key, const set_t& values);
+
+	// get the length of a set key
+	// returns the length, 0 if value does not exist or is empty,
+	// or std::nullopt if the value exists and is not a set
+	std::optional<size_t> set_len(const key_type &key);
+
+	// check if a set key contains a value
+	// returns true if the value exists,
+	// or std::nullopt if the value is not a set
+	std::optional<bool> set_contains(const key_type &key, const std::string& value);
+
+	// atomically move an element from one set to another
+	// return false if no operation was performed, true if it was
+	// return std::nullopt if the value is not a set
+	std::optional<bool> set_move(const key_type& source, const key_type& dest, const std::string& value);
+
+	// get the union of a list of sets
+	// returns the union set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<set_t> set_union(const std::vector<key_type>& keys);
+
+	// compute the union of a list of sets and store it in a key
+	// returns the number of elements in the resulting set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_union_into(const key_type& dest, const std::vector<key_type>& keys);
+
+	// get the length of the union of a list of sets
+	// returns the length of the union
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_union_len(const std::vector<key_type>& keys);
+
+	// get the intersection of a list of sets
+	// returns the intersection set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<set_t> set_intersection(const std::vector<key_type>& keys);
+
+	// compute the intersection of a list of sets and store it in a key
+	// returns the number of elements in the resulting set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_intersection_into(const key_type& dest, const std::vector<key_type>& keys);
+
+	// get the length of the intersection of a list of sets
+	// returns the length of the intersection
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_intersection_len(const std::vector<key_type>& keys);
+
+	// get the difference of two sets
+	// returns the difference set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<set_t> set_difference(const key_type& key1, const key_type& key2);
+
+	// compute the difference of two sets and store it in a key
+	// returns the number of elements in the resulting set
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_difference_into(const key_type& dest, const key_type& key1, const key_type& key2);
+
+	// get the length of the difference of two sets
+	// returns the length of the difference
+	// or std::nullopt if one of the keys is not a set
+	std::optional<size_t> set_difference_len(const key_type& key1, const key_type& key2);
 };
 
 } // namespace vanity::db
