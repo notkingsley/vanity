@@ -16,12 +16,6 @@ PrimitiveDatabase &PrimitiveDatabase::operator=(PrimitiveDatabase &&other) noexc
 	return *this;
 }
 
-auto PrimitiveDatabase::get(const key_type& key) -> std::optional<const data_type> {
-	if (m_data.contains(key))
-		return m_data.at(key);
-	return std::nullopt;
-}
-
 void PrimitiveDatabase::set(const key_type& key, const data_type& value) {
 	m_data[key] = value;
 }

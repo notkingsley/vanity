@@ -30,9 +30,6 @@ public:
 	// move assignment
 	PrimitiveDatabase& operator=(PrimitiveDatabase&& other) noexcept;
 
-	// get the value for a key
-	std::optional<const data_type> get(const key_type& key);
-
 	// set the value for a key
 	void set(const key_type& key, const data_type& value);
 

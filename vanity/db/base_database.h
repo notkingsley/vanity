@@ -54,6 +54,9 @@ public:
 	// check if the key exists
 	bool has(const key_type& key) const;
 
+	// get the value for a key
+	std::optional<const data_type> get(const key_type& key);
+
 	// get the type of key as an index
 	std::optional<int> type(const key_type& key);
 
