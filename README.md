@@ -6,7 +6,7 @@ The server side implementation is to be fully C++,
 The test client and the tests themselves are in Python and I intend to create distributable client packages for other languages (including C++) in the future, starting with Python.
 
 
-Data types currently supported are ```string```, ```int``` and  ```float```.  
+Data types currently supported are ```string```, ```int``` , ```float```, ```list```, and ```set```.  
 More will come later.
 
 Obviously, we've a long way to go. A very long way, really.  
