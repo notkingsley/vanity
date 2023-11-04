@@ -3,7 +3,6 @@
 //
 
 #include "list_database_server.h"
-#include "serialize.h"
 
 namespace vanity {
 
@@ -56,7 +55,7 @@ void ListDatabaseServer::handle_result(Client &client, const std::variant<T, db:
 	if (std::holds_alternative<db::ListErrorKind>(result))
 		send_error(client, std::get<db::ListErrorKind>(result));
 	else
-		send(client, ok(serialize(std::get<T>(result))));
+		send(client, ok(std::get<T>(result)));
 }
 
 void ListDatabaseServer::send_error(Client &client, db::ListErrorKind kind) {

@@ -3,7 +3,6 @@
 //
 
 #include "base_database_server.h"
-#include "serialize.h"
 
 namespace vanity {
 
@@ -29,15 +28,15 @@ void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
 	auto data = value.value();
 	switch (data.index()) {
 		case 0:
-			return send(client, ok(serialize(std::get<0>(data))));
+			return send(client, ok(std::get<0>(data)));
 		case 1:
-			return send(client, ok(serialize(std::get<1>(data))));
+			return send(client, ok(std::get<1>(data)));
 		case 2:
-			return send(client, ok(serialize(std::get<2>(data))));
+			return send(client, ok(std::get<2>(data)));
 		case 3:
-			return send(client, ok(serialize(std::get<3>(data))));
+			return send(client, ok(std::get<3>(data)));
 		case 4:
-			return send(client, ok(serialize(std::get<4>(data))));
+			return send(client, ok(std::get<4>(data)));
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -57,15 +56,15 @@ void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
 
 	switch (type.value()) {
 		case 0:
-			return send(client, ok(serialize_type<db::db_index_t<0>>()));
+			return send(client, ok().serialize_type<db::db_index_t<0>>().move());
 		case 1:
-			return send(client, ok(serialize_type<db::db_index_t<1>>()));
+			return send(client, ok().serialize_type<db::db_index_t<1>>().move());
 		case 2:
-			return send(client, ok(serialize_type<db::db_index_t<2>>()));
+			return send(client, ok().serialize_type<db::db_index_t<2>>().move());
 		case 3:
-			return send(client, ok(serialize_type<db::db_index_t<3>>()));
+			return send(client, ok().serialize_type<db::db_index_t<3>>().move());
 		case 4:
-			return send(client, ok(serialize_type<db::db_index_t<4>>()));
+			return send(client, ok().serialize_type<db::db_index_t<4>>().move());
 		default:
 			throw std::runtime_error("invalid type");
 	}

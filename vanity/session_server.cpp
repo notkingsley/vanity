@@ -11,7 +11,7 @@ void SessionServer::request_switch_db(Client &client, int64_t db) {
 		return send(client, error(" db index must be non-negative"));
 
 	if (db >= M_NUM_DATABASES)
-		return send(client, error(" db index must be less than " + std::to_string(M_NUM_DATABASES)));
+		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
 
 	client.db(db);
 	send(client, ok());

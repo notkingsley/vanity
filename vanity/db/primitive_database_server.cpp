@@ -3,7 +3,6 @@
 //
 
 #include "primitive_database_server.h"
-#include "serialize.h"
 
 namespace vanity {
 
@@ -26,7 +25,7 @@ void PrimitiveDatabaseServer::request_incr_int(Client &client, const std::string
 	auto result = database(client).incr_int(key, value);
 
 	if (result.has_value())
-		send(client, ok(serialize(result.value())));
+		send(client, ok(result.value()));
 	else
 		send(client, bad_type());
 }
@@ -35,7 +34,7 @@ void PrimitiveDatabaseServer::request_incr_float(Client &client, const std::stri
 	auto result = database(client).incr_float(key, value);
 
 	if (result.has_value())
-		send(client, ok(serialize(result.value())));
+		send(client, ok(result.value()));
 	else
 		send(client, bad_type());
 }
@@ -44,14 +43,14 @@ void PrimitiveDatabaseServer::request_str_len(Client &client, const std::string 
 	auto result = database(client).str_len(key);
 
 	if (result.has_value())
-		send(client, ok(serialize(result.value())));
+		send(client, ok(result.value()));
 	else
 		send(client, bad_type());
 }
 
 void PrimitiveDatabaseServer::request_many_get(Client &client, const std::vector<std::string> &keys) {
 	auto result = database(client).many_get(keys);
-	send(client, ok(serialize(result)));
+	send(client, ok(result));
 }
 
 } // namespace vanity

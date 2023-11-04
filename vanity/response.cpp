@@ -20,75 +20,19 @@ std::string&& Response::extract_data() {
 	return std::move(m_data);
 }
 
-Response& Response::add_ok(const std::string &data) {
-	return add(ok, data);
+void Response::reserve(size_t size) {
+	m_data.reserve(size + m_data.size());
 }
 
-Response& Response::add_ok() {
-	return add(ok);
+Response &&Response::move() {
+	return std::move(*this);
 }
 
-Response& Response::add_error(const std::string &data) {
-	return add(error, data);
+Response &Response::add(const std::string &data) {
+	return *this << data;
 }
 
-Response& Response::add_error() {
-	return add(error);
-}
-
-Response& Response::add_null(const std::string &data) {
-	return add(null, data);
-}
-
-Response& Response::add_null() {
-	return add(null);
-}
-
-Response& Response::add_pong(const std::string &data) {
-	return add(pong, data);
-}
-
-Response& Response::add_pong() {
-	return add(pong);
-}
-
-Response& Response::add_denied(const std::string &data) {
-	return add(denied, data);
-}
-
-Response& Response::add_denied() {
-	return add(denied);
-}
-
-Response& Response::add_internal_error(const std::string &data) {
-	return add(internal_error, data);
-}
-
-Response& Response::add_internal_error() {
-	return add(internal_error);
-}
-
-Response& Response::add_bad_type(const std::string &data) {
-	return add(bad_type, data);
-}
-
-Response& Response::add_bad_type() {
-	return add(bad_type);
-}
-
-Response& Response::add_bad_request(const std::string &data) {
-	return add(bad_request, data);
-}
-
-Response& Response::add_bad_request() {
-	return add(bad_request);
-}
-
-Response& Response::add(Status status, const std::string &data) {
-	return add(status) << data;
-}
-
-Response& Response::add(Status status) {
+Response &Response::operator<<(Response::Status status) {
 	switch (status) {
 		case ok:
 			return *this << status_value::ok;
@@ -112,12 +56,95 @@ Response& Response::add(Status status) {
 }
 
 Response &Response::operator<<(const std::string &data) {
+	reserve(data.size());
 	m_data += data;
 	return *this;
 }
 
 Response &Response::operator<<(const char *data) {
 	m_data += data;
+	return *this;
+}
+
+Response &Response::operator<<(const char data) {
+	m_data += data;
+	return *this;
+}
+
+Response &Response::serialize(bool data) {
+	return serialize_type<bool>() << (data ? "true" : "false");
+}
+
+Response &Response::serialize_body(const std::string &data) {
+	reserve(data.size() + 10);
+	return *this << '(' + std::to_string(data.size()) + ")" << data;
+}
+
+Response &Response::serialize(const std::string &data) {
+	serialize_type<std::string>();
+	return serialize_body(data);
+}
+
+Response &Response::serialize(int64_t data) {
+	return serialize_type<int64_t>() << std::to_string(data);
+}
+
+Response &Response::serialize(size_t data) {
+	return serialize(int64_t(data));
+}
+
+Response &Response::serialize(double data) {
+	return serialize_type<double>() << std::to_string(data);
+}
+
+Response &Response::serialize(const std::list<std::string> &data) {
+	serialize_type<std::list<std::string>>()
+		  << '(' << std::to_string(data.size()) << ")";
+
+	*this << '[';
+	for (const auto& s : data)
+		serialize_body(s);
+	return *this << ']';
+}
+
+Response &Response::serialize(const std::unordered_set<std::string> &data) {
+	serialize_type<std::unordered_set<std::string>>()
+		  << '(' + std::to_string(data.size()) + ")";
+
+	*this << '{';
+	for (const auto &s: data)
+		serialize_body(s);
+	return *this << '}';
+}
+
+Response &Response::serialize(const primary_serialize_type &data) {
+	switch (data.index()) {
+		case 0:
+		{
+			return serialize(std::get<0>(data));
+		}
+		case 1:
+		{
+			return serialize(std::get<1>(data));
+		}
+		case 2:
+		{
+			return serialize(std::get<2>(data));
+		}
+		case 3:
+		{
+			return serialize(std::get<3>(data));
+		}
+		case 4:
+		{
+			return serialize(std::get<4>(data));
+		}
+		default:
+			throw std::runtime_error("invalid type");
+	}
+}
+
+Response &Response::serialize() {
 	return *this;
 }
 

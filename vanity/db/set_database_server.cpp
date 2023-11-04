@@ -3,7 +3,6 @@
 //
 
 #include "set_database_server.h"
-#include "serialize.h"
 
 
 namespace vanity {
@@ -75,7 +74,7 @@ void SetDatabaseServer::request_set_difference_len(Client &client, const std::st
 template<class T>
 void SetDatabaseServer::handle_result(Client &client, const std::optional<T> &result) {
 	if (result.has_value())
-		send(client, ok(serialize(result.value())));
+		send(client, ok(result.value()));
 	else
 		send(client, bad_type("not a set"));
 }
