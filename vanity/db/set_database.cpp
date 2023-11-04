@@ -40,7 +40,7 @@ SetDatabase::set_add(const key_type &key, set_t values) {
 std::optional<set_t>
 SetDatabase::set_all(const key_type &key) {
 	if (not m_data.contains(key))
-		return std::nullopt;
+		return set_t{};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<set_t>(value))

@@ -7,6 +7,7 @@
 
 #include "list_database_server.h"
 #include "primitive_database_server.h"
+#include "set_database_server.h"
 
 namespace vanity {
 
@@ -15,7 +16,8 @@ namespace vanity {
  */
 class DatabaseServer :
 	public virtual ListDatabaseServer,
-	public virtual PrimitiveDatabaseServer
+	public virtual PrimitiveDatabaseServer,
+	public virtual SetDatabaseServer
 { };
 
 } // namespace vanity

@@ -46,6 +46,23 @@ enum class operation_t{
 	LIST_RANGE,
 	LIST_TRIM,
 	LIST_REMOVE,
+
+	SET_ADD,
+	SET_ALL,
+	SET_REMOVE,
+	SET_DISCARD,
+	SET_LEN,
+	SET_CONTAINS,
+	SET_MOVE,
+	SET_UNION,
+	SET_UNION_INTO,
+	SET_UNION_LEN,
+	SET_INTERSECT,
+	SET_INTERSECT_INTO,
+	SET_INTERSECT_LEN,
+	SET_DIFF,
+	SET_DIFF_INTO,
+	SET_DIFF_LEN,
 };
 
 // check if an operation is permitted for an unknown client
@@ -93,6 +110,23 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::LIST_TRIM:
 		case operation_t::LIST_REMOVE:
 
+		case operation_t::SET_ADD:
+		case operation_t::SET_ALL:
+		case operation_t::SET_REMOVE:
+		case operation_t::SET_DISCARD:
+		case operation_t::SET_LEN:
+		case operation_t::SET_CONTAINS:
+		case operation_t::SET_MOVE:
+		case operation_t::SET_UNION:
+		case operation_t::SET_UNION_INTO:
+		case operation_t::SET_UNION_LEN:
+		case operation_t::SET_INTERSECT:
+		case operation_t::SET_INTERSECT_INTO:
+		case operation_t::SET_INTERSECT_LEN:
+		case operation_t::SET_DIFF:
+		case operation_t::SET_DIFF_INTO:
+		case operation_t::SET_DIFF_LEN:
+
 		default:
 			return false;
 	}
@@ -132,6 +166,23 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::LIST_RANGE:
 		case operation_t::LIST_TRIM:
 		case operation_t::LIST_REMOVE:
+
+		case operation_t::SET_ADD:
+		case operation_t::SET_ALL:
+		case operation_t::SET_REMOVE:
+		case operation_t::SET_DISCARD:
+		case operation_t::SET_LEN:
+		case operation_t::SET_CONTAINS:
+		case operation_t::SET_MOVE:
+		case operation_t::SET_UNION:
+		case operation_t::SET_UNION_INTO:
+		case operation_t::SET_UNION_LEN:
+		case operation_t::SET_INTERSECT:
+		case operation_t::SET_INTERSECT_INTO:
+		case operation_t::SET_INTERSECT_LEN:
+		case operation_t::SET_DIFF:
+		case operation_t::SET_DIFF_INTO:
+		case operation_t::SET_DIFF_LEN:
 			return true;
 
 
@@ -183,6 +234,23 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::LIST_RANGE:
 		case operation_t::LIST_TRIM:
 		case operation_t::LIST_REMOVE:
+
+		case operation_t::SET_ADD:
+		case operation_t::SET_ALL:
+		case operation_t::SET_REMOVE:
+		case operation_t::SET_DISCARD:
+		case operation_t::SET_LEN:
+		case operation_t::SET_CONTAINS:
+		case operation_t::SET_MOVE:
+		case operation_t::SET_UNION:
+		case operation_t::SET_UNION_INTO:
+		case operation_t::SET_UNION_LEN:
+		case operation_t::SET_INTERSECT:
+		case operation_t::SET_INTERSECT_INTO:
+		case operation_t::SET_INTERSECT_LEN:
+		case operation_t::SET_DIFF:
+		case operation_t::SET_DIFF_INTO:
+		case operation_t::SET_DIFF_LEN:
 			return true;
 
 
@@ -236,6 +304,23 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::LIST_RANGE:
 		case operation_t::LIST_TRIM:
 		case operation_t::LIST_REMOVE:
+
+		case operation_t::SET_ADD:
+		case operation_t::SET_ALL:
+		case operation_t::SET_REMOVE:
+		case operation_t::SET_DISCARD:
+		case operation_t::SET_LEN:
+		case operation_t::SET_CONTAINS:
+		case operation_t::SET_MOVE:
+		case operation_t::SET_UNION:
+		case operation_t::SET_UNION_INTO:
+		case operation_t::SET_UNION_LEN:
+		case operation_t::SET_INTERSECT:
+		case operation_t::SET_INTERSECT_INTO:
+		case operation_t::SET_INTERSECT_LEN:
+		case operation_t::SET_DIFF:
+		case operation_t::SET_DIFF_INTO:
+		case operation_t::SET_DIFF_LEN:
 			return true;
 
 

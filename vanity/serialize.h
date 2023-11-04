@@ -58,12 +58,20 @@ struct type_to_string<std::unordered_set<std::string>> {
 	static constexpr const char* value = ":SET ";
 };
 
+template <>
+struct type_to_string<bool> {
+	static constexpr const char* value = ":BOOL ";
+};
+
 // serialize a type to a string
 template<typename T>
 constexpr auto serialize_type()
 {
 	return type_to_string<T>::value;
 }
+
+// serialize a bool to a string
+void serialize(bool data, std::string& str);
 
 // serialize a string object to a string
 void serialize(const std::string& data, std::string& str);

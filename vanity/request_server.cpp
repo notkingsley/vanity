@@ -17,6 +17,7 @@ enum class object_t{
 	FLOAT,
 	ARR,
 	LIST,
+	SET,
 };
 
 template<object_t _obj>
@@ -45,6 +46,11 @@ struct concrete_traits<object_t::ARR> {
 template<>
 struct concrete_traits<object_t::LIST> {
 	using type = std::list<std::string>;
+};
+
+template<>
+struct concrete_traits<object_t::SET> {
+	using type = std::unordered_set<std::string>;
 };
 
 template <object_t ...Args> struct concrete {
@@ -105,7 +111,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::RESET,           "RESET"},
 
 		{operation_t::GET,             "GET"},
-		{operation_t::SET,             "SET"},
+		// {operation_t::SET,             "SET"},
 		{operation_t::INCR_INT,        "INCR_INT"},
 		{operation_t::INCR_FLOAT,      "INCR_FLOAT"},
 		{operation_t::STR_LEN,         "STR_LEN"},
@@ -121,7 +127,27 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::LIST_RANGE,      "LIST_RANGE"},
 		{operation_t::LIST_TRIM,       "LIST_TRIM"},
 		{operation_t::LIST_REMOVE,     "LIST_REMOVE"},
+
+		{operation_t::SET_ADD,         "SET_ADD"},
+		{operation_t::SET_ALL,         "SET_ALL"},
+		{operation_t::SET_REMOVE,      "SET_REMOVE"},
+		{operation_t::SET_DISCARD,     "SET_DISCARD"},
+		{operation_t::SET_LEN,         "SET_LEN"},
+		{operation_t::SET_CONTAINS,    "SET_CONTAINS"},
+		{operation_t::SET_MOVE,        "SET_MOVE"},
+		{operation_t::SET_UNION,       "SET_UNION"},
+		{operation_t::SET_UNION_INTO,  "SET_UNION_INTO"},
+		{operation_t::SET_UNION_LEN,   "SET_UNION_LEN"},
+		{operation_t::SET_INTERSECT,   "SET_INTERSECT"},
+		{operation_t::SET_INTERSECT_INTO,"SET_INTERSECT_INTO"},
+		{operation_t::SET_INTERSECT_LEN,"SET_INTERSECT_LEN"},
+		{operation_t::SET_DIFF,        "SET_DIFF"},
+		{operation_t::SET_DIFF_INTO,   "SET_DIFF_INTO"},
+		{operation_t::SET_DIFF_LEN,    "SET_DIFF_LEN"},
+
+		{operation_t::SET,             "SET"},
 	};
+
 	skip_whitespace(msg, pos);
 	for (const auto& [op, str] : operations) {
 		if (msg.compare(pos, str.size(), str) == 0) {
@@ -319,6 +345,27 @@ inline std::list<std::string> extract<object_t::LIST>(const std::string& msg, si
 	return list;
 }
 
+// extract a set of strings from part of a message
+template<>
+inline std::unordered_set<std::string> extract<object_t::SET>(const std::string& msg, size_t& pos)
+{
+	ensure_not_end(msg, pos);
+	size_t len = extract_len(msg, pos);
+	if (msg[pos] != '{')
+		throw InvalidRequest("set not opened with '{' bracket");
+	++pos;
+
+	std::unordered_set<std::string> set;
+	for (size_t i = 0; i < len; ++i)
+		set.emplace(extract<object_t::STR>(msg, pos));
+
+	if (msg[pos] != '}')
+		throw InvalidRequest("set not closed with '}' bracket");
+	++pos;
+
+	return set;
+}
+
 
 void RequestServer::handle(const std::string& msg, Client& client) {
 	try{
@@ -328,7 +375,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 		if (not client.has_perm(op))
 			return send(client, denied());
 
-		using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST;
+		using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET;
 		switch (op) {
 			case operation_t::TERMINATE:
 			{
@@ -505,6 +552,97 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 				request_list_remove(client, key, value, count);
 				break;
 			}
+
+			case operation_t::SET_ADD:
+			{
+				auto [key, values] = extract_exact<STR, SET>(msg, pos);
+				request_set_add(client, key, std::move(values));
+				break;
+			}
+			case operation_t::SET_ALL:
+			{
+				request_set_all(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_REMOVE:
+			{
+				auto [key, count] = extract_exact<STR, INT>(msg, pos);
+				request_set_remove(client, key, count);
+				break;
+			}
+			case operation_t::SET_DISCARD:
+			{
+				auto [key, values] = extract_exact<STR, SET>(msg, pos);
+				request_set_discard(client, key, std::move(values));
+				break;
+			}
+			case operation_t::SET_LEN:
+			{
+				request_set_len(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_CONTAINS:
+			{
+				auto [key, value] = extract_exact<STR, STR>(msg, pos);
+				request_set_contains(client, key, value);
+				break;
+			}
+			case operation_t::SET_MOVE:
+			{
+				auto [source, dest, value] = extract_exact<STR, STR, STR>(msg, pos);
+				request_set_move(client, source, dest, value);
+				break;
+			}
+			case operation_t::SET_UNION:
+			{
+				request_set_union(client, extract_exact<ARR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_UNION_INTO:
+			{
+				auto [dest, keys] = extract_exact<STR, ARR>(msg, pos);
+				request_set_union_into(client, dest, keys);
+				break;
+			}
+			case operation_t::SET_UNION_LEN:
+			{
+				request_set_union_len(client, extract_exact<ARR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_INTERSECT:
+			{
+				request_set_intersection(client, extract_exact<ARR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_INTERSECT_INTO:
+			{
+				auto [dest, keys] = extract_exact<STR, ARR>(msg, pos);
+				request_set_intersection_into(client, dest, keys);
+				break;
+			}
+			case operation_t::SET_INTERSECT_LEN:
+			{
+				request_set_intersection_len(client, extract_exact<ARR>(msg, pos));
+				break;
+			}
+			case operation_t::SET_DIFF:
+			{
+				auto [key1, key2] = extract_exact<STR, STR>(msg, pos);
+				request_set_difference(client, key1, key2);
+				break;
+			}
+			case operation_t::SET_DIFF_INTO:
+			{
+				auto [dest, key1, key2] = extract_exact<STR, STR, STR>(msg, pos);
+				request_set_difference_into(client, dest, key1, key2);
+				break;
+			}
+			case operation_t::SET_DIFF_LEN:
+			{
+				auto [key1, key2] = extract_exact<STR, STR>(msg, pos);
+				request_set_difference_len(client, key1, key2);
+				break;
+			}
 		}
 	}
 	catch (const InvalidRequest& e)
@@ -534,7 +672,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 }
 
 void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST;
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET;
 
 	object_t obj = extract_object_t(msg, pos);
 	std::string key = extract<STR>(msg, pos);
@@ -558,8 +696,9 @@ void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t 
 			request_set(client, key, value);
 			break;
 		}
-		case ARR: // fallthrough
-		case LIST: // fallthrough
+		case ARR:	// fallthrough
+		case LIST:	// fallthrough
+		case SET:	// fallthrough
 			throw InvalidRequest("invalid object type:");
 	}
 }

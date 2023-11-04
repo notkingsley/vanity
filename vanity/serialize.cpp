@@ -87,4 +87,9 @@ void serialize(const std::unordered_set<std::string>& data, std::string& str) {
 	str += '}';
 }
 
+void serialize(bool data, std::string& str) {
+	str += serialize_type<bool>();
+	str += data ? "true" : "false";
+}
+
 } // namespace vanity

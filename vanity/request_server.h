@@ -6,6 +6,7 @@
 #define VANITY_REQUEST_SERVER_H
 
 #include <list>
+#include <unordered_set>
 
 #include "abstract_server.h"
 #include "logging.h"
@@ -109,6 +110,54 @@ public:
 
 	// a list_remove request was received from a client
 	virtual void request_list_remove(Client& client, const std::string& key, const std::string& value, int64_t count) = 0;
+
+	// a set_add request was received from a client
+	virtual void request_set_add(Client& client, const std::string& key, std::unordered_set<std::string> values) = 0;
+
+	// a set_all request was received from a client
+	virtual void request_set_all(Client& client, const std::string& key) = 0;
+
+	// a set_remove request was received from a client
+	virtual void request_set_remove(Client& client, const std::string& key, int64_t count) = 0;
+
+	// a set_discard request was received from a client
+	virtual void request_set_discard(Client& client, const std::string& key, std::unordered_set<std::string> values) = 0;
+
+	// a set_len request was received from a client
+	virtual void request_set_len(Client& client, const std::string& key) = 0;
+
+	// a set_contains request was received from a client
+	virtual void request_set_contains(Client& client, const std::string& key, const std::string& value) = 0;
+
+	// a set_move request was received from a client
+	virtual void request_set_move(Client& client, const std::string& source, const std::string& dest, const std::string& value) = 0;
+
+	// a set_union request was received from a client
+	virtual void request_set_union(Client& client, std::vector<std::string> keys) = 0;
+
+	// a set_union_into request was received from a client
+	virtual void request_set_union_into(Client& client, const std::string& dest, std::vector<std::string> keys) = 0;
+
+	// a set_union_len request was received from a client
+	virtual void request_set_union_len(Client& client, std::vector<std::string> keys) = 0;
+
+	// a set_intersection request was received from a client
+	virtual void request_set_intersection(Client& client, std::vector<std::string> keys) = 0;
+
+	// a set_intersection_into request was received from a client
+	virtual void request_set_intersection_into(Client& client, const std::string& dest, std::vector<std::string> keys) = 0;
+
+	// a set_intersection_len request was received from a client
+	virtual void request_set_intersection_len(Client& client, std::vector<std::string> keys) = 0;
+
+	// a set_difference request was received from a client
+	virtual void request_set_difference(Client& client, const std::string& key1, const std::string& key2) = 0;
+
+	// a set_difference_into request was received from a client
+	virtual void request_set_difference_into(Client& client, const std::string& dest, const std::string& key1, const std::string& key2) = 0;
+
+	// a set_difference_len request was received from a client
+	virtual void request_set_difference_len(Client& client, const std::string& key1, const std::string& key2) = 0;
 
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {

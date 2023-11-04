@@ -13,4 +13,5 @@ add_library(vanity_db STATIC
 	primitive_database_server.cpp
 	serial_database.cpp
 	set_database.cpp
+	set_database_server.cpp
 )
