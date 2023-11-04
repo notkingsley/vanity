@@ -21,6 +21,28 @@ db::SerialDatabase& BaseDatabaseServer::database(Client &client) {
 	return m_databases[client.db()];
 }
 
+void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
+	auto value = database(client).get(key);
+	if (not value.has_value())
+		return send(client, null());
+
+	auto data = value.value();
+	switch (data.index()) {
+		case 0:
+			return send(client, ok(serialize(std::get<0>(data))));
+		case 1:
+			return send(client, ok(serialize(std::get<1>(data))));
+		case 2:
+			return send(client, ok(serialize(std::get<2>(data))));
+		case 3:
+			return send(client, ok(serialize(std::get<3>(data))));
+		case 4:
+			return send(client, ok(serialize(std::get<4>(data))));
+		default:
+			throw std::runtime_error("invalid type");
+	}
+}
+
 void BaseDatabaseServer::request_del(Client &client, const std::string &key) {
 	if (database(client).del(key))
 		send(client, ok());
@@ -42,6 +64,8 @@ void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
 			return send(client, ok(serialize_type<db::db_index_t<2>>()));
 		case 3:
 			return send(client, ok(serialize_type<db::db_index_t<3>>()));
+		case 4:
+			return send(client, ok(serialize_type<db::db_index_t<4>>()));
 		default:
 			throw std::runtime_error("invalid type");
 	}

@@ -16,9 +16,6 @@ namespace vanity {
 class PrimitiveDatabaseServer : public virtual BaseDatabaseServer
 {
 public:
-	// a get request was received from a client
-	void request_get(Client& client, const std::string& key) override;
-
 	// a set request was received from a client
 	void request_set(Client& client, const std::string& key, const std::string& value) override;
 

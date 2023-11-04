@@ -7,24 +7,6 @@
 
 namespace vanity {
 
-void PrimitiveDatabaseServer::request_get(Client &client, const std::string &key) {
-	auto value = database(client).get(key);
-	if (not value.has_value())
-		return send(client, null());
-
-	auto data = value.value();
-	switch (data.index()) {
-		case 0:
-			return send(client, ok(serialize(std::get<0>(data))));
-		case 1:
-			return send(client, ok(serialize(std::get<1>(data))));
-		case 2:
-			return send(client, ok(serialize(std::get<2>(data))));
-		default:
-			throw std::runtime_error("invalid type");
-	}
-}
-
 void PrimitiveDatabaseServer::request_set(Client &client, const std::string &key, const std::string &value) {
 	database(client).set(key, value);
 	send(client, ok());

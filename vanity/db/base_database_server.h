@@ -36,6 +36,9 @@ public:
 	// get the client's current selected database
 	db::SerialDatabase& database(Client& client);
 
+	// a get request was received from a client
+	void request_get(Client& client, const std::string& key) override;
+
 	// a del request was received from a client
 	void request_del(Client& client, const std::string& key) override;
 
