@@ -26,6 +26,8 @@ class ServerType(Enum):
 	ARRAY = "ARR"
 	LIST = "LIST"
 	NULL = "NULL"
+	SET = "SET"
+	BOOL = "BOOL"
 	
 
 class InvalidResponse(Exception):
@@ -175,6 +177,45 @@ def extract_list(msg: str):
 	return elements, msg
 
 
+def extract_set(msg: str):
+	"""
+	Extract a set from a response.
+	:param msg: The response to extract from.
+	:return: The extracted set, or None if no set could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	if not msg.startswith("{"):
+		return None, msg
+	msg = msg[1:].lstrip()
+	
+	elements = set()
+	for _ in range(num):
+		element, msg = extract_as(msg, ServerType.STRING)
+		elements.add(element)
+
+	if not msg.startswith("}"):
+		raise InvalidResponse("Message did not end with '{'.")
+	msg = msg[1:].lstrip()
+	
+	return elements, msg
+
+
+def extract_bool(msg: str):
+	"""
+	Extract a bool from a response.
+	:param msg: The response to extract from.
+	:return: The extracted bool, or None if no bool could be deciphered.
+	"""
+	if msg.startswith("true"):
+		return True, msg[4:].lstrip()
+	if msg.startswith("false"):
+		return False, msg[5:].lstrip()
+	return None, msg
+
+
 def extract_as(msg: str, _type: ServerType):
 	"""
 	Extract a value from a response as a given type.
@@ -194,6 +235,10 @@ def extract_as(msg: str, _type: ServerType):
 		return extract_list(msg)
 	if _type == ServerType.NULL:
 		return None, msg
+	if _type == ServerType.SET:
+		return extract_set(msg)
+	if _type == ServerType.BOOL:
+		return extract_bool(msg)
 
 
 def extract_type(msg: str) -> tuple[ServerType | None, str]:
@@ -218,6 +263,12 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
 
 	elif msg.startswith(":LIST"):
 		return ServerType.LIST, msg[5:].lstrip()
+	
+	elif msg.startswith(":SET"):
+		return ServerType.SET, msg[4:].lstrip()
+	
+	elif msg.startswith(":BOOL"):
+		return ServerType.BOOL, msg[5:].lstrip()
 
 	return None, msg
 
@@ -332,3 +383,15 @@ class Response:
 		:return: True if the response is of type LIST, False otherwise.
 		"""
 		return self.type == ServerType.LIST
+	
+	def type_is_set(self) -> bool:
+		"""
+		:return: True if the response is of type SET, False otherwise.
+		"""
+		return self.type == ServerType.SET
+	
+	def type_is_bool(self) -> bool:
+		"""
+		:return: True if the response is of type BOOL, False otherwise.
+		"""
+		return self.type == ServerType.BOOL

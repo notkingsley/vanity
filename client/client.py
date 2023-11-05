@@ -14,7 +14,7 @@ class AuthLevel(Enum):
 	ADMIN = "ADMIN"
 
 
-def format(msg: str | int | float | list | AuthLevel) -> str:
+def format(msg: str | int | float | list | set | AuthLevel) -> str:
 	"""
 	Format a message body to be sent to the server.
 	Escape the quotes in the message if it is a string
@@ -29,6 +29,8 @@ def format(msg: str | int | float | list | AuthLevel) -> str:
 		return f"({len(msg)})[" + "".join(map(format, msg)) + "]"
 	elif isinstance(msg, str):
 		return f"({len(msg)})" + msg
+	elif isinstance(msg, set):
+		return f"({len(msg)})" + "{" + "".join(map(format, msg)) + "}"
 	else:
 		raise TypeError(f"Cannot format {msg}.")
 
@@ -363,3 +365,142 @@ class Client:
 		:return: The number of items removed.
 		"""
 		return self.request("LIST_REMOVE", key, value, count)
+	
+	def set_add(self, key: str, set: set):
+		"""
+		Add items to a set.
+		:param key: The key of the set.
+		:param set: The items to add.
+		:return: The number of items added.
+		"""
+		return self.request("SET_ADD", key, set)
+	
+	def set_all(self, key: str):
+		"""
+		Get all items from a set.
+		:param key: The key of the set.
+		:return: The items in the set.
+		"""
+		return self.request("SET_ALL", key)
+	
+	def set_remove(self, key: str, count: int = 1):
+		"""
+		Randomly remove items from a set
+		:param key: The key of the set.
+		:param count: The number of items to remove.
+		:return: The items removed.
+		"""
+		return self.request("SET_REMOVE", key, count)
+	
+	def set_discard(self, key: str, set: set):
+		"""
+		Randomly discard items from a set
+		:param key: The key of the set.
+		:param set: The items to discard.
+		"""
+		return self.request("SET_DISCARD", key, set)
+	
+	def set_len(self, key: str):
+		"""
+		Get the length of a set.
+		:param key: The key of the set.
+		:return: The length of the set.
+		"""
+		return self.request("SET_LEN", key)
+	
+	def set_contains(self, key: str, value: str):
+		"""
+		Check if a set contains a value.
+		:param key: The key of the set.
+		:param value: The value to check.
+		:return: Whether the set contains the value.
+		"""
+		return self.request("SET_CONTAINS", key, value)
+	
+	def set_move(self, source: str, dest: str, value: str):
+		"""
+		Move a value from one set to another.
+		:param source: The key of the source set.
+		:param dest: The key of the destination set.
+		:param value: The value to move.
+		:return: Whether the value was moved.
+		"""
+		return self.request("SET_MOVE", source, dest, value)
+	
+	def set_union(self, *keys):
+		"""
+		Get the union of many sets.
+		:param keys: The keys of the sets.
+		:return: The union of the sets.
+		"""
+		return self.request("SET_UNION", list(keys))
+	
+	def set_union_into(self, dest: str, *keys):
+		"""
+		Get the union of many sets and store it in another set.
+		:param dest: The key of the destination set.
+		:param keys: The keys of the sets.
+		:return: The length of the union of the sets.
+		"""
+		return self.request("SET_UNION_INTO", dest, list(keys))
+	
+	def set_union_len(self, *keys):
+		"""
+		Get the length of the union of many sets.
+		:param keys: The keys of the sets.
+		:return: The length of the union of the sets.
+		"""
+		return self.request("SET_UNION_LEN", list(keys))
+	
+	def set_intersect(self, *keys):
+		"""
+		Get the intersection of many sets.
+		:param keys: The keys of the sets.
+		:return: The intersection of the sets.
+		"""
+		return self.request("SET_INTERSECT", list(keys))
+	
+	def set_intersect_into(self, dest: str, *keys):
+		"""
+		Get the intersection of many sets and store it in another set.
+		:param dest: The key of the destination set.
+		:param keys: The keys of the sets.
+		:return: The length of the intersection of the sets.
+		"""
+		return self.request("SET_INTERSECT_INTO", dest, list(keys))
+	
+	def set_intersect_len(self, *keys):
+		"""
+		Get the length of the intersection of many sets.
+		:param keys: The keys of the sets.
+		:return: The length of the intersection of the sets.
+		"""
+		return self.request("SET_INTERSECT_LEN", list(keys))
+	
+	def set_diff(self, key1: str, key2: str):
+		"""
+		Get the difference of two sets.
+		:param key1: The key of the first set.
+		:param key2: The key of the second set.
+		:return: The difference of the sets.
+		"""
+		return self.request("SET_DIFF", key1, key2)
+	
+	def set_diff_into(self, dest: str, key1: str, key2: str):
+		"""
+		Get the difference of two sets and store it in another set.
+		:param dest: The key of the destination set.
+		:param key1: The key of the first set.
+		:param key2: The key of the second set.
+		:return: The length of the difference of the sets.
+		"""
+		return self.request("SET_DIFF_INTO", dest, key1, key2)
+	
+	def set_diff_len(self, key1: str, key2: str):
+		"""
+		Get the length of the difference of two sets.
+		:param key1: The key of the first set.
+		:param key2: The key of the second set.
+		:return: The length of the difference of the sets.
+		"""
+		return self.request("SET_DIFF_LEN", key1, key2)
