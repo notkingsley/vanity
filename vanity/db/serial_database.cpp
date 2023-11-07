@@ -369,7 +369,7 @@ auto SerialDatabase::set_remove(const key_type &key, size_t count) -> set_remove
 }
 
 auto SerialDatabase::set_discard(const key_type &key, const set_t &values) -> set_discard_ret_type{
-	return std::get<set_discard_ret_type>(send_task(SET_DISCARD, std::make_tuple(key, values)).get());
+	return std::get<set_discard_ret_type>(send_task(SET_DISCARD, set_discard_type(key, values)).get());
 }
 
 auto SerialDatabase::set_len(const key_type &key) -> set_len_ret_type {

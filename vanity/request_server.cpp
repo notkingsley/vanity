@@ -135,15 +135,15 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::SET_LEN,         "SET_LEN"},
 		{operation_t::SET_CONTAINS,    "SET_CONTAINS"},
 		{operation_t::SET_MOVE,        "SET_MOVE"},
-		{operation_t::SET_UNION,       "SET_UNION"},
 		{operation_t::SET_UNION_INTO,  "SET_UNION_INTO"},
 		{operation_t::SET_UNION_LEN,   "SET_UNION_LEN"},
-		{operation_t::SET_INTERSECT,   "SET_INTERSECT"},
+		{operation_t::SET_UNION,       "SET_UNION"},
 		{operation_t::SET_INTERSECT_INTO,"SET_INTERSECT_INTO"},
 		{operation_t::SET_INTERSECT_LEN,"SET_INTERSECT_LEN"},
-		{operation_t::SET_DIFF,        "SET_DIFF"},
+		{operation_t::SET_INTERSECT,   "SET_INTERSECT"},
 		{operation_t::SET_DIFF_INTO,   "SET_DIFF_INTO"},
 		{operation_t::SET_DIFF_LEN,    "SET_DIFF_LEN"},
+		{operation_t::SET_DIFF,        "SET_DIFF"},
 
 		{operation_t::SET,             "SET"},
 	};

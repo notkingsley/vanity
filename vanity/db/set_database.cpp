@@ -52,7 +52,7 @@ SetDatabase::set_all(const key_type &key) {
 std::optional<set_t>
 SetDatabase::set_remove(const key_type &key, size_t count) {
 	if (not m_data.contains(key))
-		return std::nullopt;
+		return set_t{};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<set_t>(value))
@@ -181,7 +181,7 @@ SetDatabase::set_union_into(const key_type &dest, const std::vector<key_type> &k
 		return std::nullopt;
 
 	auto size = result->size();
-	m_data.emplace(dest, std::move(*result));
+	m_data[dest] = std::move(*result);
 	return size;
 }
 
@@ -242,7 +242,7 @@ SetDatabase::set_intersection_into(const key_type &dest, const std::vector<key_t
 		return std::nullopt;
 
 	auto size = result->size();
-	m_data.emplace(dest, std::move(*result));
+	m_data[dest] = std::move(*result);
 	return size;
 }
 
@@ -283,7 +283,7 @@ SetDatabase::set_difference_into(const key_type &dest, const key_type &key1, con
 		return std::nullopt;
 
 	auto size = result->size();
-	m_data.emplace(dest, std::move(*result));
+	m_data[dest] = std::move(*result);
 	return size;
 }
 
