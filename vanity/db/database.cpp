@@ -90,6 +90,31 @@ set_t read<set_t>(std::ifstream &in)
 	return set;
 }
 
+// write a hash to the output stream
+template<>
+void write<hash_t>(std::ofstream &out, const hash_t& value)
+{
+	write(out, value.size());
+	for (const auto& s : value) {
+		write(out, s.first);
+		write(out, s.second);
+	}
+}
+
+// read a hash from the input stream
+template<>
+hash_t read<hash_t>(std::ifstream &in)
+{
+	hash_t hash{};
+	std::streamsize size = read<std::streamsize>(in);
+	for (std::streamsize i = 0; i < size; ++i) {
+		auto key = read<string_t>(in);
+		auto value = read<string_t>(in);
+		hash[key] = value;
+	}
+	return hash;
+}
+
 // write a primary_serialize_type to the output stream
 template<>
 void write<db_data_type>(std::ofstream &out, const db_data_type& value)
@@ -108,6 +133,8 @@ void write<db_data_type>(std::ofstream &out, const db_data_type& value)
 			return write(out, std::get<3>(value));
 		case 4:
 			return write(out, std::get<4>(value));
+		case 5:
+			return write(out, std::get<5>(value));
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -128,6 +155,8 @@ db_data_type read<db_data_type>(std::ifstream &in)
 			return read<db_index_t<3>>(in);
 		case 4:
 			return read<db_index_t<4>>(in);
+		case 5:
+			return read<db_index_t<5>>(in);
 		default:
 			throw std::runtime_error("invalid type");
 	}

@@ -37,6 +37,8 @@ void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
 			return send(client, ok(std::get<3>(data)));
 		case 4:
 			return send(client, ok(std::get<4>(data)));
+		case 5:
+			return send(client, ok(std::get<5>(data)));
 		default:
 			throw std::runtime_error("invalid type");
 	}
@@ -65,6 +67,8 @@ void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
 			return send(client, ok().serialize_type<db::db_index_t<3>>().move());
 		case 4:
 			return send(client, ok().serialize_type<db::db_index_t<4>>().move());
+		case 5:
+			return send(client, ok().serialize_type<db::db_index_t<5>>().move());
 		default:
 			throw std::runtime_error("invalid type");
 	}

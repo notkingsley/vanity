@@ -25,6 +25,11 @@ template <typename T>
 struct type_to_string;
 
 template <>
+struct type_to_string<bool> {
+	static constexpr const char* value = ":BOOL ";
+};
+
+template <>
 struct type_to_string<int64_t> {
 	static constexpr const char* value = ":INT ";
 };
@@ -50,18 +55,18 @@ struct type_to_string<std::vector<T>> {
 };
 
 template <>
-struct type_to_string<std::list<std::string>> {
+struct type_to_string<db::list_t> {
 	static constexpr const char* value = ":LIST ";
 };
 
 template <>
-struct type_to_string<std::unordered_set<std::string>> {
+struct type_to_string<db::set_t> {
 	static constexpr const char* value = ":SET ";
 };
 
 template <>
-struct type_to_string<bool> {
-	static constexpr const char* value = ":BOOL ";
+struct type_to_string<db::hash_t> {
+	static constexpr const char* value = ":HASH ";
 };
 
 /*
@@ -135,6 +140,9 @@ public:
 
 	// serialize a set of strings to a Response
 	Response& serialize(const std::unordered_set<std::string>& data);
+
+	// serialize a hash of strings to a Response
+	Response& serialize(const std::unordered_map<std::string, std::string>& data);
 
 	// serialize the database's primary type to a Response
 	Response& serialize(const primary_serialize_type& data);

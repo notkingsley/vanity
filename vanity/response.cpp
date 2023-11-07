@@ -117,6 +117,18 @@ Response &Response::serialize(const std::unordered_set<std::string> &data) {
 	return *this << '}';
 }
 
+Response &Response::serialize(const std::unordered_map<std::string, std::string> &data) {
+	serialize_type<std::unordered_map<std::string, std::string>>()
+		  << '(' + std::to_string(data.size()) + ")";
+
+	*this << '{';
+	for (const auto &s: data) {
+		serialize_body(s.first);
+		serialize_body(s.second);
+	}
+	return *this << '}';
+}
+
 Response &Response::serialize(const primary_serialize_type &data) {
 	switch (data.index()) {
 		case 0:
@@ -138,6 +150,10 @@ Response &Response::serialize(const primary_serialize_type &data) {
 		case 4:
 		{
 			return serialize(std::get<4>(data));
+		}
+		case 5:
+		{
+			return serialize(std::get<5>(data));
 		}
 		default:
 			throw std::runtime_error("invalid type");

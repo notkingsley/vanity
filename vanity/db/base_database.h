@@ -24,6 +24,7 @@ using float_t = double;
 
 using list_t = std::list<string_t>;
 using set_t = std::unordered_set<string_t>;
+using hash_t = std::unordered_map<string_t, string_t>;
 
 /*
  * A BaseDatabase is the base class for all databases
@@ -32,7 +33,7 @@ class BaseDatabase
 {
 public:
 	using key_type = string_t;
-	using data_type = std::variant<string_t, int_t, float_t, list_t, set_t>;
+	using data_type = std::variant<string_t, int_t, float_t, list_t, set_t, hash_t>;
 
 	// create a database
 	BaseDatabase() = default;
