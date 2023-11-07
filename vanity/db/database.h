@@ -5,6 +5,7 @@
 #ifndef VANITY_DATABASE_H
 #define VANITY_DATABASE_H
 
+#include "hash_database.h"
 #include "primitive_database.h"
 #include "list_database.h"
 #include "set_database.h"
@@ -15,7 +16,11 @@ namespace vanity::db {
 /*
  * A Database is an abstraction for a key value database
  */
-class Database : public PrimitiveDatabase, public ListDatabase, public SetDatabase
+class Database:
+	public HashDatabase,
+	public PrimitiveDatabase,
+	public ListDatabase,
+	public SetDatabase
 {
 public:
 	// create a new database
