@@ -14,7 +14,17 @@ class AuthLevel(Enum):
 	ADMIN = "ADMIN"
 
 
-def format(msg: str | int | float | list | set | AuthLevel) -> str:
+def dict_elements(d: dict[str, str]):
+	"""
+	Return an iterable yeilding the elements of a dict.
+	The elements are produced as key1 value1 key2 value2 ...
+	"""
+	for key, value in d.items():
+		yield key
+		yield value
+
+
+def format(msg: str | int | float | list | set | dict | AuthLevel) -> str:
 	"""
 	Format a message body to be sent to the server.
 	Escape the quotes in the message if it is a string
@@ -31,6 +41,8 @@ def format(msg: str | int | float | list | set | AuthLevel) -> str:
 		return f"({len(msg)})" + msg
 	elif isinstance(msg, set):
 		return f"({len(msg)})" + "{" + "".join(map(format, msg)) + "}"
+	elif isinstance(msg, dict):
+		return f"({len(msg)})" + "{" + "".join(map(format, dict_elements(msg))) + "}"
 	else:
 		raise TypeError(f"Cannot format {msg}.")
 
@@ -504,3 +516,79 @@ class Client:
 		:return: The length of the difference of the sets.
 		"""
 		return self.request("SET_DIFF_LEN", key1, key2)
+	
+	def hash_set(self, key: str, values: dict[str, str]):
+		"""
+		Set the value of a key to a hash with the contents of values
+		:param key: the key to store the hash
+		:param values: the dict containing the data to store in the hash
+		"""
+		return self.request("HASH_SET", key, values)
+	
+	def hash_all(self, key: str):
+		"""
+		Get all the fields and values of a hash
+		:param key: the key of the hash
+		"""
+		return self.request("HASH_ALL", key)
+	
+	def hash_get(self, key: str, field: str):
+		"""
+		Get the value of a field in a hash
+		:param key: the key of the hash
+		:param field: the field to get the value of
+		"""
+		return self.request("HASH_GET", key, field)
+	
+	def hash_contains(self, key: str, field: str):
+		"""
+		Check if a hash contains a field
+		:param key: the key of the hash
+		:param field: the field to check
+		"""
+		return self.request("HASH_CONTAINS", key, field)
+	
+	def hash_len(self, key: str):
+		"""
+		Get the number of fields in a hash
+		:param key: the key of the hash
+		"""
+		return self.request("HASH_LEN", key)
+	
+	def hash_key_len(self, key: str, field: str):
+		"""
+		Get the length of a field in a hash
+		:param key: the key of the hash
+		:param field: the field to get the length of
+		"""
+		return self.request("HASH_KEY_LEN", key, field)
+
+	def hash_remove(self, key: str, fields: list[str]):
+		"""
+		Remove fields from a hash
+		:param key: the key of the hash
+		:param fields: the fields to remove
+		"""
+		return self.request("HASH_REMOVE", key, fields)
+	
+	def hash_keys(self, key: str):
+		"""
+		Get the keys of a hash
+		:param key: the key of the hash
+		"""
+		return self.request("HASH_KEYS", key)
+	
+	def hash_values(self, key: str):
+		"""
+		Get the values of a hash
+		:param key: the key of the hash
+		"""
+		return self.request("HASH_VALUES", key)
+	
+	def hash_many_get(self, key: str, fields: list[str]):
+		"""
+		Get many fields from a hash
+		:param key: the key of the hash
+		:param fields: the fields to get
+		"""
+		return self.request("HASH_MANY_GET", key, fields)

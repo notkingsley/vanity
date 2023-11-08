@@ -28,6 +28,7 @@ class ServerType(Enum):
 	NULL = "NULL"
 	SET = "SET"
 	BOOL = "BOOL"
+	HASH = "HASH"
 	
 
 class InvalidResponse(Exception):
@@ -216,6 +217,33 @@ def extract_bool(msg: str):
 	return None, msg
 
 
+def extract_hash(msg: str):
+	"""
+	Extract a hash from a response.
+	:param msg: The response to extract from.
+	:return: The extracted hash, or None if no hash could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	if not msg.startswith("{"):
+		return None, msg
+	msg = msg[1:].lstrip()
+	
+	elements = dict()
+	for _ in range(num):
+		key, msg = extract_as(msg, ServerType.STRING)
+		value, msg = extract_as(msg, ServerType.STRING)
+		elements[key] = value
+
+	if not msg.startswith("}"):
+		raise InvalidResponse("Message did not end with '}'.")
+	msg = msg[1:].lstrip()
+	
+	return elements, msg
+
+
 def extract_as(msg: str, _type: ServerType):
 	"""
 	Extract a value from a response as a given type.
@@ -239,6 +267,8 @@ def extract_as(msg: str, _type: ServerType):
 		return extract_set(msg)
 	if _type == ServerType.BOOL:
 		return extract_bool(msg)
+	if _type == ServerType.HASH:
+		return extract_hash(msg)
 
 
 def extract_type(msg: str) -> tuple[ServerType | None, str]:
@@ -269,6 +299,9 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
 	
 	elif msg.startswith(":BOOL"):
 		return ServerType.BOOL, msg[5:].lstrip()
+	
+	elif msg.startswith(":HASH"):
+		return ServerType.HASH, msg[5:].lstrip()
 
 	return None, msg
 
@@ -395,3 +428,9 @@ class Response:
 		:return: True if the response is of type BOOL, False otherwise.
 		"""
 		return self.type == ServerType.BOOL
+	
+	def type_is_hash(self) -> bool:
+		"""
+		:return: True if the response is of type HASH, False otherwise.
+		"""
+		return self.type == ServerType.HASH
