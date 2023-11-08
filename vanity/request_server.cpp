@@ -18,6 +18,7 @@ enum class object_t{
 	ARR,
 	LIST,
 	SET,
+	HASH,
 };
 
 template<object_t _obj>
@@ -51,6 +52,11 @@ struct concrete_traits<object_t::LIST> {
 template<>
 struct concrete_traits<object_t::SET> {
 	using type = std::unordered_set<std::string>;
+};
+
+template<>
+struct concrete_traits<object_t::HASH> {
+	using type = std::unordered_map<std::string, std::string>;
 };
 
 template <object_t ...Args> struct concrete {
@@ -146,6 +152,18 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::SET_DIFF,        "SET_DIFF"},
 
 		{operation_t::SET,             "SET"},
+
+		{operation_t::HASH_SET,        "HASH_SET"},
+		{operation_t::HASH_ALL,        "HASH_ALL"},
+		{operation_t::HASH_GET,        "HASH_GET"},
+		{operation_t::HASH_CONTAINS,   "HASH_CONTAINS"},
+		{operation_t::HASH_LEN,        "HASH_LEN"},
+		{operation_t::HASH_KEY_LEN,    "HASH_KEY_LEN"},
+		{operation_t::HASH_REMOVE,     "HASH_REMOVE"},
+		{operation_t::HASH_KEYS,       "HASH_KEYS"},
+		{operation_t::HASH_VALUES,     "HASH_VALUES"},
+		{operation_t::HASH_UPDATE,     "HASH_UPDATE"},
+		{operation_t::HASH_MANY_GET,   "HASH_MANY_GET"},
 	};
 
 	skip_whitespace(msg, pos);
@@ -168,6 +186,8 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 		{object_t::FLOAT, "FLOAT"},
 		{object_t::ARR,   "ARR"},
 		{object_t::LIST,  "LIST"},
+		{object_t::SET,   "SET"},
+		{object_t::HASH,  "HASH"},
 	};
 
 	skip_whitespace(msg, pos);
@@ -292,7 +312,6 @@ inline double extract<object_t::FLOAT>(const std::string& msg, size_t& pos)
 template<>
 inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 {
-	ensure_not_end(msg, pos);
 	size_t len = extract_len(msg, pos);
 	if (pos + len > msg.size())
 		throw InvalidRequest("string length mismatch");
@@ -306,7 +325,6 @@ inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
 template<>
 inline std::vector<std::string> extract<object_t::ARR>(const std::string& msg, size_t& pos)
 {
-	ensure_not_end(msg, pos);
 	size_t len = extract_len(msg, pos);
 	if (msg[pos] != '[')
 		throw InvalidRequest("array not opened with bracket");
@@ -328,7 +346,6 @@ inline std::vector<std::string> extract<object_t::ARR>(const std::string& msg, s
 template<>
 inline std::list<std::string> extract<object_t::LIST>(const std::string& msg, size_t& pos)
 {
-	ensure_not_end(msg, pos);
 	size_t len = extract_len(msg, pos);
 	if (msg[pos] != '[')
 		throw InvalidRequest("list not opened with bracket");
@@ -349,7 +366,6 @@ inline std::list<std::string> extract<object_t::LIST>(const std::string& msg, si
 template<>
 inline std::unordered_set<std::string> extract<object_t::SET>(const std::string& msg, size_t& pos)
 {
-	ensure_not_end(msg, pos);
 	size_t len = extract_len(msg, pos);
 	if (msg[pos] != '{')
 		throw InvalidRequest("set not opened with '{' bracket");
@@ -366,6 +382,29 @@ inline std::unordered_set<std::string> extract<object_t::SET>(const std::string&
 	return set;
 }
 
+// extract a hash of strings from part of a message
+template<>
+inline std::unordered_map<std::string, std::string> extract<object_t::HASH>(const std::string& msg, size_t& pos)
+{
+	size_t len = extract_len(msg, pos);
+	if (msg[pos] != '{')
+		throw InvalidRequest("hash not opened with '{' bracket");
+	++pos;
+
+	std::unordered_map<std::string, std::string> hash;
+	for (size_t i = 0; i < len; ++i) {
+		auto key = extract<object_t::STR>(msg, pos);
+		auto value = extract<object_t::STR>(msg, pos);
+		hash.emplace(std::move(key), std::move(value));
+	}
+
+	if (msg[pos] != '}')
+		throw InvalidRequest("hash not closed with '}' bracket");
+	++pos;
+
+	return hash;
+}
+
 
 void RequestServer::handle(const std::string& msg, Client& client) {
 	try{
@@ -375,7 +414,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 		if (not client.has_perm(op))
 			return send(client, denied());
 
-		using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET;
+		using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
 		switch (op) {
 			case operation_t::TERMINATE:
 			{
@@ -643,6 +682,69 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 				request_set_difference_len(client, key1, key2);
 				break;
 			}
+
+			case operation_t::HASH_SET:
+			{
+				auto [key, hash] = extract_exact<STR, HASH>(msg, pos);
+				request_hash_set(client, key, std::move(hash));
+				break;
+			}
+			case operation_t::HASH_ALL:
+			{
+				request_hash_all(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::HASH_GET:
+			{
+				auto [key, hash_key] = extract_exact<STR, STR>(msg, pos);
+				request_hash_get(client, key, hash_key);
+				break;
+			}
+			case operation_t::HASH_CONTAINS:
+			{
+				auto [key, hash_key] = extract_exact<STR, STR>(msg, pos);
+				request_hash_contains(client, key, hash_key);
+				break;
+			}
+			case operation_t::HASH_LEN:
+			{
+				request_hash_len(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::HASH_KEY_LEN:
+			{
+				auto [key, hash_key] = extract_exact<STR, STR>(msg, pos);
+				request_hash_key_len(client, key, hash_key);
+				break;
+			}
+			case operation_t::HASH_REMOVE:
+			{
+				auto [key, hash_key] = extract_exact<STR, ARR>(msg, pos);
+				request_hash_remove(client, key, hash_key);
+				break;
+			}
+			case operation_t::HASH_KEYS:
+			{
+				request_hash_keys(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::HASH_VALUES:
+			{
+				request_hash_values(client, extract_exact<STR>(msg, pos));
+				break;
+			}
+			case operation_t::HASH_UPDATE:
+			{
+				auto [key, hash] = extract_exact<STR, HASH>(msg, pos);
+				request_hash_update(client, key, std::move(hash));
+				break;
+			}
+			case operation_t::HASH_MANY_GET:
+			{
+				auto [key, hash_keys] = extract_exact<STR, ARR>(msg, pos);
+				request_hash_many_get(client, key, hash_keys);
+				break;
+			}
 		}
 	}
 	catch (const InvalidRequest& e)
@@ -672,7 +774,7 @@ void RequestServer::handle(const std::string& msg, Client& client) {
 }
 
 void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET;
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
 
 	object_t obj = extract_object_t(msg, pos);
 	std::string key = extract<STR>(msg, pos);
@@ -699,6 +801,7 @@ void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t 
 		case ARR:	// fallthrough
 		case LIST:	// fallthrough
 		case SET:	// fallthrough
+		case HASH:	// fallthrough
 			throw InvalidRequest("invalid object type:");
 	}
 }

@@ -159,6 +159,39 @@ public:
 	// a set_difference_len request was received from a client
 	virtual void request_set_difference_len(Client& client, const std::string& key1, const std::string& key2) = 0;
 
+	// a hash_set request was received from a client
+	virtual void request_hash_set(Client& client, const std::string& key, std::unordered_map<std::string, std::string> values) = 0;
+
+	// a hash_all request was received from a client
+	virtual void request_hash_all(Client& client, const std::string& key) = 0;
+
+	// a hash_get request was received from a client
+	virtual void request_hash_get(Client& client, const std::string& key, const std::string& hash_key) = 0;
+
+	// a hash_contains request was received from a client
+	virtual void request_hash_contains(Client& client, const std::string& key, const std::string& hash_key) = 0;
+
+	// a hash_len request was received from a client
+	virtual void request_hash_len(Client& client, const std::string& key) = 0;
+
+	// a hash_key_len request was received from a client
+	virtual void request_hash_key_len(Client& client, const std::string& key, const std::string& hash_key) = 0;
+
+	// a hash_remove request was received from a client
+	virtual void request_hash_remove(Client& client, const std::string& key, const std::vector<std::string>& hash_keys) = 0;
+
+	// a hash_keys request was received from a client
+	virtual void request_hash_keys(Client& client, const std::string& key) = 0;
+
+	// a hash_values request was received from a client
+	virtual void request_hash_values(Client& client, const std::string& key) = 0;
+
+	// a hash_update request was received from a client
+	virtual void request_hash_update(Client& client, const std::string& key, std::unordered_map<std::string, std::string> values) = 0;
+
+	// a hash_many_get request was received from a client
+	virtual void request_hash_many_get(Client& client, const std::string& key, const std::vector<std::string>& hash_keys) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

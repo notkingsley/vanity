@@ -63,6 +63,18 @@ enum class operation_t{
 	SET_DIFF,
 	SET_DIFF_INTO,
 	SET_DIFF_LEN,
+
+	HASH_SET,
+	HASH_ALL,
+	HASH_GET,
+	HASH_CONTAINS,
+	HASH_LEN,
+	HASH_KEY_LEN,
+	HASH_REMOVE,
+	HASH_KEYS,
+	HASH_VALUES,
+	HASH_UPDATE,
+	HASH_MANY_GET,
 };
 
 // check if an operation is permitted for an unknown client
@@ -127,6 +139,18 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::SET_DIFF_INTO:
 		case operation_t::SET_DIFF_LEN:
 
+		case operation_t::HASH_SET:
+		case operation_t::HASH_ALL:
+		case operation_t::HASH_GET:
+		case operation_t::HASH_CONTAINS:
+		case operation_t::HASH_LEN:
+		case operation_t::HASH_KEY_LEN:
+		case operation_t::HASH_REMOVE:
+		case operation_t::HASH_KEYS:
+		case operation_t::HASH_VALUES:
+		case operation_t::HASH_UPDATE:
+		case operation_t::HASH_MANY_GET:
+
 		default:
 			return false;
 	}
@@ -183,6 +207,18 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::SET_DIFF:
 		case operation_t::SET_DIFF_INTO:
 		case operation_t::SET_DIFF_LEN:
+
+		case operation_t::HASH_SET:
+		case operation_t::HASH_ALL:
+		case operation_t::HASH_GET:
+		case operation_t::HASH_CONTAINS:
+		case operation_t::HASH_LEN:
+		case operation_t::HASH_KEY_LEN:
+		case operation_t::HASH_REMOVE:
+		case operation_t::HASH_KEYS:
+		case operation_t::HASH_VALUES:
+		case operation_t::HASH_UPDATE:
+		case operation_t::HASH_MANY_GET:
 			return true;
 
 
@@ -251,6 +287,18 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::SET_DIFF:
 		case operation_t::SET_DIFF_INTO:
 		case operation_t::SET_DIFF_LEN:
+
+		case operation_t::HASH_SET:
+		case operation_t::HASH_ALL:
+		case operation_t::HASH_GET:
+		case operation_t::HASH_CONTAINS:
+		case operation_t::HASH_LEN:
+		case operation_t::HASH_KEY_LEN:
+		case operation_t::HASH_REMOVE:
+		case operation_t::HASH_KEYS:
+		case operation_t::HASH_VALUES:
+		case operation_t::HASH_UPDATE:
+		case operation_t::HASH_MANY_GET:
 			return true;
 
 
@@ -321,6 +369,18 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::SET_DIFF:
 		case operation_t::SET_DIFF_INTO:
 		case operation_t::SET_DIFF_LEN:
+
+		case operation_t::HASH_SET:
+		case operation_t::HASH_ALL:
+		case operation_t::HASH_GET:
+		case operation_t::HASH_CONTAINS:
+		case operation_t::HASH_LEN:
+		case operation_t::HASH_KEY_LEN:
+		case operation_t::HASH_REMOVE:
+		case operation_t::HASH_KEYS:
+		case operation_t::HASH_VALUES:
+		case operation_t::HASH_UPDATE:
+		case operation_t::HASH_MANY_GET:
 			return true;
 
 

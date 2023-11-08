@@ -7,6 +7,7 @@ add_library(vanity_db STATIC
 	base_database_server.cpp
     database.cpp
 	hash_database.cpp
+	hash_database_server.cpp
 	list_database.cpp
 	list_database_server.cpp
 	persistent_server.cpp
