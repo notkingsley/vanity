@@ -249,6 +249,73 @@ void SerialDatabase::perform(task_type task, task_data_type data, std::promise<r
 			promise.set_value(Database::set_difference_len(key1, key2));
 			break;
 		}
+		case HASH_SET:
+		{
+			auto& [key, values] = std::get<hash_set_type>(data);
+			Database::hash_set(key, std::move(values));
+			promise.set_value(std::monostate{});
+			break;
+		}
+		case HASH_ALL:
+		{
+			auto& key = std::get<hash_all_type>(data);
+			promise.set_value(Database::hash_all(key));
+			break;
+		}
+		case HASH_GET:
+		{
+			auto& [key, hash_key] = std::get<hash_get_type>(data);
+			promise.set_value(Database::hash_get(key, hash_key));
+			break;
+		}
+		case HASH_CONTAINS:
+		{
+			auto& [key, hash_key] = std::get<hash_contains_type>(data);
+			promise.set_value(Database::hash_contains(key, hash_key));
+			break;
+		}
+		case HASH_LEN:
+		{
+			auto& key = std::get<hash_len_type>(data);
+			promise.set_value(Database::hash_len(key));
+			break;
+		}
+		case HASH_KEY_LEN:
+		{
+			auto& [key, hash_key] = std::get<hash_key_len_type>(data);
+			promise.set_value(Database::hash_key_len(key, hash_key));
+			break;
+		}
+		case HASH_REMOVE:
+		{
+			auto& [key, hash_keys] = std::get<hash_remove_type>(data);
+			promise.set_value(Database::hash_remove(key, hash_keys));
+			break;
+		}
+		case HASH_KEYS:
+		{
+			auto& key = std::get<hash_keys_type>(data);
+			promise.set_value(Database::hash_keys(key));
+			break;
+		}
+		case HASH_VALUES:
+		{
+			auto& key = std::get<hash_values_type>(data);
+			promise.set_value(Database::hash_values(key));
+			break;
+		}
+		case HASH_UPDATE:
+		{
+			auto& [key, values] = std::get<hash_update_type>(data);
+			promise.set_value(Database::hash_update(key, std::move(values)));
+			break;
+		}
+		case HASH_MANY_GET:
+		{
+			auto& [key, hash_keys] = std::get<hash_many_get_type>(data);
+			promise.set_value(Database::hash_many_get(key, hash_keys));
+			break;
+		}
 	}
 }
 
@@ -418,6 +485,51 @@ auto SerialDatabase::set_difference_into(const key_type &dest, const key_type &k
 
 auto SerialDatabase::set_difference_len(const key_type &key1, const key_type &key2) -> set_difference_len_ret_type {
 	return std::get<set_difference_len_ret_type>(send_task(SET_DIFFERENCE_LEN, std::make_tuple(key1, key2)).get());
+}
+
+
+void SerialDatabase::hash_set(const BaseDatabase::key_type &key, hash_t values) {
+	send_task(HASH_SET, std::make_tuple(key, std::move(values))).wait();
+}
+
+auto SerialDatabase::hash_all(const BaseDatabase::key_type &key) -> hash_all_ret_type {
+	return std::get<hash_all_ret_type>(send_task(HASH_ALL, key).get());
+}
+
+auto SerialDatabase::hash_get(const BaseDatabase::key_type &key, const std::string &hash_key) -> hash_get_ret_type {
+	return std::get<hash_get_ret_type>(send_task(HASH_GET, std::make_tuple(key, hash_key)).get());
+}
+
+auto SerialDatabase::hash_contains(const BaseDatabase::key_type &key, const std::string &hash_key) -> hash_contains_ret_type {
+	return std::get<hash_contains_ret_type>(send_task(HASH_CONTAINS, std::make_tuple(key, hash_key)).get());
+}
+
+auto SerialDatabase::hash_len(const BaseDatabase::key_type &key) -> hash_len_ret_type {
+	return std::get<hash_len_ret_type>(send_task(HASH_LEN, key).get());
+}
+
+auto SerialDatabase::hash_key_len(const BaseDatabase::key_type &key, const std::string &hash_key) -> hash_key_len_ret_type {
+	return std::get<hash_key_len_ret_type>(send_task(HASH_KEY_LEN, std::make_tuple(key, hash_key)).get());
+}
+
+auto SerialDatabase::hash_remove(const BaseDatabase::key_type &key, const std::vector<std::string> &hash_keys) -> hash_remove_ret_type {
+	return std::get<hash_remove_ret_type>(send_task(HASH_REMOVE, std::make_tuple(key, hash_keys)).get());
+}
+
+auto SerialDatabase::hash_keys(const BaseDatabase::key_type &key) -> hash_keys_ret_type {
+	return std::get<hash_keys_ret_type>(send_task(HASH_KEYS, key).get());
+}
+
+auto SerialDatabase::hash_values(const BaseDatabase::key_type &key) -> hash_values_ret_type {
+	return std::get<hash_values_ret_type>(send_task(HASH_VALUES, key).get());
+}
+
+auto SerialDatabase::hash_update(const key_type &key, hash_t values) -> hash_update_ret_type {
+	return std::get<hash_update_ret_type>(send_task(HASH_UPDATE, std::make_tuple(key, std::move(values))).get());
+}
+
+auto SerialDatabase::hash_many_get(const key_type &key, const std::vector<std::string> &hash_keys) -> hash_many_get_ret_type {
+	return std::get<hash_many_get_ret_type>(send_task(HASH_MANY_GET, std::make_tuple(key, hash_keys)).get());
 }
 
 } // namespace vanity::db

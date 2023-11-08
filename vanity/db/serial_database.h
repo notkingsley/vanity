@@ -68,6 +68,19 @@ protected:
 	using set_difference_into_type = std::tuple<key_type, key_type, key_type>;
 	using set_difference_len_type = std::tuple<key_type, key_type>;
 
+	// hash database
+	using hash_set_type = std::tuple<key_type, std::unordered_map<std::string, std::string>>;
+	using hash_all_type = key_type;
+	using hash_get_type = std::tuple<key_type, std::string>;
+	using hash_contains_type = std::tuple<key_type, std::string>;
+	using hash_len_type = key_type;
+	using hash_key_len_type = std::tuple<key_type, std::string>;
+	using hash_remove_type = std::tuple<key_type, std::vector<std::string>>;
+	using hash_keys_type = key_type;
+	using hash_values_type = key_type;
+	using hash_update_type = std::tuple<key_type, std::unordered_map<std::string, std::string>>;
+	using hash_many_get_type = std::tuple<key_type, std::vector<std::string>>;
+
 
 	// return types
 	// base database
@@ -116,6 +129,19 @@ protected:
 	using set_difference_into_ret_type = std::optional<size_t>;
 	using set_difference_len_ret_type = std::optional<size_t>;
 
+	// hash database
+	using hash_set_ret_type = void;
+	using hash_all_ret_type = std::variant<hash_t, HashError>;
+	using hash_get_ret_type = std::variant<string_t, HashError>;
+	using hash_contains_ret_type = std::variant<bool, HashError>;
+	using hash_len_ret_type = std::variant<size_t, HashError>;
+	using hash_key_len_ret_type = std::variant<size_t, HashError>;
+	using hash_remove_ret_type = std::variant<size_t, HashError>;
+	using hash_keys_ret_type = std::variant<std::vector<string_t>, HashError>;
+	using hash_values_ret_type = std::variant<std::vector<string_t>, HashError>;
+	using hash_update_ret_type = std::variant<size_t, HashError>;
+	using hash_many_get_ret_type = std::variant<std::vector<std::optional<string_t>>, HashError>;
+
 public:
 	enum task_type {
 		RESET,
@@ -159,6 +185,18 @@ public:
 		SET_DIFFERENCE,
 		SET_DIFFERENCE_INTO,
 		SET_DIFFERENCE_LEN,
+
+		HASH_SET,
+		HASH_ALL,
+		HASH_GET,
+		HASH_CONTAINS,
+		HASH_LEN,
+		HASH_KEY_LEN,
+		HASH_REMOVE,
+		HASH_KEYS,
+		HASH_VALUES,
+		HASH_UPDATE,
+		HASH_MANY_GET,
 	};
 
 	using task_data_type = std::variant<
@@ -183,6 +221,8 @@ public:
 		set_difference_type,
 		set_difference_into_type,
 
+		hash_set_type,
+
 		std::monostate
 	>;
 	using ret_type = std::variant<
@@ -202,6 +242,13 @@ public:
 		set_add_ret_type,
 		set_all_ret_type,
 		set_contains_ret_type,
+
+		hash_all_ret_type,
+		hash_get_ret_type,
+		hash_contains_ret_type,
+		hash_len_ret_type,
+		hash_keys_ret_type,
+		hash_many_get_ret_type,
 
 		std::monostate
 	>;
@@ -429,6 +476,66 @@ public:
 	// returns the length of the difference
 	// or std::nullopt if one of the keys is not a set
 	std::optional<size_t> set_difference_len(const key_type& key1, const key_type& key2);
+
+
+	// set a hash key
+	// overwrites the content's key if it already exists
+	void hash_set(const key_type &key, hash_t values);
+
+	// get all elements from a hash key
+	// returns the elements,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<hash_t, HashError> hash_all(const key_type &key);
+
+	// get the value of a hash key
+	// returns the value,
+	// or HashError::NotHash if the value is not a hash
+	// or HashError::BadKey if key does not exist
+	// or hash_key does not exist in the hash
+	std::variant<string_t, HashError> hash_get(const key_type &key, const string_t& hash_key);
+
+	// check if a hash key contains a value
+	// returns true if the value exists,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<bool, HashError> hash_contains(const key_type &key, const string_t& hash_key);
+
+	// get the length of a hash
+	// returns the length, 0 if value does not exist or is empty,
+	// or HashError::NotHash if the value exists and is not a hash
+	std::variant<size_t, HashError> hash_len(const key_type &key);
+
+	// get the length of a hash key
+	// returns the length, 0 if value does not exist or is empty,
+	// or HashError::NotHash if the value exists and is not a hash
+	// or HashError::BadKey if the hash_key does not exist in the hash
+	std::variant<size_t, HashError> hash_key_len(const key_type &key, const string_t& hash_key);
+
+	// remove elements from a hash key
+	// return the number of elements removed,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<size_t, HashError> hash_remove(const key_type &key, const std::vector<string_t>& hash_keys);
+
+	// get all keys from a hash key
+	// returns the keys,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<std::vector<string_t>, HashError> hash_keys(const key_type &key);
+
+	// get all values from a hash key
+	// returns the values,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<std::vector<string_t>, HashError> hash_values(const key_type &key);
+
+	// update the contents of a hash
+	// returns the number of elements added,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<size_t, HashError> hash_update(const key_type &key, hash_t values);
+
+	// get multiple values from a hash key
+	// returns the values,
+	// or HashError::NotHash if the value is not a hash
+	std::variant<std::vector<std::optional<string_t>>, HashError>
+	hash_many_get(const key_type &key, const std::vector<string_t>& hash_keys);
+
 };
 
 } // namespace vanity::db
