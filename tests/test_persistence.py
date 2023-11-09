@@ -129,3 +129,20 @@ class PersistenceTest(unittest.TestCase):
 		with make_client(self.port) as client:
 			response = client.set_all("test_persist_set")
 			self.assertEqual(response.value, {"red", "green", "blue"})
+	
+	def test_persist_hash(self):
+		"""
+		Test that we can set a hash value on persist,
+		restart the server, and get the value.
+		"""
+		with make_client(self.port) as client:
+			response = client.hash_set("test_persist_hash", {"red": "1", "green": "2", "blue": "3"})
+			self.assertTrue(response.is_ok())
+			response = client.persist()
+			self.assertTrue(response.is_ok())
+
+		self.server_handle.restart()
+
+		with make_client(self.port) as client:
+			response = client.hash_all("test_persist_hash")
+			self.assertEqual(response.value, {"red": "1", "green": "2", "blue": "3"})
