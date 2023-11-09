@@ -159,7 +159,7 @@ std::variant<size_t, HashError> HashDatabase::hash_update(const key_type &key, h
 std::variant<std::vector<std::optional<string_t>>, HashError>
 HashDatabase::hash_many_get(const key_type &key, const std::vector<string_t> &hash_keys) {
 	if (not m_data.contains(key))
-		return std::vector<std::optional<string_t>>{};
+		return std::vector<std::optional<string_t>>{hash_keys.size(), std::nullopt};
 
 	auto& value = m_data.at(key);
 	if (not std::holds_alternative<hash_t>(value))
