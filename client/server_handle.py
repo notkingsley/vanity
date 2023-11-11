@@ -39,6 +39,7 @@ class ServerHandle:
 		:param users_file: The file to store user's login info in if no_users_persist is False.
 		"""
 		self.args = [executable_path]
+		self.port = port
 
 		if port is not None:
 			self.args.append(f"--port={port}")
