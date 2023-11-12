@@ -61,7 +61,7 @@ public:
 	}
 
 	// write a message to the socket
-	void write(SocketServer& server, Response&& response)
+	virtual void write(SocketServer& server, Response&& response)
 	{
 		m_writer.register_write(server, std::move(response));
 	}
