@@ -20,6 +20,10 @@ std::string&& Response::extract_data() {
 	return std::move(m_data);
 }
 
+std::string_view Response::body() const {
+	return {m_data.data() + M_LENGTH_SIZE, m_data.size() - M_LENGTH_SIZE};
+}
+
 void Response::reserve(size_t size) {
 	m_data.reserve(size + m_data.size());
 }

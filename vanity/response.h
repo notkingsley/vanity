@@ -99,6 +99,9 @@ public:
 	// destructively extract the response data
 	std::string&& extract_data();
 
+	// obtain a view of the (current) response body (without the length field)
+	std::string_view body() const;
+
 	// reserve space in the response
 	void reserve(size_t size);
 
