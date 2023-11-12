@@ -24,6 +24,9 @@ public:
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;
 
+	// extract the data from a message and dispatch it to the appropriate handler
+	void do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end);
+
 	// a get request was received from a client
 	virtual void request_get(Client& client, const std::string& key) = 0;
 
@@ -209,7 +212,7 @@ public:
 
 private:
 	// convenience function to dispatch a set request by type
-	void dispatch_set(Client& client, const std::string& msg, size_t& pos);
+	void dispatch_set(Client& client, const std::string& msg, size_t& pos, bool expect_end);
 };
 
 } // namespace vanity
