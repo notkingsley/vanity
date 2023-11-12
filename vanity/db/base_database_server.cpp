@@ -16,7 +16,7 @@ void BaseDatabaseServer::stop() {
 		database.stop();
 }
 
-db::SerialDatabase& BaseDatabaseServer::database(Client &client) {
+db_type& BaseDatabaseServer::database(Client &client) {
 	return m_databases[client.db()];
 }
 
@@ -25,7 +25,7 @@ void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
 	if (not value.has_value())
 		return send(client, null());
 
-	auto data = value.value();
+	auto& data = value.value();
 	switch (data.index()) {
 		case 0:
 			return send(client, ok(std::get<0>(data)));

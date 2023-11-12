@@ -7,12 +7,16 @@
 
 #include <array>
 
+#include "locked_database.h"
 #include "serial_database.h"
 #include "request_server.h"
 #include "logging.h"
 
 
 namespace vanity {
+
+//using db_type = db::SerialDatabase;
+using db_type = db::LockedDatabase;
 
 /*
  * A BaseDatabaseServer holds the common functionality of a DatabaseServer
@@ -24,7 +28,7 @@ protected:
 	static constexpr size_t M_NUM_DATABASES = 16;
 
 	// the databases
-	std::array<db::SerialDatabase, M_NUM_DATABASES> m_databases;
+	std::array<db_type, M_NUM_DATABASES> m_databases;
 
 public:
 	// start the database threads
@@ -34,7 +38,7 @@ public:
 	void stop();
 
 	// get the client's current selected database
-	db::SerialDatabase& database(Client& client);
+	db_type& database(Client& client);
 
 	// a get request was received from a client
 	void request_get(Client& client, const std::string& key) override;
