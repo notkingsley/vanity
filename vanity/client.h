@@ -19,9 +19,6 @@ namespace vanity {
 class Client
 {
 public:
-	// create a client
-//	explicit Client(ClientSocket&& socket);
-
 	// the client has sent a message, and it is ready to be read
 	virtual void ready(SocketServer& server) = 0;
 
