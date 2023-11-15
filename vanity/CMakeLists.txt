@@ -13,6 +13,7 @@ add_executable(vanity
 	auth/auth_server.cpp
 	concrete_client.cpp
 	piped_client.cpp
+	pipe_server.cpp
 	request_server.cpp
 	response.cpp
 	session_server.cpp

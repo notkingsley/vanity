@@ -7,6 +7,7 @@
 
 #include "auth/serial_auth_server.h"
 #include "db/persistent_server.h"
+#include "pipe_server.h"
 #include "signals.h"
 #include "session_server.h"
 #include "socket/socket_server.h"
@@ -31,6 +32,7 @@ struct ServerConfig
  */
 class Server:
 	public virtual PersistentServer,
+	public virtual PipeServer,
 	public virtual SerialAuthServer,
 	public virtual SessionServer,
 	public virtual SocketServer
@@ -65,10 +67,10 @@ private:
 public:
 	// create a server
 	explicit Server(const ServerConfig& config) noexcept :
-			Logger(config.log_file, config.log_level),
-			PersistentServer(config.db_file),
-			AuthServer(config.users_db),
-			m_config(config) {};
+		Logger(config.log_file, config.log_level),
+		PersistentServer(config.db_file),
+		AuthServer(config.users_db),
+		m_config(config) {};
 
 	// request to terminate the server
 	void terminate() override {

@@ -14,6 +14,7 @@ enum class operation_t{
 	EXIT,
 	TERMINATE,
 	PING,
+	PIPE,
 
 	ADD_USER,
 	EDIT_USER,
@@ -90,6 +91,7 @@ inline bool unknown_is_permitted(operation_t operation)
 
 
 		case operation_t::TERMINATE:
+		case operation_t::PIPE:
 
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -163,6 +165,7 @@ inline bool user_is_permitted(operation_t operation)
 	{
 		case operation_t::EXIT:
 		case operation_t::PING:
+		case operation_t::PIPE:
 
 		case operation_t::CHANGE_PASSWORD:
 
@@ -244,6 +247,7 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::EXIT:
 		case operation_t::PING:
 		case operation_t::TERMINATE:
+		case operation_t::PIPE:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
@@ -321,6 +325,7 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::EXIT:
 		case operation_t::PING:
 		case operation_t::TERMINATE:
+		case operation_t::PIPE:
 
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:

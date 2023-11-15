@@ -24,8 +24,8 @@ public:
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;
 
-	// extract the data from a message and dispatch it to the appropriate handler
-	void do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end);
+	// a pipe request was received from a client
+	virtual void request_pipe(Client& client, const std::string& msg, size_t& pos) = 0;
 
 	// a get request was received from a client
 	virtual void request_get(Client& client, const std::string& key) = 0;
@@ -209,6 +209,10 @@ public:
 	virtual void request_ping(Client& client, const std::string& msg) {
 		send(client, pong(msg));
 	};
+
+protected:
+	// extract the data from a message and dispatch it to the appropriate handler
+	void do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end);
 
 private:
 	// convenience function to dispatch a set request by type

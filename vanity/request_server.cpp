@@ -101,6 +101,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::EXIT,            "EXIT"},
 		{operation_t::TERMINATE,       "TERMINATE"},
 		{operation_t::PING,            "PING"},
+		{operation_t::PIPE,            "PIPE"},
 
 		{operation_t::AUTH,            "AUTH"},
 		{operation_t::ADD_USER,        "ADD_USER"},
@@ -117,7 +118,6 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::RESET,           "RESET"},
 
 		{operation_t::GET,             "GET"},
-		// {operation_t::SET,             "SET"},
 		{operation_t::INCR_INT,        "INCR_INT"},
 		{operation_t::INCR_FLOAT,      "INCR_FLOAT"},
 		{operation_t::STR_LEN,         "STR_LEN"},
@@ -227,7 +227,7 @@ static inline client_auth extract_client_auth(const std::string& msg, size_t& po
 }
 
 // extract a (len) from part of a message
-static inline size_t extract_len(const std::string& msg, size_t& pos)
+inline size_t extract_len(const std::string& msg, size_t& pos)
 {
 	ensure_not_end(msg, pos);
 	if (msg[pos] != '(') {
@@ -436,6 +436,11 @@ void RequestServer::do_handle(Client &client, const std::string &msg, size_t &po
 			{
 				ensure_end(msg, pos);
 				request_exit(client);
+				break;
+			}
+			case operation_t::PIPE:
+			{
+				request_pipe(client, msg, pos);
 				break;
 			}
 
