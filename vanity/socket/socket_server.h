@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "abstract_server.h"
+#include "concrete_client.h"
 #include "epoll.h"
 #include "event.h"
 #include "logging.h"
@@ -27,7 +28,7 @@ class SocketServer : public virtual AbstractServer, public virtual Logger
 {
 private:
 	// the current set of clients
-	std::unordered_set<Client> m_clients;
+	std::unordered_set<ConcreteClient> m_clients;
 
 	// active SocketConnectionServers
 	std::vector<SocketConnectionServer> m_connection_servers;
@@ -72,10 +73,10 @@ public:
 	void bind(uint16_t port);
 
 	// add a new client
-	void add_client(Client&& client);
+	void add_client(ConcreteClient&& client);
 
 	// remove a client
-	void remove_client(Client& client);
+	void remove_client(ConcreteClient& client);
 
 	// add a socket writer
 	void add_socket_writer(SocketWriter& writer);

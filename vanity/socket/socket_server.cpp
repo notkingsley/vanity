@@ -105,12 +105,12 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 	}
 }
 
-void SocketServer::add_client(Client &&client) {
+void SocketServer::add_client(ConcreteClient &&client) {
 	auto it = m_clients.emplace(std::move(client)).first;
-	m_read_epoll.add(const_cast<Client&>((*it)));
+	m_read_epoll.add(const_cast<ConcreteClient&>((*it)));
 }
 
-void SocketServer::remove_client(Client &client) {
+void SocketServer::remove_client(ConcreteClient &client) {
 	m_read_epoll.remove(client);
 	m_clients.erase(client);
 }

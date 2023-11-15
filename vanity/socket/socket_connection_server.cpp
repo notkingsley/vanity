@@ -3,7 +3,7 @@
 //
 
 #include "socket_connection_server.h"
-#include "../client.h"
+#include "../concrete_client.h"
 
 
 namespace vanity{
@@ -22,7 +22,7 @@ void SocketConnectionServer::unregister_event(int epoll_fd) const {
 
 void SocketConnectionServer::ready(SocketServer& server) {
 	// assumed to never fail
-	server.add_client(Client{m_socket.accept()});
+	server.add_client(ConcreteClient{m_socket.accept()});
 }
 
 } // namespace vanity

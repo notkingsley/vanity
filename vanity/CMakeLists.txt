@@ -11,7 +11,7 @@ add_subdirectory(socket)
 
 add_executable(vanity
 	auth/auth_server.cpp
-	client.cpp
+	concrete_client.cpp
 	request_server.cpp
 	response.cpp
 	session_server.cpp

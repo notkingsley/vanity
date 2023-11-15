@@ -12,59 +12,47 @@ namespace vanity {
 
 /*
  * A Client is, well, a client
+ *
+ * This is merely an interface for a client,
+ * the methods are implemented by ConcreteClient
  */
-class Client : public SocketClient
+class Client
 {
-private:
-	// the client's session info
-	mutable session_info m_session_info;
-
-	// if this client has been requested to be closed
-	mutable bool m_closed = false;
-
 public:
 	// create a client
-	explicit Client(ClientSocket&& socket);
+//	explicit Client(ClientSocket&& socket);
 
 	// the client has sent a message, and it is ready to be read
-	void ready(SocketServer& server) override;
+	virtual void ready(SocketServer& server) = 0;
 
 	// check if the client has permission to perform an op
-	bool has_perm(operation_t op) const;
+	virtual bool has_perm(operation_t op) const = 0;
 
 	// set the client's active database index
-	void db(int db);
+	virtual void db(int db) = 0;
 
 	// get the client's active database index
-	int db() const;
+	virtual int db() const = 0;
 
 	// update the client's auth level
-	void set_auth(const client_auth& auth);
+	virtual void set_auth(const client_auth& auth) = 0;
 
 	// set the client's username
-	void username(const std::string& username);
+	virtual void username(const std::string& username) = 0;
 
 	// get the client's username
-	const std::string& username() const;
+	virtual const std::string& username() const = 0;
 
 	// request to close the client, not effective immediately
 	// but when the client makes a request
-	void close();
-};
+	virtual void close() = 0;
 
-bool operator==(const Client& lhs, const Client& rhs);
+	// read from the socket
+	virtual size_t read(char* buffer, size_t buffer_size) const = 0;
+
+	// write a response to the client
+	virtual void write(SocketServer& server, Response&& response) = 0;
+};
 
 } // namespace vanity
-
-namespace std {
-
-template<>
-struct hash<vanity::Client> : public hash<const vanity::Client*> {
-	size_t operator()(const vanity::Client &c) const {
-		return hash<const vanity::Client*>::operator()(&c);
-	}
-};
-
-} // namespace std
-
 #endif // VANITY_CLIENT_H
