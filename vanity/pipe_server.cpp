@@ -7,8 +7,8 @@
 
 namespace vanity {
 
-// extract a (len) from part of a message
-extern inline size_t extract_len(const std::string& msg, size_t& pos);
+// extract a (len) from part of a message (defined by request_server)
+extern size_t extract_len(const std::string& msg, size_t& pos);
 
 void PipeServer::request_pipe(Client &client, const std::string &msg, size_t &pos) {
 	size_t len = extract_len(msg, pos);
