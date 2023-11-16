@@ -79,14 +79,14 @@ Response &Response::serialize(bool data) {
 	return serialize_type<bool>() << (data ? "true" : "false");
 }
 
-Response &Response::serialize_body(const std::string &data) {
+Response &Response::serialize_string_body(const std::string &data) {
 	reserve(data.size() + 10);
 	return *this << '(' + std::to_string(data.size()) + ")" << data;
 }
 
 Response &Response::serialize(const std::string &data) {
 	serialize_type<std::string>();
-	return serialize_body(data);
+	return serialize_string_body(data);
 }
 
 Response &Response::serialize(int64_t data) {
@@ -107,7 +107,7 @@ Response &Response::serialize(const std::list<std::string> &data) {
 
 	*this << '[';
 	for (const auto& s : data)
-		serialize_body(s);
+		serialize_string_body(s);
 	return *this << ']';
 }
 
@@ -117,7 +117,7 @@ Response &Response::serialize(const std::unordered_set<std::string> &data) {
 
 	*this << '{';
 	for (const auto &s: data)
-		serialize_body(s);
+		serialize_string_body(s);
 	return *this << '}';
 }
 
@@ -127,8 +127,8 @@ Response &Response::serialize(const std::unordered_map<std::string, std::string>
 
 	*this << '{';
 	for (const auto &s: data) {
-		serialize_body(s.first);
-		serialize_body(s.second);
+		serialize_string_body(s.first);
+		serialize_string_body(s.second);
 	}
 	return *this << '}';
 }

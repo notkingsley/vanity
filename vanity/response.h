@@ -81,6 +81,17 @@ private:
 	// the response data
 	std::string m_data;
 
+	struct status_value {
+		static constexpr char const* const ok = "OK";
+		static constexpr char const* const error = "ERROR";
+		static constexpr char const* const null = "NULL";
+		static constexpr char const* const pong = "PONG";
+		static constexpr char const* const denied = "DENIED";
+		static constexpr char const* const internal_error = "INTERNAL_ERROR";
+		static constexpr char const* const bad_type = "BAD_TYPE";
+		static constexpr char const* const bad_request = "BAD_REQUEST";
+	};
+
 public:
 	enum Status{
 		ok,
@@ -153,8 +164,10 @@ public:
 	// serialize nothing to a Response (does nothing)
 	Response& serialize();
 
-	// do not serialize const char*
-	Response& serialize(const char *data) = delete;
+	// do not serialize const char* directly
+	// call serialize_string_body to add a string,
+	// or operator<< for raw data
+	Response& serialize(const char*) = delete;
 
 	// serialize an optional object to a Response
 	template<typename T>
@@ -182,108 +195,96 @@ public:
 		return *this << type_to_string<T>::value;
 	}
 
-private:
 	// serialize a string's body to a Response
-	Response& serialize_body(const std::string &data);
-
-	struct status_value {
-		static constexpr char const* const ok = "OK";
-		static constexpr char const* const error = "ERROR";
-		static constexpr char const* const null = "NULL";
-		static constexpr char const* const pong = "PONG";
-		static constexpr char const* const denied = "DENIED";
-		static constexpr char const* const internal_error = "INTERNAL_ERROR";
-		static constexpr char const* const bad_type = "BAD_TYPE";
-		static constexpr char const* const bad_request = "BAD_REQUEST";
-	};
+	Response& serialize_string_body(const std::string &data);
 };
 
 // make an OK response
 template<typename... Args>
 Response ok(Args&&... args){
-	return (Response() << Response::Status::ok).serialize(args...);
+	return (Response() << Response::ok).serialize(args...);
 }
 
-// a plain OK response
+// an OK response with a message body
 inline Response ok(const char* body) {
-	return Response() << Response::Status::ok << body;
+	return (Response() << Response::ok).serialize_string_body(body);
 }
 
 // make an ERROR response
 template<typename... Args>
 Response error(Args&&... args) {
-	return (Response() << Response::Status::error).serialize(args...);
+	return (Response() << Response::error).serialize(args...);
 }
 
-// a plain ERROR response
+// an ERROR response with a message body
 inline Response error(const char* body) {
-	return Response() << Response::Status::error << body;
+	return (Response() << Response::error).serialize_string_body(body);
 }
 
 // make a NULL response
 template<typename... Args>
 Response null(Args&&... args) {
-	return (Response() << Response::Status::null).serialize(args...);
+	return (Response() << Response::null).serialize(args...);
 }
 
-// a plain NULL response
+// a NULL response with a message body
 inline Response null(const char* body) {
-	return Response() << Response::Status::null << body;
+	return (Response() << Response::null).serialize_string_body(body);
 }
 
 // make a PONG response
 template<typename... Args>
 Response pong(Args&&... args) {
-	return (Response() << Response::Status::pong).serialize(args...);
+	return (Response() << Response::pong).serialize(args...);
 }
 
-// a plain PONG response
+// a PONG response with a message body
 inline Response pong(const char* body) {
-	return Response() << Response::Status::pong << body;
+	return (Response() << Response::pong).serialize_string_body(body);
 }
 
 // make a DENIED response
 template<typename... Args>
 Response denied(Args&&... args) {
-	return (Response() << Response::Status::denied).serialize(args...);
+	return (Response() << Response::denied).serialize(args...);
 }
 
-// a plain DENIED response
+// a DENIED response with a message body
 inline Response denied(const char* body) {
-	return Response() << Response::Status::denied << body;
+	return (Response() << Response::denied).serialize_string_body(body);
 }
 
 // make an INTERNAL_ERROR response
 template<typename... Args>
 Response internal_error(Args&&... args) {
-	return (Response() << Response::Status::internal_error).serialize(args...);
+	return (Response() << Response::internal_error).serialize(args...);
 }
 
-// a plain INTERNAL_ERROR response
+// an INTERNAL_ERROR response with a message body
 inline Response internal_error(const char* body) {
-	return Response() << Response::Status::internal_error << body;
+	return (Response() << Response::internal_error).serialize_string_body(body);
 }
 
 // make a BAD_TYPE response
 template<typename... Args>
 Response bad_type(Args&&... args) {
-	return (Response() << Response::Status::bad_type).serialize(args...);
+	return (Response() << Response::bad_type).serialize(args...);
 }
 
-// a plain BAD_TYPE response
+// a BAD_TYPE response with a message body
 inline Response bad_type(const char* body) {
-	return Response() << Response::Status::bad_type << body;
+	return (Response() << Response::bad_type).serialize_string_body(body);
 }
 
 // make a BAD_REQUEST response
 template<typename... Args>
 Response bad_request(Args&&... args) {
-	return (Response() << Response::Status::bad_request).serialize(args...);
+	return (Response() << Response::bad_request).serialize(args...);
 }
 
-// a plain BAD_REQUEST response
+// a BAD_REQUEST response with a message body
 inline Response bad_request(const char* body) {
-	return Response() << Response::Status::bad_request << body;
+	return (Response() << Response::bad_request).serialize_string_body(body);
 }
 
 } // namespace vanity
