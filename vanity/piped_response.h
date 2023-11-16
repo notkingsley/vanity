@@ -18,7 +18,7 @@ class PipedResponse : public Response
 public:
 	// construct a PipedResponse with an expected size
 	explicit PipedResponse(size_t size) {
-		*this << "PIPE" << '(' << std::to_string(size) << ')';
+		*this << ok << ":PIPE" << '(' << std::to_string(size) << ')';
 	};
 
 	// append a response to the PipedResponse
