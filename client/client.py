@@ -87,11 +87,28 @@ class Client:
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.close()
 	
+	@staticmethod
+	def request_from(command: str, *args) -> str:
+		"""
+		Format a request to be sent to the server.
+		:param command: The command to send.
+		:param args: The arguments to send.
+		:return: The formatted request.
+		"""
+		return f"{command}{' '.join(map(format, args))}"
+
 	def close(self):
 		"""
 		Close the connection to the server.
 		"""
 		self.sock.close()
+	
+	def send_request(self, request: str):
+		"""
+		Send a request to the server.
+		:param request: The request to send.
+		"""
+		self.sock.send(request)
 	
 	def send_command(self, command: str, *args):
 		"""
@@ -99,7 +116,7 @@ class Client:
 		:param command: The command to send.
 		:param args: The arguments to send.
 		"""
-		self.sock.send(f"{command} {' '.join(map(format, args))}")
+		self.send_request(self.request_from(command, *args))
 	
 	def read_response(self) -> Response:
 		"""
