@@ -116,3 +116,15 @@ class Client(CommandInterface):
 		"""
 		self.send_command(command, *args)
 		return self.read_response()
+
+	def exit(self):
+		"""
+		Request to exit the session
+		"""
+		self.send_command("EXIT")
+	
+	def terminate(self):
+		"""
+		Terminate the server.
+		"""
+		self.send_command("TERMINATE")

@@ -55,18 +55,6 @@ class CommandInterface(ABC):
 		"""
 		return self.request("DEL", key)
 	
-	def exit(self):
-		"""
-		Request to exit the session
-		"""
-		self.send_command("EXIT")
-	
-	def terminate(self):
-		"""
-		Terminate the server.
-		"""
-		self.send_command("TERMINATE")
-	
 	def ping(self, msg = str()):
 		"""
 		Ping the server.
