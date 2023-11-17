@@ -3,8 +3,7 @@ from time import sleep, time
 import socket
 from threading import Event, Thread
 
-from client.client import Client
-from client.server_handle import ServerHandle
+from client import Client, ServerHandle
 
 
 def get_free_port():

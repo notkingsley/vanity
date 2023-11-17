@@ -1,6 +1,6 @@
 import socket
 
-from client.client import Client
+from client import Client
 
 
 def get_free_port():

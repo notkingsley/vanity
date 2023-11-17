@@ -1,8 +1,7 @@
 import os
 import unittest
 
-from client.client import AuthLevel
-from client.server_handle import ServerHandle
+from client import AuthLevel, ServerHandle
 from tests.utils import get_free_port, make_client
 
 
