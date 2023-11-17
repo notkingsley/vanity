@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from enum import Enum
 from warnings import warn
 
@@ -29,6 +30,7 @@ class ServerType(Enum):
 	SET = "SET"
 	BOOL = "BOOL"
 	HASH = "HASH"
+	PIPE = "PIPE"
 	
 
 class InvalidResponse(Exception):
@@ -244,6 +246,24 @@ def extract_hash(msg: str):
 	return elements, msg
 
 
+def extract_pipe(msg: str):
+	"""
+	Extract a pipe from a response.
+	:param msg: The response to extract from.
+	:return: The extracted pipe, or None if no pipe could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	responses: list[Response] = list()
+	for _ in range(num):
+		response, msg = response_from(msg)
+		responses.append(Response(response))
+
+	return responses, msg
+
+
 def extract_as(msg: str, _type: ServerType):
 	"""
 	Extract a value from a response as a given type.
@@ -251,24 +271,29 @@ def extract_as(msg: str, _type: ServerType):
 	:param type: The type to extract as.
 	:return: The extracted value, or None if no value could be deciphered.
 	"""
-	if _type == ServerType.STRING:
-		return extract_str(msg)
-	if _type == ServerType.INT:
-		return extract_int(msg)
-	if _type == ServerType.FLOAT:
-		return extract_float(msg)
-	if _type == ServerType.ARRAY:
-		return extract_array(msg)
-	if _type == ServerType.LIST:
-		return extract_list(msg)
-	if _type == ServerType.NULL:
-		return None, msg
-	if _type == ServerType.SET:
-		return extract_set(msg)
-	if _type == ServerType.BOOL:
-		return extract_bool(msg)
-	if _type == ServerType.HASH:
-		return extract_hash(msg)
+	match _type:
+		case ServerType.STRING:
+			return extract_str(msg)
+		case ServerType.INT:
+			return extract_int(msg)
+		case ServerType.FLOAT:
+			return extract_float(msg)
+		case ServerType.ARRAY:
+			return extract_array(msg)
+		case ServerType.LIST:
+			return extract_list(msg)
+		case ServerType.NULL:
+			return None, msg
+		case ServerType.SET:
+			return extract_set(msg)
+		case ServerType.BOOL:
+			return extract_bool(msg)
+		case ServerType.HASH:
+			return extract_hash(msg)
+		case ServerType.PIPE:
+			return extract_pipe(msg)
+		case _:
+			raise ValueError(f"Invalid type: {_type}.")
 
 
 def extract_type(msg: str) -> tuple[ServerType | None, str]:
@@ -303,38 +328,80 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
 	elif msg.startswith(":HASH"):
 		return ServerType.HASH, msg[5:].lstrip()
 
+	elif msg.startswith(":PIPE"):
+		return ServerType.PIPE, msg[5:].lstrip()
+
 	return None, msg
 
 
+def response_from(raw: str):
+	"""
+	Convert a raw response to a Response.
+	:param raw: The raw response string.
+	:return: The RawResponse and the remaining message.
+	"""
+	status, raw = extract_status(raw)
+	type, raw = extract_type(raw)
+
+	value = None
+	body = None
+
+	if type is not None:
+		value, raw = extract_as(raw, type)
+	
+	else:
+		len, raw = extract_len(raw)
+		if len is not None:
+			body, raw = raw[:len], raw[len:]
+	
+	return RawResponse(status, type, value, body), raw
+
+
+@dataclass
+class RawResponse:
+	"""
+	Represents a raw response just after extraction.
+	"""
+	status: ServerConstant | None
+	type: ServerType | None
+	value: str | int | float | list | set | dict | bool | list["Response"] | None
+	body: str | None
+
+
 class Response:
-	def __init__(self, body: str) -> None:
-		self._raw = body
+	def __init__(self, raw: str | RawResponse) -> None:
+		rem = None
+		if isinstance(raw, str):
+			raw, rem = response_from(raw)
+		
+		self.status = raw.status
+		self.type = raw.type
+		self.value = raw.value
+		self.body = raw.body
 
-		raw = self._raw
-		self.status, raw = extract_status(raw)
-		self.type, raw = extract_type(raw)
-
-		self.value = None
-		self.body = None
-
-		if self.type is not None:
-			self.value, raw = extract_as(raw, self.type)
-
-		else:
-			len, raw = extract_len(raw)
-			if len is not None:
-				self.body, raw = raw[:len], raw[len:]
-
-		if raw:
-			warn(f"Response has trailing data: {raw}")
+		if rem:
+			warn(f"Response has trailing data: {rem}")
 
 	def __str__(self) -> str:
 		status = self.status.name if self.status else self.status
-		body = self._raw
-		if self._raw and len(self._raw) > 30:
-			body = self._raw[:30] + "..."
+		status = f"status={status}" if status else ""
 
-		return f"<Response: status={status}, body={body}>"
+		type = self.type.name if self.type else self.type
+		type = f"type={type}" if type else ""
+
+		if self.body:
+			body = self.body
+			if len(body) > 30:
+				body = body[:30] + "..."
+		else:
+			body = ""
+		body = f"body={body}" if body else ""
+
+		_r = ", ".join(filter(None, (status, type, body)))
+		return f"<Response: {_r}>"
+	
+	def __repr__(self) -> str:
+		return str(self)
 
 	def is_null(self) -> bool:
 		"""
@@ -437,3 +504,9 @@ class Response:
 		:return: True if the response is of type HASH, False otherwise.
 		"""
 		return self.type == ServerType.HASH
+	
+	def type_is_pipe(self) -> bool:
+		"""
+		:return: True if the response is of type PIPE, False otherwise.
+		"""
+		return self.type == ServerType.PIPE
