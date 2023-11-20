@@ -18,7 +18,7 @@ Where:
 A <request> is defined as a sequence of characters, with the following structure:
 <request> => <command><arguments>
 Where:
-    - `<command>` is one of the commands described in the COMMANDS documentation.
+    - `<command>` is one of the commands described in the commands/ documentations.
     - `<arguments>` is a sequence of <object>s, as described in the TYPES documentation
 
 A <response> is defined as a sequence of characters, with one of the following structure:
