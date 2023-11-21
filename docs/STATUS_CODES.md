@@ -1,6 +1,6 @@
 This document describes the status codes used by Vanity in responses to requests.
 
-A <status> is defined as a simple sequence of characters and is one of the following:
+A `<status>` is defined as a simple sequence of characters and is one of the following:
 - `OK` - The request was successful.
 - `ERROR` - An error occurred while processing the request.
 - `NULL` - Some requested data was not found.
