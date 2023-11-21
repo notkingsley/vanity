@@ -52,10 +52,11 @@ The <value> is the value of the object, and is defined for each type as follows:
     The NULL type has no value, and is represented by the empty string (the presence of the type annotation is enough to identify it).
     Note: Currently, it is an error to specify a NULL in a request, but they are used in responses.
 
-- <arr> => <length>[<object>...]
+- <arr> => <length>[<object>...] or <length>[<string>...]
     where
         <object> is an object of any type, including annotations, and the square brackets are part of the syntax.
-    Note: ARR is not used, or expected, in requests. In a response, it is used to represent a sequence of objects of any type.
+        <string> is a string as defined above, and the square brackets are part of the syntax.
+    Note: In requests, a sequence of unannotated strings are expected. In a response, it is used to represent a sequence of objects of any type, including annotations.
 
 - <list> => <length>[<string>...]
     where
