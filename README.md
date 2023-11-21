@@ -6,8 +6,7 @@ The server side implementation is to be fully C++,
 The test client and the tests themselves are in Python and I intend to create distributable client packages for other languages (including C++) in the future, starting with Python.
 
 
-Data types currently supported are ```string```, ```int``` , ```float```, ```list```, and ```set```.  
-More will come later.
+Data types currently supported are ```string```, ```int``` , ```float```, ```list```, ```set```, and ```hash```.  
 
 Obviously, we've a long way to go. A very long way, really.  
 *Welcome to the Playground. Follow me...*
@@ -40,7 +39,7 @@ A lightweight WebSocket implementation would also serve here, but it's still not
 Nothwithstanding, the primitive communication is still message-oriented. Something of a request-response like HTTP, but reusing the same socket connection. This might change still, so I'm retaining the event-oriented advantage (potentially).  
 
 
-The client abstracts most of it, so you can do:
+The [client](client/client_.py) abstracts most of it, so you can do:
 ```python
 >>> from client import Client
 >>> client = Client("localhost", 9955)
@@ -53,32 +52,15 @@ True
 >>> client.exit()
 ```
 
-The underlying syntax (used over the sockets and expected by the cli) is less appealing and looks like:  
+The underlying syntax (used over the sockets and expected by the [cli](client/vanity_cli.py)) is less appealing (see the [docs](docs/SYNTAX) for more details)
 ```bash
-> AUTH "vanity" "vanity"
+$ ./client/vanity_cli.py localhost 9955
+> PING
+PONG
+> SET:STR (3)foo (3)bar
 OK
-
-> GET "foo"
-NULL
-
-> SET :STR "foo" "bar"
-OK
-
-> GET "foo"
-:STR "bar"
-
-> DEL "double"
-ERROR
-
-> SET :FLOAT "double" 123.456
-OK
-
-> DEL "foo"
-OK
-
-> GET "double"
-:FLOAT 123.456
-
+> GET (3)foo
+OK:STR (3)bar
 > EXIT
 ```
 
