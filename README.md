@@ -52,7 +52,7 @@ True
 >>> client.exit()
 ```
 
-The underlying syntax (used over the sockets and expected by the [cli](client/vanity_cli.py)) is less appealing (see the [docs](docs/SYNTAX) for more details)
+The underlying syntax (used over the sockets and expected by the [cli](client/vanity_cli.py)) is less appealing (see the [docs](docs/SYNTAX.md) for more details)
 ```bash
 $ ./client/vanity_cli.py localhost 9955
 > PING
