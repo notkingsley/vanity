@@ -5,14 +5,14 @@
 #ifndef VANITY_BASE_DATABASE_H
 #define VANITY_BASE_DATABASE_H
 
-#include "base_map.h"
+#include "expiry_database.h"
 
 namespace vanity::db {
 
 /*
  * A BaseDatabase is the base class for all databases
  */
-class BaseDatabase : public BaseMap
+class BaseDatabase : public ExpiryDatabase
 {
 public:
 	// create a database
@@ -33,7 +33,7 @@ public:
 	void reset();
 
 	// check if the key exists
-	bool has(const key_type& key) const;
+	bool has(const key_type& key);
 
 	// get the value for a key
 	std::optional<const data_type> get(const key_type& key);
