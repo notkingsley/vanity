@@ -18,9 +18,11 @@ HashDatabase &HashDatabase::operator=(HashDatabase &&other) noexcept {
 
 void HashDatabase::hash_set(const key_type &key, hash_t values) {
 	m_data[key] = std::move(values);
+	clear_expiry(key);
 }
 
 std::variant<hash_t, HashError> HashDatabase::hash_all(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return hash_t{};
 
@@ -32,6 +34,7 @@ std::variant<hash_t, HashError> HashDatabase::hash_all(const key_type &key) {
 }
 
 std::variant<string_t, HashError> HashDatabase::hash_get(const key_type &key, const string_t &hash_key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return HashError::BadKey;
 
@@ -47,6 +50,7 @@ std::variant<string_t, HashError> HashDatabase::hash_get(const key_type &key, co
 }
 
 std::variant<bool, HashError> HashDatabase::hash_contains(const key_type &key, const string_t &hash_key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return false;
 
@@ -59,6 +63,7 @@ std::variant<bool, HashError> HashDatabase::hash_contains(const key_type &key, c
 }
 
 std::variant<size_t, HashError> HashDatabase::hash_len(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -71,6 +76,7 @@ std::variant<size_t, HashError> HashDatabase::hash_len(const key_type &key) {
 }
 
 std::variant<size_t, HashError> HashDatabase::hash_key_len(const key_type &key, const string_t &hash_key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return HashError::BadKey;
 
@@ -86,6 +92,7 @@ std::variant<size_t, HashError> HashDatabase::hash_key_len(const key_type &key, 
 }
 
 std::variant<size_t, HashError> HashDatabase::hash_remove(const key_type &key, const std::vector<string_t> &hash_keys) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -98,12 +105,15 @@ std::variant<size_t, HashError> HashDatabase::hash_remove(const key_type &key, c
 	for (const auto& hash_key : hash_keys)
 		hash.erase(hash_key);
 
-	if (hash.empty())
+	if (hash.empty()){
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 	return size - hash.size();
 }
 
 std::variant<std::vector<string_t>, HashError> HashDatabase::hash_keys(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return std::vector<string_t>{};
 
@@ -121,6 +131,7 @@ std::variant<std::vector<string_t>, HashError> HashDatabase::hash_keys(const key
 }
 
 std::variant<std::vector<string_t>, HashError> HashDatabase::hash_values(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return std::vector<string_t>{};
 
@@ -138,6 +149,7 @@ std::variant<std::vector<string_t>, HashError> HashDatabase::hash_values(const k
 }
 
 std::variant<size_t, HashError> HashDatabase::hash_update(const key_type &key, hash_t values) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		m_data[key] = {};
 
@@ -158,6 +170,7 @@ std::variant<size_t, HashError> HashDatabase::hash_update(const key_type &key, h
 
 std::variant<std::vector<std::optional<string_t>>, HashError>
 HashDatabase::hash_many_get(const key_type &key, const std::vector<string_t> &hash_keys) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return std::vector<std::optional<string_t>>{hash_keys.size(), std::nullopt};
 

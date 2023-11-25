@@ -21,6 +21,7 @@ SetDatabase &SetDatabase::operator=(SetDatabase &&other) noexcept {
 
 std::optional<size_t>
 SetDatabase::set_add(const key_type &key, set_t values) {
+	erase_if_expired(key);
 	if (values.empty())
 		return 0ull;
 
@@ -39,6 +40,7 @@ SetDatabase::set_add(const key_type &key, set_t values) {
 
 std::optional<set_t>
 SetDatabase::set_all(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return set_t{};
 
@@ -51,6 +53,7 @@ SetDatabase::set_all(const key_type &key) {
 
 std::optional<set_t>
 SetDatabase::set_remove(const key_type &key, size_t count) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return set_t{};
 
@@ -72,13 +75,16 @@ SetDatabase::set_remove(const key_type &key, size_t count) {
 		removed.insert(set.extract(it));
 	}
 
-	if (set.empty())
+	if (set.empty()) {
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 	return removed;
 }
 
 std::optional<size_t>
 SetDatabase::set_discard(const key_type &key, const set_t& values) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -91,13 +97,16 @@ SetDatabase::set_discard(const key_type &key, const set_t& values) {
 	for (const auto& v : values)
 		set.erase(v);
 
-	if (set.empty())
+	if (set.empty()) {
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 	return size - set.size();
 }
 
 std::optional<size_t>
 SetDatabase::set_len(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -110,6 +119,7 @@ SetDatabase::set_len(const key_type &key) {
 
 std::optional<bool>
 SetDatabase::set_contains(const key_type &key, const std::string &value) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return false;
 
@@ -122,6 +132,8 @@ SetDatabase::set_contains(const key_type &key, const std::string &value) {
 
 std::optional<bool>
 SetDatabase::set_move(const key_type &source, const key_type &dest, const std::string &value) {
+	erase_if_expired(source);
+	erase_if_expired(dest);
 	if (not m_data.contains(source))
 		return false;
 
@@ -143,13 +155,18 @@ SetDatabase::set_move(const key_type &source, const key_type &dest, const std::s
 	auto& dest_set = std::get<set_t>(dest_val);
 	dest_set.insert(source_set.extract(value));
 
-	if (source_set.empty())
+	if (source_set.empty()) {
 		m_data.erase(source);
+		clear_expiry(source);
+	}
 	return true;
 }
 
 std::optional<set_t>
 SetDatabase::set_union(const std::vector<key_type> &keys) {
+	for (const auto& key : keys)
+		erase_if_expired(key);
+
 	if (keys.empty())
 		return set_t{};
 
@@ -182,6 +199,7 @@ SetDatabase::set_union_into(const key_type &dest, const std::vector<key_type> &k
 
 	auto size = result->size();
 	m_data[dest] = std::move(*result);
+	clear_expiry(dest);
 	return size;
 }
 
@@ -196,6 +214,9 @@ SetDatabase::set_union_len(const std::vector<key_type> &keys) {
 
 std::optional<set_t>
 SetDatabase::set_intersection(const std::vector<key_type> &keys) {
+	for (const auto& key : keys)
+		erase_if_expired(key);
+
 	if (keys.empty())
 		return set_t{};
 
@@ -243,6 +264,7 @@ SetDatabase::set_intersection_into(const key_type &dest, const std::vector<key_t
 
 	auto size = result->size();
 	m_data[dest] = std::move(*result);
+	clear_expiry(dest);
 	return size;
 }
 
@@ -257,6 +279,8 @@ SetDatabase::set_intersection_len(const std::vector<key_type> &keys) {
 
 std::optional<set_t>
 SetDatabase::set_difference(const key_type &key1, const key_type &key2) {
+	erase_if_expired(key1);
+	erase_if_expired(key2);
 	if (not m_data.contains(key1) or not m_data.contains(key2))
 		return set_t{};
 
@@ -284,6 +308,7 @@ SetDatabase::set_difference_into(const key_type &dest, const key_type &key1, con
 
 	auto size = result->size();
 	m_data[dest] = std::move(*result);
+	clear_expiry(dest);
 	return size;
 }
 

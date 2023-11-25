@@ -18,9 +18,11 @@ PrimitiveDatabase &PrimitiveDatabase::operator=(PrimitiveDatabase &&other) noexc
 
 void PrimitiveDatabase::set(const key_type& key, const data_type& value) {
 	m_data[key] = value;
+	clear_expiry(key);
 }
 
 std::optional<int_t> PrimitiveDatabase::incr_int(const key_type &key, int_t value) {
+	erase_if_expired(key);
 	if (m_data.contains(key)) {
 		if (std::holds_alternative<int_t>(m_data.at(key))){
 			auto& val = std::get<int_t>(m_data.at(key));
@@ -37,6 +39,7 @@ std::optional<int_t> PrimitiveDatabase::incr_int(const key_type &key, int_t valu
 }
 
 std::optional<float_t> PrimitiveDatabase::incr_float(const key_type &key, float_t value) {
+	erase_if_expired(key);
 	if (m_data.contains(key)) {
 		if (std::holds_alternative<float_t>(m_data.at(key))){
 			auto& val = std::get<float_t>(m_data.at(key));
@@ -53,6 +56,7 @@ std::optional<float_t> PrimitiveDatabase::incr_float(const key_type &key, float_
 }
 
 std::optional<int_t> PrimitiveDatabase::str_len(const key_type &key) {
+	erase_if_expired(key);
 	if (m_data.contains(key) and std::holds_alternative<string_t>(m_data.at(key)))
 		return std::get<string_t>(m_data.at(key)).size();
 	else
@@ -60,16 +64,22 @@ std::optional<int_t> PrimitiveDatabase::str_len(const key_type &key) {
 }
 
 std::vector<std::optional<PrimitiveDatabase::data_type>> PrimitiveDatabase::many_get(const std::vector<key_type>& keys) {
+	for (const auto &key: keys)
+		erase_if_expired(key);
+
 	std::vector<std::optional<data_type>> values;
 	values.reserve(keys.size());
 	for (const auto &key: keys)
 		values.emplace_back(get(key));
+
 	return values;
 }
 
 void PrimitiveDatabase::many_set(std::vector<std::pair<key_type, data_type>> pairs) {
-	for (auto& pair: pairs)
+	for (auto& pair: pairs){
+		clear_expiry(pair.first);
 		m_data.emplace(std::move(pair));
+	}
 }
 
 } // namespace vanity::db

@@ -18,6 +18,7 @@ ListDatabase &ListDatabase::operator=(ListDatabase &&other) noexcept {
 
 std::variant<size_t, ListErrorKind>
 ListDatabase::list_len(const key_type &key) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -30,14 +31,19 @@ ListDatabase::list_len(const key_type &key) {
 
 std::variant<std::string, ListErrorKind>
 ListDatabase::list_get(const key_type &key, int64_t index) {
+	erase_if_expired(key);
+
 	auto it_or_error = iterator_or_error(key, index);
 	if (std::holds_alternative<ListErrorKind>(it_or_error))
 		return std::get<ListErrorKind>(it_or_error);
+
 	return *std::get<list_t::iterator>(it_or_error);
 }
 
 std::variant<bool, ListErrorKind>
 ListDatabase::list_set(const key_type &key, int64_t index, const std::string &value) {
+	erase_if_expired(key);
+
 	auto it_or_error = iterator_or_error(key, index);
 	if (std::holds_alternative<ListErrorKind>(it_or_error))
 		return std::get<ListErrorKind>(it_or_error);
@@ -49,6 +55,7 @@ ListDatabase::list_set(const key_type &key, int64_t index, const std::string &va
 
 std::variant<size_t, ListErrorKind>
 ListDatabase::list_push_left(const key_type &key, list_t values) {
+	erase_if_expired(key);
 	if (values.empty())
 		return 0ull;
 
@@ -67,6 +74,7 @@ ListDatabase::list_push_left(const key_type &key, list_t values) {
 
 std::variant<size_t, ListErrorKind>
 ListDatabase::list_push_right(const key_type &key, list_t values) {
+	erase_if_expired(key);
 	if (values.empty())
 		return 0ull;
 
@@ -84,6 +92,7 @@ ListDatabase::list_push_right(const key_type &key, list_t values) {
 
 std::variant<list_t, ListErrorKind>
 ListDatabase::list_pop_left(const key_type &key, int64_t n) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -98,14 +107,17 @@ ListDatabase::list_pop_left(const key_type &key, int64_t n) {
 
 	list_t result;
 	result.splice(result.begin(), list, list.begin(), it);
-	if (list.empty())
+	if (list.empty()) {
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 
 	return result;
 }
 
 std::variant<list_t, ListErrorKind>
 ListDatabase::list_pop_right(const key_type &key, int64_t n) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -120,14 +132,17 @@ ListDatabase::list_pop_right(const key_type &key, int64_t n) {
 
 	list_t result;
 	result.splice(result.begin(), list, rit.base(), list.end());
-	if (list.empty())
+	if (list.empty()) {
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 
 	return result;
 }
 
 std::variant<list_t, ListErrorKind>
 ListDatabase::list_range(const key_type &key, int64_t start, int64_t end) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return list_t{};
 
@@ -145,6 +160,7 @@ ListDatabase::list_range(const key_type &key, int64_t start, int64_t end) {
 
 std::variant<size_t, ListErrorKind>
 ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -171,6 +187,7 @@ ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
 
 std::variant<size_t, ListErrorKind>
 ListDatabase::list_remove(const key_type &key, const std::string &element, int64_t count) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return 0ull;
 
@@ -208,14 +225,17 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int64
 	}
 
 	auto ret = size - list.size();
-	if (list.empty())
+	if (list.empty()) {
 		m_data.erase(key);
+		clear_expiry(key);
+	}
 
 	return ret;
 };
 
 std::variant<list_t::iterator, ListErrorKind>
 ListDatabase::iterator_or_error(const key_type &key, int64_t index) {
+	erase_if_expired(key);
 	if (not m_data.contains(key))
 		return ListErrorKind::OutOfRange;
 
