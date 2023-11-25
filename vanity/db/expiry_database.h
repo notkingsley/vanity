@@ -5,21 +5,16 @@
 #ifndef VANITY_EXPIRY_DATABASE_H
 #define VANITY_EXPIRY_DATABASE_H
 
-#include <chrono>
-
 #include "base_map.h"
 
-
 namespace vanity::db {
-
-using time_t = std::chrono::time_point<std::chrono::system_clock>;
 
 /*
  * An ExpiryDatabase is a database that allows for expiry of keys
  */
 class ExpiryDatabase: public BaseMap
 {
-private:
+protected:
 	// the expiry times for the keys
 	std::unordered_map<key_type, time_t> m_expiry_times;
 

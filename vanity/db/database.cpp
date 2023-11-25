@@ -179,6 +179,48 @@ db_pair_type read<db_pair_type>(std::ifstream &in)
 	return std::make_pair(first, second);
 }
 
+// write a time_t to the output stream
+template<>
+void write<time_t>(std::ofstream &out, const time_t& value)
+{
+	out.write(reinterpret_cast<const char *>(&value), sizeof(time_t));
+}
+
+// read a time_t from the input stream
+template<>
+time_t read<time_t>(std::ifstream &in)
+{
+	time_t value;
+	in.read(reinterpret_cast<char *>(&value), sizeof(time_t));
+	return value;
+}
+
+// write an expiry_db_pair_type to the output stream
+template<>
+void write<expiry_db_pair_type>(std::ofstream &out, const expiry_db_pair_type& value)
+{
+	write(out, value.first);
+	write(out, value.second);
+}
+
+// read an expiry_db_pair_type from the input stream
+template<>
+expiry_db_pair_type read<expiry_db_pair_type>(std::ifstream &in)
+{
+	db_key_type first = read<db_key_type>(in);
+	time_t second = read<time_t>(in);
+	return std::make_pair(first, second);
+}
+
+// write an unordered_map to the output stream
+template<typename K, typename V>
+void write(std::ofstream &out, const std::unordered_map<K, V>& value)
+{
+	write(out, value.size());
+	for (const auto& pair : value)
+		write<std::pair<K, V>>(out, pair);
+}
+
 Database &Database::operator=(Database &&other) noexcept
 {
 	BaseDatabase::operator=(std::move(other));
@@ -189,9 +231,8 @@ Database::Database(Database &&other) noexcept
 		: BaseDatabase(std::move(other)) { }
 
 void Database::persist(std::ofstream &out) const{
-	write(out, m_data.size());
-	for (const auto& pair : m_data)
-		write<db_pair_type>(out, pair);
+	write(out, m_data);
+	write(out, m_expiry_times);
 }
 
 Database Database::from(std::ifstream &in) {
@@ -200,6 +241,10 @@ Database Database::from(std::ifstream &in) {
 	size_t size = read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
 		db.m_data.insert(read<db_pair_type>(in));
+
+	size = read<size_t>(in);
+	for (size_t i = 0; i < size; ++i)
+		db.m_expiry_times.insert(read<expiry_db_pair_type>(in));
 
 	return db;
 }
