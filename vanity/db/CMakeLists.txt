@@ -5,6 +5,7 @@ include_directories(.)
 add_library(vanity_db STATIC
 	base_database.cpp
 	base_database_server.cpp
+	base_map.h
     database.cpp
 	hash_database.cpp
 	hash_database_server.cpp
@@ -17,4 +18,5 @@ add_library(vanity_db STATIC
 	serial_database.cpp
 	set_database.cpp
 	set_database_server.cpp
+	types.h
 )

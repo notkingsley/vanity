@@ -5,20 +5,14 @@
 #ifndef VANITY_RESPONSE_H
 #define VANITY_RESPONSE_H
 
-#include <list>
 #include <netinet/in.h>
-#include <optional>
-#include <string>
-#include <variant>
-#include <vector>
-#include <unordered_set>
 
-#include "db/base_database.h"
+#include "db/types.h"
 
 
 namespace vanity {
 
-using primary_serialize_type = db::BaseDatabase::data_type;
+using primary_serialize_type = db::db_data_type;
 
 // convert a type to a string
 template <typename T>
