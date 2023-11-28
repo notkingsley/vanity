@@ -18,6 +18,7 @@ add_executable(vanity
 	response.cpp
 	session_server.cpp
     vanity.cpp
+	extract.h
 )
 
 target_link_libraries(vanity
