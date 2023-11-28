@@ -120,7 +120,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 
 		{operation_t::SET_EXPIRY,      "SET_EXPIRY"},
 		{operation_t::GET_EXPIRY,      "GET_EXPIRY"},
-		{operation_t::CLEAR_EXPIRY,      "DEL_EXPIRY"},
+		{operation_t::CLEAR_EXPIRY,    "CLEAR_EXPIRY"},
 
 		{operation_t::GET,             "GET"},
 		{operation_t::INCR_INT,        "INCR_INT"},
