@@ -56,19 +56,19 @@ void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t 
 		case STR:
 		{
 			auto value {extract_exact<STR>(msg, pos, end)};
-			request_set(client, key, value);
+			request_set_str(client, key, value);
 			break;
 		}
 		case INT:
 		{
 			auto value {extract_exact<INT>(msg, pos, end)};
-			request_set(client, key, value);
+			request_set_int(client, key, value);
 			break;
 		}
 		case FLOAT:
 		{
 			auto value {extract_exact<FLOAT>(msg, pos, end)};
-			request_set(client, key, value);
+			request_set_float(client, key, value);
 			break;
 		}
 		case ARR:	// fallthrough

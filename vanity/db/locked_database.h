@@ -89,8 +89,14 @@ public:
 	void clear_all_expiry();
 
 
-	// set the value for a key
-	void set(const key_type& key, const db_data_type& value);
+	// set a string value for a key
+	void set_str(const key_type& key, const std::string& value);
+
+	// set an integer value for a key
+	void set_int(const key_type& key, int_t value);
+
+	// set a float value for a key
+	void set_float(const key_type& key, float_t value);
 
 	// increment the value for an integer key, or set it to 0 if it doesn't exist
 	// returns the new value, or std::nullopt if the value is not an integer
