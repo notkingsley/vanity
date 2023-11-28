@@ -134,6 +134,29 @@ class CommandInterface(ABC):
 		"""
 		return self.request("EXISTS", key)
 	
+	def set_expiry(self, key: str, expiry: float):
+		"""
+		Set the expiry of a key.
+		:param key: The key to set the expiry of.
+		:param expiry: The expiry to set, in seconds.
+		"""
+		return self.request("SET_EXPIRY", key, expiry)
+	
+	def get_expiry(self, key: str):
+		"""
+		Get the expiry of a key.
+		:param key: The key to get the expiry of.
+		:return: The expiry of the key, in seconds.
+		"""
+		return self.request("GET_EXPIRY", key)
+	
+	def clear_expiry(self, key: str):
+		"""
+		Clear the expiry of a key.
+		:param key: The key to clear the expiry of.
+		"""
+		return self.request("CLEAR_EXPIRY", key)
+	
 	def incr_int(self, key: str, by: int = 1):
 		"""
 		Increment an integer value.
