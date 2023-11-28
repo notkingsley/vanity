@@ -59,7 +59,8 @@ struct concrete_traits<object_t::HASH> {
 	using type = std::unordered_map<std::string, std::string>;
 };
 
-template <object_t ...Args> struct concrete {
+template <object_t ...Args>
+struct concrete {
 	using type = std::tuple<typename concrete_traits<Args>::type...>;
 };
 
@@ -116,6 +117,10 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 		{operation_t::TYPE,            "TYPE"},
 		{operation_t::EXISTS,          "EXISTS"},
 		{operation_t::RESET,           "RESET"},
+
+		{operation_t::SET_EXPIRY,      "SET_EXPIRY"},
+		{operation_t::GET_EXPIRY,      "GET_EXPIRY"},
+		{operation_t::CLEAR_EXPIRY,      "DEL_EXPIRY"},
 
 		{operation_t::GET,             "GET"},
 		{operation_t::INCR_INT,        "INCR_INT"},
@@ -506,6 +511,23 @@ void RequestServer::do_handle(Client &client, const std::string &msg, size_t &po
 			{
 				ensure_end(msg, pos);
 				request_reset(client);
+				break;
+			}
+
+			case operation_t::SET_EXPIRY:
+			{
+				auto [key, expiry] = extract_exact<STR, FLOAT>(msg, pos, end);
+				request_set_expiry(client, key, expiry);
+				break;
+			}
+			case operation_t::GET_EXPIRY:
+			{
+				request_get_expiry(client, extract_exact<STR>(msg, pos, end));
+				break;
+			}
+			case operation_t::CLEAR_EXPIRY:
+			{
+				request_clear_expiry(client, extract_exact<STR>(msg, pos, end));
 				break;
 			}
 

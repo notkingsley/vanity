@@ -48,6 +48,15 @@ public:
 	// an exists request was received from a client
 	virtual void request_exists(Client& client, const std::string& key) = 0;
 
+	// a set_expiry request was received from a client
+	virtual void request_set_expiry(Client& client, const std::string& key, double seconds) = 0;
+
+	// a get_expiry request was received from a client
+	virtual void request_get_expiry(Client& client, const std::string& key) = 0;
+
+	// a clear_expiry request was received from a client
+	virtual void request_clear_expiry(Client& client, const std::string& key) = 0;
+
 	// an incr_int request was received from a client
 	virtual void request_incr_int(Client& client, const std::string& key, int64_t value) = 0;
 

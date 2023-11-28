@@ -30,6 +30,10 @@ enum class operation_t{
 	EXISTS,
 	RESET,
 
+	SET_EXPIRY,
+	GET_EXPIRY,
+	CLEAR_EXPIRY,
+
 	GET,
 	SET,
 	INCR_INT,
@@ -106,6 +110,10 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::EXISTS:
 		case operation_t::RESET:
 
+		case operation_t::SET_EXPIRY:
+		case operation_t::GET_EXPIRY:
+		case operation_t::CLEAR_EXPIRY:
+
 		case operation_t::GET:
 		case operation_t::SET:
 		case operation_t::INCR_INT:
@@ -175,6 +183,10 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::DEL:
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
+
+		case operation_t::SET_EXPIRY:
+		case operation_t::GET_EXPIRY:
+		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
 		case operation_t::SET:
@@ -256,6 +268,10 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
 		case operation_t::RESET:
+
+		case operation_t::SET_EXPIRY:
+		case operation_t::GET_EXPIRY:
+		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
 		case operation_t::SET:
@@ -339,6 +355,10 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::TYPE:
 		case operation_t::RESET:
 		case operation_t::EXISTS:
+
+		case operation_t::SET_EXPIRY:
+		case operation_t::GET_EXPIRY:
+		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
 		case operation_t::SET:
