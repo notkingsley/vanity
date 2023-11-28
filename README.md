@@ -57,7 +57,7 @@ The underlying syntax (used over the sockets and expected by the [cli](client/va
 $ ./client/vanity_cli.py localhost 9955
 > PING
 PONG
-> SET:STR (3)foo (3)bar
+> STR_SET (3)foo (3)bar
 OK
 > GET (3)foo
 OK:STR (3)bar
