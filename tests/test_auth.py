@@ -36,7 +36,7 @@ class UnknownUserTest(unittest.TestCase):
 		"""
 		Test that we can't set data on the server if we don't login.
 		"""
-		response = self.client.set("test_set_no_login", "test_set_no_login_value")
+		response = self.client.str_set("test_set_no_login", "test_set_no_login_value")
 		self.assertTrue(response.is_denied())
 	
 	def test_delete_no_login(self):
@@ -158,7 +158,7 @@ class UserAuthTest(unittest.TestCase):
 		"""
 		Test that we can set data on the server if we login.
 		"""
-		response = self.client.set("test_set", "test_set_value")
+		response = self.client.str_set("test_set", "test_set_value")
 		self.assertTrue(response.is_ok())
 		response = self.client.get("test_set")
 		self.assertTrue(response.is_ok())

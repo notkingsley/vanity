@@ -22,7 +22,7 @@ class NoPersistenceTest(unittest.TestCase):
 		Test that we can set a value on no_db_persist, restart the server, and get a null.
 		"""
 		with make_client(self.port) as client:
-			client.set("test_no_db_persist", "test_no_db_persist_value")
+			client.str_set("test_no_db_persist", "test_no_db_persist_value")
 			response = client.persist()
 			self.assertTrue(response.is_error())
 
@@ -56,7 +56,7 @@ class PersistenceTest(unittest.TestCase):
 		Test that we can set a value on persist, restart the server, and get the value.
 		"""
 		with make_client(self.port) as client:
-			client.set("test_persist", "test_persist_value")
+			client.str_set("test_persist", "test_persist_value")
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 
@@ -72,7 +72,7 @@ class PersistenceTest(unittest.TestCase):
 		restart the server, and get the value.
 		"""
 		with make_client(self.port) as client:
-			client.set("test_persist_int", 123)
+			client.int_set("test_persist_int", 123)
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 
@@ -88,7 +88,7 @@ class PersistenceTest(unittest.TestCase):
 		restart the server, and get the value.
 		"""
 		with make_client(self.port) as client:
-			client.set("test_persist_float", 123.456)
+			client.float_set("test_persist_float", 123.456)
 			response = client.persist()
 			self.assertTrue(response.is_ok())
 

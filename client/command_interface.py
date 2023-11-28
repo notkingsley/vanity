@@ -34,19 +34,29 @@ class CommandInterface(ABC):
 		"""
 		return self.request("GET", key)
 	
-	def set(self, key: str, value: str | int | float):
+	def str_set(self, key: str, value: str):
 		"""
-		Set the value of a key.
+		Set the value of a key to a string.
 		:param key: The key to set.
 		:param value: The value to set.
 		"""
-		if isinstance(value, str):
-			command = "SET :STR"
-		elif isinstance(value, int):
-			command = "SET :INT"
-		elif isinstance(value, float):
-			command = "SET :FLOAT"
-		return self.request(command, key, value)
+		return self.request("STR_SET", key, value)
+	
+	def int_set(self, key: str, value: int):
+		"""
+		Set the value of a key to an integer.
+		:param key: The key to set.
+		:param value: The value to set.
+		"""
+		return self.request("INT_SET", key, value)
+	
+	def float_set(self, key: str, value: float):
+		"""
+		Set the value of a key to a float.
+		:param key: The key to set.
+		:param value: The value to set.
+		"""
+		return self.request("FLOAT_SET", key, value)
 	
 	def delete(self, key: str):
 		"""

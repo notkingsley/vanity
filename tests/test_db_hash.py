@@ -79,7 +79,7 @@ class BadTypeTest(BaseDatabaseTest):
 
 	def setUp(self) -> None:
 		super().setUp()
-		response = self.client.set("test_bad_type", "value")
+		response = self.client.str_set("test_bad_type", "value")
 		self.assertTrue(response.is_ok())
 
 	def test_hash_all(self):

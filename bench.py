@@ -136,7 +136,7 @@ class SetLoad(Load):
 	Allows to impose a set load on a server.
 	"""
 	def action(self, client: Client):
-		client.set("test_set", "test_set_value")
+		client.str_set("test_set", "test_set_value")
 
 
 class GetLoad(Load):
@@ -144,7 +144,7 @@ class GetLoad(Load):
 	Allows to impose a get load on a server.
 	"""
 	def loop(self, client: Client, exit: Event):
-		client.set("test_set", "test_set_value")
+		client.str_set("test_set", "test_set_value")
 		super().loop(client, exit)
 
 	def action(self, client: Client):
@@ -164,7 +164,7 @@ class SetBench(Bench):
 	Bench the set command.
 	"""
 	def action(self, client: Client):
-		client.set("test_set", "test_set_value")
+		client.str_set("test_set", "test_set_value")
 
 
 class GetBench(Bench):
@@ -172,7 +172,7 @@ class GetBench(Bench):
 	Bench the get command.
 	"""
 	def bench(self, client: Client, repeat: int):
-		client.set("test_set", "test_set_value")
+		client.str_set("test_set", "test_set_value")
 		return super().bench(client, repeat)
 	
 	def action(self, client: Client):

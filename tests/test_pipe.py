@@ -28,7 +28,7 @@ class TestPipe(unittest.TestCase):
 		Test the pipe.
 		"""
 		self.pipe.get("test")
-		self.pipe.set("test", "testval")
+		self.pipe.str_set("test", "testval")
 		self.pipe.get("test")
 		self.pipe.delete("test")
 		self.pipe.get("test")
@@ -56,7 +56,7 @@ class TestPipe(unittest.TestCase):
 		Test the pipe while switching the database.
 		"""
 		self.pipe.switch_db(1)
-		self.pipe.set("test", "testval")
+		self.pipe.str_set("test", "testval")
 		self.pipe.switch_db(0)
 		self.pipe.get("test")
 		self.pipe.switch_db(1)

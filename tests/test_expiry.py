@@ -13,7 +13,7 @@ class ExpiryTest(BaseDatabaseTest):
 		"""
 		Test the set_expiry command.
 		"""
-		response = self.client.set("key", "value")
+		response = self.client.str_set("key", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.set_expiry("key", self.EXPIRE_TIME)
 		self.assertTrue(response.is_ok())
@@ -25,7 +25,7 @@ class ExpiryTest(BaseDatabaseTest):
 		"""
 		Test the get_expiry command.
 		"""
-		response = self.client.set("key", "value")
+		response = self.client.str_set("key", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.set_expiry("key", self.EXPIRE_TIME)
 		self.assertTrue(response.is_ok())
@@ -37,7 +37,7 @@ class ExpiryTest(BaseDatabaseTest):
 		"""
 		Test the clear_expiry command.
 		"""
-		response = self.client.set("key", "value")
+		response = self.client.str_set("key", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.set_expiry("key", self.EXPIRE_TIME)
 		self.assertTrue(response.is_ok())

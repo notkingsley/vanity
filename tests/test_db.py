@@ -26,7 +26,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set a value and then get it.
 		"""
-		self.client.set("test_set_get_key", "test_set_get_value")
+		self.client.str_set("test_set_get_key", "test_set_get_value")
 		response = self.client.get("test_set_get_key")
 		self.assertEqual(response.value, "test_set_get_value")
 
@@ -34,7 +34,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set a value and then delete it.
 		"""
-		self.client.set("test_set_del_key", "test_set_del_value")
+		self.client.str_set("test_set_del_key", "test_set_del_value")
 		response = self.client.delete("test_set_del_key")
 		self.assertTrue(response.is_ok())
 
@@ -56,8 +56,8 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can overwrite a key.
 		"""
-		self.client.set("test_set_overwrite", "test_set_overwrite_value")
-		self.client.set("test_set_overwrite", "test_set_overwrite_value2")
+		self.client.str_set("test_set_overwrite", "test_set_overwrite_value")
+		self.client.str_set("test_set_overwrite", "test_set_overwrite_value2")
 		response = self.client.get("test_set_overwrite")
 		self.assertEqual(response.value, "test_set_overwrite_value2")
 	
@@ -65,7 +65,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set a value, delete it, and then get a null.
 		"""
-		self.client.set("test_set_delete_get", "test_set_delete_get_value")
+		self.client.str_set("test_set_delete_get", "test_set_delete_get_value")
 		self.client.delete("test_set_delete_get")
 		response = self.client.get("test_set_delete_get")
 		self.assertTrue(response.is_null())
@@ -74,9 +74,9 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set a value, delete it, set it again, and then get it.
 		"""
-		self.client.set("test_set_delete_set_get", "test_set_delete_set_get_value")
+		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value")
 		self.client.delete("test_set_delete_set_get")
-		self.client.set("test_set_delete_set_get", "test_set_delete_set_get_value2")
+		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value2")
 		response = self.client.get("test_set_delete_set_get")
 		self.assertEqual(response.value, "test_set_delete_set_get_value2")
 	
@@ -91,7 +91,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can reset the database.
 		"""
-		self.client.set("test_reset", "test_reset_value")
+		self.client.str_set("test_reset", "test_reset_value")
 		self.client.reset()
 		response = self.client.get("test_reset")
 		self.assertTrue(response.is_null())
@@ -100,7 +100,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set an integer value and then get it.
 		"""
-		self.client.set("test_set_get_int", 123)
+		self.client.int_set("test_set_get_int", 123)
 		response = self.client.get("test_set_get_int")
 		self.assertEqual(response.value, 123)
 	
@@ -108,7 +108,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can set a float value and then get it.
 		"""
-		self.client.set("test_set_get_float", 123.456)
+		self.client.float_set("test_set_get_float", 123.456)
 		response = self.client.get("test_set_get_float")
 		self.assertEqual(response.value, 123.456)
 	
@@ -116,7 +116,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that the type of a string is str.
 		"""
-		self.client.set("test_type_str", "test_type_str_value")
+		self.client.str_set("test_type_str", "test_type_str_value")
 		response = self.client.get("test_type_str")
 		self.assertTrue(response.type_is_str())
 	
@@ -124,7 +124,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that the type of an integer is int.
 		"""
-		self.client.set("test_type_int", 123)
+		self.client.int_set("test_type_int", 123)
 		response = self.client.get("test_type_int")
 		self.assertTrue(response.type_is_int())
 	
@@ -132,7 +132,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that the type of a float is float.
 		"""
-		self.client.set("test_type_float", 123.456)
+		self.client.float_set("test_type_float", 123.456)
 		response = self.client.get("test_type_float")
 		self.assertTrue(response.type_is_float())
 	
@@ -147,7 +147,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can check if a value is a string.
 		"""
-		self.client.set("test_type_str", "test_type_str_value")
+		self.client.str_set("test_type_str", "test_type_str_value")
 		response = self.client.type("test_type_str")
 		self.assertTrue(response.type_is_str())
 		self.assertIsNone(response.value)
@@ -156,7 +156,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can check if a value is an integer.
 		"""
-		self.client.set("test_type_int", 123)
+		self.client.int_set("test_type_int", 123)
 		response = self.client.type("test_type_int")
 		self.assertTrue(response.type_is_int())
 		self.assertIsNone(response.value)
@@ -165,7 +165,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can check if a value is a float.
 		"""
-		self.client.set("test_type_float", 123.456)
+		self.client.float_set("test_type_float", 123.456)
 		response = self.client.type("test_type_float")
 		self.assertTrue(response.type_is_float())
 		self.assertIsNone(response.value)
@@ -174,7 +174,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can check if a key exists.
 		"""
-		self.client.set("test_exists", "test_exists_value")
+		self.client.str_set("test_exists", "test_exists_value")
 		response = self.client.exists("test_exists")
 		self.assertTrue(response.is_ok())
 	
@@ -189,7 +189,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can check if a key exists after deleting it.
 		"""
-		response = self.client.set("test_exists_delete", "test_exists_delete_value")
+		response = self.client.str_set("test_exists_delete", "test_exists_delete_value")
 		self.assertTrue(response.is_ok())
 		response = self.client.delete("test_exists_delete")
 		self.assertTrue(response.is_ok())
@@ -200,7 +200,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can increment an integer value.
 		"""
-		self.client.set("test_incr_int", 123)
+		self.client.int_set("test_incr_int", 123)
 		response = self.client.incr_int("test_incr_int", 456)
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, 579)
@@ -223,7 +223,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can increment a float value.
 		"""
-		self.client.set("test_incr_float", 123.456)
+		self.client.float_set("test_incr_float", 123.456)
 		response = self.client.incr_float("test_incr_float", 456.789)
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, 580.245)
@@ -246,7 +246,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can decrement an integer value.
 		"""
-		self.client.set("test_decr_int", 123)
+		self.client.int_set("test_decr_int", 123)
 		response = self.client.decr_int("test_decr_int", 456)
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, -333)
@@ -269,7 +269,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can decrement a float value.
 		"""
-		self.client.set("test_decr_float", 123.456)
+		self.client.float_set("test_decr_float", 123.456)
 		response = self.client.decr_float("test_decr_float", 456.789)
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, -333.333)
@@ -292,7 +292,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can increment a float value by an integer.
 		"""
-		self.client.set("test_incr_float_int", 123.456)
+		self.client.float_set("test_incr_float_int", 123.456)
 		response = self.client.incr_float("test_incr_float_int", 456)
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, 579.456)
@@ -304,7 +304,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can't increment an integer value by a float.
 		"""
-		self.client.set("test_incr_int_float", 123)
+		self.client.int_set("test_incr_int_float", 123)
 		response = self.client.incr_float("test_incr_int_float", 456.789)
 		self.assertTrue(response.is_bad_type())
 		response = self.client.get("test_incr_int_float")
@@ -315,7 +315,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get the length of a string.
 		"""
-		self.client.set("test_str_len", "test_str_len_value")
+		self.client.str_set("test_str_len", "test_str_len_value")
 		response = self.client.str_len("test_str_len")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, len("test_str_len_value"))
@@ -331,7 +331,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can't get the length of an integer.
 		"""
-		self.client.set("test_str_len_int", 123)
+		self.client.int_set("test_str_len_int", 123)
 		response = self.client.str_len("test_str_len_int")
 		self.assertTrue(response.is_bad_type())
 	
@@ -339,7 +339,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can't get the length of a float.
 		"""
-		self.client.set("test_str_len_float", 123.456)
+		self.client.float_set("test_str_len_float", 123.456)
 		response = self.client.str_len("test_str_len_float")
 		self.assertTrue(response.is_bad_type())
 	
@@ -347,9 +347,9 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get many values at once.
 		"""
-		self.client.set("test_many_get_1", "test_many_get_1_value")
-		self.client.set("test_many_get_2", "test_many_get_2_value")
-		self.client.set("test_many_get_3", "test_many_get_3_value")
+		self.client.str_set("test_many_get_1", "test_many_get_1_value")
+		self.client.str_set("test_many_get_2", "test_many_get_2_value")
+		self.client.str_set("test_many_get_3", "test_many_get_3_value")
 		response = self.client.many_get("test_many_get_1", "test_many_get_2", "test_many_get_3")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, ["test_many_get_1_value", "test_many_get_2_value", "test_many_get_3_value"])
@@ -358,8 +358,8 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get many values at once, some of which don't exist.
 		"""
-		self.client.set("test_many_get_non_existent_1", "test_many_get_non_existent_1_value")
-		self.client.set("test_many_get_non_existent_3", "test_many_get_non_existent_3_value")
+		self.client.str_set("test_many_get_non_existent_1", "test_many_get_non_existent_1_value")
+		self.client.str_set("test_many_get_non_existent_3", "test_many_get_non_existent_3_value")
 		response = self.client.many_get("test_many_get_non_existent_1", "test_many_get_non_existent_2", "test_many_get_non_existent_3")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, ["test_many_get_non_existent_1_value", None, "test_many_get_non_existent_3_value"])
@@ -376,9 +376,9 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get many values at once, some of which are integers.
 		"""
-		self.client.set("test_many_get_int_1", "test_many_get_int_1_value")
-		self.client.set("test_many_get_int_2", 123)
-		self.client.set("test_many_get_int_3", "test_many_get_int_3_value")
+		self.client.str_set("test_many_get_int_1", "test_many_get_int_1_value")
+		self.client.int_set("test_many_get_int_2", 123)
+		self.client.str_set("test_many_get_int_3", "test_many_get_int_3_value")
 		response = self.client.many_get("test_many_get_int_1", "test_many_get_int_2", "test_many_get_int_3")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, ["test_many_get_int_1_value", 123, "test_many_get_int_3_value"])
@@ -387,9 +387,9 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get many values at once, some of which are floats.
 		"""
-		self.client.set("test_many_get_float_1", "test_many_get_float_1_value")
-		self.client.set("test_many_get_float_2", 123.456)
-		self.client.set("test_many_get_float_3", "test_many_get_float_3_value")
+		self.client.str_set("test_many_get_float_1", "test_many_get_float_1_value")
+		self.client.float_set("test_many_get_float_2", 123.456)
+		self.client.str_set("test_many_get_float_3", "test_many_get_float_3_value")
 		response = self.client.many_get("test_many_get_float_1", "test_many_get_float_2", "test_many_get_float_3")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, ["test_many_get_float_1_value", 123.456, "test_many_get_float_3_value"])
@@ -398,11 +398,11 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		Test that we can get many values at once, some of which are integers and floats.
 		"""
-		self.client.set("test_many_get_mixed_1", "test_many_get_mixed_1_value")
-		self.client.set("test_many_get_mixed_2", 123)
-		self.client.set("test_many_get_mixed_3", 123.456)
-		self.client.set("test_many_get_mixed_4", "test_many_get_mixed_4_value")
-		self.client.set("test_many_get_mixed_5", 123.456)
+		self.client.str_set("test_many_get_mixed_1", "test_many_get_mixed_1_value")
+		self.client.int_set("test_many_get_mixed_2", 123)
+		self.client.float_set("test_many_get_mixed_3", 123.456)
+		self.client.str_set("test_many_get_mixed_4", "test_many_get_mixed_4_value")
+		self.client.float_set("test_many_get_mixed_5", 123.456)
 		response = self.client.many_get("test_many_get_mixed_1", "test_many_get_mixed_2", "test_invalid", "test_many_get_mixed_3", "test_many_get_mixed_4", "test_many_get_mixed_5")
 		self.assertTrue(response.is_ok())
 		self.assertEqual(response.value, ["test_many_get_mixed_1_value", 123, None, 123.456, "test_many_get_mixed_4_value", 123.456])
@@ -432,7 +432,7 @@ class SwitchDBTest(unittest.TestCase):
 		"""
 		Test that we can switch databases.
 		"""
-		response = self.client.set("test_switch_db", "test_switch_db_value")
+		response = self.client.str_set("test_switch_db", "test_switch_db_value")
 		self.assertTrue(response.is_ok())
 		response = self.client.switch_db(1)
 		self.assertTrue(response.is_ok())

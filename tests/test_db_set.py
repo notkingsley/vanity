@@ -133,7 +133,7 @@ class SetBadTypeTest(BaseDatabaseTest):
 	"""
 	def setUp(self) -> None:
 		super().setUp()
-		response = self.client.set("test_set_bad_type", "test_set_bad_type_value")
+		response = self.client.str_set("test_set_bad_type", "test_set_bad_type_value")
 		self.assertTrue(response.is_ok())
 	
 	def test_set_add(self):

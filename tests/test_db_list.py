@@ -96,7 +96,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that getting the length of a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_len("not-a-list")
 		self.assertTrue(response.is_bad_type())
@@ -106,7 +106,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that getting an item from a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_get("not-a-list", 0)
 		self.assertTrue(response.is_bad_type())
@@ -116,7 +116,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that setting an item in a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_set("not-a-list", 0, "value")
 		self.assertTrue(response.is_bad_type())
@@ -126,7 +126,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that pushing an item to the left of a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_push_left("not-a-list", ["value"])
 		self.assertTrue(response.is_bad_type())
@@ -136,7 +136,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that pushing an item to the right of a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_push_right("not-a-list", ["value"])
 		self.assertTrue(response.is_bad_type())
@@ -146,7 +146,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that popping an item from the left of a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_pop_left("not-a-list", 10)
 		self.assertTrue(response.is_bad_type())
@@ -156,7 +156,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that popping an item from the right of a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_pop_right("not-a-list", 10)
 		self.assertTrue(response.is_bad_type())
@@ -166,7 +166,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that getting a range from a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_range("not-a-list", 0, 10)
 		self.assertTrue(response.is_bad_type())
@@ -176,7 +176,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that trimming a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_trim("not-a-list", 0, 10)
 		self.assertTrue(response.is_bad_type())
@@ -186,7 +186,7 @@ class WrongDatabaseKeyTypeTest(BaseDatabaseTest):
 		"""
 		Test that removing an item from a list key that is not a list returns an error.
 		"""
-		response = self.client.set("not-a-list", "value")
+		response = self.client.str_set("not-a-list", "value")
 		self.assertTrue(response.is_ok())
 		response = self.client.list_remove("not-a-list", "value")
 		self.assertTrue(response.is_bad_type())
