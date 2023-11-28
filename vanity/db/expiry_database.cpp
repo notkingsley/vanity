@@ -26,10 +26,12 @@ void ExpiryDatabase::clear_expiry(const key_type &key) {
 }
 
 void ExpiryDatabase::set_expiry(const key_type &key, time_t expiry_time) {
-	m_expiry_times[key] = expiry_time;
+	if (m_data.contains(key))
+		m_expiry_times[key] = expiry_time;
 }
 
 std::optional<time_t> ExpiryDatabase::get_expiry(const BaseMap::key_type &key) {
+	erase_if_expired(key);
 	if (not m_expiry_times.contains(key))
 		return std::nullopt;
 	return m_expiry_times[key];
