@@ -35,7 +35,9 @@ enum class operation_t{
 	CLEAR_EXPIRY,
 
 	GET,
-	SET,
+	STR_SET,
+	INT_SET,
+	FLOAT_SET,
 	INCR_INT,
 	INCR_FLOAT,
 	STR_LEN,
@@ -115,7 +117,9 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
-		case operation_t::SET:
+		case operation_t::STR_SET:
+		case operation_t::INT_SET:
+		case operation_t::FLOAT_SET:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
 		case operation_t::STR_LEN:
@@ -189,7 +193,9 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
-		case operation_t::SET:
+		case operation_t::STR_SET:
+		case operation_t::INT_SET:
+		case operation_t::FLOAT_SET:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
 		case operation_t::STR_LEN:
@@ -274,7 +280,9 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
-		case operation_t::SET:
+		case operation_t::STR_SET:
+		case operation_t::INT_SET:
+		case operation_t::FLOAT_SET:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
 		case operation_t::STR_LEN:
@@ -361,7 +369,9 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::GET:
-		case operation_t::SET:
+		case operation_t::STR_SET:
+		case operation_t::INT_SET:
+		case operation_t::FLOAT_SET:
 		case operation_t::INCR_INT:
 		case operation_t::INCR_FLOAT:
 		case operation_t::STR_LEN:

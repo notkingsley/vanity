@@ -46,39 +46,6 @@ void RequestServer::do_handle(Client &client, const std::string &msg, size_t &po
 	}
 }
 
-void RequestServer::dispatch_set(Client &client, const std::string &msg, size_t &pos, bool end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
-
-	object_t obj = extract_object_t(msg, pos);
-	std::string key = extract<STR>(msg, pos);
-
-	switch (obj) {
-		case STR:
-		{
-			auto value {extract_exact<STR>(msg, pos, end)};
-			request_set_str(client, key, value);
-			break;
-		}
-		case INT:
-		{
-			auto value {extract_exact<INT>(msg, pos, end)};
-			request_set_int(client, key, value);
-			break;
-		}
-		case FLOAT:
-		{
-			auto value {extract_exact<FLOAT>(msg, pos, end)};
-			request_set_float(client, key, value);
-			break;
-		}
-		case ARR:	// fallthrough
-		case LIST:	// fallthrough
-		case SET:	// fallthrough
-		case HASH:	// fallthrough
-			throw InvalidRequest("invalid object type:");
-	}
-}
-
 void RequestServer::dispatch_op(Client &client, operation_t op, const std::string &msg, size_t &pos, bool expect_end) {
 	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
 	switch (op) {
@@ -192,9 +159,22 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 			request_get(client, extract_exact<STR>(msg, pos, expect_end));
 			break;
 		}
-		case operation_t::SET:
+		case operation_t::STR_SET:
 		{
-			dispatch_set(client, msg, pos, expect_end);
+			auto [key, value] = extract_exact<STR, STR>(msg, pos, expect_end);
+			request_set_str(client, key, value);
+			break;
+		}
+		case operation_t::INT_SET:
+		{
+			auto [key, value] = extract_exact<STR, INT>(msg, pos, expect_end);
+			request_set_int(client, key, value);
+			break;
+		}
+		case operation_t::FLOAT_SET:
+		{
+			auto [key, value] = extract_exact<STR, FLOAT>(msg, pos, expect_end);
+			request_set_float(client, key, value);
 			break;
 		}
 		case operation_t::INCR_INT:

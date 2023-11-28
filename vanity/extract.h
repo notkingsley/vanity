@@ -121,8 +121,8 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::SWITCH_DB,       "SWITCH_DB"},
 			{operation_t::PERSIST,         "PERSIST"},
 
-			{operation_t::DEL,             "DEL"},
-			{operation_t::TYPE,            "TYPE"},
+			{operation_t::DEL,          "DEL"},
+			{operation_t::TYPE,           "TYPE"},
 			{operation_t::EXISTS,          "EXISTS"},
 			{operation_t::RESET,           "RESET"},
 
@@ -131,6 +131,9 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::CLEAR_EXPIRY,    "CLEAR_EXPIRY"},
 
 			{operation_t::GET,             "GET"},
+			{operation_t::STR_SET,         "STR_SET"},
+			{operation_t::INT_SET,         "INT_SET"},
+			{operation_t::FLOAT_SET,       "FLOAT_SET"},
 			{operation_t::INCR_INT,        "INCR_INT"},
 			{operation_t::INCR_FLOAT,      "INCR_FLOAT"},
 			{operation_t::STR_LEN,         "STR_LEN"},
@@ -164,8 +167,6 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::SET_DIFF_LEN,    "SET_DIFF_LEN"},
 			{operation_t::SET_DIFF,        "SET_DIFF"},
 
-			{operation_t::SET,             "SET"},
-
 			{operation_t::HASH_SET,        "HASH_SET"},
 			{operation_t::HASH_ALL,        "HASH_ALL"},
 			{operation_t::HASH_GET,        "HASH_GET"},
@@ -190,6 +191,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 }
 
 // extract the object type from the message
+// currently unused
 static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 {
 	static const char object_separator = ':';

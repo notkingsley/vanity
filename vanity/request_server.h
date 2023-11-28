@@ -224,9 +224,6 @@ protected:
 	void do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end);
 
 private:
-	// convenience function to dispatch a set request by type
-	void dispatch_set(Client& client, const std::string& msg, size_t& pos, bool expect_end);
-
 	// convenience function that contains a giant switch statement to dispatch an operation_t
 	void dispatch_op(Client& client, operation_t op, const std::string& msg, size_t& pos, bool expect_end);
 };
