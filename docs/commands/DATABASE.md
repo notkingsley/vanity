@@ -27,6 +27,20 @@ This includes commands for database management, and those for primitive types, s
     OK
     ```
 
+- `FLOAT_SET<key><value>`  
+    Sets the given key to the given float value in the current database, overwriting any existing value.  
+    Returns `OK` if successful.  
+    Only authenticated clients can set keys.  
+
+    `<key>` is the key to set in the database, a `<string>`.  
+    `<value>` is the value to set the key to, a `<float>`.  
+
+    Example:
+    ```
+    FLOAT_SET (4)key1 5.5
+    OK
+    ```
+
 - `GET<key>`  
     Returns the value associated with the given key from the current database.  
     Returns `OK` with the serialized value if successful, or `NULL` if the key does not exist.  
@@ -71,6 +85,20 @@ This includes commands for database management, and those for primitive types, s
     OK:INT 5
     ```
 
+- `INT_SET<key><value>`  
+    Sets the given key to the given integer value in the current database, overwriting any existing value.  
+    Returns `OK` if successful.  
+    Only authenticated clients can set keys.  
+
+    `<key>` is the key to set in the database, a `<string>`.  
+    `<value>` is the value to set the key to, an `<int>`.  
+
+    Example:
+    ```
+    INT_SET (4)key1 5
+    OK
+    ```
+
 - `MANY_GET<keys>`  
     Returns the values associated with the given keys from the current database.  
     Returns `OK` along with the serialized values in an ARR, each with the `<type_annotation>`, adding `:NULL` for any keys that do not exist.  
@@ -107,23 +135,6 @@ This includes commands for database management, and those for primitive types, s
     OK
     ```
 
-- `SET<type_annotation><key><value>`  
-    Sets the given key to the given value in the current database, overwriting any existing value.  
-    Returns `OK` if successful.  
-    Only authenticated clients can set keys.  
-
-    `<type_annotation>` is the type of the value to set, as described in the [TYPES](../TYPES.md) documentation.
-    `<key>` is the key to set in the database, a `<string>`.
-    `<value>` is a value of the type specified by `<type_annotation>`, as described in the [TYPES](../TYPES.md) documentation.
-
-    The `SET` command only works for primitive types. To set a list, hash, or set, use the appropriate command.
-
-    Example:
-    ```
-    SET:STR (4)key1 (6)value1
-    OK
-    ```
-
 - `STR_LEN<key>`  
     Returns the length of the string value associated with the given key in the current database.  
     Returns `OK` along with the length if successful, or `BAD_TYPE` if the key exists and is not a string.  
@@ -135,6 +146,20 @@ This includes commands for database management, and those for primitive types, s
     ```
     STR_LEN (4)key1
     OK:INT 6
+    ```
+
+- `STR_SET<key><value>`  
+    Sets the given key to the given string value in the current database, overwriting any existing value.  
+    Returns `OK` if successful.  
+    Only authenticated clients can set keys.  
+
+    `<key>` is the key to set in the database, a `<string>`.  
+    `<value>` is the value to set the key to, a `<string>`.  
+
+    Example:
+    ```
+    STR_SET (4)key1 (6)value1
+    OK
     ```
 
 - `SWITCH_DB<db_index>`  

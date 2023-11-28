@@ -1,6 +1,6 @@
 This document the basic types recognized/used by Vanity.
 
-For most commands expecting an object, the type is known and implicitly assumed, so the the type annotation is not included.  
+For requests expecting an object, the type is known and implicitly assumed, so the the type annotation is not included.  
 In Responses, the type is always included.
 
 An `<object>` is defined as a sequence of characters, with the following structure:  
@@ -20,7 +20,7 @@ where `<type_name>` is the name of the type, and is one of the following:
 - HASH for a `<hash>`
 - PIPE for a `<pipe>`
 
-Note: Currently, it is an error to specify a NULL, or BOOL explicitly in a request, and the types LIST, SET, ARR and HASH are always implicitly expected, so they are not used in requests either.
+Note: Currently, no type annotations are used in requests, but they are used in responses.
 
 We define a `<length>` thus:
  - `(len)`  
