@@ -54,6 +54,37 @@ std::optional<int> LockedDatabase::type(const BaseDatabase::key_type &key) {
 }
 
 
+bool LockedDatabase::is_expired(const vanity::db::BaseMap::key_type &key) {
+	std::lock_guard lock{m_mutex};
+	return Database::is_expired(key);
+}
+
+void LockedDatabase::erase_if_expired(const vanity::db::BaseMap::key_type &key) {
+	std::lock_guard lock{m_mutex};
+	Database::erase_if_expired(key);
+}
+
+void LockedDatabase::set_expiry(const BaseDatabase::key_type &key, time_t expiry_time) {
+	std::lock_guard lock{m_mutex};
+	Database::set_expiry(key, expiry_time);
+}
+
+std::optional<time_t> LockedDatabase::get_expiry(const BaseDatabase::key_type &key) {
+	std::lock_guard lock{m_mutex};
+	return Database::get_expiry(key);
+}
+
+void LockedDatabase::clear_expiry(const BaseDatabase::key_type &key) {
+	std::lock_guard lock{m_mutex};
+	Database::clear_expiry(key);
+}
+
+void LockedDatabase::clear_all_expiry() {
+	std::lock_guard lock{m_mutex};
+	Database::clear_all_expiry();
+}
+
+
 void LockedDatabase::set(const key_type &key, const data_type &value) {
 	std::lock_guard lock{m_mutex};
 	Database::set(key, value);

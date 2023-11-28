@@ -48,6 +48,10 @@ public:
 	// set the expiry time for a key
 	void set_expiry(const key_type &key, time_t expiry_time);
 
+	// get the expiry time for a key
+	// returns std::nullopt if the key has no expiry time
+	std::optional<time_t> get_expiry(const key_type &key);
+
 	// clear all expiry times
 	void clear_all_expiry();
 };

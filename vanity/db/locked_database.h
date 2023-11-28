@@ -17,7 +17,8 @@ namespace vanity::db {
 /*
  * A database that is locked by a mutex.
  */
-class LockedDatabase : public Database {
+class LockedDatabase : public Database
+{
 private:
 	// the mutex
 	std::mutex m_mutex;
@@ -62,6 +63,30 @@ public:
 
 	// get the type of key as an index
 	std::optional<int> type(const key_type& key);
+
+
+	// check if the key is is_expired
+	bool is_expired(const key_type &key);
+
+	// delete key if it is expired
+	// this should be called before every operation
+	// on a key
+	void erase_if_expired(const key_type &key);
+
+	// reset/clear the expiry time for a key
+	// this should be called after every operation
+	// that sets or resets the value for a key
+	void clear_expiry(const key_type &key);
+
+	// set the expiry time for a key
+	void set_expiry(const key_type &key, time_t expiry_time);
+
+	// get the expiry time for a key
+	// returns std::nullopt if the key has no expiry time
+	std::optional<time_t> get_expiry(const key_type &key);
+
+	// clear all expiry times
+	void clear_all_expiry();
 
 
 	// set the value for a key
