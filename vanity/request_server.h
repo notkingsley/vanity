@@ -30,14 +30,14 @@ public:
 	// a get request was received from a client
 	virtual void request_get(Client& client, const std::string& key) = 0;
 
-	// a set_str request was received from a client
-	virtual void request_set_str(Client& client, const std::string& key, const std::string& value) = 0;
+	// a str_set request was received from a client
+	virtual void request_str_set(Client& client, const std::string& key, const std::string& value) = 0;
 
-	// a set_int request was received from a client
-	virtual void request_set_int(Client& client, const std::string& key, const int64_t& value) = 0;
+	// an int_set request was received from a client
+	virtual void request_int_set(Client& client, const std::string& key, const int64_t& value) = 0;
 
-	// a set_float request was received from a client
-	virtual void request_set_float(Client& client, const std::string& key, const double& value) = 0;
+	// a float_set request was received from a client
+	virtual void request_float_set(Client& client, const std::string& key, const double& value) = 0;
 
 	// a del request was received from a client
 	virtual void request_del(Client& client, const std::string& key) = 0;

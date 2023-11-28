@@ -16,14 +16,14 @@ namespace vanity {
 class PrimitiveDatabaseServer : public virtual BaseDatabaseServer
 {
 public:
-	// a set_str request was received from a client
-	virtual void request_set_str(Client& client, const std::string& key, const std::string& value) override;
+	// a str_set request was received from a client
+	void request_str_set(Client& client, const std::string& key, const std::string& value) override;
 
-	// a set_int request was received from a client
-	virtual void request_set_int(Client& client, const std::string& key, const int64_t& value) override;
+	// an int_set request was received from a client
+	void request_int_set(Client& client, const std::string& key, const int64_t& value) override;
 
-	// a set_int request was received from a client
-	virtual void request_set_float(Client& client, const std::string& key, const double& value) override;
+	// a float_set request was received from a client
+	void request_float_set(Client& client, const std::string& key, const double& value) override;
 
 	// an incr_int request was received from a client
 	void request_incr_int(Client& client, const std::string& key, db::int_t value) override;

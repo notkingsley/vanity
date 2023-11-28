@@ -162,19 +162,19 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		case operation_t::STR_SET:
 		{
 			auto [key, value] = extract_exact<STR, STR>(msg, pos, expect_end);
-			request_set_str(client, key, value);
+			request_str_set(client, key, value);
 			break;
 		}
 		case operation_t::INT_SET:
 		{
 			auto [key, value] = extract_exact<STR, INT>(msg, pos, expect_end);
-			request_set_int(client, key, value);
+			request_int_set(client, key, value);
 			break;
 		}
 		case operation_t::FLOAT_SET:
 		{
 			auto [key, value] = extract_exact<STR, FLOAT>(msg, pos, expect_end);
-			request_set_float(client, key, value);
+			request_float_set(client, key, value);
 			break;
 		}
 		case operation_t::INCR_INT:

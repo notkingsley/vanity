@@ -85,19 +85,19 @@ void LockedDatabase::clear_all_expiry() {
 }
 
 
-void LockedDatabase::set_str(const key_type &key, const std::string &value) {
+void LockedDatabase::str_set(const key_type &key, const std::string &value) {
 	std::lock_guard lock{m_mutex};
-	Database::set_str(key, value);
+	Database::str_set(key, value);
 }
 
-void LockedDatabase::set_int(const key_type &key, int_t value) {
+void LockedDatabase::int_set(const key_type &key, int_t value) {
 	std::lock_guard lock{m_mutex};
-	Database::set_int(key, value);
+	Database::int_set(key, value);
 }
 
-void LockedDatabase::set_float(const key_type &key, float_t value) {
+void LockedDatabase::float_set(const key_type &key, float_t value) {
 	std::lock_guard lock{m_mutex};
-	Database::set_float(key, value);
+	Database::float_set(key, value);
 }
 
 std::optional<int_t> LockedDatabase::incr_int(const BaseDatabase::key_type &key, int_t value) {

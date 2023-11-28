@@ -6,18 +6,18 @@
 
 namespace vanity {
 
-void PrimitiveDatabaseServer::request_set_str(Client &client, const std::string &key, const std::string &value) {
-	database(client).set_str(key, value);
+void PrimitiveDatabaseServer::request_str_set(Client &client, const std::string &key, const std::string &value) {
+	database(client).str_set(key, value);
 	send(client, ok());
 }
 
-void PrimitiveDatabaseServer::request_set_int(Client &client, const std::string &key, const int64_t &value) {
-	database(client).set_int(key, value);
+void PrimitiveDatabaseServer::request_int_set(Client &client, const std::string &key, const int64_t &value) {
+	database(client).int_set(key, value);
 	send(client, ok());
 }
 
-void PrimitiveDatabaseServer::request_set_float(Client &client, const std::string &key, const double &value) {
-	database(client).set_float(key, value);
+void PrimitiveDatabaseServer::request_float_set(Client &client, const std::string &key, const double &value) {
+	database(client).float_set(key, value);
 	send(client, ok());
 }
 

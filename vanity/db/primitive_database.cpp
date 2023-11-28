@@ -16,17 +16,17 @@ PrimitiveDatabase &PrimitiveDatabase::operator=(PrimitiveDatabase &&other) noexc
 	return *this;
 }
 
-void PrimitiveDatabase::set_str(const key_type& key, const std::string& value) {
+void PrimitiveDatabase::str_set(const key_type& key, const std::string& value) {
 	m_data[key] = value;
 	clear_expiry(key);
 }
 
-void PrimitiveDatabase::set_int(const key_type& key, int_t value) {
+void PrimitiveDatabase::int_set(const key_type& key, int_t value) {
 	m_data[key] = value;
 	clear_expiry(key);
 }
 
-void PrimitiveDatabase::set_float(const key_type& key, float_t value) {
+void PrimitiveDatabase::float_set(const key_type& key, float_t value) {
 	m_data[key] = value;
 	clear_expiry(key);
 }
