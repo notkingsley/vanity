@@ -84,6 +84,16 @@ void LockedDatabase::clear_all_expiry() {
 	Database::clear_all_expiry();
 }
 
+void LockedDatabase::shallow_purge() {
+	std::lock_guard lock{m_mutex};
+	Database::shallow_purge();
+}
+
+void LockedDatabase::deep_purge() {
+	std::lock_guard lock{m_mutex};
+	Database::deep_purge();
+}
+
 
 void LockedDatabase::str_set(const key_type &key, const std::string &value) {
 	std::lock_guard lock{m_mutex};

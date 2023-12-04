@@ -2,7 +2,11 @@
 // Created by kingsli on 11/22/23.
 //
 
+#include <random>
+#include <ranges>
+
 #include "expiry_database.h"
+
 
 namespace vanity::db {
 
@@ -14,11 +18,13 @@ bool ExpiryDatabase::is_expired(const key_type &key) {
 	return std::chrono::system_clock::now() > m_expiry_times[key];
 }
 
-void ExpiryDatabase::erase_if_expired(const key_type &key) {
-	if (is_expired(key)){
-		m_data.erase(key);
-		m_expiry_times.erase(key);
-	}
+bool ExpiryDatabase::erase_if_expired(const key_type &key) {
+	if (not is_expired(key))
+		return false;
+
+	m_data.erase(key);
+	m_expiry_times.erase(key);
+	return true;
 }
 
 void ExpiryDatabase::clear_expiry(const key_type &key) {
@@ -39,6 +45,35 @@ std::optional<time_t> ExpiryDatabase::get_expiry(const BaseMap::key_type &key) {
 
 void ExpiryDatabase::clear_all_expiry() {
 	m_expiry_times.clear();
+}
+
+void ExpiryDatabase::shallow_purge() {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+
+	while (true) {
+		std::uniform_int_distribution<size_t> dis(0, m_expiry_times.size() - 1);
+		size_t sample_size = std::min<size_t>(M_MAX_SAMPLE_SIZE, m_expiry_times.size());
+		auto all_keys = std::views::keys(m_expiry_times);
+
+		std::vector<key_type> sampled_keys;
+		sampled_keys.reserve(sample_size);
+
+		std::sample(all_keys.begin(), all_keys.end(), std::back_inserter(sampled_keys), sample_size, gen);
+		size_t expired_count = std::count_if(sampled_keys.begin(), sampled_keys.end(), [this](const auto& key) {
+			return erase_if_expired(key);
+		});
+
+		if (expired_count / sample_size < M_MIN_EXPIRED_PERCENTAGE)
+			break;
+		if (m_expiry_times.empty())
+			break;
+	}
+}
+
+void ExpiryDatabase::deep_purge() {
+	for (auto& [key, _] : m_expiry_times)
+		erase_if_expired(key);
 }
 
 } // namespace vanity::db

@@ -88,6 +88,24 @@ public:
 	// clear all expiry times
 	void clear_all_expiry();
 
+	// shallow purge expired keys
+	// this samples 100 of the keys, and deletes
+	// all expired keys in the sample, then repeats
+	// till < 25% of sampled keys are expired
+	// this is a shallow purge, and is not guaranteed
+	// to delete all expired keys in the database
+	// this is intended to be called periodically, but
+	// may not be particularly useful since the
+	// sampling process is linear in the number of keys anyway
+	void shallow_purge();
+
+	// deep purge expired keys
+	// this deletes all expired keys in the database
+	// this is a deep purge, and is guaranteed to delete
+	// all expired keys in the database
+	// should not be called often
+	void deep_purge();
+
 
 	// set a string value for a key
 	void str_set(const key_type& key, const std::string& value);
