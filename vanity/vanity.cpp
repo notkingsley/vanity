@@ -2,6 +2,7 @@
 
 #include "arguments.h"
 #include "server.h"
+#include "signals.h"
 
 
 // extract a server config from the command line arguments
@@ -106,6 +107,7 @@ int main(int argc, char **argv)
 	vanity::Arguments args{argc, argv};
 
 	vanity::Server server{extract_config(args)};
+	vanity::signal::set_server(&server);
 	server.run();
 
 	return 0;

@@ -8,7 +8,6 @@
 #include "auth/serial_auth_server.h"
 #include "db/database_server.h"
 #include "pipe_server.h"
-#include "signals.h"
 #include "session_server.h"
 #include "socket/socket_server.h"
 
@@ -43,8 +42,6 @@ private:
 
 	// start background server tasks
 	void start(){
-		signal::set_server(this);
-
 		SocketServer::bind(m_config.port);
 		SocketServer::start();
 		SerialAuthServer::start();
