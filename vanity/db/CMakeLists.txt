@@ -3,6 +3,7 @@ project(vanity_db)
 include_directories(.)
 
 add_library(vanity_db STATIC
+	auto_expiry_database_server.cpp
 	base_database.cpp
 	base_database_server.cpp
     database.cpp

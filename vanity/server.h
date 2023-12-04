@@ -79,7 +79,7 @@ public:
 	void run(){
 		start();
 
-		while (true) {
+		while (true)
 			switch (m_event_queue.get()) {
 				case server_event::socket_ready: {
 					SocketServer::socket_ready();
@@ -89,10 +89,14 @@ public:
 					PersistentServer::persist();
 					break;
 				}
-				case server_event::terminate:
+				case server_event::expire: {
+					AutoExpiryDatabaseServer::expire();
+					break;
+				}
+				case server_event::terminate: {
 					return stop();
+				}
 			}
-		}
 	}
 };
 

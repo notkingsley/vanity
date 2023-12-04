@@ -13,6 +13,7 @@ enum class server_event{
 	socket_ready,
 	persist,
 	terminate,
+	expire,
 };
 
 /*
