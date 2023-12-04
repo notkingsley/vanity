@@ -33,6 +33,12 @@ public:
 
 	// a change_password request was received from a client
 	void request_change_password(Client& client, const std::string& new_password) override;
+
+	// an exit request was received from a client
+	void request_exit(Client& client) override;
+
+	// a terminate request was received from a client
+	void request_terminate(Client& client) override;
 };
 
 } // namespace vanity
