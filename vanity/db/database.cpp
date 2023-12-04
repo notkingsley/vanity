@@ -230,7 +230,8 @@ Database &Database::operator=(Database &&other) noexcept
 Database::Database(Database &&other) noexcept
 		: BaseDatabase(std::move(other)) { }
 
-void Database::persist(std::ofstream &out) const{
+void Database::persist(std::ofstream &out) {
+	deep_purge();
 	write(out, m_data);
 	write(out, m_expiry_times);
 }
@@ -246,6 +247,7 @@ Database Database::from(std::ifstream &in) {
 	for (size_t i = 0; i < size; ++i)
 		db.m_expiry_times.insert(read<expiry_db_pair_type>(in));
 
+	db.deep_purge();
 	return db;
 }
 

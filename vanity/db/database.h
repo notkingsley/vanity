@@ -37,7 +37,7 @@ public:
 	Database& operator=(Database&& other) noexcept;
 
 	// persist the database to a file stream
-	void persist(std::ofstream &out) const;
+	void persist(std::ofstream &out);
 
 	// load the database from a file stream
 	static Database from(std::ifstream &in);
