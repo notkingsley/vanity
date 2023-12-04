@@ -9,22 +9,11 @@
 #include "db/database_server.h"
 #include "pipe_server.h"
 #include "session_server.h"
+#include "server_config.h"
 #include "socket/socket_server.h"
 
 
 namespace vanity {
-
-/*
- * Configuration for the server
- */
-struct ServerConfig
-{
-	std::optional<std::filesystem::path> users_db;
-	std::optional<std::filesystem::path> db_file;
-	std::filesystem::path log_file;
-	LogLevel log_level;
-	int port;
-};
 
 /*
  * Top level server
