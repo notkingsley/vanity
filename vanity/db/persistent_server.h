@@ -8,7 +8,7 @@
 #include <filesystem>
 #include <optional>
 
-#include "database_server.h"
+#include "base_database_server.h"
 #include "event.h"
 
 
@@ -17,7 +17,7 @@ namespace vanity {
 /*
  * A database that handles persistence to disk
  */
-class PersistentServer : public virtual DatabaseServer
+class PersistentServer : public virtual BaseDatabaseServer
 {
 private:
 	// time between automatic persistence calls in microseconds

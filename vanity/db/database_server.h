@@ -8,6 +8,7 @@
 #include "expiry_database_server.h"
 #include "hash_database_server.h"
 #include "list_database_server.h"
+#include "persistent_server.h"
 #include "primitive_database_server.h"
 #include "set_database_server.h"
 
@@ -21,8 +22,22 @@ class DatabaseServer :
 	public virtual HashDatabaseServer,
 	public virtual ListDatabaseServer,
 	public virtual PrimitiveDatabaseServer,
+	public virtual PersistentServer,
 	public virtual SetDatabaseServer
-{ };
+{
+public:
+	// start any background tasks
+	void start(){
+		BaseDatabaseServer::start();
+		PersistentServer::start();
+	}
+
+	// stop any background tasks
+	void stop(){
+		BaseDatabaseServer::stop();
+		PersistentServer::stop();
+	}
+};
 
 } // namespace vanity
 
