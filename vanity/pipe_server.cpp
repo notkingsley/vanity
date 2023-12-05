@@ -15,8 +15,8 @@ void PipeServer::request_pipe(Client &client, const std::string &msg, size_t &po
 	PipedClient piped_client{client, len};
 
 	for (size_t i = 0; i < len - 1; ++i)
-		do_handle(piped_client, msg, pos, false);
-	do_handle(piped_client, msg, pos, true);
+		do_handle(piped_client, msg, pos, false, true);
+	do_handle(piped_client, msg, pos, true, true);
 
 	piped_client.perform_write(*this);
 }

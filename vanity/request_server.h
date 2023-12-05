@@ -221,9 +221,18 @@ public:
 
 protected:
 	// extract the data from a message and dispatch it to the appropriate handler
-	void do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end);
+	// client: the client that sent the message
+	// msg: the message
+	// pos: the position in the message
+	// expect_end: whether the message should end after this operation. an error is sent if it doesn't
+	// strict: whether to read the arguments even if the operation will fail (does not cover malformed requests)
+	// returns true if the request was extracted and dispatched successfully, false otherwise
+	bool do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end, bool strict);
 
 private:
+	// same as do_handle, but without exception handling
+	bool do_handle_inner(Client& client, const std::string& msg, size_t& pos, bool expect_end, bool strict);
+
 	// convenience function that contains a giant switch statement to dispatch an operation_t
 	void dispatch_op(Client& client, operation_t op, const std::string& msg, size_t& pos, bool expect_end);
 };
