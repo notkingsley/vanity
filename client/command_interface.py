@@ -69,7 +69,7 @@ class CommandInterface(ABC):
 		"""
 		Ping the server.
 		"""
-		return self.request("PING" + msg)
+		return self.request("PING", msg)
 	
 	def persist(self):
 		"""
