@@ -25,6 +25,7 @@ class ServerType(Enum):
 	INT = "INT"
 	FLOAT = "FLOAT"
 	ARRAY = "ARR"
+	TUPLE = "TUPLE"
 	LIST = "LIST"
 	NULL = "NULL"
 	SET = "SET"
@@ -137,6 +138,32 @@ def extract_array(msg: str):
 	
 	elements = list()
 	for _ in range(num):
+		element, msg = extract_as(msg, ServerType.STRING)
+		elements.append(element)
+
+	if not msg.startswith("]"):
+		raise InvalidResponse(f"Message did not end with ']'.")
+	msg = msg[1:].lstrip()
+	
+	return elements, msg
+
+
+def extract_tuple(msg: str):
+	"""
+	Extract a tuple from a response.
+	:param msg: The response to extract from.
+	:return: The extracted tuple (actually a list), or None if no tuple could be deciphered.
+	"""
+	num, msg = extract_len(msg)
+	if num is None:
+		return None, msg
+	
+	if not msg.startswith("("):
+		return None, msg
+	msg = msg[1:].lstrip()
+	
+	elements = list()
+	for _ in range(num):
 		_type, msg = extract_type(msg)
 		if _type is None:
 			raise InvalidResponse(f"Could not extract type from {msg}.")
@@ -147,8 +174,8 @@ def extract_array(msg: str):
 		
 		elements.append(element)
 
-	if not msg.startswith("]"):
-		raise InvalidResponse(f"Message did not end with ']'.")
+	if not msg.startswith(")"):
+		raise InvalidResponse(f"Message did not end with ')'.")
 	msg = msg[1:].lstrip()
 	
 	return elements, msg
@@ -280,6 +307,8 @@ def extract_as(msg: str, _type: ServerType):
 			return extract_float(msg)
 		case ServerType.ARRAY:
 			return extract_array(msg)
+		case ServerType.TUPLE:
+			return extract_tuple(msg)
 		case ServerType.LIST:
 			return extract_list(msg)
 		case ServerType.NULL:
@@ -315,6 +344,9 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
 	
 	elif msg.startswith(":ARR"):
 		return ServerType.ARRAY, msg[4:].lstrip()
+	
+	elif msg.startswith(":TUPLE"):
+		return ServerType.TUPLE, msg[6:].lstrip()
 
 	elif msg.startswith(":LIST"):
 		return ServerType.LIST, msg[5:].lstrip()
@@ -474,6 +506,12 @@ class Response:
 		:return: True if the response is of type ARRAY, False otherwise.
 		"""
 		return self.type == ServerType.ARRAY
+	
+	def type_is_tuple(self) -> bool:
+		"""
+		:return: True if the response is of type TUPLE, False otherwise.
+		"""
+		return self.type == ServerType.TUPLE
 	
 	def type_is_null(self) -> bool:
 		"""

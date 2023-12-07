@@ -5,6 +5,7 @@
 #ifndef VANITY_RESPONSE_H
 #define VANITY_RESPONSE_H
 
+#include <concepts>
 #include <netinet/in.h>
 
 #include "db/db/types.h"
@@ -43,9 +44,14 @@ struct type_to_string<std::monostate> {
 	static constexpr const char* value = ":NULL ";
 };
 
+template <>
+struct type_to_string<std::vector<std::string>> {
+	static constexpr const char* value = ":ARR ";
+};
+
 template <typename T>
 struct type_to_string<std::vector<T>> {
-	static constexpr const char* value = ":ARR ";
+	static constexpr const char* value = ":TUPLE ";
 };
 
 template <>
@@ -62,6 +68,10 @@ template <>
 struct type_to_string<db::hash_t> {
 	static constexpr const char* value = ":HASH ";
 };
+
+// type-dependent std::false_type to delay evaluation till instantiation
+template <typename T>
+struct false_type : std::false_type {};
 
 /*
  * A Response allows a dynamically efficient method to compose a response
@@ -163,6 +173,13 @@ public:
 	// or operator<< for raw data
 	Response& serialize(const char*) = delete;
 
+	// serialize something to a Response
+	template<typename T, typename = void>
+	Response& serialize(const T& data) {
+		static_assert(false_type<T>::value, "cannot serialize this type");
+		return *this;
+	}
+
 	// serialize an optional object to a Response
 	template<typename T>
 	Response& serialize(const std::optional<T>& data) {
@@ -175,13 +192,35 @@ public:
 	// serialize a vector to a Response
 	template<typename T>
 	Response& serialize(const std::vector<T>& data) {
-		serialize_type<std::vector<T>>()
+		// gcc bug prevents in-class specialization, so we have to do this
+		if constexpr (std::is_same_v<T, std::string>)
+			return serialize_arr(data);
+		else
+			return serialize_tuple(data);
+	}
+
+	// serialize a vector of strings as an ARR to a Response
+	Response& serialize_arr(const std::vector<std::string>& data) {
+		serialize_type<std::vector<std::string>>()
 			  << '(' + std::to_string(data.size()) + ")";
 
 		*this << '[';
 		for (const auto& s : data)
-			serialize(s);
+			serialize_string_body(s);
 		return *this << ']';
+	}
+
+	// serialize an arbitrary vector as a TUPLE to a Response
+	template<typename T>
+	Response& serialize_tuple(const std::vector<T>& data) {
+		static_assert(!std::is_same_v<T, std::string>, "cannot serialize vector of strings as tuple");
+		serialize_type<std::vector<T>>()
+			  << '(' + std::to_string(data.size()) + ")";
+
+		*this << '(';
+		for (const auto& s : data)
+			serialize(s);
+		return *this << ')';
 	}
 
 	template<typename T>
