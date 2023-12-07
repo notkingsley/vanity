@@ -201,8 +201,8 @@ public:
 
 	// serialize a vector of strings as an ARR to a Response
 	Response& serialize_arr(const std::vector<std::string>& data) {
-		serialize_type<std::vector<std::string>>()
-			  << '(' + std::to_string(data.size()) + ")";
+		serialize_type<std::vector<std::string>>();
+		serialize_length(data.size());
 
 		*this << '[';
 		for (const auto& s : data)
@@ -214,8 +214,8 @@ public:
 	template<typename T>
 	Response& serialize_tuple(const std::vector<T>& data) {
 		static_assert(!std::is_same_v<T, std::string>, "cannot serialize vector of strings as tuple");
-		serialize_type<std::vector<T>>()
-			  << '(' + std::to_string(data.size()) + ")";
+		serialize_type<std::vector<T>>();
+		serialize_length(data.size());
 
 		*this << '(';
 		for (const auto& s : data)
@@ -230,6 +230,9 @@ public:
 
 	// serialize a string's body to a Response
 	Response& serialize_string_body(const std::string &data);
+
+	// serialize a length to a Response
+	Response& serialize_length(size_t length);
 };
 
 // make an OK response

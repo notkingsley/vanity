@@ -81,7 +81,8 @@ Response &Response::serialize(bool data) {
 
 Response &Response::serialize_string_body(const std::string &data) {
 	reserve(data.size() + 10);
-	return *this << '(' + std::to_string(data.size()) + ")" << data;
+	serialize_length(data.size());
+	return *this << data;
 }
 
 Response &Response::serialize(const std::string &data) {
@@ -102,8 +103,8 @@ Response &Response::serialize(double data) {
 }
 
 Response &Response::serialize(const std::list<std::string> &data) {
-	serialize_type<std::list<std::string>>()
-		  << '(' << std::to_string(data.size()) << ")";
+	serialize_type<std::list<std::string>>();
+	serialize_length(data.size());
 
 	*this << '[';
 	for (const auto& s : data)
@@ -112,8 +113,8 @@ Response &Response::serialize(const std::list<std::string> &data) {
 }
 
 Response &Response::serialize(const std::unordered_set<std::string> &data) {
-	serialize_type<std::unordered_set<std::string>>()
-		  << '(' + std::to_string(data.size()) + ")";
+	serialize_type<std::unordered_set<std::string>>();
+	serialize_length(data.size());
 
 	*this << '{';
 	for (const auto &s: data)
@@ -122,8 +123,8 @@ Response &Response::serialize(const std::unordered_set<std::string> &data) {
 }
 
 Response &Response::serialize(const std::unordered_map<std::string, std::string> &data) {
-	serialize_type<std::unordered_map<std::string, std::string>>()
-		  << '(' + std::to_string(data.size()) + ")";
+	serialize_type<std::unordered_map<std::string, std::string>>();
+	serialize_length(data.size());
 
 	*this << '{';
 	for (const auto &s: data) {
@@ -166,6 +167,10 @@ Response &Response::serialize(const primary_serialize_type &data) {
 
 Response &Response::serialize() {
 	return *this;
+}
+
+Response &Response::serialize_length(size_t length) {
+	return *this << '(' << std::to_string(length) << ')';
 }
 
 } // namespace vanity
