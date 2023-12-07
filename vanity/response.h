@@ -174,7 +174,7 @@ public:
 	Response& serialize(const char*) = delete;
 
 	// serialize something to a Response
-	template<typename T, typename = void>
+	template<typename T>
 	Response& serialize(const T& data) {
 		static_assert(false_type<T>::value, "cannot serialize this type");
 		return *this;
