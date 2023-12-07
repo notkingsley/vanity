@@ -101,7 +101,7 @@ This includes commands for database management, and those for primitive types, s
 
 - `MANY_GET<keys>`  
     Returns the values associated with the given keys from the current database.  
-    Returns `OK` along with the serialized values in an ARR, each with the `<type_annotation>`, adding `:NULL` for any keys that do not exist.  
+    Returns `OK` along with the serialized values in a TUPLE, each with the `<type_annotation>`, adding `:NULL` for any keys that do not exist.  
     Only authenticated clients can get keys.  
     This works for all types of values, but it is not recommended to use this for types other than strings, integers, and floats.  
 
@@ -110,7 +110,7 @@ This includes commands for database management, and those for primitive types, s
     Example:
     ```
     MANY_GET (4)key1 (4)key2
-    OK:ARR (2)[:STR (6)value1:NULL]
+    OK:TUPLE (2)(:STR (6)value1:NULL)
     ```
 
 - `PERSIST`  

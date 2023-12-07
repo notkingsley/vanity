@@ -95,7 +95,7 @@ All of these commands require basic authentication.
     Example:
     ```
     HASH_MANY_GET (5)mykey (2)[(6)field1(6)field3]
-    OK:ARR (2)[:STR(6)value1:NULL]
+    OK:TUPLE (2)(:STR(6)value1:NULL)
     ```
 
 - `HASH_REMOVE<key><hash_keys>`  

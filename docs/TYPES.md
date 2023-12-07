@@ -15,6 +15,7 @@ where `<type_name>` is the name of the type, and is one of the following:
 - BOOL for a `<bool>`
 - NULL for a `<null>`
 - ARR for an `<arr>`
+- TUPLE for a `<tuple>`
 - LIST for a `<list>`
 - SET for a `<set>`
 - HASH for a `<hash>`
@@ -55,12 +56,17 @@ The `<value>` is the value of the object, and is defined for each type as follow
     The NULL type has no value, and is represented by the empty string (the presence of the type annotation is enough to identify it).  
     Note: Currently, it is an error to specify a NULL in a request, but they are used in responses.
 
-- `<arr>` => `<length>[<object>...] or <length>[<string>...]`  
+- `<arr>` => `<length>[<string>...]`  
     where  
-    - `<object>` is an object of any type, including annotations, and the square brackets are part of the syntax.
-    - `<string>` is a string as defined above, and the square brackets are part of the syntax.
+    - `<string>` is a string as defined above, and the square brackets are part of the syntax.  
 
-    Note: In requests, a sequence of unannotated strings are expected. In a response, it is used to represent a sequence of objects of any type, including annotations.
+    Note: ARR is only allowed to contain strings.
+
+- `<tuple>` => `<length>(<object>...)`  
+    where
+    - `<object>` is an object of a primitive type, including annotations, and the brackets are part of the syntax.
+
+    Note: TUPLE is only allowed to contain primitive types.
 
 - `<list>` => `<length>[<string>...]`  
     where  
