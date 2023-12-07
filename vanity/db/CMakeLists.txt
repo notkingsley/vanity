@@ -2,22 +2,20 @@ project(vanity_db)
 
 include_directories(.)
 
+add_subdirectory(db)
+
 add_library(vanity_db STATIC
 	auto_expiry_database_server.cpp
-	base_database.cpp
 	base_database_server.cpp
-    database.cpp
-	expiry_database.cpp
 	expiry_database_server.cpp
-	hash_database.cpp
 	hash_database_server.cpp
-	list_database.cpp
 	list_database_server.cpp
-	locked_database.cpp
 	persistent_server.cpp
-	primitive_database.cpp
 	primitive_database_server.cpp
-#	serial_database.cpp
-	set_database.cpp
 	set_database_server.cpp
+)
+
+target_link_libraries(
+	vanity_db
+	vanity_db_db
 )

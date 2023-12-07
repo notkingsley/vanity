@@ -7,7 +7,7 @@
 
 #include <netinet/in.h>
 
-#include "db/types.h"
+#include "db/db/types.h"
 
 
 namespace vanity {
