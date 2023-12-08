@@ -54,6 +54,21 @@ public:
 
 	// a reset request was received from a client
 	void request_reset(Client& client) override;
+
+	// a keys request was received from a client
+	void request_keys(Client& client) override;
+
+	// a copy_to request was received from a client
+	void request_copy_to(Client& client, const std::string& from, const std::string& to) override;
+
+	// a move_to request was received from a client
+	void request_move_to(Client& client, const std::string& from, const std::string& to) override;
+
+	// a copy_to_db request was received from a client
+	void request_copy_to_db(Client& client, const std::string& from, int64_t dest) override;
+
+	// a move_to_db request was received from a client
+	void request_move_to_db(Client& client, const std::string& from, int64_t dest) override;
 };
 
 } // namespace vanity

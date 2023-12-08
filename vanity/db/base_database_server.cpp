@@ -87,4 +87,52 @@ void BaseDatabaseServer::request_exists(Client &client, const std::string &key) 
 		send(client, null());
 }
 
+void BaseDatabaseServer::request_keys(Client &client) {
+	auto keys = database(client).keys();
+	if (keys.empty())
+		return send(client, null());
+	else
+		send(client, ok(keys));
+}
+
+void BaseDatabaseServer::request_copy_to(Client &client, const std::string &from, const std::string &to) {
+	if (database(client).copy_to(from, to))
+		send(client, ok());
+	else
+		send(client, null());
+}
+
+void BaseDatabaseServer::request_move_to(Client &client, const std::string &from, const std::string &to) {
+	if (database(client).move_to(from, to))
+		send(client, ok());
+	else
+		send(client, null());
+}
+
+void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &from, int64_t dest) {
+	if (dest < 0)
+		return send(client, error(" db index must be non-negative"));
+
+	if (dest >= M_NUM_DATABASES)
+		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
+
+	if (database(client).copy_to_db(from, m_databases[dest]))
+		send(client, ok());
+	else
+		send(client, null());
+}
+
+void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &from, int64_t dest) {
+	if (dest < 0)
+		return send(client, error(" db index must be non-negative"));
+
+	if (dest >= M_NUM_DATABASES)
+		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
+
+	if (database(client).move_to_db(from, m_databases[dest]))
+		send(client, ok());
+	else
+		send(client, null());
+}
+
 } // namespace vanity

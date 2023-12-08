@@ -121,10 +121,15 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::SWITCH_DB,       "SWITCH_DB"},
 			{operation_t::PERSIST,         "PERSIST"},
 
-			{operation_t::DEL,          "DEL"},
-			{operation_t::TYPE,           "TYPE"},
+			{operation_t::DEL,             "DEL"},
+			{operation_t::TYPE,            "TYPE"},
 			{operation_t::EXISTS,          "EXISTS"},
 			{operation_t::RESET,           "RESET"},
+			{operation_t::KEYS,            "KEYS"},
+			{operation_t::COPY_TO_DB,      "COPY_TO_DB"},
+			{operation_t::MOVE_TO_DB,      "MOVE_TO_DB"},
+			{operation_t::COPY_TO,         "COPY_TO"},
+			{operation_t::MOVE_TO,         "MOVE_TO"},
 
 			{operation_t::SET_EXPIRY,      "SET_EXPIRY"},
 			{operation_t::GET_EXPIRY,      "GET_EXPIRY"},

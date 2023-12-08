@@ -90,6 +90,31 @@ void dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool e
 			ensure_end(msg, pos);
 			break;
 		}
+		case operation_t::KEYS:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::COPY_TO:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::MOVE_TO:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::COPY_TO_DB:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::MOVE_TO_DB:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
 
 		case operation_t::SET_EXPIRY:
 		{
@@ -481,6 +506,35 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		{
 			ensure_end(msg, pos);
 			request_reset(client);
+			break;
+		}
+		case operation_t::KEYS:
+		{
+			request_keys(client);
+			break;
+		}
+		case operation_t::COPY_TO:
+		{
+			auto [from, to] = extract_exact<STR, STR>(msg, pos, expect_end);
+			request_copy_to(client, from, to);
+			break;
+		}
+		case operation_t::MOVE_TO:
+		{
+			auto [from, to] = extract_exact<STR, STR>(msg, pos, expect_end);
+			request_move_to(client, from, to);
+			break;
+		}
+		case operation_t::COPY_TO_DB:
+		{
+			auto [from, to] = extract_exact<STR, INT>(msg, pos, expect_end);
+			request_copy_to_db(client, from, to);
+			break;
+		}
+		case operation_t::MOVE_TO_DB:
+		{
+			auto [from, to] = extract_exact<STR, INT>(msg, pos, expect_end);
+			request_move_to_db(client, from, to);
 			break;
 		}
 

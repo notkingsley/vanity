@@ -48,6 +48,21 @@ public:
 	// an exists request was received from a client
 	virtual void request_exists(Client& client, const std::string& key) = 0;
 
+	// a keys request was received from a client
+	virtual void request_keys(Client& client) = 0;
+
+	// a copy_to request was received from a client
+	virtual void request_copy_to(Client& client, const std::string& key, const std::string& dest) = 0;
+
+	// a move_to request was received from a client
+	virtual void request_move_to(Client& client, const std::string& key, const std::string& dest) = 0;
+
+	// a copy_to_db request was received from a client
+	virtual void request_copy_to_db(Client& client, const std::string& key, int64_t dest) = 0;
+
+	// a move_to_db request was received from a client
+	virtual void request_move_to_db(Client& client, const std::string& key, int64_t dest) = 0;
+
 	// a set_expiry request was received from a client
 	virtual void request_set_expiry(Client& client, const std::string& key, double seconds) = 0;
 

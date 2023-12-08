@@ -29,6 +29,11 @@ enum class operation_t{
 	TYPE,
 	EXISTS,
 	RESET,
+	KEYS,
+	COPY_TO,
+	MOVE_TO,
+	COPY_TO_DB,
+	MOVE_TO_DB,
 
 	SET_EXPIRY,
 	GET_EXPIRY,
@@ -111,6 +116,11 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
 		case operation_t::RESET:
+		case operation_t::KEYS:
+		case operation_t::COPY_TO:
+		case operation_t::MOVE_TO:
+		case operation_t::COPY_TO_DB:
+		case operation_t::MOVE_TO_DB:
 
 		case operation_t::SET_EXPIRY:
 		case operation_t::GET_EXPIRY:
@@ -187,6 +197,11 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::DEL:
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
+		case operation_t::KEYS:
+		case operation_t::COPY_TO:
+		case operation_t::MOVE_TO:
+		case operation_t::COPY_TO_DB:
+		case operation_t::MOVE_TO_DB:
 
 		case operation_t::SET_EXPIRY:
 		case operation_t::GET_EXPIRY:
@@ -274,6 +289,11 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
 		case operation_t::RESET:
+		case operation_t::KEYS:
+		case operation_t::COPY_TO:
+		case operation_t::MOVE_TO:
+		case operation_t::COPY_TO_DB:
+		case operation_t::MOVE_TO_DB:
 
 		case operation_t::SET_EXPIRY:
 		case operation_t::GET_EXPIRY:
@@ -363,6 +383,11 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::TYPE:
 		case operation_t::RESET:
 		case operation_t::EXISTS:
+		case operation_t::KEYS:
+		case operation_t::COPY_TO:
+		case operation_t::MOVE_TO:
+		case operation_t::COPY_TO_DB:
+		case operation_t::MOVE_TO_DB:
 
 		case operation_t::SET_EXPIRY:
 		case operation_t::GET_EXPIRY:
