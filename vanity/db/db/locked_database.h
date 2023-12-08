@@ -64,6 +64,29 @@ public:
 	// get the type of key as an index
 	std::optional<int> type(const key_type& key);
 
+	// get all keys in this database
+	std::vector<key_type> keys();
+
+	// copy a value from one key to another
+	// returns true if the value was copied
+	// false if the value was not copied
+	bool copy_to(const key_type& from, const key_type& to);
+
+	// move a value from one key to another
+	// returns true if the value was moved
+	// false if the value was not moved
+	bool move_to(const key_type& from, const key_type& to);
+
+	// copy a value from one key to another in another database
+	// returns true if the value was copied
+	// false if the value was not copied
+	bool copy_to_db(const key_type& from, LockedDatabase& to);
+
+	// move a value from one key to another in another database
+	// returns true if the value was moved
+	// false if the value was not moved
+	bool move_to_db(const key_type& from, LockedDatabase& to);
+
 
 	// check if the key is is_expired
 	bool is_expired(const key_type &key);

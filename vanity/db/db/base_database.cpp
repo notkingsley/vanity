@@ -35,4 +35,60 @@ std::optional<int> BaseDatabase::type(const key_type &key) {
 	return std::nullopt;
 }
 
+std::vector<BaseDatabase::key_type> BaseDatabase::keys() {
+	deep_purge();
+	std::vector<key_type> keys;
+	for (auto& [key, _] : m_data)
+		keys.push_back(key);
+	return keys;
+}
+
+bool BaseDatabase::copy_to(const key_type &from, const key_type &to) {
+	erase_if_expired(from);
+	if (not m_data.contains(from))
+		return false;
+
+	m_data[to] = m_data.at(from);
+	clear_expiry(to);
+	return true;
+}
+
+bool BaseDatabase::move_to(const key_type &from, const key_type &to) {
+	erase_if_expired(from);
+	if (not m_data.contains(from))
+		return false;
+
+	m_data[to] = std::move(m_data.at(from));
+	if (m_expiry_times.contains(from))
+		m_expiry_times[to] = m_expiry_times.at(from);
+
+	m_data.erase(from);
+	clear_expiry(from);
+	return true;
+}
+
+bool BaseDatabase::copy_to_db(const key_type &from, BaseDatabase &to) {
+	erase_if_expired(from);
+	if (not m_data.contains(from))
+		return false;
+
+	to.m_data[from] = m_data.at(from);
+	to.clear_expiry(from);
+	return true;
+}
+
+bool BaseDatabase::move_to_db(const key_type &from, BaseDatabase &to) {
+	erase_if_expired(from);
+	if (not m_data.contains(from))
+		return false;
+
+	to.m_data[from] = std::move(m_data.at(from));
+	if (m_expiry_times.contains(from))
+		to.m_expiry_times[from] = m_expiry_times.at(from);
+
+	m_data.erase(from);
+	clear_expiry(from);
+	return true;
+}
+
 } // namespace vanity::db
