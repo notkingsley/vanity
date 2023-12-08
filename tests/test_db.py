@@ -21,23 +21,7 @@ class BaseDatabaseTest(unittest.TestCase):
 		self.client.reset()
 
 
-class PrimitiveDatabaseTest(BaseDatabaseTest):
-	def test_set_get(self):
-		"""
-		Test that we can set a value and then get it.
-		"""
-		self.client.str_set("test_set_get_key", "test_set_get_value")
-		response = self.client.get("test_set_get_key")
-		self.assertEqual(response.value, "test_set_get_value")
-
-	def test_set_del(self):
-		"""
-		Test that we can set a value and then delete it.
-		"""
-		self.client.str_set("test_set_del_key", "test_set_del_value")
-		response = self.client.delete("test_set_del_key")
-		self.assertTrue(response.is_ok())
-
+class GeneralDatabaseTest(BaseDatabaseTest):
 	def test_get_empty(self):
 		"""
 		Test that we get a null when we try to get a key that doesn't exist.
@@ -51,34 +35,6 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		"""
 		response = self.client.delete("test_del_empty")
 		self.assertTrue(response.is_error())
-	
-	def test_set_overwrite(self):
-		"""
-		Test that we can overwrite a key.
-		"""
-		self.client.str_set("test_set_overwrite", "test_set_overwrite_value")
-		self.client.str_set("test_set_overwrite", "test_set_overwrite_value2")
-		response = self.client.get("test_set_overwrite")
-		self.assertEqual(response.value, "test_set_overwrite_value2")
-	
-	def test_set_delete_get(self):
-		"""
-		Test that we can set a value, delete it, and then get a null.
-		"""
-		self.client.str_set("test_set_delete_get", "test_set_delete_get_value")
-		self.client.delete("test_set_delete_get")
-		response = self.client.get("test_set_delete_get")
-		self.assertTrue(response.is_null())
-	
-	def test_set_delete_set_get(self):
-		"""
-		Test that we can set a value, delete it, set it again, and then get it.
-		"""
-		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value")
-		self.client.delete("test_set_delete_set_get")
-		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value2")
-		response = self.client.get("test_set_delete_set_get")
-		self.assertEqual(response.value, "test_set_delete_set_get_value2")
 	
 	def test_ping(self):
 		"""
@@ -95,23 +51,7 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		self.client.reset()
 		response = self.client.get("test_reset")
 		self.assertTrue(response.is_null())
-	
-	def test_set_get_int(self):
-		"""
-		Test that we can set an integer value and then get it.
-		"""
-		self.client.int_set("test_set_get_int", 123)
-		response = self.client.get("test_set_get_int")
-		self.assertEqual(response.value, 123)
-	
-	def test_set_get_float(self):
-		"""
-		Test that we can set a float value and then get it.
-		"""
-		self.client.float_set("test_set_get_float", 123.456)
-		response = self.client.get("test_set_get_float")
-		self.assertEqual(response.value, 123.456)
-	
+
 	def test_get_type_str(self):
 		"""
 		Test that the type of a string is str.
@@ -195,6 +135,270 @@ class PrimitiveDatabaseTest(BaseDatabaseTest):
 		self.assertTrue(response.is_ok())
 		response = self.client.exists("test_exists_delete")
 		self.assertTrue(response.is_null())
+	
+	def test_keys(self):
+		"""
+		Test that we can get the keys.
+		"""
+		self.client.str_set("test_keys_1", "test_keys_1_value")
+		self.client.str_set("test_keys_2", "test_keys_2_value")
+		self.client.str_set("test_keys_3", "test_keys_3_value")
+		response = self.client.keys()
+		self.assertTrue(response.is_ok())
+		self.assertEqual(set(response.value), {"test_keys_1", "test_keys_2", "test_keys_3"})
+	
+	def test_keys_empty(self):
+		"""
+		Test that we can get the keys when there are none.
+		"""
+		response = self.client.keys()
+		self.assertTrue(response.is_null())
+	
+	def test_copy_to(self):
+		"""
+		Test that we can copy a key to another key.
+		"""
+		self.client.str_set("test_copy_to", "test_copy_to_value")
+		response = self.client.copy_to("test_copy_to", "test_copy_to_2")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_copy_to_2")
+		self.assertEqual(response.value, "test_copy_to_value")
+	
+	def test_copy_to_overwrite(self):
+		"""
+		Test that we can copy a key to another key, overwriting it.
+		"""
+		self.client.str_set("test_copy_to_overwrite", "test_copy_to_overwrite_value")
+		self.client.str_set("test_copy_to_overwrite_2", "test_copy_to_overwrite_value_2")
+		response = self.client.copy_to("test_copy_to_overwrite", "test_copy_to_overwrite_2")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_copy_to_overwrite_2")
+		self.assertEqual(response.value, "test_copy_to_overwrite_value")
+	
+	def test_copy_to_non_existent(self):
+		"""
+		Test that we can't copy a key to another key when the source key doesn't exist.
+		"""
+		response = self.client.copy_to("test_copy_to_non_existent", "test_copy_to_non_existent_2")
+		self.assertTrue(response.is_null())
+	
+	def test_copy_to_same(self):
+		"""
+		Test that we can copy a key to itself and nothing happens.
+		"""
+		self.client.str_set("test_copy_to_same", "test_copy_to_same_value")
+		response = self.client.copy_to("test_copy_to_same", "test_copy_to_same")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_copy_to_same")
+		self.assertEqual(response.value, "test_copy_to_same_value")
+
+	def move_to(self):
+		"""
+		Test that we can move a key to another key.
+		"""
+		self.client.str_set("test_move_to", "test_move_to_value")
+		response = self.client.move_to("test_move_to", "test_move_to_2")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_move_to_2")
+		self.assertEqual(response.value, "test_move_to_value")
+		response = self.client.get("test_move_to")
+		self.assertTrue(response.is_null())
+	
+	def test_move_to_overwrite(self):
+		"""
+		Test that we can move a key to another key, overwriting it.
+		"""
+		self.client.str_set("test_move_to_overwrite", "test_move_to_overwrite_value")
+		self.client.str_set("test_move_to_overwrite_2", "test_move_to_overwrite_value_2")
+		response = self.client.move_to("test_move_to_overwrite", "test_move_to_overwrite_2")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_move_to_overwrite_2")
+		self.assertEqual(response.value, "test_move_to_overwrite_value")
+		response = self.client.get("test_move_to_overwrite")
+		self.assertTrue(response.is_null())
+	
+	def test_move_to_non_existent(self):
+		"""
+		Test that we can't move a key to another key when the source key doesn't exist.
+		"""
+		response = self.client.move_to("test_move_to_non_existent", "test_move_to_non_existent_2")
+		self.assertTrue(response.is_null())
+	
+	def test_move_to_same(self):
+		"""
+		Test that we can move a key to itself and nothing happens.
+		"""
+		self.client.str_set("test_move_to_same", "test_move_to_same_value")
+		response = self.client.move_to("test_move_to_same", "test_move_to_same")
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_move_to_same")
+		self.assertEqual(response.value, "test_move_to_same_value")
+	
+	def test_copy_to_db_non_existent(self):
+		"""
+		Test that we can't copy a key to another database when the source key doesn't exist.
+		"""
+		response = self.client.copy_to_db("test_copy_to_db_non_existent", 1)
+		self.assertTrue(response.is_null())
+	
+	def test_copy_to_db_same(self):
+		"""
+		Test that we can copy a key to the same database and nothing happens.
+		"""
+		self.client.str_set("test_copy_to_db_same", "test_copy_to_db_same_value")
+		response = self.client.copy_to_db("test_copy_to_db_same", 0)
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_copy_to_db_same")
+		self.assertEqual(response.value, "test_copy_to_db_same_value")
+	
+	def test_move_to_db_non_existent(self):
+		"""
+		Test that we can't move a key to another database when the source key doesn't exist.
+		"""
+		response = self.client.move_to_db("test_move_to_db_non_existent", 1)
+		self.assertTrue(response.is_null())
+	
+	def test_move_to_db_same(self):
+		"""
+		Test that we can move a key to the same database and nothing happens.
+		"""
+		self.client.str_set("test_move_to_db_same", "test_move_to_db_same_value")
+		response = self.client.move_to_db("test_move_to_db_same", 0)
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_move_to_db_same")
+		self.assertEqual(response.value, "test_move_to_db_same_value")
+
+
+class GeneralDatabaseTestWithSwitching(BaseDatabaseTest):
+	"""
+	Test general database commands that modify multiple databases.
+	"""
+	def tearDown(self):
+		self.client.switch_db(0)
+		self.client.reset()
+		self.client.switch_db(1)
+		self.client.reset()
+		self.client.switch_db(0)
+
+	def test_copy_to_db(self):
+		"""
+		Test that we can copy a key to another database.
+		"""
+		self.client.str_set("test_copy_to_db", "test_copy_to_db_value")
+		response = self.client.copy_to_db("test_copy_to_db", 1)
+		self.assertTrue(response.is_ok())
+		response = self.client.switch_db(1)
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_copy_to_db")
+		self.assertEqual(response.value, "test_copy_to_db_value")
+	
+	def test_copy_to_db_overwrite(self):
+		"""
+		Test that we can copy a key to another database, overwriting it.
+		"""
+		self.client.str_set("test_copy_to_db_overwrite", "test_copy_to_db_overwrite_value")
+		self.client.switch_db(1)
+		self.client.str_set("test_copy_to_db_overwrite", "test_copy_to_db_overwrite_value_2")
+		self.client.switch_db(0)
+		response = self.client.copy_to_db("test_copy_to_db_overwrite", 1)
+		self.assertTrue(response.is_ok())
+		response = self.client.switch_db(1)
+		response = self.client.get("test_copy_to_db_overwrite")
+		self.assertEqual(response.value, "test_copy_to_db_overwrite_value")
+	
+	def test_move_to_db(self):
+		"""
+		Test that we can move a key to another database.
+		"""
+		self.client.str_set("test_move_to_db", "test_move_to_db_value")
+		response = self.client.move_to_db("test_move_to_db", 1)
+		self.assertTrue(response.is_ok())
+		response = self.client.switch_db(1)
+		self.assertTrue(response.is_ok())
+		response = self.client.get("test_move_to_db")
+		self.assertEqual(response.value, "test_move_to_db_value")
+		response = self.client.switch_db(0)
+		response = self.client.get("test_move_to_db")
+		self.assertTrue(response.is_null())
+	
+	def test_move_to_db_overwrite(self):
+		"""
+		Test that we can move a key to another database, overwriting it.
+		"""
+		self.client.str_set("test_move_to_db_overwrite", "test_move_to_db_overwrite_value")
+		self.client.switch_db(1)
+		self.client.str_set("test_move_to_db_overwrite", "test_move_to_db_overwrite_value_2")
+		self.client.switch_db(0)
+		response = self.client.move_to_db("test_move_to_db_overwrite", 1)
+		self.assertTrue(response.is_ok())
+		response = self.client.switch_db(1)
+		response = self.client.get("test_move_to_db_overwrite")
+		self.assertEqual(response.value, "test_move_to_db_overwrite_value")
+		response = self.client.switch_db(0)
+		response = self.client.get("test_move_to_db_overwrite")
+		self.assertTrue(response.is_null())
+
+
+class PrimitiveDatabaseTest(BaseDatabaseTest):
+	def test_set_get(self):
+		"""
+		Test that we can set a value and then get it.
+		"""
+		self.client.str_set("test_set_get_key", "test_set_get_value")
+		response = self.client.get("test_set_get_key")
+		self.assertEqual(response.value, "test_set_get_value")
+
+	def test_set_del(self):
+		"""
+		Test that we can set a value and then delete it.
+		"""
+		self.client.str_set("test_set_del_key", "test_set_del_value")
+		response = self.client.delete("test_set_del_key")
+		self.assertTrue(response.is_ok())
+
+	def test_set_overwrite(self):
+		"""
+		Test that we can overwrite a key.
+		"""
+		self.client.str_set("test_set_overwrite", "test_set_overwrite_value")
+		self.client.str_set("test_set_overwrite", "test_set_overwrite_value2")
+		response = self.client.get("test_set_overwrite")
+		self.assertEqual(response.value, "test_set_overwrite_value2")
+	
+	def test_set_delete_get(self):
+		"""
+		Test that we can set a value, delete it, and then get a null.
+		"""
+		self.client.str_set("test_set_delete_get", "test_set_delete_get_value")
+		self.client.delete("test_set_delete_get")
+		response = self.client.get("test_set_delete_get")
+		self.assertTrue(response.is_null())
+	
+	def test_set_delete_set_get(self):
+		"""
+		Test that we can set a value, delete it, set it again, and then get it.
+		"""
+		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value")
+		self.client.delete("test_set_delete_set_get")
+		self.client.str_set("test_set_delete_set_get", "test_set_delete_set_get_value2")
+		response = self.client.get("test_set_delete_set_get")
+		self.assertEqual(response.value, "test_set_delete_set_get_value2")
+	
+	def test_set_get_int(self):
+		"""
+		Test that we can set an integer value and then get it.
+		"""
+		self.client.int_set("test_set_get_int", 123)
+		response = self.client.get("test_set_get_int")
+		self.assertEqual(response.value, 123)
+	
+	def test_set_get_float(self):
+		"""
+		Test that we can set a float value and then get it.
+		"""
+		self.client.float_set("test_set_get_float", 123.456)
+		response = self.client.get("test_set_get_float")
+		self.assertEqual(response.value, 123.456)
 	
 	def test_incr_int(self):
 		"""
