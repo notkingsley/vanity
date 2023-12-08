@@ -116,6 +116,9 @@ void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &f
 	if (dest >= M_NUM_DATABASES)
 		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
 
+	if (dest == client.db())
+		return send(client, ok());
+
 	if (database(client).copy_to_db(from, m_databases[dest]))
 		send(client, ok());
 	else
@@ -128,6 +131,9 @@ void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &f
 
 	if (dest >= M_NUM_DATABASES)
 		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
+
+	if (dest == client.db())
+		return send(client, ok());
 
 	if (database(client).move_to_db(from, m_databases[dest]))
 		send(client, ok());
