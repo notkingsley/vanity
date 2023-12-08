@@ -48,6 +48,9 @@ bool BaseDatabase::copy_to(const key_type &from, const key_type &to) {
 	if (not m_data.contains(from))
 		return false;
 
+	if (from == to)
+		return true;
+
 	m_data[to] = m_data.at(from);
 	clear_expiry(to);
 	return true;
@@ -57,6 +60,9 @@ bool BaseDatabase::move_to(const key_type &from, const key_type &to) {
 	erase_if_expired(from);
 	if (not m_data.contains(from))
 		return false;
+
+	if (from == to)
+		return true;
 
 	m_data[to] = std::move(m_data.at(from));
 	if (m_expiry_times.contains(from))
@@ -72,6 +78,9 @@ bool BaseDatabase::copy_to_db(const key_type &from, BaseDatabase &to) {
 	if (not m_data.contains(from))
 		return false;
 
+	if (this == &to)
+		return true;
+
 	to.m_data[from] = m_data.at(from);
 	to.clear_expiry(from);
 	return true;
@@ -81,6 +90,9 @@ bool BaseDatabase::move_to_db(const key_type &from, BaseDatabase &to) {
 	erase_if_expired(from);
 	if (not m_data.contains(from))
 		return false;
+
+	if (this == &to)
+		return true;
 
 	to.m_data[from] = std::move(m_data.at(from));
 	if (m_expiry_times.contains(from))
