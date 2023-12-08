@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 
+from client.response import Response
+
 
 class AuthLevel(Enum):
 	"""
@@ -17,7 +19,7 @@ class CommandInterface(ABC):
 	A CommandInterface defines the interface for handling commands.
 	"""
 	@abstractmethod
-	def request(self, command: str, *args):
+	def request(self, command: str, *args) -> Response | None:
 		"""
 		Handle a request.
 		:param command: The command to handle.
@@ -143,6 +145,45 @@ class CommandInterface(ABC):
 		:return: Whether the key exists.
 		"""
 		return self.request("EXISTS", key)
+	
+	def keys(self):
+		"""
+		Get all the keys in the database.
+		:return: The keys in the database.
+		"""
+		return self.request("KEYS")
+	
+	def copy_to(self, source: str, dest: str):
+		"""
+		Copy a key to another key.
+		:param source: The key to copy.
+		:param dest: The key to copy to.
+		"""
+		return self.request("COPY_TO", source, dest)
+	
+	def move_to(self, source: str, dest: str):
+		"""
+		Move a key to another key.
+		:param source: The key to move.
+		:param dest: The key to move to.
+		"""
+		return self.request("MOVE_TO", source, dest)
+	
+	def copy_to_db(self, source: str, db: int):
+		"""
+		Copy a key to another database.
+		:param source: The key to copy.
+		:param db: The database to copy to.
+		"""
+		return self.request("COPY_TO_DB", source, db)
+	
+	def move_to_db(self, source: str, db: int):
+		"""
+		Move a key to another database.
+		:param source: The key to move.
+		:param db: The database to move to.
+		"""
+		return self.request("MOVE_TO_DB", source, db)
 	
 	def set_expiry(self, key: str, expiry: float):
 		"""
