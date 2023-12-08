@@ -1,6 +1,34 @@
 This document describes the basic database commands supported by a Vanity server.  
 This includes commands for database management, and those for primitive types, sorted alphabetically.  
 
+- `COPY_TO<source><dest>`  
+    Copies the value at `<source>` to `<dest>` in the current database.  
+    Returns `OK` if successful, or `NULL` if the source key does not exist.  
+    Does nothing if the source and destination keys are the same.  
+
+    `<source>` is the key to copy from, a `<string>`.  
+    `<dest>` is the key to copy to, a `<string>`.
+
+    Example:
+    ```
+    COPY_TO (4)key1 (4)key2
+    OK
+    ```
+
+- `COPY_TO_DB<source><db>`  
+    Copies the value at `<source>` from the current database to the database with the given index.  
+    Returns `OK` if successful, or `NULL` if the source key does not exist.  
+    Does nothing if the current database and the target are the same.    
+
+    `<source>` is the key to copy from, a `<string>`.  
+    `<db>` is the database to copy to, an `<int>` between 0 and 15.
+
+    Example:
+    ```
+    COPY_TO_DB (4)key1 2
+    OK
+    ```
+
 - `DEL<key>`  
     Deletes the key-value pair with the given key from the current database.  
     Returns `OK` if successful, or `ERROR` if the key does not exist.  
@@ -99,6 +127,17 @@ This includes commands for database management, and those for primitive types, s
     OK
     ```
 
+- `KEYS`  
+    Gets all keys in the current database.  
+    Returns `OK` along with the serialized keys in an ARRAY if successful, or `NULL` if the database is empty.  
+    Only authenticated clients can get keys.  
+
+    Example:
+    ```
+    KEYS
+    OK:ARR (2)[(4)key1(4)key2]
+    ```
+
 - `MANY_GET<keys>`  
     Returns the values associated with the given keys from the current database.  
     Returns `OK` along with the serialized values in a TUPLE, each with the `<type_annotation>`, adding `:NULL` for any keys that do not exist.  
@@ -111,6 +150,34 @@ This includes commands for database management, and those for primitive types, s
     ```
     MANY_GET (4)key1 (4)key2
     OK:TUPLE (2)(:STR (6)value1:NULL)
+    ```
+
+- `MOVE_TO<source><dest>`  
+    Moves the value at `<source>` to `<dest>` in the current database.  
+    Returns `OK` if successful, or `NULL` if the source key does not exist.  
+    Does nothing if the source and destination keys are the same.  
+
+    `<source>` is the key to move from, a `<string>`.  
+    `<dest>` is the key to move to, a `<string>`.
+
+    Example:
+    ```
+    MOVE_TO (4)key1 (4)key2
+    OK
+    ```
+
+- `MOVE_TO_DB<source><db>`  
+    Moves the value at `<source>` from the current database to the database with the given index.  
+    Returns `OK` if successful, or `NULL` if the source key does not exist.  
+    Does nothing if the current database and the target are the same.    
+
+    `<source>` is the key to move from, a `<string>`.  
+    `<db>` is the database to move to, an `<int>` between 0 and 15.
+
+    Example:
+    ```
+    MOVE_TO_DB (4)key1 2
+    OK
     ```
 
 - `PERSIST`  
