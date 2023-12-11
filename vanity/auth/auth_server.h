@@ -16,7 +16,6 @@ namespace vanity {
 struct auth_info {
 	std::string hash;
 	client_auth auth;
-	std::vector<Client*> active;
 };
 
 /*

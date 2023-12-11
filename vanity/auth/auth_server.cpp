@@ -37,8 +37,6 @@ void AuthServer::request_edit_user(Client &client, const std::string &username, 
 	}
 
 	m_logins[username].auth = auth_level;
-	for (auto& c : m_logins[username].active)
-		c->set_auth(auth_level);
 	persist_logins();
 
 	if (auth_level == client_auth::USER)
@@ -55,8 +53,6 @@ void AuthServer::request_del_user(Client &client, const std::string &username) {
 	if (username == client.username())
 		return send(client, error("cannot delete self"));
 
-	for (auto& c : m_logins[username].active)
-		c->close();
 	m_logins.erase(username);
 	persist_logins();
 
@@ -76,7 +72,6 @@ void AuthServer::request_auth(Client &client, const std::string &username, const
 
 	client.username(username);
 	client.set_auth(m_logins[username].auth);
-	m_logins[username].active.push_back(&client);
 
 	logger().info("authenticated user: " + username);
 	send(client, ok());
