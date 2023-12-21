@@ -10,6 +10,7 @@
 
 #include "abstract_server.h"
 #include "logging.h"
+#include "request.h"
 
 
 namespace vanity {
@@ -25,7 +26,7 @@ public:
 	void handle(const std::string& msg, Client& client) override;
 
 	// a pipe request was received from a client
-	virtual void request_pipe(Client& client, const std::string& msg, size_t& pos) = 0;
+	virtual void request_pipe(Client& client, Request& request) = 0;
 
 	// a get request was received from a client
 	virtual void request_get(Client& client, const std::string& key) = 0;
@@ -244,24 +245,23 @@ public:
 	};
 
 protected:
-	// extract the data from a message and dispatch it to the appropriate handler
+	// extract the data from a requst and dispatch it to the appropriate handler
 	// client: the client that sent the message
-	// msg: the message
-	// pos: the position in the message
+	// request: the request to extract data from
 	// expect_end: whether the message should end after this operation. an error is sent if it doesn't
 	// strict: whether to read the arguments even if the operation will fail (does not cover malformed requests)
 	// returns true if the request was extracted and dispatched successfully, false otherwise
-	bool do_handle(Client& client, const std::string& msg, size_t& pos, bool expect_end, bool strict);
+	bool do_handle(Client& client, Request& request, bool expect_end, bool strict);
 
 private:
 	// same as do_handle, but without exception handling
-	bool do_handle_inner(Client& client, const std::string& msg, size_t& pos, bool expect_end, bool strict);
+	bool do_handle_inner(Client& client, Request& request, bool expect_end, bool strict);
 
 	// convenience function that contains a giant switch statement to dispatch an operation_t
-	void dispatch_op(Client& client, operation_t op, const std::string& msg, size_t& pos, bool expect_end);
+	void dispatch_op(Client& client, operation_t op, Request& request, bool expect_end);
 
 	// similar to dispatch_op, but merely advances pos by extracting the data without actually calling the request_ method
-	static void dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool expect_end);
+	static void dry_dispatch_op(operation_t op, Request& request, bool expect_end);
 };
 
 } // namespace vanity

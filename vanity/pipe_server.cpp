@@ -3,6 +3,7 @@
 //
 
 #include "aggregating_client.h"
+#include "extract.h"
 #include "pipe_server.h"
 
 namespace vanity {
@@ -20,16 +21,14 @@ public:
 		: AggregatingClient(client, pipe_size, "PIPE") {};
 };
 
-// extract a (len) from part of a message (defined by request_server)
-extern size_t extract_len(const std::string& msg, size_t& pos);
 
-void PipeServer::request_pipe(Client &client, const std::string &msg, size_t &pos) {
-	size_t len = extract_len(msg, pos);
+void PipeServer::request_pipe(Client &client, Request& request) {
+	size_t len = extract_len(request);
 	PipedClient piped_client{client, len};
 
 	for (size_t i = 0; i < len - 1; ++i)
-		do_handle(piped_client, msg, pos, false, true);
-	do_handle(piped_client, msg, pos, true, true);
+		do_handle(piped_client, request, false, true);
+	do_handle(piped_client, request, true, true);
 
 	piped_client.perform_write(*this);
 }

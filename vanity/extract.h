@@ -14,6 +14,7 @@
 
 #include "exceptions.h"
 #include "permissions.h"
+#include "request.h"
 
 
 namespace vanity {
@@ -80,38 +81,38 @@ struct concrete<_obj> {
 template<object_t ...Args>
 using concrete_t = typename concrete<Args...>::type;
 
-// increment pos until it is not a whitespace
-static inline void skip_whitespace(const std::string& msg, size_t& pos)
+// increment request until it is not a whitespace
+static inline void skip_whitespace(Request& request)
 {
-	while (pos < msg.size() and isspace(msg[pos]))
-		++pos;
+	while (request.not_end() and isspace(request.current()))
+		++request;
 }
 
 // ensure we are at the end of the message
-static inline void ensure_end(const std::string& msg, size_t& pos)
+static inline void ensure_end(Request& request)
 {
-	skip_whitespace(msg, pos);
-	if (pos < msg.size())
+	skip_whitespace(request);
+	if (request.not_end())
 		throw InvalidRequest("unexpected character at end of message");
 }
 
 // ensure we are at the end of the message if condition is true
-static inline void ensure_end_if(const std::string& msg, size_t& pos, bool condition)
+static inline void ensure_end_if(Request& request, bool condition)
 {
 	if (condition)
-		ensure_end(msg, pos);
+		ensure_end(request);
 }
 
 // ensure we are not at the end of the message
-static inline void ensure_not_end(const std::string& msg, size_t& pos)
+static inline void ensure_not_end(Request& request)
 {
-	skip_whitespace(msg, pos);
-	if (pos >= msg.size())
+	skip_whitespace(request);
+	if (request.end())
 		throw InvalidRequest("unexpected end of message");
 }
 
 // extract the operation from the message
-static inline operation_t extract_operation(const std::string& msg, size_t& pos)
+static inline operation_t extract_operation(Request& request)
 {
 	static const std::initializer_list <std::pair<operation_t, std::string>> operations {
 			{operation_t::EXIT,            "EXIT"},
@@ -196,10 +197,10 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::HASH_MANY_GET,   "HASH_MANY_GET"},
 	};
 
-	skip_whitespace(msg, pos);
+	skip_whitespace(request);
 	for (const auto& [op, str] : operations) {
-		if (msg.compare(pos, str.size(), str) == 0) {
-			pos += str.size();
+		if (request.compare(str)) {
+			request += str.size();
 			return op;
 		}
 	}
@@ -208,7 +209,7 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 
 // extract the object type from the message
 // currently unused
-static inline object_t extract_object_t(const std::string& msg, size_t& pos)
+static inline object_t extract_object_t(Request& request)
 {
 	static const char object_separator = ':';
 	static const std::initializer_list <std::pair<object_t, std::string>> objects {
@@ -221,16 +222,16 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 			{object_t::HASH,  "HASH"},
 	};
 
-	skip_whitespace(msg, pos);
-	if (msg[pos] != object_separator) {
+	skip_whitespace(request);
+	if (request.current() != object_separator) {
 		throw InvalidRequest("expected object type");
 	}
-	++pos;
+	++request;
 
-	skip_whitespace(msg, pos);
+	skip_whitespace(request);
 	for (const auto& [obj, str] : objects) {
-		if (msg.compare(pos, str.size(), str) == 0) {
-			pos += str.size();
+		if (request.compare(str)) {
+			request += str.size();
 			return obj;
 		}
 	}
@@ -238,7 +239,7 @@ static inline object_t extract_object_t(const std::string& msg, size_t& pos)
 }
 
 // extract thea client auth level from the message
-static inline client_auth extract_client_auth(const std::string& msg, size_t& pos)
+static inline client_auth extract_client_auth(Request& request)
 {
 	static const std::initializer_list <std::pair<client_auth, std::string>> auths {
 			{client_auth::UNKNOWN,     "UNKNOWN"},
@@ -247,10 +248,10 @@ static inline client_auth extract_client_auth(const std::string& msg, size_t& po
 			{client_auth::PEER,        "PEER"},
 	};
 
-	skip_whitespace(msg, pos);
+	skip_whitespace(request);
 	for (const auto& [auth, str] : auths) {
-		if (msg.compare(pos, str.size(), str) == 0) {
-			pos += str.size();
+		if (request.compare(str)) {
+			request += str.size();
 			return auth;
 		}
 	}
@@ -258,22 +259,22 @@ static inline client_auth extract_client_auth(const std::string& msg, size_t& po
 }
 
 // extract a (len) from part of a message
-inline size_t extract_len(const std::string& msg, size_t& pos)
+inline size_t extract_len(Request& request)
 {
-	ensure_not_end(msg, pos);
-	if (msg[pos] != '(') {
+	ensure_not_end(request);
+	if (request.current() != '(') {
 		throw InvalidRequest("expected length specifier");
 	}
-	++pos;
+	++request;
 
 	try{
 		size_t count = 0;
-		size_t len = std::stoull(msg.substr(pos), &count);
-		pos += count;
-		if (msg[pos] != ')') {
+		size_t len = std::stoull(request.substr(), &count);
+		request += count;
+		if (request.current() != ')') {
 			throw InvalidRequest("expected length specifier");
 		}
-		++pos;
+		++request;
 		return len;
 	}
 	catch (const std::out_of_range& e) {
@@ -286,30 +287,30 @@ inline size_t extract_len(const std::string& msg, size_t& pos)
 
 // extract an object from part of a message
 template<object_t ...Args>
-static inline concrete_t<Args...> extract(const std::string& msg, size_t& pos)
+static inline concrete_t<Args...> extract(Request& request)
 {
-	return {extract<Args>(msg, pos)...};
+	return {extract<Args>(request)...};
 }
 
 // extract exactly the given object types from the rest of a message
 // throw if expect_end is true and there are more or less than the given object types
 template<object_t ...Args>
-static inline concrete_t<Args...> extract_exact(const std::string& msg, size_t& pos, bool expect_end)
+static inline concrete_t<Args...> extract_exact(Request& request, bool expect_end)
 {
-	auto ret = extract<Args...>(msg, pos);
-	ensure_end_if(msg, pos, expect_end);
+	auto ret = extract<Args...>(request);
+	ensure_end_if(request, expect_end);
 	return ret;
 }
 
 // extract an int64_t from part of a message
 template<>
-inline int64_t extract<object_t::INT>(const std::string& msg, size_t& pos)
+inline int64_t extract<object_t::INT>(Request& request)
 {
-	ensure_not_end(msg, pos);
+	ensure_not_end(request);
 	try{
 		size_t count = 0;
-		auto ret{std::stoll(msg.substr(pos), &count)};
-		pos += count;
+		auto ret{std::stoll(request.substr(), &count)};
+		request += count;
 		return ret;
 	}
 	catch (const std::out_of_range& e) {
@@ -322,13 +323,13 @@ inline int64_t extract<object_t::INT>(const std::string& msg, size_t& pos)
 
 // extract a double from part of a message
 template<>
-inline double extract<object_t::FLOAT>(const std::string& msg, size_t& pos)
+inline double extract<object_t::FLOAT>(Request& request)
 {
-	ensure_not_end(msg, pos);
+	ensure_not_end(request);
 	try{
 		size_t count = 0;
-		auto ret{std::stod(msg.substr(pos), &count)};
-		pos += count;
+		auto ret{std::stod(request.substr(), &count)};
+		request += count;
 		return ret;
 	}
 	catch (const std::out_of_range& e) {
@@ -341,97 +342,97 @@ inline double extract<object_t::FLOAT>(const std::string& msg, size_t& pos)
 
 // extract a string from part of a message
 template<>
-inline std::string extract<object_t::STR>(const std::string& msg, size_t& pos)
+inline std::string extract<object_t::STR>(Request& request)
 {
-	size_t len = extract_len(msg, pos);
-	if (pos + len > msg.size())
+	size_t len = extract_len(request);
+	if (not request.has_up_to(len))
 		throw InvalidRequest("string length mismatch");
 
-	std::string ret = msg.substr(pos, len);
-	pos += len;
+	std::string ret = request.substr(len);
+	request += len;
 	return ret;
 }
 
 // extract a vector of strings from part of a message
 template<>
-inline std::vector<std::string> extract<object_t::ARR>(const std::string& msg, size_t& pos)
+inline std::vector<std::string> extract<object_t::ARR>(Request& request)
 {
-	size_t len = extract_len(msg, pos);
-	if (msg[pos] != '[')
+	size_t len = extract_len(request);
+	if (request.current() != '[')
 		throw InvalidRequest("array not opened with bracket");
-	++pos;
+	++request;
 
 	std::vector<std::string> arr;
 	arr.reserve(len);
 	for (size_t i = 0; i < len; ++i)
-		arr.emplace_back(extract<object_t::STR>(msg, pos));
+		arr.emplace_back(extract<object_t::STR>(request));
 
-	if (msg[pos] != ']')
+	if (request.current() != ']')
 		throw InvalidRequest("array not closed with bracket");
-	++pos;
+	++request;
 
 	return arr;
 }
 
 // extract a list of strings from part of a message
 template<>
-inline std::list<std::string> extract<object_t::LIST>(const std::string& msg, size_t& pos)
+inline std::list<std::string> extract<object_t::LIST>(Request& request)
 {
-	size_t len = extract_len(msg, pos);
-	if (msg[pos] != '[')
+	size_t len = extract_len(request);
+	if (request.current() != '[')
 		throw InvalidRequest("list not opened with bracket");
-	++pos;
+	++request;
 
 	std::list<std::string> list;
 	for (size_t i = 0; i < len; ++i)
-		list.emplace_back(extract<object_t::STR>(msg, pos));
+		list.emplace_back(extract<object_t::STR>(request));
 
-	if (msg[pos] != ']')
+	if (request.current() != ']')
 		throw InvalidRequest("list not closed with bracket");
-	++pos;
+	++request;
 
 	return list;
 }
 
 // extract a set of strings from part of a message
 template<>
-inline std::unordered_set<std::string> extract<object_t::SET>(const std::string& msg, size_t& pos)
+inline std::unordered_set<std::string> extract<object_t::SET>(Request& request)
 {
-	size_t len = extract_len(msg, pos);
-	if (msg[pos] != '{')
+	size_t len = extract_len(request);
+	if (request.current() != '{')
 		throw InvalidRequest("set not opened with '{' bracket");
-	++pos;
+	++request;
 
 	std::unordered_set<std::string> set;
 	for (size_t i = 0; i < len; ++i)
-		set.emplace(extract<object_t::STR>(msg, pos));
+		set.emplace(extract<object_t::STR>(request));
 
-	if (msg[pos] != '}')
+	if (request.current() != '}')
 		throw InvalidRequest("set not closed with '}' bracket");
-	++pos;
+	++request;
 
 	return set;
 }
 
 // extract a hash of strings from part of a message
 template<>
-inline std::unordered_map<std::string, std::string> extract<object_t::HASH>(const std::string& msg, size_t& pos)
+inline std::unordered_map<std::string, std::string> extract<object_t::HASH>(Request& request)
 {
-	size_t len = extract_len(msg, pos);
-	if (msg[pos] != '{')
+	size_t len = extract_len(request);
+	if (request.current() != '{')
 		throw InvalidRequest("hash not opened with '{' bracket");
-	++pos;
+	++request;
 
 	std::unordered_map<std::string, std::string> hash;
 	for (size_t i = 0; i < len; ++i) {
-		auto key = extract<object_t::STR>(msg, pos);
-		auto value = extract<object_t::STR>(msg, pos);
+		auto key = extract<object_t::STR>(request);
+		auto value = extract<object_t::STR>(request);
 		hash.emplace(std::move(key), std::move(value));
 	}
 
-	if (msg[pos] != '}')
+	if (request.current() != '}')
 		throw InvalidRequest("hash not closed with '}' bracket");
-	++pos;
+	++request;
 
 	return hash;
 }

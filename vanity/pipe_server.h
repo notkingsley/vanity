@@ -17,7 +17,7 @@ class PipeServer : public virtual SerialAuthServer, public virtual SocketServer
 {
 public:
 	// a pipe request was received from a client
-	void request_pipe(Client& client, const std::string& msg, size_t& pos) override;
+	void request_pipe(Client& client, Request& request) override;
 
 	// an add_user request was received from a client
 	void request_add_user(Client& client, const std::string& username, const std::string& password) override;
