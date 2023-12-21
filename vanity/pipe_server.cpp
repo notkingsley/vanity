@@ -2,10 +2,23 @@
 // Created by kingsli on 11/15/23.
 //
 
-#include "piped_client.h"
+#include "aggregating_client.h"
 #include "pipe_server.h"
 
 namespace vanity {
+
+/*
+ * A PipedClient is an AggregatingClient that writes to a pipe
+ * This exists mainly to distinguish between a client that is
+ * responding to a pipe and other AggregatingClients
+ */
+class PipedClient : public AggregatingClient
+{
+public:
+	// create a PipedClient with an underlying client and a pipe size
+	PipedClient(Client& client, size_t pipe_size)
+		: AggregatingClient(client, pipe_size, "PIPE") {};
+};
 
 // extract a (len) from part of a message (defined by request_server)
 extern size_t extract_len(const std::string& msg, size_t& pos);
