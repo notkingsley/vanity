@@ -25,6 +25,10 @@ enum class operation_t{
 	SWITCH_DB,
 	PERSIST,
 
+	TRANSACT_BEGIN,
+	TRANSACT_COMMIT,
+	TRANSACT_DISCARD,
+
 	DEL,
 	TYPE,
 	EXISTS,
@@ -112,6 +116,10 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
 
+		case operation_t::TRANSACT_BEGIN:
+		case operation_t::TRANSACT_COMMIT:
+		case operation_t::TRANSACT_DISCARD:
+
 		case operation_t::DEL:
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
@@ -193,6 +201,10 @@ inline bool user_is_permitted(operation_t operation)
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
+
+		case operation_t::TRANSACT_BEGIN:
+		case operation_t::TRANSACT_COMMIT:
+		case operation_t::TRANSACT_DISCARD:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -356,6 +368,10 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 
+		case operation_t::TRANSACT_BEGIN:
+		case operation_t::TRANSACT_COMMIT:
+		case operation_t::TRANSACT_DISCARD:
+
 		default:
 			return false;
 	}
@@ -378,6 +394,10 @@ inline bool admin_is_permitted(operation_t operation)
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
+
+		case operation_t::TRANSACT_BEGIN:
+		case operation_t::TRANSACT_COMMIT:
+		case operation_t::TRANSACT_DISCARD:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:

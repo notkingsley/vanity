@@ -70,6 +70,22 @@ void dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool e
 			break;
 		}
 
+		case operation_t::TRANSACT_BEGIN:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::TRANSACT_COMMIT:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::TRANSACT_DISCARD:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+
 		case operation_t::DEL:
 		{
 			extract_exact<STR>(msg, pos, expect_end);
@@ -484,6 +500,25 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		{
 			ensure_end(msg, pos);
 			request_persist(client);
+			break;
+		}
+
+		case operation_t::TRANSACT_BEGIN:
+		{
+			ensure_end(msg, pos);
+			request_transact_begin(client);
+			break;
+		}
+		case operation_t::TRANSACT_COMMIT:
+		{
+			ensure_end(msg, pos);
+			request_transact_commit(client);
+			break;
+		}
+		case operation_t::TRANSACT_DISCARD:
+		{
+			ensure_end(msg, pos);
+			request_transact_discard(client);
 			break;
 		}
 

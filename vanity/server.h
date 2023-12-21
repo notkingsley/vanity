@@ -11,6 +11,7 @@
 #include "session_server.h"
 #include "server_config.h"
 #include "socket/socket_server.h"
+#include "transaction_server.h"
 
 
 namespace vanity {
@@ -23,7 +24,8 @@ class Server:
 	public virtual PipeServer,
 	public virtual SerialAuthServer,
 	public virtual SessionServer,
-	public virtual SocketServer
+	public virtual SocketServer,
+	public virtual TransactionServer
 {
 private:
 	// the configuration

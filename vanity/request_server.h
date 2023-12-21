@@ -219,6 +219,15 @@ public:
 	// a hash_many_get request was received from a client
 	virtual void request_hash_many_get(Client& client, const std::string& key, const std::vector<std::string>& hash_keys) = 0;
 
+	// a transact_begin request was received from a client
+	virtual void request_transact_begin(Client& client) = 0;
+
+	// a transact_commit request was received from a client
+	virtual void request_transact_commit(Client& client) = 0;
+
+	// a transact_discard request was received from a client
+	virtual void request_transact_discard(Client& client) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

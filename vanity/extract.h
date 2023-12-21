@@ -121,6 +121,10 @@ static inline operation_t extract_operation(const std::string& msg, size_t& pos)
 			{operation_t::SWITCH_DB,       "SWITCH_DB"},
 			{operation_t::PERSIST,         "PERSIST"},
 
+			{operation_t::TRANSACT_BEGIN,  "TRANSACT_BEGIN"},
+			{operation_t::TRANSACT_COMMIT, "TRANSACT_COMMIT"},
+			{operation_t::TRANSACT_DISCARD,"TRANSACT_DISCARD"},
+
 			{operation_t::DEL,             "DEL"},
 			{operation_t::TYPE,            "TYPE"},
 			{operation_t::EXISTS,          "EXISTS"},
