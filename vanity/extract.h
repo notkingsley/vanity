@@ -95,6 +95,13 @@ static inline void ensure_end(const std::string& msg, size_t& pos)
 		throw InvalidRequest("unexpected character at end of message");
 }
 
+// ensure we are at the end of the message if condition is true
+static inline void ensure_end_if(const std::string& msg, size_t& pos, bool condition)
+{
+	if (condition)
+		ensure_end(msg, pos);
+}
+
 // ensure we are not at the end of the message
 static inline void ensure_not_end(const std::string& msg, size_t& pos)
 {
@@ -290,8 +297,7 @@ template<object_t ...Args>
 static inline concrete_t<Args...> extract_exact(const std::string& msg, size_t& pos, bool expect_end)
 {
 	auto ret = extract<Args...>(msg, pos);
-	if (expect_end)
-		ensure_end(msg, pos);
+	ensure_end_if(msg, pos, expect_end);
 	return ret;
 }
 

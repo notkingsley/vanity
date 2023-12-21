@@ -104,7 +104,7 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		{
 			auto username = extract<STR>(msg, pos);
 			auto auth = extract_client_auth(msg, pos);
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_edit_user(client, username, auth);
 			break;
 		}
@@ -126,26 +126,26 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		}
 		case operation_t::PERSIST:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_persist(client);
 			break;
 		}
 
 		case operation_t::TRANSACT_BEGIN:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_transact_begin(client);
 			break;
 		}
 		case operation_t::TRANSACT_COMMIT:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_transact_commit(client);
 			break;
 		}
 		case operation_t::TRANSACT_DISCARD:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_transact_discard(client);
 			break;
 		}
@@ -167,12 +167,13 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		}
 		case operation_t::RESET:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			request_reset(client);
 			break;
 		}
 		case operation_t::KEYS:
 		{
+			ensure_end_if(msg, pos, expect_end);
 			request_keys(client);
 			break;
 		}
@@ -517,7 +518,7 @@ void RequestServer::dry_dispatch_op(operation_t op, const std::string &msg, size
 		{
 			extract<STR>(msg, pos);
 			extract_client_auth(msg, pos);
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 		case operation_t::DEL_USER:
@@ -538,23 +539,23 @@ void RequestServer::dry_dispatch_op(operation_t op, const std::string &msg, size
 		}
 		case operation_t::PERSIST:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 
 		case operation_t::TRANSACT_BEGIN:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 		case operation_t::TRANSACT_COMMIT:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 		case operation_t::TRANSACT_DISCARD:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 
@@ -575,12 +576,12 @@ void RequestServer::dry_dispatch_op(operation_t op, const std::string &msg, size
 		}
 		case operation_t::RESET:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 		case operation_t::KEYS:
 		{
-			ensure_end(msg, pos);
+			ensure_end_if(msg, pos, expect_end);
 			break;
 		}
 		case operation_t::COPY_TO:
