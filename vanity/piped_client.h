@@ -5,8 +5,8 @@
 #ifndef VANITY_PIPED_CLIENT_H
 #define VANITY_PIPED_CLIENT_H
 
+#include "aggregate_response.h"
 #include "fake_client.h"
-#include "piped_response.h"
 
 namespace vanity {
 
@@ -21,11 +21,11 @@ class PipedClient : public FakeClient
 {
 private:
 	// the response
-	PipedResponse m_response;
+	AggregateResponse m_response;
 
 public:
 	// create a PipedClient with an underlying client and a pipe size
-	explicit PipedClient(Client& client, size_t pipe_size);
+	PipedClient(Client& client, size_t pipe_size);
 
 	// write the response to the pipe instead of the client
 	void write(SocketServer& server, Response&& response) override;
