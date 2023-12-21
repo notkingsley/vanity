@@ -259,6 +259,9 @@ private:
 
 	// convenience function that contains a giant switch statement to dispatch an operation_t
 	void dispatch_op(Client& client, operation_t op, const std::string& msg, size_t& pos, bool expect_end);
+
+	// similar to dispatch_op, but merely advances pos by extracting the data without actually calling the request_ method
+	static void dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool expect_end);
 };
 
 } // namespace vanity

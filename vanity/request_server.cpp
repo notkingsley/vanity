@@ -7,378 +7,6 @@
 
 namespace vanity {
 
-// similar to RequestServer::dispatch_op, but merely advances pos by extracting the data without actually calling the request_ method
-void dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool expect_end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
-	switch (op) {
-		case operation_t::TERMINATE:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::PING:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::EXIT:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::PIPE:
-		{
-			break;
-		}
-
-		case operation_t::AUTH:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::ADD_USER:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::EDIT_USER:
-		{
-			extract<STR>(msg, pos);
-			extract_client_auth(msg, pos);
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::DEL_USER:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::CHANGE_PASSWORD:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::SWITCH_DB:
-		{
-			extract_exact<INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::PERSIST:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-
-		case operation_t::TRANSACT_BEGIN:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::TRANSACT_COMMIT:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::TRANSACT_DISCARD:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-
-		case operation_t::DEL:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::TYPE:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::EXISTS:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::RESET:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::KEYS:
-		{
-			ensure_end(msg, pos);
-			break;
-		}
-		case operation_t::COPY_TO:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::MOVE_TO:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::COPY_TO_DB:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::MOVE_TO_DB:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::SET_EXPIRY:
-		{
-			extract_exact<STR, FLOAT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::GET_EXPIRY:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::CLEAR_EXPIRY:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::GET:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::STR_SET:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::INT_SET:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::FLOAT_SET:
-		{
-			extract_exact<STR, FLOAT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::INCR_INT:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::INCR_FLOAT:
-		{
-			extract_exact<STR, FLOAT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::STR_LEN:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::MANY_GET:
-		{
-			extract_exact<ARR>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::LIST_LEN:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_GET:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_SET:
-		{
-			extract_exact<STR, INT, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_PUSH_LEFT:
-		{
-			extract_exact<STR, LIST>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_PUSH_RIGHT:
-		{
-			extract_exact<STR, LIST>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_POP_LEFT:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_POP_RIGHT:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_RANGE:
-		{
-			extract_exact<STR, INT, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_TRIM:
-		{
-			extract_exact<STR, INT, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::LIST_REMOVE:
-		{
-			extract_exact<STR, STR, INT>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::SET_ADD:
-		{
-			extract_exact<STR, SET>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_ALL:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_REMOVE:
-		{
-			extract_exact<STR, INT>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_DISCARD:
-		{
-			extract_exact<STR, SET>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_LEN:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_CONTAINS:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_MOVE:
-		{
-			extract_exact<STR, STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_UNION:
-		{
-			extract_exact<ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_UNION_INTO:
-		{
-			extract_exact<STR, ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_UNION_LEN:
-		{
-			extract_exact<ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_INTERSECT:
-		{
-			extract_exact<ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_INTERSECT_INTO:
-		{
-			extract_exact<STR, ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_INTERSECT_LEN:
-		{
-			extract_exact<ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_DIFF:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_DIFF_INTO:
-		{
-			extract_exact<STR, STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::SET_DIFF_LEN:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-
-		case operation_t::HASH_SET:
-		{
-			extract_exact<STR, HASH>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_ALL:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_GET:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_CONTAINS:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_LEN:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_KEY_LEN:
-		{
-			extract_exact<STR, STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_REMOVE:
-		{
-			extract_exact<STR, ARR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_KEYS:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_VALUES:
-		{
-			extract_exact<STR>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_UPDATE:
-		{
-			extract_exact<STR, HASH>(msg, pos, expect_end);
-			break;
-		}
-		case operation_t::HASH_MANY_GET:
-		{
-			extract_exact<STR, ARR>(msg, pos, expect_end);
-			break;
-		}
-	}
-}
-
 void RequestServer::handle(const std::string& msg, Client& client) {
 	size_t pos = 0;
 	do_handle(client, msg, pos, true, false);
@@ -847,6 +475,377 @@ void RequestServer::dispatch_op(Client &client, operation_t op, const std::strin
 		{
 			auto [key, hash_keys] = extract_exact<STR, ARR>(msg, pos, expect_end);
 			request_hash_many_get(client, key, hash_keys);
+			break;
+		}
+	}
+}
+
+void RequestServer::dry_dispatch_op(operation_t op, const std::string &msg, size_t &pos, bool expect_end) {
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
+	switch (op) {
+		case operation_t::TERMINATE:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::PING:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::EXIT:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::PIPE:
+		{
+			break;
+		}
+
+		case operation_t::AUTH:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::ADD_USER:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::EDIT_USER:
+		{
+			extract<STR>(msg, pos);
+			extract_client_auth(msg, pos);
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::DEL_USER:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::CHANGE_PASSWORD:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::SWITCH_DB:
+		{
+			extract_exact<INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::PERSIST:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+
+		case operation_t::TRANSACT_BEGIN:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::TRANSACT_COMMIT:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::TRANSACT_DISCARD:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+
+		case operation_t::DEL:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::TYPE:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::EXISTS:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::RESET:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::KEYS:
+		{
+			ensure_end(msg, pos);
+			break;
+		}
+		case operation_t::COPY_TO:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::MOVE_TO:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::COPY_TO_DB:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::MOVE_TO_DB:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::SET_EXPIRY:
+		{
+			extract_exact<STR, FLOAT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::GET_EXPIRY:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::CLEAR_EXPIRY:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::GET:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::STR_SET:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::INT_SET:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::FLOAT_SET:
+		{
+			extract_exact<STR, FLOAT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::INCR_INT:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::INCR_FLOAT:
+		{
+			extract_exact<STR, FLOAT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::STR_LEN:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::MANY_GET:
+		{
+			extract_exact<ARR>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::LIST_LEN:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_GET:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_SET:
+		{
+			extract_exact<STR, INT, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_PUSH_LEFT:
+		{
+			extract_exact<STR, LIST>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_PUSH_RIGHT:
+		{
+			extract_exact<STR, LIST>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_POP_LEFT:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_POP_RIGHT:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_RANGE:
+		{
+			extract_exact<STR, INT, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_TRIM:
+		{
+			extract_exact<STR, INT, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::LIST_REMOVE:
+		{
+			extract_exact<STR, STR, INT>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::SET_ADD:
+		{
+			extract_exact<STR, SET>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_ALL:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_REMOVE:
+		{
+			extract_exact<STR, INT>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_DISCARD:
+		{
+			extract_exact<STR, SET>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_LEN:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_CONTAINS:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_MOVE:
+		{
+			extract_exact<STR, STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_UNION:
+		{
+			extract_exact<ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_UNION_INTO:
+		{
+			extract_exact<STR, ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_UNION_LEN:
+		{
+			extract_exact<ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_INTERSECT:
+		{
+			extract_exact<ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_INTERSECT_INTO:
+		{
+			extract_exact<STR, ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_INTERSECT_LEN:
+		{
+			extract_exact<ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_DIFF:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_DIFF_INTO:
+		{
+			extract_exact<STR, STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::SET_DIFF_LEN:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+
+		case operation_t::HASH_SET:
+		{
+			extract_exact<STR, HASH>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_ALL:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_GET:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_CONTAINS:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_LEN:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_KEY_LEN:
+		{
+			extract_exact<STR, STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_REMOVE:
+		{
+			extract_exact<STR, ARR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_KEYS:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_VALUES:
+		{
+			extract_exact<STR>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_UPDATE:
+		{
+			extract_exact<STR, HASH>(msg, pos, expect_end);
+			break;
+		}
+		case operation_t::HASH_MANY_GET:
+		{
+			extract_exact<STR, ARR>(msg, pos, expect_end);
 			break;
 		}
 	}
