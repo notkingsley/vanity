@@ -42,6 +42,16 @@ public:
 	// set the client's username
 	void username(const std::string& username) override;
 
+	// get the client's current connection state
+	conn_state state() const override;
+
+	// set the client's current connection state
+	void state(conn_state state) override;
+
+	// get a reference to the client's current transaction data
+	// if the client is not in a transaction, this will throw
+	transaction_data& get_transaction_data() override;
+
 	// get the client's username
 	const std::string& username() const override;
 

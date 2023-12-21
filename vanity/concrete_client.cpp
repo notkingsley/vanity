@@ -45,6 +45,32 @@ const std::string &ConcreteClient::username() const {
 	return m_session_info.username;
 }
 
+conn_state ConcreteClient::state() const {
+	return m_session_info.state;
+}
+
+void ConcreteClient::state(conn_state state) {
+	m_session_info.state = state;
+	switch (state) {
+		using conn_data_type = session_info::conn_data_type;
+		case conn_state::NORMAL:
+			m_session_info.conn_data.reset();
+			break;
+		case conn_state::PUBSUB:
+			m_session_info.conn_data = std::make_unique<conn_data_type>(pubsub_data{});
+			break;
+		case conn_state::TRANSACTION:
+			m_session_info.conn_data = std::make_unique<conn_data_type>(transaction_data{});
+			break;
+	}
+}
+
+transaction_data &ConcreteClient::get_transaction_data() {
+	if (m_session_info.state != conn_state::TRANSACTION)
+		throw std::runtime_error("client is not in a transaction");
+	return std::get<transaction_data>(*m_session_info.conn_data);
+}
+
 void ConcreteClient::close() {
 	m_closed = true;
 }
@@ -61,4 +87,6 @@ bool operator==(const ConcreteClient& lhs, const ConcreteClient& rhs) {
 	return &lhs == &rhs;
 }
 
-} // namespace vanity
+}
+
+// namespace vanity

@@ -40,6 +40,16 @@ public:
 	// get the client's username
 	virtual const std::string& username() const = 0;
 
+	// get the client's current connection state
+	virtual conn_state state() const = 0;
+
+	// set the client's current connection state
+	virtual void state(conn_state state) = 0;
+
+	// get a reference to the client's current transaction data
+	// if the client is not in a transaction, this will throw
+	virtual transaction_data& get_transaction_data() = 0;
+
 	// request to close the client, not effective immediately
 	// but when the client makes a request
 	virtual void close() = 0;

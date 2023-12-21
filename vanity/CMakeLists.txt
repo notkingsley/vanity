@@ -12,13 +12,13 @@ add_subdirectory(socket)
 add_executable(vanity
 	auth/auth_server.cpp
 	concrete_client.cpp
-	piped_client.cpp
+	fake_client.cpp
 	pipe_server.cpp
 	request_server.cpp
 	response.cpp
 	session_server.cpp
+	transaction_server.cpp
     vanity.cpp
-	extract.h
 )
 
 target_link_libraries(vanity
