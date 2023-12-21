@@ -6,48 +6,14 @@
 
 namespace vanity {
 
-void PipedClient::ready(SocketServer &server) {
-	return m_client.ready(server);
-}
-
-bool PipedClient::has_perm(operation_t op) const {
-	return m_client.has_perm(op);
-}
-
-void PipedClient::db(int db) {
-	return m_client.db(db);
-}
-
-int PipedClient::db() const {
-	return m_client.db();
-}
-
-void PipedClient::set_auth(const client_auth &auth) {
-	return m_client.set_auth(auth);
-}
-
-void PipedClient::username(const std::string &username) {
-	return m_client.username(username);
-}
-
-const std::string &PipedClient::username() const {
-	return m_client.username();
-}
-
-void PipedClient::close() {
-	m_client.close();
-}
-
-size_t PipedClient::read(char *buffer, size_t buffer_size) const {
-	return m_client.read(buffer, buffer_size);
-}
+PipedClient::PipedClient(Client &client, size_t pipe_size) : FakeClient(client), m_response(pipe_size) {}
 
 void PipedClient::write(SocketServer &server, Response &&response) {
 	m_response.append(response);
 }
 
 void PipedClient::perform_write(SocketServer &server) {
-	m_client.write(server, m_response.move());
+	client().write(server, m_response.move());
 }
 
 } // namespace vanity
