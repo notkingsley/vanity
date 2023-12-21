@@ -245,23 +245,35 @@ public:
 	};
 
 protected:
-	// extract the data from a requst and dispatch it to the appropriate handler
+	// extract the data from a request and dispatch it to the appropriate handler
 	// client: the client that sent the message
 	// request: the request to extract data from
-	// expect_end: whether the message should end after this operation. an error is sent if it doesn't
+	// end: whether the message should end after this operation. an error is sent if it doesn't
 	// strict: whether to read the arguments even if the operation will fail (does not cover malformed requests)
 	// returns true if the request was extracted and dispatched successfully, false otherwise
-	bool do_handle(Client& client, Request& request, bool expect_end, bool strict);
+	bool do_handle(Client& client, Request& request, bool end, bool strict);
 
-private:
-	// same as do_handle, but without exception handling
-	bool do_handle_inner(Client& client, Request& request, bool expect_end, bool strict);
+	// dispatch a request
+	// this selects the correct handler based on the client's current state
+	// effectively same as do_handle, but doesn't catch errors or ensures a response will be sent
+	bool dispatch_request(Client& client, Request& request, bool end, bool strict);
+
+	// dispatch a request in a normal context
+	virtual bool dispatch_normal_request(Client& client, Request& request, bool end, bool strict);
+
+	// dispatch a request in a pubsub context
+	virtual bool dispatch_pubsub_request(Client& client, Request& request, bool end, bool strict) {
+		throw std::runtime_error("not implemented");
+	};
+
+	// dispatch a request in a transaction context
+	virtual bool dispatch_transaction_request(Client& client, Request& request, bool end, bool strict) = 0;
 
 	// convenience function that contains a giant switch statement to dispatch an operation_t
-	void dispatch_op(Client& client, operation_t op, Request& request, bool expect_end);
+	void dispatch_op(Client& client, operation_t op, Request& request, bool end);
 
 	// similar to dispatch_op, but merely advances pos by extracting the data without actually calling the request_ method
-	static void dry_dispatch_op(operation_t op, Request& request, bool expect_end);
+	static void dry_dispatch_op(operation_t op, Request& request, bool end);
 };
 
 } // namespace vanity
