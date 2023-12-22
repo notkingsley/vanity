@@ -15,6 +15,7 @@ add_executable(vanity
 	fake_client.cpp
 	pipe_server.cpp
 	request_server.cpp
+	request.cpp
 	response.cpp
 	session_server.cpp
 	transaction_server.cpp

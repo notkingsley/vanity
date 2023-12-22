@@ -93,6 +93,89 @@ enum class operation_t{
 	HASH_MANY_GET,
 };
 
+const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STRINGS {
+	{operation_t::EXIT,               "EXIT"},
+	{operation_t::TERMINATE,          "TERMINATE"},
+	{operation_t::PING,               "PING"},
+	{operation_t::PIPE,               "PIPE"},
+
+	{operation_t::AUTH,               "AUTH"},
+	{operation_t::ADD_USER,           "ADD_USER"},
+	{operation_t::EDIT_USER,          "EDIT_USER"},
+	{operation_t::DEL_USER,           "DEL_USER"},
+	{operation_t::CHANGE_PASSWORD,    "CHANGE_PASSWORD"},
+
+	{operation_t::SWITCH_DB,          "SWITCH_DB"},
+	{operation_t::PERSIST,            "PERSIST"},
+
+	{operation_t::TRANSACT_BEGIN,     "TRANSACT_BEGIN"},
+	{operation_t::TRANSACT_COMMIT,    "TRANSACT_COMMIT"},
+	{operation_t::TRANSACT_DISCARD,   "TRANSACT_DISCARD"},
+
+	{operation_t::DEL,                "DEL"},
+	{operation_t::TYPE,               "TYPE"},
+	{operation_t::EXISTS,             "EXISTS"},
+	{operation_t::RESET,              "RESET"},
+	{operation_t::KEYS,               "KEYS"},
+	{operation_t::COPY_TO_DB,         "COPY_TO_DB"},
+	{operation_t::MOVE_TO_DB,         "MOVE_TO_DB"},
+	{operation_t::COPY_TO,            "COPY_TO"},
+	{operation_t::MOVE_TO,            "MOVE_TO"},
+
+	{operation_t::SET_EXPIRY,         "SET_EXPIRY"},
+	{operation_t::GET_EXPIRY,         "GET_EXPIRY"},
+	{operation_t::CLEAR_EXPIRY,       "CLEAR_EXPIRY"},
+
+	{operation_t::GET,                "GET"},
+	{operation_t::STR_SET,            "STR_SET"},
+	{operation_t::INT_SET,            "INT_SET"},
+	{operation_t::FLOAT_SET,          "FLOAT_SET"},
+	{operation_t::INCR_INT,           "INCR_INT"},
+	{operation_t::INCR_FLOAT,         "INCR_FLOAT"},
+	{operation_t::STR_LEN,            "STR_LEN"},
+	{operation_t::MANY_GET,           "MANY_GET"},
+
+	{operation_t::LIST_LEN,           "LIST_LEN"},
+	{operation_t::LIST_GET,           "LIST_GET"},
+	{operation_t::LIST_SET,           "LIST_SET"},
+	{operation_t::LIST_PUSH_LEFT,     "LIST_PUSH_LEFT"},
+	{operation_t::LIST_PUSH_RIGHT,    "LIST_PUSH_RIGHT"},
+	{operation_t::LIST_POP_LEFT,      "LIST_POP_LEFT"},
+	{operation_t::LIST_POP_RIGHT,     "LIST_POP_RIGHT"},
+	{operation_t::LIST_RANGE,         "LIST_RANGE"},
+	{operation_t::LIST_TRIM,          "LIST_TRIM"},
+	{operation_t::LIST_REMOVE,        "LIST_REMOVE"},
+
+	{operation_t::SET_ADD,            "SET_ADD"},
+	{operation_t::SET_ALL,            "SET_ALL"},
+	{operation_t::SET_REMOVE,         "SET_REMOVE"},
+	{operation_t::SET_DISCARD,        "SET_DISCARD"},
+	{operation_t::SET_LEN,            "SET_LEN"},
+	{operation_t::SET_CONTAINS,       "SET_CONTAINS"},
+	{operation_t::SET_MOVE,           "SET_MOVE"},
+	{operation_t::SET_UNION_INTO,     "SET_UNION_INTO"},
+	{operation_t::SET_UNION_LEN,      "SET_UNION_LEN"},
+	{operation_t::SET_UNION,          "SET_UNION"},
+	{operation_t::SET_INTERSECT_INTO, "SET_INTERSECT_INTO"},
+	{operation_t::SET_INTERSECT_LEN,  "SET_INTERSECT_LEN"},
+	{operation_t::SET_INTERSECT,      "SET_INTERSECT"},
+	{operation_t::SET_DIFF_INTO,      "SET_DIFF_INTO"},
+	{operation_t::SET_DIFF_LEN,       "SET_DIFF_LEN"},
+	{operation_t::SET_DIFF,           "SET_DIFF"},
+
+	{operation_t::HASH_SET,           "HASH_SET"},
+	{operation_t::HASH_ALL,           "HASH_ALL"},
+	{operation_t::HASH_GET,           "HASH_GET"},
+	{operation_t::HASH_CONTAINS,      "HASH_CONTAINS"},
+	{operation_t::HASH_LEN,           "HASH_LEN"},
+	{operation_t::HASH_KEY_LEN,       "HASH_KEY_LEN"},
+	{operation_t::HASH_REMOVE,        "HASH_REMOVE"},
+	{operation_t::HASH_KEYS,          "HASH_KEYS"},
+	{operation_t::HASH_VALUES,        "HASH_VALUES"},
+	{operation_t::HASH_UPDATE,        "HASH_UPDATE"},
+	{operation_t::HASH_MANY_GET,      "HASH_MANY_GET"},
+};
+
 // check if an operation is permitted for an unknown client
 inline bool unknown_is_permitted(operation_t operation)
 {

@@ -21,6 +21,13 @@ enum class client_auth
 	ADMIN,
 };
 
+const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STRINGS {
+	{client_auth::UNKNOWN, "UNKNOWN"},
+	{client_auth::USER,    "USER"},
+	{client_auth::ADMIN,   "ADMIN"},
+	{client_auth::PEER,    "PEER"},
+};
+
 // a client's current connection state
 enum class conn_state
 {

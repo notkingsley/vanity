@@ -23,6 +23,9 @@ public:
 
 	// a transact_discard request was received from a client
 	void request_transact_discard(Client& client) override;
+
+	// dispatch a request in a transaction context
+	virtual bool dispatch_transaction_request(Client& client, Request& request, bool end, bool strict);
 };
 
 } // namespace vanity
