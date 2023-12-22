@@ -20,8 +20,10 @@ namespace vanity::db {
 class LockedDatabase : public Database
 {
 private:
+	using lock_type = std::recursive_mutex;
+
 	// the mutex
-	std::mutex m_mutex;
+	lock_type m_mutex;
 
 public:
 	// create a locked database
@@ -40,6 +42,9 @@ public:
 	// load the database from a file stream
 	static LockedDatabase from(std::ifstream &in);
 
+
+	// acquire the lock
+	std::lock_guard<lock_type> lock();
 
 	// compatibility functions
 	void start(long) {}

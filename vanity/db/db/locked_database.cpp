@@ -23,6 +23,10 @@ LockedDatabase LockedDatabase::from(std::ifstream &in) {
 }
 
 
+std::lock_guard<LockedDatabase::lock_type> LockedDatabase::lock() {
+	return std::lock_guard{m_mutex};
+}
+
 void LockedDatabase::persist(std::ofstream &out) {
 	std::lock_guard lock{m_mutex};
 	Database::persist(out);
