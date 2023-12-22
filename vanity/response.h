@@ -94,6 +94,7 @@ private:
 		static constexpr char const* const internal_error = "INTERNAL_ERROR";
 		static constexpr char const* const bad_type = "BAD_TYPE";
 		static constexpr char const* const bad_request = "BAD_REQUEST";
+		static constexpr char const* const bad_state = "BAD_STATE";
 	};
 
 public:
@@ -106,6 +107,7 @@ public:
 		internal_error,
 		bad_type,
 		bad_request,
+		bad_state,
 	};
 
 	// default constructor
@@ -321,6 +323,17 @@ Response bad_request(Args&&... args) {
 // a BAD_REQUEST response with a message body
 inline Response bad_request(const char* body) {
 	return (Response() << Response::bad_request).serialize_string_body(body);
+}
+
+// make a BAD_STATE response
+template<typename... Args>
+Response bad_state(Args&&... args) {
+	return (Response() << Response::bad_state).serialize(args...);
+}
+
+// a BAD_STATE response with a message body
+inline Response bad_state(const char* body) {
+	return (Response() << Response::bad_state).serialize_string_body(body);
 }
 
 } // namespace vanity

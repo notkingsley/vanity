@@ -54,6 +54,8 @@ Response &Response::operator<<(Response::Status status) {
 			return *this << status_value::bad_type;
 		case bad_request:
 			return *this << status_value::bad_request;
+		case bad_state:
+			return *this << status_value::bad_state;
 		default:
 			throw std::runtime_error("invalid status");
 	}
