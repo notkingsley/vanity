@@ -191,6 +191,9 @@ public:
 	// extract the operation type from the request
 	operation_t get_operation();
 
+	// like get_operation, but doesn't advance the position
+	operation_t peek_operation();
+
 	// extract the object type from the request
 	// currently unused
 	object_t get_object_t();

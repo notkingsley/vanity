@@ -47,15 +47,28 @@ bool RequestServer::do_handle(Client &client, Request& request, bool end, bool s
 }
 
 bool RequestServer::dispatch_request(Client &client, Request& request, bool end, bool strict) {
-	switch (session_state(client)) {
-		case conn_state::NORMAL:
+	auto state = session_state(client);
+
+	switch (behaviour(request.peek_operation(), state)) {
+		case behaviour_t::DEFAULT: {
 			return dispatch_normal_request(client, request, end, strict);
-		case conn_state::PUBSUB:
-			return dispatch_pubsub_request(client, request, end, strict);
-		case conn_state::TRANSACTION:
-			return dispatch_transaction_request(client, request, end, strict);
-		default:
-			throw std::runtime_error("Invalid client state");
+		}
+		case behaviour_t::NOT_PERMITTED: {
+			if (strict)
+				dry_dispatch_op(request.get_operation(), request, end);
+			send(client, bad_state());
+			return false;
+		}
+		case behaviour_t::CONTEXTUAL: {
+			switch (state) {
+				case conn_state::NORMAL:
+					return dispatch_normal_request(client, request, end, strict);
+				case conn_state::PUBSUB:
+					return dispatch_pubsub_request(client, request, end, strict);
+				case conn_state::TRANSACTION:
+					return dispatch_transaction_request(client, request, end, strict);
+			}
+		}
 	}
 }
 

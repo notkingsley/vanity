@@ -39,6 +39,15 @@ operation_t Request::get_operation() {
 	throw InvalidRequest("invalid operation");
 }
 
+operation_t Request::peek_operation() {
+	skip_whitespace();
+	for (const auto &[op, str]: OPERATION_T_STRINGS)
+		if (compare(str))
+			return op;
+
+	throw InvalidRequest("invalid operation");
+}
+
 object_t Request::get_object_t() {
 	skip_whitespace();
 	expect(':', "expected object type");
