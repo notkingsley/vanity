@@ -25,30 +25,8 @@ public:
 	// check if the client has permission to perform an op
 	virtual bool has_perm(operation_t op) const = 0;
 
-	// set the client's active database index
-	virtual void db(int db) = 0;
-
-	// get the client's active database index
-	virtual int db() const = 0;
-
-	// update the client's auth level
-	virtual void set_auth(const client_auth& auth) = 0;
-
-	// set the client's username
-	virtual void username(const std::string& username) = 0;
-
-	// get the client's username
-	virtual const std::string& username() const = 0;
-
-	// get the client's current connection state
-	virtual conn_state state() const = 0;
-
-	// set the client's current connection state
-	virtual void state(conn_state state) = 0;
-
-	// get a reference to the client's current transaction data
-	// if the client is not in a transaction, this will throw
-	virtual transaction_data& get_transaction_data() = 0;
+	// return the client's session info
+	virtual struct session_info& session_info() = 0;
 
 	// request to close the client, not effective immediately
 	// but when the client makes a request

@@ -47,7 +47,7 @@ bool RequestServer::do_handle(Client &client, Request& request, bool end, bool s
 }
 
 bool RequestServer::dispatch_request(Client &client, Request& request, bool end, bool strict) {
-	switch (client.state()) {
+	switch (session_state(client)) {
 		case conn_state::NORMAL:
 			return dispatch_normal_request(client, request, end, strict);
 		case conn_state::PUBSUB:

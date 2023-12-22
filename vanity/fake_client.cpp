@@ -16,36 +16,8 @@ bool FakeClient::has_perm(operation_t op) const {
 	return m_client.has_perm(op);
 }
 
-void FakeClient::db(int db) {
-	return m_client.db(db);
-}
-
-int FakeClient::db() const {
-	return m_client.db();
-}
-
-void FakeClient::set_auth(const client_auth &auth) {
-	return m_client.set_auth(auth);
-}
-
-void FakeClient::username(const std::string &username) {
-	return m_client.username(username);
-}
-
-conn_state FakeClient::state() const {
-	return m_client.state();
-}
-
-void FakeClient::state(conn_state state) {
-	return m_client.state(state);
-}
-
-transaction_data &FakeClient::get_transaction_data() {
-	return m_client.get_transaction_data();
-}
-
-const std::string &FakeClient::username() const {
-	return m_client.username();
+struct session_info &FakeClient::session_info() {
+	return m_client.session_info();
 }
 
 void FakeClient::close() {

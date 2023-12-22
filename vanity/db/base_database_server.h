@@ -40,6 +40,9 @@ public:
 	// get the client's current selected database
 	db_type& database(Client& client);
 
+	// a switch_db request was received from a client
+	void request_switch_db(Client& client, int64_t db) override;
+
 	// a get request was received from a client
 	void request_get(Client& client, const std::string& key) override;
 
@@ -69,6 +72,11 @@ public:
 
 	// a move_to_db request was received from a client
 	void request_move_to_db(Client& client, const std::string& from, int64_t dest) override;
+
+private:
+	// validate a db index or send an error to the client
+	// return true if the index was valid, false otherwise
+	bool validate_db_index(Client& client, int64_t index);
 };
 
 } // namespace vanity

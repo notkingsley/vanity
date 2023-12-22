@@ -25,50 +25,8 @@ bool ConcreteClient::has_perm(operation_t op) const {
 	return is_permitted(op, m_session_info.auth);
 }
 
-void ConcreteClient::db(int db) {
-	m_session_info.database = db;
-}
-
-int ConcreteClient::db() const {
-	return m_session_info.database;
-}
-
-void ConcreteClient::set_auth(const client_auth &auth) {
-	m_session_info.auth = auth;
-}
-
-void ConcreteClient::username(const std::string &username) {
-	m_session_info.username = username;
-}
-
-const std::string &ConcreteClient::username() const {
-	return m_session_info.username;
-}
-
-conn_state ConcreteClient::state() const {
-	return m_session_info.state;
-}
-
-void ConcreteClient::state(conn_state state) {
-	m_session_info.state = state;
-	switch (state) {
-		using conn_data_type = session_info::conn_data_type;
-		case conn_state::NORMAL:
-			m_session_info.conn_data.reset();
-			break;
-		case conn_state::PUBSUB:
-			m_session_info.conn_data = std::make_unique<conn_data_type>(pubsub_data{});
-			break;
-		case conn_state::TRANSACTION:
-			m_session_info.conn_data = std::make_unique<conn_data_type>(transaction_data{});
-			break;
-	}
-}
-
-transaction_data &ConcreteClient::get_transaction_data() {
-	if (m_session_info.state != conn_state::TRANSACTION)
-		throw std::runtime_error("client is not in a transaction");
-	return std::get<transaction_data>(*m_session_info.conn_data);
+struct session_info &ConcreteClient::session_info() {
+	return m_session_info;
 }
 
 void ConcreteClient::close() {

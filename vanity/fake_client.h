@@ -30,30 +30,8 @@ public:
 	// check if the client has permission to perform an op
 	bool has_perm(operation_t op) const override;
 
-	// set the client's active database index
-	void db(int db) override;
-
-	// get the client's active database index
-	int db() const override;
-
-	// update the client's auth level
-	void set_auth(const client_auth& auth) override;
-
-	// set the client's username
-	void username(const std::string& username) override;
-
-	// get the client's current connection state
-	conn_state state() const override;
-
-	// set the client's current connection state
-	void state(conn_state state) override;
-
-	// get a reference to the client's current transaction data
-	// if the client is not in a transaction, this will throw
-	transaction_data& get_transaction_data() override;
-
-	// get the client's username
-	const std::string& username() const override;
+	// return the client's session info
+	struct session_info& session_info() override;
 
 	// request to close the client, not effective immediately
 	// but when the client makes a request

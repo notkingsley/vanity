@@ -53,6 +53,22 @@ struct pubsub_data
 	std::set<std::string> channels;
 };
 
+template<conn_state state>
+struct conn_data {};
+
+template<>
+struct conn_data<conn_state::PUBSUB> {
+	using type = pubsub_data;
+};
+
+template<>
+struct conn_data<conn_state::TRANSACTION> {
+	using type = transaction_data;
+};
+
+template<conn_state state>
+using conn_data_t = typename conn_data<state>::type;
+
 /*
  * A SessionInfo is a struct that contains information about a client's session
  */
@@ -63,7 +79,7 @@ struct session_info
 	// the client's username
 	std::string username;
 
-	// data on the current connection state
+	// data on the current connection state (bad method? consider cleaner methods)
 	std::unique_ptr<conn_data_type> conn_data;
 
 	// client auth

@@ -17,7 +17,15 @@ void BaseDatabaseServer::stop() {
 }
 
 db_type& BaseDatabaseServer::database(Client &client) {
-	return m_databases[client.db()];
+	return m_databases[session_db(client)];
+}
+
+void BaseDatabaseServer::request_switch_db(Client &client, int64_t db) {
+	if (not validate_db_index(client, db))
+		return;
+
+	session_db(client) = db;
+	send(client, ok());
 }
 
 void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
@@ -110,13 +118,10 @@ void BaseDatabaseServer::request_move_to(Client &client, const std::string &from
 }
 
 void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &from, int64_t dest) {
-	if (dest < 0)
-		return send(client, error(" db index must be non-negative"));
+	if (not validate_db_index(client, dest))
+		return;
 
-	if (dest >= M_NUM_DATABASES)
-		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
-
-	if (dest == client.db())
+	if (dest == session_db(client))
 		return send(client, ok());
 
 	if (database(client).copy_to_db(from, m_databases[dest]))
@@ -126,19 +131,30 @@ void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &f
 }
 
 void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &from, int64_t dest) {
-	if (dest < 0)
-		return send(client, error(" db index must be non-negative"));
+	if (not validate_db_index(client, dest))
+		return;
 
-	if (dest >= M_NUM_DATABASES)
-		return send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
-
-	if (dest == client.db())
+	if (dest == session_db(client))
 		return send(client, ok());
 
 	if (database(client).move_to_db(from, m_databases[dest]))
 		send(client, ok());
 	else
 		send(client, null());
+}
+
+bool BaseDatabaseServer::validate_db_index(Client &client, int64_t index) {
+	if (index < 0) {
+		send(client, error(" db index must be non-negative"));
+		return false;
+	}
+
+	if (index >= M_NUM_DATABASES) {
+		send(client, error((" db index must be less than " + std::to_string(M_NUM_DATABASES)).c_str()));
+		return false;
+	}
+
+	return true;
 }
 
 } // namespace vanity

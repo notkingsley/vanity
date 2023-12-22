@@ -11,6 +11,7 @@
 #include "abstract_server.h"
 #include "logging.h"
 #include "request.h"
+#include "session_server.h"
 
 
 namespace vanity {
@@ -19,7 +20,7 @@ namespace vanity {
  * A RequestServer allows to process incoming requests
  * and dispatch them to the appropriate handler
  */
-class RequestServer : public virtual AbstractServer, public virtual Logger
+class RequestServer : public virtual AbstractServer, public virtual Logger, protected virtual SessionServer
 {
 public:
 	// a message was received from a client
