@@ -40,10 +40,17 @@ enum class conn_state
 struct transaction_data
 {
 	// the commands in the transaction, in order
-	std::string command;
+	std::string commands;
 
 	// the number of commands in the transaction
 	int num_commands = 0;
+
+	// push a command to the transaction and increment the number of commands
+	template<class T>
+	void push(T& command) {
+		commands += command;
+		num_commands++;
+	}
 };
 
 // data on a currently running pubsub session

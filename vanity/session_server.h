@@ -42,7 +42,7 @@ public:
 		if (not session_info.conn_data)
 			throw std::runtime_error("state does not hold any data");
 
-		if (not std::holds_alternative<conn_data_t<state>>(session_info.conn_data))
+		if (not std::holds_alternative<conn_data_t<state>>(*session_info.conn_data))
 			throw std::runtime_error("variant data is of wrong type");
 
 		return std::get<conn_data_t<state>>(*session_info.conn_data);
