@@ -215,6 +215,22 @@ public:
 		ensure_end_if(end);
 		return ret;
 	}
+
+	// get thd index of the current position in the request string
+	size_t index() const {
+		return pos;
+	}
+
+	// get a view of the request string between two indices
+	std::string_view view(size_t start, size_t end) const {
+		if (start > end)
+			throw std::out_of_range("start index greater than end index");
+
+		if (end > msg.size())
+			throw std::out_of_range("end index out of range");
+
+		return {msg.data() + start, end - start};
+	}
 };
 
 template<>
