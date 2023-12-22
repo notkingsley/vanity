@@ -5,7 +5,7 @@
 #ifndef VANITY_SESSION_SERVER_H
 #define VANITY_SESSION_SERVER_H
 
-#include "client.h"
+#include "client/client.h"
 
 namespace vanity {
 

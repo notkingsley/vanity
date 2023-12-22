@@ -3,7 +3,6 @@
 //
 
 #include "socket_connection_server.h"
-#include "../concrete_client.h"
 
 
 namespace vanity{

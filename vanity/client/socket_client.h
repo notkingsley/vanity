@@ -5,11 +5,8 @@
 #ifndef VANITY_SOCKET_CLIENT_H
 #define VANITY_SOCKET_CLIENT_H
 
-#include "response.h"
-#include "socket.h"
-#include "socket_event_handler.h"
-#include "socket_reader.h"
-#include "socket_writer.h"
+#include "socket/socket_reader.h"
+#include "socket/socket_writer.h"
 
 
 namespace vanity {

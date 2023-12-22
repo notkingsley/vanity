@@ -6,7 +6,7 @@
 #include <thread>
 
 #include "abstract_server.h"
-#include "concrete_client.h"
+#include "client/concrete_client.h"
 #include "epoll.h"
 #include "event.h"
 #include "logging.h"

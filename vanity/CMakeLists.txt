@@ -6,13 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 include_directories(.)
 
 add_subdirectory(auth)
+add_subdirectory(client)
 add_subdirectory(db)
 add_subdirectory(socket)
 
 add_executable(vanity
-	auth/auth_server.cpp
-	concrete_client.cpp
-	fake_client.cpp
 	pipe_server.cpp
 	request_server.cpp
 	request.cpp
@@ -24,6 +22,7 @@ add_executable(vanity
 
 target_link_libraries(vanity
 	vanity_auth
+	vanity_client
     vanity_db
     vanity_socket
 )

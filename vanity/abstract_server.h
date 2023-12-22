@@ -1,7 +1,7 @@
 #ifndef VANITY_ABSTRACT_SERVER_H
 #define VANITY_ABSTRACT_SERVER_H
 
-#include "client.h"
+#include "client/client.h"
 #include "exceptions.h"
 #include "queue.h"
 

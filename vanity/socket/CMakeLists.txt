@@ -11,3 +11,8 @@ add_library(vanity_socket STATIC
     socket_server.cpp
     socket_writer.cpp
 )
+
+# cyclic dependency see client/CMakeLists.txt
+target_link_libraries(vanity_socket
+	vanity_client
+)
