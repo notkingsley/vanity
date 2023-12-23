@@ -16,4 +16,4 @@ Other documents describe the commands for some specific purposes.
 - `PIPE<pipe>`
     A PIPE request, containing multiple requests in one command.  
     The `<pipe>` is a sequence of requests, as defined in the [TYPES](../TYPES.md) documentation.  
-    `PIPE` requests get a `:PIPE` response, which is a sequence of responses, one for each request in the pipe, in order.
+    `PIPE` requests get an `:AGG` response, which is a sequence of responses, one for each request in the pipe, in order.
