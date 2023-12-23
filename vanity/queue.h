@@ -103,6 +103,14 @@ public:
 		}
 		m_cond.notify_one();
 	}
+
+	// clear the queue
+	void clear()
+	{
+		std::lock_guard lock(m_mutex);
+		while (not m_queue.empty())
+			m_queue.pop();
+	}
 };
 
 } // namespace vanity
