@@ -67,8 +67,12 @@ bool RequestServer::dispatch_request(Client &client, Request& request, bool end,
 					return dispatch_pubsub_request(client, request, end, strict);
 				case conn_state::TRANSACTION:
 					return dispatch_transaction_request(client, request, end, strict);
+				default:
+					throw std::runtime_error("invalid state");
 			}
 		}
+		default:
+			throw std::runtime_error("invalid behaviour");
 	}
 }
 

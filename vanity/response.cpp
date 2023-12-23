@@ -58,6 +58,8 @@ Response &Response::operator<<(Response::Status status) {
 			return *this << status_value::bad_state;
 		case queued:
 			return *this << status_value::queued;
+		default:
+			throw std::runtime_error("invalid status");
 	}
 }
 
