@@ -95,6 +95,7 @@ private:
 		static constexpr char const* const bad_type = "BAD_TYPE";
 		static constexpr char const* const bad_request = "BAD_REQUEST";
 		static constexpr char const* const bad_state = "BAD_STATE";
+		static constexpr char const* const queued = "QUEUED";
 	};
 
 public:
@@ -108,6 +109,7 @@ public:
 		bad_type,
 		bad_request,
 		bad_state,
+		queued,
 	};
 
 	// default constructor
@@ -334,6 +336,17 @@ Response bad_state(Args&&... args) {
 // a BAD_STATE response with a message body
 inline Response bad_state(const char* body) {
 	return (Response() << Response::bad_state).serialize_string_body(body);
+}
+
+// make a QUEUED response
+template<typename... Args>
+Response queued(Args&&... args) {
+	return (Response() << Response::queued).serialize(args...);
+}
+
+// a QUEUED response with a message body
+inline Response queued(const char* body) {
+	return (Response() << Response::queued).serialize_string_body(body);
 }
 
 } // namespace vanity

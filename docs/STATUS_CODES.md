@@ -10,3 +10,4 @@ A `<status>` is defined as a simple sequence of characters and is one of the fol
 - `BAD_TYPE` - A command was issued on a key of the wrong type.
 - `INTERNAL_ERROR` - An internal error occurred while processing the request.
 - `BAD_STATE` - The client is in an incorrect state to make a request with that command.
+- `QUEUED` - The request was queued for later execution.
