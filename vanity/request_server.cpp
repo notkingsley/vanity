@@ -46,6 +46,12 @@ bool RequestServer::do_handle(Client &client, Request& request, bool end, bool s
 	}
 }
 
+void RequestServer::do_handle_many(Client &client, Request &request, size_t len) {
+	for (size_t i = 0; i < len - 1; ++i)
+		do_handle(client, request, false, true);
+	do_handle(client, request, true, false);
+}
+
 bool RequestServer::dispatch_request(Client &client, Request& request, bool end, bool strict) {
 	auto state = session_state(client);
 

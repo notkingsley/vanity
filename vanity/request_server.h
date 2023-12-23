@@ -254,6 +254,11 @@ protected:
 	// returns true if the request was extracted and dispatched successfully, false otherwise
 	bool do_handle(Client& client, Request& request, bool end, bool strict);
 
+	// dispatch multiple requests using do_handle, expecting the message to end after the last one
+	// this calls do_handle on each request in the message, so a response will be sent for each one no matter what
+	// behavior is undefined if one of the requests couldn't be dispatched
+	void do_handle_many(Client& client, Request& request, size_t len);
+
 	// dispatch a request
 	// this selects the correct handler based on the client's current state
 	// effectively same as do_handle, but doesn't catch errors or ensures a response will be sent

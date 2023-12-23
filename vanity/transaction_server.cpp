@@ -29,16 +29,11 @@ void TransactionServer::request_transact_commit(Client &client) {
 	auto &trn_data = data(client);
 	TransactionClient trn_client{client, trn_data.size};
 	Request trn_request{trn_data.commands};
-
 	{
 		TempState trn_state{client, conn_state::NORMAL};
 		auto trn_lock= database(client).lock();
-
-		for (size_t i = 0; i < trn_data.size - 1; ++i)
-			do_handle(trn_client, trn_request, false, true);
-		do_handle(trn_client, trn_request, true, true);
+		do_handle_many(trn_client, trn_request, trn_data.size);
 	}
-
 	exit_transaction(client);
 	trn_client.perform_write(*this);
 }
