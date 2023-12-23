@@ -17,7 +17,7 @@ class PipedClient : public AggregatingClient
 public:
 	// create a PipedClient with an underlying client and a pipe size
 	PipedClient(Client& client, size_t pipe_size)
-		: AggregatingClient(client, pipe_size, "PIPE") {};
+		: AggregatingClient(client, pipe_size) {};
 };
 
 

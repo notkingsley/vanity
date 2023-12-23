@@ -16,8 +16,9 @@ class AggregateResponse : public Response
 {
 public:
 	// construct an AggregateResponse with an expected size and an aggregate type
-	AggregateResponse(size_t size, std::string agg_type) {
-		*this << ok << ':' << agg_type << '(' << std::to_string(size) << ')';
+	explicit AggregateResponse(size_t size) {
+		*this << ok << ":AGG";
+		serialize_length(size);
 	};
 
 	// append a response to the PipedResponse

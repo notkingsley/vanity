@@ -17,7 +17,7 @@ class TransactionClient : public AggregatingClient
 public:
 	// create a TransactionClient with an underlying client and a response size
 	TransactionClient(Client& client, size_t size)
-		: AggregatingClient(client, size, "TRANSACTION") {};
+		: AggregatingClient(client, size) {};
 };
 
 void TransactionServer::request_transact_begin(Client &client) {

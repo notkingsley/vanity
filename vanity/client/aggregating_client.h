@@ -25,8 +25,8 @@ private:
 
 public:
 	// create a AggregatingClient with an underlying client, a response size and an aggregate type
-	AggregatingClient(Client& client, size_t resp_size, std::string agg_type)
-		: FakeClient(client), m_response(resp_size, agg_type) {}
+	AggregatingClient(Client& client, size_t resp_size)
+		: FakeClient(client), m_response(resp_size) {}
 
 	// write the response to the aggregate instead of the client
 	void write(SocketServer& server, Response&& response) override {
