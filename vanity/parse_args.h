@@ -29,9 +29,9 @@ inline vanity::ServerConfig extract_config(const vanity::Arguments& args)
 
 
 	if (args.has_kwarg("port"))
-		config.port = std::stoi(args.get_kwarg("port"));
+		config.ports.push_back(std::stoi(args.get_kwarg("port")));
 	else
-		config.port = 9955;
+		config.ports.push_back(9955);
 
 
 	if (args.has("no_db_persist")) {

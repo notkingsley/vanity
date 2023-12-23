@@ -8,7 +8,7 @@
 
 namespace vanity {
 
-SocketServer::SocketServer() {
+SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} {
 	m_super_epoll.add(m_read_epoll);
 	m_super_epoll.add(m_write_epoll);
 }
@@ -40,6 +40,11 @@ void SocketServer::bind(uint16_t port) {
 	m_connection_servers.emplace_back(port);
 	m_read_epoll.add(m_connection_servers.back());
 	logger().info("Listening on port " + std::to_string(port));
+}
+
+void SocketServer::bind_all() {
+	for (auto& port : m_ports)
+		bind(port);
 }
 
 void SocketServer::send(Client &client, Response&& response) {

@@ -22,12 +22,8 @@ class Server:
 	public virtual TransactionServer
 {
 private:
-	// the configured port
-	int m_port;
-
 	// start background server tasks
 	void start(){
-		SocketServer::bind(m_port);
 		SocketServer::start();
 		SerialAuthServer::start();
 		DatabaseServer::start();
@@ -47,10 +43,10 @@ private:
 public:
 	// create a server
 	explicit Server(const ServerConfig& config):
+		AuthServer(config.users_db),
 		Logger(config.log_file, config.log_level),
 		PersistentServer(config.db_file),
-		AuthServer(config.users_db),
-		m_port(config.port) {};
+		SocketServer(config.ports) {};
 
 	// run the server with the given configuration
 	void run() {

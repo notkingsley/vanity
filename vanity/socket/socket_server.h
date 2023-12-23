@@ -33,6 +33,9 @@ private:
 	// active SocketConnectionServers
 	std::vector<SocketConnectionServer> m_connection_servers;
 
+	// all ports
+	std::vector<uint16_t> m_ports;
+
 	// the poll thread
 	std::thread m_poll_thread {};
 
@@ -53,7 +56,7 @@ private:
 
 public:
 	// create a socket server
-	SocketServer();
+	SocketServer(std::vector<uint16_t> ports);
 
 	// destroy the socket server
 	~SocketServer() override = default;
@@ -72,9 +75,6 @@ public:
 	// send a message to a client
 	void send(Client& client, Response&& response) override;
 
-	// bind to and start listening on port
-	void bind(uint16_t port);
-
 	// add a new client
 	void add_client(ConcreteClient&& client);
 
@@ -88,7 +88,7 @@ public:
 	void remove_socket_writer(SocketWriter& writer);
 
 protected:
-	// start polling as a background task
+	// start listening on all ports and start polling as a background task
 	void start();
 
 	// some polled socket is ready
@@ -106,6 +106,12 @@ private:
 
 	// this epoll instance is ready
 	void epoll_ready(Epoll& epoll);
+
+	// bind to and start listening on port
+	void bind(uint16_t port);
+
+	// bind all ports
+	void bind_all();
 };
 
 } // namespace vanity

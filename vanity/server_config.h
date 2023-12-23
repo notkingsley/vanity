@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <optional>
+#include <vector>
 
 #include "logging.h"
 
@@ -21,8 +22,8 @@ struct ServerConfig
 	std::optional<std::filesystem::path> users_db;
 	std::optional<std::filesystem::path> db_file;
 	std::filesystem::path log_file;
+	std::vector<uint16_t> ports;
 	LogLevel log_level;
-	int port;
 };
 
 } // namespace vanity
