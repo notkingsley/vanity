@@ -43,13 +43,13 @@ struct transaction_data
 	std::string commands;
 
 	// the number of commands in the transaction
-	int num_commands = 0;
+	size_t size = 0;
 
 	// push a command to the transaction and increment the number of commands
 	template<class T>
 	void push(T& command) {
 		commands += command;
-		num_commands++;
+		++size;
 	}
 };
 
