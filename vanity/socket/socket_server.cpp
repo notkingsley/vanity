@@ -13,6 +13,10 @@ SocketServer::SocketServer() {
 	m_super_epoll.add(m_write_epoll);
 }
 
+void SocketServer::event_socket_ready() {
+	socket_ready();
+}
+
 void SocketServer::socket_ready() {
 	constexpr int super_poll_size = 2;
 	epoll_event events[super_poll_size] {};
@@ -39,7 +43,7 @@ void SocketServer::bind(uint16_t port) {
 }
 
 void SocketServer::send(Client &client, Response&& response) {
-	client.write(*this, std::move(response));
+	client.write(*this, response.move());
 }
 
 void SocketServer::poll() {
@@ -61,7 +65,7 @@ void SocketServer::poll() {
 			break;
 
 		if (n > 0){
-			m_event_queue.push(server_event::socket_ready);
+			push_event(server_event::socket_ready);
 			m_polled.wait();
 		}
 

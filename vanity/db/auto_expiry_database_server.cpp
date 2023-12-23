@@ -23,7 +23,11 @@ void AutoExpiryDatabaseServer::expire() {
 
 void AutoExpiryDatabaseServer::expire_loop() {
 	while (not m_stopped.wait(M_EXPIRE_INTERVAL))
-		m_event_queue.push(server_event::expire);
+		push_event(server_event::expire);
+}
+
+void AutoExpiryDatabaseServer::event_expire() {
+	expire();
 }
 
 } // namespace vanity

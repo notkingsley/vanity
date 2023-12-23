@@ -6,6 +6,7 @@
 #define VANITY_AUTO_EXPIRY_DATABASE_SERVER_H
 
 #include "base_database_server.h"
+#include "event_server.h"
 #include "event.h"
 
 
@@ -14,7 +15,7 @@ namespace vanity {
 /*
  * An AutoExpiryDatabaseServer automatically emits expire events
  */
-class AutoExpiryDatabaseServer: public virtual BaseDatabaseServer
+class AutoExpiryDatabaseServer: public virtual BaseDatabaseServer, public virtual EventServer
 {
 private:
 	// time between automatic emitted server_events in microseconds
@@ -35,6 +36,9 @@ public:
 
 	// erase expired keys
 	void expire();
+
+	// an expire event was received
+	void event_expire() override;
 
 private:
 	// run in a separate thread, yielding server_event::expire

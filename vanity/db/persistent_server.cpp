@@ -63,7 +63,11 @@ void PersistentServer::stop() {
 
 void PersistentServer::persist_loop() {
 	while (not m_stopped.wait(M_PERSIST_INTERVAL))
-		m_event_queue.push(server_event::persist);
+		push_event(server_event::persist);
+}
+
+void PersistentServer::event_persist() {
+	persist();
 }
 
 } // namespace vanity

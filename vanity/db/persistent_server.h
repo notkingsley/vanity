@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base_database_server.h"
+#include "event_server.h"
 #include "event.h"
 
 
@@ -17,7 +18,7 @@ namespace vanity {
 /*
  * A database that handles persistence to disk
  */
-class PersistentServer : public virtual BaseDatabaseServer
+class PersistentServer : public virtual BaseDatabaseServer, public virtual EventServer
 {
 private:
 	// time between automatic persistence calls in microseconds
@@ -47,6 +48,9 @@ public:
 
 	// a persist request was received from a client
 	void request_persist(Client& client) override;
+
+	// a persist event was received
+	void event_persist() override;
 
 private:
 	// run in a separate thread, yielding server_event::persist

@@ -5,7 +5,7 @@
 #include <memory>
 #include <thread>
 
-#include "abstract_server.h"
+#include "event_server.h"
 #include "client/concrete_client.h"
 #include "epoll.h"
 #include "event.h"
@@ -24,7 +24,7 @@ class SocketConnectionServer;
  * A SocketServer allows us to listen on one or more sockets,
  * accept connections and read/write data
  */
-class SocketServer : public virtual AbstractServer, public virtual Logger
+class SocketServer : public virtual EventServer, public virtual Logger
 {
 private:
 	// the current set of clients
@@ -65,6 +65,9 @@ public:
 	// no move
 	SocketServer(SocketServer&& other) noexcept = delete;
 	SocketServer& operator=(SocketServer&& other) noexcept = delete;
+
+	// a socket_ready event was received
+	void event_socket_ready() override;
 
 	// send a message to a client
 	void send(Client& client, Response&& response) override;
