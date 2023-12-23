@@ -31,7 +31,7 @@ class ServerType(Enum):
 	SET = "SET"
 	BOOL = "BOOL"
 	HASH = "HASH"
-	PIPE = "PIPE"
+	AGG = "AGG"
 	
 
 class InvalidResponse(Exception):
@@ -273,11 +273,11 @@ def extract_hash(msg: str):
 	return elements, msg
 
 
-def extract_pipe(msg: str):
+def extract_agg(msg: str):
 	"""
-	Extract a pipe from a response.
+	Extract an aggregate response.
 	:param msg: The response to extract from.
-	:return: The extracted pipe, or None if no pipe could be deciphered.
+	:return: The extracted list of responses, or None if no aggregate could be deciphered.
 	"""
 	num, msg = extract_len(msg)
 	if num is None:
@@ -319,8 +319,8 @@ def extract_as(msg: str, _type: ServerType):
 			return extract_bool(msg)
 		case ServerType.HASH:
 			return extract_hash(msg)
-		case ServerType.PIPE:
-			return extract_pipe(msg)
+		case ServerType.AGG:
+			return extract_agg(msg)
 		case _:
 			raise ValueError(f"Invalid type: {_type}.")
 
@@ -360,8 +360,8 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
 	elif msg.startswith(":HASH"):
 		return ServerType.HASH, msg[5:].lstrip()
 
-	elif msg.startswith(":PIPE"):
-		return ServerType.PIPE, msg[5:].lstrip()
+	elif msg.startswith(":AGG"):
+		return ServerType.AGG, msg[4:].lstrip()
 
 	return None, msg
 
@@ -543,8 +543,8 @@ class Response:
 		"""
 		return self.type == ServerType.HASH
 	
-	def type_is_pipe(self) -> bool:
+	def type_is_agg(self) -> bool:
 		"""
-		:return: True if the response is of type PIPE, False otherwise.
+		:return: True if the response is an aggregate, False otherwise.
 		"""
-		return self.type == ServerType.PIPE
+		return self.type == ServerType.AGG
