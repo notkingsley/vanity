@@ -47,6 +47,49 @@ public:
 
 		return std::get<conn_data_t<state>>(*session_info.conn_data);
 	}
+
+protected:
+	/*
+	 * Temporarily changes a client's state
+	 */
+	class TempState
+	{
+	private:
+		// the client
+		Client& m_client;
+
+		// the client's original state
+		conn_state m_original_state;
+
+		// get a reference to the client's state
+		conn_state& state() const {
+			return m_client.session_info().state;
+		}
+
+	public:
+		// create a TempState with a client and a new state
+		TempState(Client& client, conn_state new_state)
+				: m_client(client), m_original_state(state()) {
+			state() = new_state;
+		}
+
+		// restore the client's original state
+		~TempState() {
+			state() = m_original_state;
+		}
+
+		// delete copy constructor
+		TempState(const TempState&) = delete;
+
+		// delete copy assignment
+		TempState& operator=(const TempState&) = delete;
+
+		// delete move constructor
+		TempState(TempState&&) = delete;
+
+		// delete move assignment
+		TempState& operator=(TempState&&) = delete;
+	};
 };
 
 } // namespace vanity
