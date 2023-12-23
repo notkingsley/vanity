@@ -266,6 +266,9 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
 			return false;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -360,6 +363,9 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 			return false;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -451,6 +457,9 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
 			return false;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -543,6 +552,9 @@ inline bool admin_is_permitted(operation_t operation)
 
 		case operation_t::AUTH:
 			return false;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -559,6 +571,8 @@ inline bool is_permitted(operation_t op, client_auth auth)
 			return peer_is_permitted(op);
 		case client_auth::ADMIN:
 			return admin_is_permitted(op);
+		default:
+			throw std::runtime_error("invalid client_auth");
 	}
 }
 
@@ -658,6 +672,9 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
 			return behaviour_t::NOT_PERMITTED;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -669,6 +686,9 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::PING:
 		case operation_t::EXIT:
 		case operation_t::TERMINATE:
+
+		case operation_t::TRANSACT_COMMIT:
+		case operation_t::TRANSACT_DISCARD:
 			return behaviour_t::DEFAULT;
 
 
@@ -689,9 +709,6 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::TRANSACT_BEGIN:
 			return behaviour_t::NOT_PERMITTED;
 
-
-		case operation_t::TRANSACT_COMMIT:
-		case operation_t::TRANSACT_DISCARD:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -754,6 +771,9 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
 			return behaviour_t::CONTEXTUAL;
+
+		default:
+			throw std::runtime_error("invalid operation");
 	}
 }
 
@@ -774,6 +794,8 @@ inline behaviour_t behaviour(operation_t operation, conn_state state)
 			return pubsub_behaviour(operation);
 		case conn_state::TRANSACTION:
 			return transaction_behaviour(operation);
+		default:
+			throw std::runtime_error("invalid conn_state");
 	}
 }
 
