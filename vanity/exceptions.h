@@ -64,6 +64,19 @@ public:
 	}
 };
 
+/*
+ * Thrown for malformed arguments
+ */
+class MalformedArgument : public std::exception
+{
+private:
+	std::string m_msg;
+
+public:
+	explicit MalformedArgument(std::string msg) : m_msg{std::move(msg)} {}
+	const char* what() const noexcept override { return m_msg.c_str(); }
+};
+
 } // namespace vanity
 
 #endif //VANITY_EXCEPTIONS_H
