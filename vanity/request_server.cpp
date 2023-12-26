@@ -47,6 +47,9 @@ bool RequestServer::do_handle(Client &client, Request& request, bool end, bool s
 }
 
 void RequestServer::do_handle_many(Client &client, Request &request, size_t len) {
+	if (len == 0)
+		return;
+
 	for (size_t i = 0; i < len - 1; ++i)
 		do_handle(client, request, false, true);
 	do_handle(client, request, true, false);
