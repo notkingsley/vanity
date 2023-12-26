@@ -80,6 +80,7 @@ void SocketServer::poll() {
 }
 
 void SocketServer::start() {
+	bind_all();
 	m_running = true;
 	m_poll_thread = std::thread{&SocketServer::poll, this};
 }
