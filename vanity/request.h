@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "exceptions.h"
-#include "permissions.h"
+#include "client/permissions.h"
 
 
 namespace vanity {
