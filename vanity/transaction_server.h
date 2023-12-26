@@ -5,7 +5,7 @@
 #ifndef VANITY_TRANSACTION_SERVER_H
 #define VANITY_TRANSACTION_SERVER_H
 
-#include "db/base_database_server.h"
+#include "db/servers/base_database_server.h"
 #include "request_server.h"
 #include "socket/socket_server.h"
 

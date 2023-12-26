@@ -5,7 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
-#include "db/database_server.h"
+#include "db/servers/database_server.h"
 #include "pipe_server.h"
 #include "server_config.h"
 #include "transaction_server.h"
