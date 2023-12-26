@@ -15,6 +15,7 @@ class ServerConstant(Enum):
 	INTERNAL_ERROR = "INTERNAL_ERROR"
 	BAD_REQUEST = "BAD_REQUEST"
 	BAD_TYPE = "BAD_TYPE"
+	BAD_STATE = "BAD_STATE"
 	QUEUED = "QUEUED"
 
 
@@ -483,6 +484,12 @@ class Response:
 		:return: True if the response is BAD_TYPE, False otherwise.
 		"""
 		return self.status == ServerConstant.BAD_TYPE
+	
+	def is_bad_state(self) -> bool:
+		"""
+		:return: True if the response is BAD_STATE, False otherwise.
+		"""
+		return self.status == ServerConstant.BAD_STATE
 	
 	def is_queued(self) -> bool:
 		"""
