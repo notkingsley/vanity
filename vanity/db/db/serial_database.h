@@ -9,7 +9,7 @@
 #define VANITY_SERIAL_DATABASE_H
 
 #include "database.h"
-#include "task_serializer.h"
+#include "utils/task_serializer.h"
 
 
 namespace vanity::db {

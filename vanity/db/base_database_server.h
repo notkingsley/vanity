@@ -10,7 +10,7 @@
 #include "db/db/locked_database.h"
 #include "db/db/serial_database.h"
 #include "request_server.h"
-#include "logging.h"
+#include "utils/logging.h"
 
 
 namespace vanity {

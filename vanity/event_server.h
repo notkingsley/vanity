@@ -6,7 +6,7 @@
 #define VANITY_EVENT_SERVER_H
 
 #include "abstract_server.h"
-#include "queue.h"
+#include "utils/queue.h"
 
 
 namespace vanity {

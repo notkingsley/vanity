@@ -8,7 +8,7 @@
 #include <variant>
 
 #include "auth_server.h"
-#include "task_serializer.h"
+#include "utils/task_serializer.h"
 
 namespace vanity {
 

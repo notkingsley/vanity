@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "hasher.h"
-#include "logging.h"
+#include "utils/logging.h"
 #include "request_server.h"
 
 namespace vanity {
