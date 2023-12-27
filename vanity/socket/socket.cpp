@@ -23,14 +23,9 @@ Socket &Socket::operator=(Socket &&other) noexcept {
 	return *this;
 }
 
-void Socket::register_event(int epoll_fd, SocketEventHandler& handler) const {
-	handler.register_event(epoll_fd, m_fd);
+int Socket::fd() const {
+	return m_fd;
 }
-
-void Socket::unregister_event(int epoll_fd) const {
-	SocketEventHandler::unregister_event(epoll_fd, m_fd);
-}
-
 
 ClientSocket::ClientSocket(int server_fd)
 {

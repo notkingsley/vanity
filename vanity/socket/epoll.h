@@ -6,7 +6,7 @@
 #define VANITY_SOCKET_EPOLL_H
 
 #include "socket.h"
-
+#include "socket_event_handler.h"
 
 namespace vanity {
 

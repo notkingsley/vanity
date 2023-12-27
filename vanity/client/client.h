@@ -6,6 +6,7 @@
 #define VANITY_CLIENT_H
 
 #include "permissions.h"
+#include "response.h"
 #include "socket_client.h"
 
 namespace vanity {

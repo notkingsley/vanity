@@ -7,9 +7,7 @@
 
 #include <queue>
 
-#include "response.h"
 #include "socket_event_handler.h"
-
 
 namespace vanity {
 
@@ -45,21 +43,18 @@ public:
 	SocketWriter& operator=(const SocketWriter& other) = delete;
 
 	// register to the server's epoll to write a response
-	void register_write(SocketServer& server, Response&& response);
+	void write(SocketServer& server, std::string&& response);
+
+	// get the socket file descriptor
+	int socket_fd() const override;
 
 	// attempt to write all messages
 	void ready(SocketServer& server) override;
 
-	// register to epoll for events
-	void register_event(int epoll_fd) override;
-
-	// unregister from epoll for events
-	void unregister_event(int epoll_fd) const override;
-
 private:
 	// write to the socket
 	// return false when done, true otherwise
-	bool write();
+	bool do_write();
 };
 
 } // namespace vanity

@@ -13,9 +13,6 @@
 
 namespace vanity{
 
-// forward declaration
-class SocketEventHandler;
-
 /*
 A socket holding a connection
 */
@@ -40,11 +37,8 @@ public:
 	Socket(Socket&& other) noexcept;
 	Socket& operator=(Socket&& other) noexcept;
 
-	// register to epoll for events with handler
-	void register_event(int epoll_fd, SocketEventHandler& handler) const;
-
-	// unregister from epoll for events
-	void unregister_event(int epoll_fd) const;
+	// get the socket's file descriptor
+	int fd() const;
 };
 
 /*

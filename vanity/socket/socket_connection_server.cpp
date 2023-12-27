@@ -3,7 +3,7 @@
 //
 
 #include "socket_connection_server.h"
-
+#include "socket_server.h"
 
 namespace vanity{
 
@@ -11,12 +11,8 @@ SocketConnectionServer::SocketConnectionServer(uint16_t port) {
 	m_socket.listen(port);
 }
 
-void SocketConnectionServer::register_event(int epoll_fd) {
-	m_socket.register_event(epoll_fd, *this);
-}
-
-void SocketConnectionServer::unregister_event(int epoll_fd) const {
-	m_socket.unregister_event(epoll_fd);
+int SocketConnectionServer::socket_fd() const {
+	return m_socket.fd();
 }
 
 void SocketConnectionServer::ready(SocketServer& server) {

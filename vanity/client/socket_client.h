@@ -39,17 +39,8 @@ public:
 	// move assignment
 	SocketClient& operator=(SocketClient&& other) noexcept = delete;
 
-	// register to epoll for events
-	void register_event(int epoll_fd) override
-	{
-		m_socket.register_event(epoll_fd, *this);
-	}
-
-	// unregister from epoll for events
-	void unregister_event(int epoll_fd) const override
-	{
-		m_socket.unregister_event(epoll_fd);
-	}
+	// get the socket file descriptor
+	int socket_fd() const override { return m_socket.fd(); };
 
 	// read from the socket
 	size_t read(char* buffer, size_t buffer_size) const
@@ -58,9 +49,9 @@ public:
 	}
 
 	// write a message to the socket
-	void write(SocketServer& server, Response&& response)
+	void write(SocketServer& server, std::string&& response)
 	{
-		m_writer.register_write(server, std::move(response));
+		m_writer.write(server, std::move(response));
 	}
 };
 

@@ -5,14 +5,13 @@
 #include <memory>
 #include <thread>
 
-#include "event_server.h"
 #include "client/concrete_client.h"
 #include "epoll.h"
+#include "event_server.h"
+#include "socket.h"
+#include "socket_connection_server.h"
 #include "utils/event.h"
 #include "utils/logging.h"
-#include "socket.h"
-#include "socket_event_handler.h"
-#include "socket_connection_server.h"
 
 
 namespace vanity{

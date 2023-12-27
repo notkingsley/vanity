@@ -8,8 +8,6 @@
 
 #include "socket.h"
 #include "socket_event_handler.h"
-#include "socket_server.h"
-
 
 namespace vanity{
 
@@ -26,11 +24,8 @@ public:
 	// start to listen on port
 	explicit SocketConnectionServer(uint16_t port);
 
-	// register to epoll for events
-	void register_event(int epoll_fd) override;
-
-	// unregister from epoll for events
-	void unregister_event(int epoll_fd) const override;
+	// get the socket file descriptor
+	int socket_fd() const override;
 
 	// the socket is ready for reading
 	// return true if the socket should be kept, false otherwise

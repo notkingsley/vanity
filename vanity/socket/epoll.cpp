@@ -5,8 +5,6 @@
 #include <unistd.h>
 
 #include "epoll.h"
-#include "socket_event_handler.h"
-
 
 namespace vanity {
 
@@ -38,11 +36,18 @@ int EpollBase::wait(epoll_event *events, int max_events, int timeout) const {
 
 
 void Epoll::add(SocketEventHandler& handler) const {
-	handler.register_event(m_fd);
+	epoll_event event{};
+	event.events = handler.get_event_mask();
+	event.data.ptr = &handler;
+	int ctl = epoll_ctl(m_fd, EPOLL_CTL_ADD, handler.socket_fd(), &event);
+	if (ctl < 0)
+		throw SocketError("Could not add client to epoll");
 }
 
 void Epoll::remove(const SocketEventHandler &handler) const {
-	handler.unregister_event(m_fd);
+	int ctl = epoll_ctl(m_fd, EPOLL_CTL_DEL, handler.socket_fd(), nullptr);
+	if (ctl < 0)
+		throw SocketError("Could not remove client from epoll");
 }
 
 
