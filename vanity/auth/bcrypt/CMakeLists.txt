@@ -5,7 +5,6 @@ include_directories(.)
 add_library(vanity_auth_bcrypt STATIC
 	bcrypt.c
 	bcrypt.h
-	crypt.3
 	crypt.h
 	crypt_blowfish.c
 	crypt_blowfish.h
