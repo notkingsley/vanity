@@ -23,7 +23,6 @@ conn_state SessionServer::session_state(Client &client) {
 }
 
 void SessionServer::session_set_state(Client &client, conn_state state) {
-	using conn_data_type = session_info::conn_data_type;
 	auto &session_info = client.session_info();
 	session_info.state = state;
 
@@ -32,12 +31,8 @@ void SessionServer::session_set_state(Client &client, conn_state state) {
 			session_info.conn_data.reset();
 			break;
 		}
-		case conn_state::PUBSUB: {
-			session_info.conn_data = std::make_unique<conn_data_type>(pubsub_data{});
-			break;
-		}
 		case conn_state::TRANSACTION: {
-			session_info.conn_data = std::make_unique<conn_data_type>(transaction_data{});
+			session_info.conn_data = std::make_unique<transaction_data>();
 			break;
 		}
 	}

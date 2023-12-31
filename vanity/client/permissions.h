@@ -777,12 +777,6 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 	}
 }
 
-// get the behaviour of an operation during a pubsub
-inline behaviour_t pubsub_behaviour(operation_t operation)
-{
-	return behaviour_t::DEFAULT;
-}
-
 // get the behaviour of an operation in some context
 inline behaviour_t behaviour(operation_t operation, conn_state state)
 {
@@ -790,8 +784,6 @@ inline behaviour_t behaviour(operation_t operation, conn_state state)
 	{
 		case conn_state::NORMAL:
 			return normal_behaviour(operation);
-		case conn_state::PUBSUB:
-			return pubsub_behaviour(operation);
 		case conn_state::TRANSACTION:
 			return transaction_behaviour(operation);
 		default:

@@ -267,11 +267,6 @@ protected:
 	// dispatch a request in a normal context
 	virtual bool dispatch_normal_request(Client& client, Request& request, bool end, bool strict);
 
-	// dispatch a request in a pubsub context
-	virtual bool dispatch_pubsub_request(Client& client, Request& request, bool end, bool strict) {
-		throw std::runtime_error("not implemented");
-	};
-
 	// dispatch a request in a transaction context
 	virtual bool dispatch_transaction_request(Client& client, Request& request, bool end, bool strict) = 0;
 

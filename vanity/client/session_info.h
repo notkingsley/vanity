@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <variant>
 
 namespace vanity {
 
@@ -32,7 +31,6 @@ const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STR
 enum class conn_state
 {
 	NORMAL,
-	PUBSUB,
 	TRANSACTION,
 };
 
@@ -53,20 +51,8 @@ struct transaction_data
 	}
 };
 
-// data on a currently running pubsub session
-struct pubsub_data
-{
-	// the channels the client is subscribed to
-	std::set<std::string> channels;
-};
-
 template<conn_state state>
 struct conn_data {};
-
-template<>
-struct conn_data<conn_state::PUBSUB> {
-	using type = pubsub_data;
-};
 
 template<>
 struct conn_data<conn_state::TRANSACTION> {
@@ -81,13 +67,15 @@ using conn_data_t = typename conn_data<state>::type;
  */
 struct session_info
 {
-	using conn_data_type = std::variant<transaction_data, pubsub_data>;
+	// the pubsub channels the client is subscribed to
+	std::set<std::string> channels;
 
 	// the client's username
 	std::string username;
 
-	// data on the current connection state (bad method? consider cleaner methods)
-	std::unique_ptr<conn_data_type> conn_data;
+	// data on the current connection state
+	// we'll use a variant when we have more than one state
+	std::unique_ptr<transaction_data> conn_data;
 
 	// client auth
 	client_auth auth = client_auth::UNKNOWN;
