@@ -111,7 +111,8 @@ void RequestServer::dispatch_op(Client &client, operation_t op, Request& request
 		}
 		case operation_t::PING:
 		{
-			request_ping(client, request.get_exact<STR>(end));
+			request.ensure_end_if(end);
+			request_ping(client);
 			break;
 		}
 		case operation_t::EXIT:
@@ -530,7 +531,7 @@ void RequestServer::dry_dispatch_op(operation_t op, Request& request, bool end) 
 		}
 		case operation_t::PING:
 		{
-			request.get_exact<STR>(end);
+			request.ensure_end_if(end);
 			break;
 		}
 		case operation_t::EXIT:

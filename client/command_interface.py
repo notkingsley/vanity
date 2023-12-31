@@ -69,11 +69,11 @@ class CommandInterface(ABC):
         """
         return self.request("DEL", key)
 
-    def ping(self, msg=str()):
+    def ping(self):
         """
         Ping the server.
         """
-        return self.request("PING", msg)
+        return self.request("PING")
 
     def persist(self):
         """

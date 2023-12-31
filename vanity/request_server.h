@@ -241,8 +241,8 @@ public:
 	};
 
 	// a ping request was received from a client
-	virtual void request_ping(Client& client, const std::string& msg) {
-		send(client, pong(msg));
+	virtual void request_ping(Client& client) {
+		send(client, pong());
 	};
 
 protected:
