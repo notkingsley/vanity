@@ -78,7 +78,10 @@ public:
 	void add_client(ConcreteClient&& client);
 
 	// remove a client
-	void remove_client(ConcreteClient& client);
+	// this is virtual because it's the most pragmatic solution
+	// without introducing hooks or callbacks which are unnecessary
+	// for now. this should be temporary, however.
+	virtual void remove_client(ConcreteClient& client);
 
 	// add a socket writer
 	void add_socket_writer(SocketWriter& writer);
