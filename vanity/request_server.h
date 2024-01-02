@@ -231,6 +231,15 @@ public:
 	// a transact_discard request was received from a client
 	virtual void request_transact_discard(Client& client) = 0;
 
+	// a subscribe request was received from a client
+	virtual void request_subscribe(Client& client, const std::string& channel) = 0;
+
+	// an unsubscribe request was received from a client
+	virtual void request_unsubscribe(Client& client, const std::string& channel) = 0;
+
+	// a publish request was received from a client
+	virtual void request_publish(Client& client, const std::string& channel, const std::string& message) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

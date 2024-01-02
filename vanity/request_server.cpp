@@ -188,6 +188,23 @@ void RequestServer::dispatch_op(Client &client, operation_t op, Request& request
 			break;
 		}
 
+		case operation_t::PUBLISH:
+		{
+			auto [channel, message] = request.get_exact<STR, STR>(end);
+			request_publish(client, channel, message);
+			break;
+		}
+		case operation_t::SUBSCRIBE:
+		{
+			request_subscribe(client, request.get_exact<STR>(end));
+			break;
+		}
+		case operation_t::UNSUBSCRIBE:
+		{
+			request_unsubscribe(client, request.get_exact<STR>(end));
+			break;
+		}
+
 		case operation_t::DEL:
 		{
 			request_del(client, request.get_exact<STR>(end));
@@ -595,6 +612,22 @@ void RequestServer::dry_dispatch_op(operation_t op, Request& request, bool end) 
 		case operation_t::TRANSACT_DISCARD:
 		{
 			request.ensure_end_if(end);
+			break;
+		}
+
+		case operation_t::PUBLISH:
+		{
+			request.get_exact<STR, STR>(end);
+			break;
+		}
+		case operation_t::SUBSCRIBE:
+		{
+			request.get_exact<STR>(end);
+			break;
+		}
+		case operation_t::UNSUBSCRIBE:
+		{
+			request.get_exact<STR>(end);
 			break;
 		}
 

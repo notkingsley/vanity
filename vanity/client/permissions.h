@@ -29,6 +29,10 @@ enum class operation_t{
 	TRANSACT_COMMIT,
 	TRANSACT_DISCARD,
 
+	PUBLISH,
+	SUBSCRIBE,
+	UNSUBSCRIBE,
+
 	DEL,
 	TYPE,
 	EXISTS,
@@ -111,6 +115,10 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::TRANSACT_BEGIN,     "TRANSACT_BEGIN"},
 	{operation_t::TRANSACT_COMMIT,    "TRANSACT_COMMIT"},
 	{operation_t::TRANSACT_DISCARD,   "TRANSACT_DISCARD"},
+
+	{operation_t::PUBLISH,            "PUBLISH"},
+	{operation_t::SUBSCRIBE,          "SUBSCRIBE"},
+	{operation_t::UNSUBSCRIBE,        "UNSUBSCRIBE"},
 
 	{operation_t::DEL,                "DEL"},
 	{operation_t::TYPE,               "TYPE"},
@@ -203,6 +211,10 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
 
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
+
 		case operation_t::DEL:
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
@@ -289,6 +301,10 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::TRANSACT_BEGIN:
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
+
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -456,6 +472,10 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::TRANSACT_BEGIN:
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
+
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
 			return false;
 
 		default:
@@ -484,6 +504,10 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::TRANSACT_BEGIN:
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
+
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -604,6 +628,10 @@ inline behaviour_t normal_behaviour(operation_t operation)
 
 		case operation_t::TRANSACT_BEGIN:
 
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
+
 		case operation_t::DEL:
 		case operation_t::TYPE:
 		case operation_t::EXISTS:
@@ -689,6 +717,10 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
+
+		case operation_t::PUBLISH:
+		case operation_t::SUBSCRIBE:
+		case operation_t::UNSUBSCRIBE:
 			return behaviour_t::DEFAULT;
 
 
