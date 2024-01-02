@@ -32,6 +32,9 @@ public:
 	// set a client's current connection state
 	static void session_set_state(Client& client, conn_state state);
 
+	// get a client's current channels
+	static session_info::channels_t &session_channels(Client &client);
+
 	// get a reference to a client's current connection's state data
 	template<conn_state state>
 	static conn_data_t<state>& session_data(Client& client) {

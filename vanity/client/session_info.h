@@ -67,8 +67,10 @@ using conn_data_t = typename conn_data<state>::type;
  */
 struct session_info
 {
+	using channels_t = std::set<std::string>;
+
 	// the pubsub channels the client is subscribed to
-	std::set<std::string> channels;
+	channels_t channels;
 
 	// the client's username
 	std::string username;

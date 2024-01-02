@@ -38,4 +38,8 @@ void SessionServer::session_set_state(Client &client, conn_state state) {
 	}
 }
 
+session_info::channels_t &SessionServer::session_channels(Client &client) {
+	return client.session_info().channels;
+}
+
 } // namespace vanity
