@@ -11,6 +11,7 @@
 #include "abstract_server.h"
 #include "utils/logging.h"
 #include "request.h"
+#include "response_shortcuts.h"
 #include "session_server.h"
 
 
