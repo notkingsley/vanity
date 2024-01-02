@@ -69,10 +69,6 @@ struct type_to_string<db::hash_t> {
 	static constexpr const char* value = ":HASH ";
 };
 
-// type-dependent std::false_type to delay evaluation till instantiation
-template <typename T>
-struct false_type : std::false_type {};
-
 /*
  * A Response allows a dynamically efficient method to compose a response
  */
@@ -99,8 +95,12 @@ private:
 		static constexpr char const* const async = "ASYNC";
 	};
 
+	// type-dependent std::false_type to delay evaluation till instantiation
+	template <typename T>
+	struct false_type : std::false_type {};
+
 public:
-	enum Status{
+	enum Status {
 		ok,
 		error,
 		null,
@@ -128,9 +128,6 @@ public:
 
 	// return this as a rvalue
 	Response&& move();
-
-	// add a message to the response
-	Response& add(const std::string& data);
 
 	// add a status to the response
 	Response& operator<<(Status status);

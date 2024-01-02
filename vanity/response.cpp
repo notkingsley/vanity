@@ -32,10 +32,6 @@ Response &&Response::move() {
 	return std::move(*this);
 }
 
-Response &Response::add(const std::string &data) {
-	return *this << data;
-}
-
 Response &Response::operator<<(Response::Status status) {
 	switch (status) {
 		case ok:
