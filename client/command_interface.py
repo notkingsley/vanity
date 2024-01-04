@@ -582,3 +582,25 @@ class CommandInterface(ABC):
         Discard a transaction
         """
         return self.request("TRANSACT_DISCARD")
+
+    def publish(self, channel: str, message: str):
+        """
+        Publish a message to a channel
+        :param channel: the channel to publish to
+        :param message: the message to publish
+        """
+        return self.request("PUBLISH", channel, message)
+
+    def subscribe(self, channel: str):
+        """
+        Subscribe to a channel
+        :param channel: the channel to subscribe to
+        """
+        return self.request("SUBSCRIBE", channel)
+
+    def unsubscribe(self, channel: str):
+        """
+        Unsubscribe from a channel
+        :param channel: the channel to unsubscribe from
+        """
+        return self.request("UNSUBSCRIBE", channel)
