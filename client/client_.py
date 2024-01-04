@@ -1,5 +1,6 @@
 from itertools import chain
 
+from client.async_response import make_response
 from client.response import Response
 from client.socket_client import SocketClient
 from client.command_interface import AuthLevel, CommandInterface
@@ -105,7 +106,7 @@ class Client(CommandInterface):
 		Read a response from the server.
 		:return: The response from the server.
 		"""
-		return Response(self.sock.read_msg())
+		return make_response(self.sock.read_msg())
 	
 	def request(self, command: str, *args) -> Response:
 		"""
