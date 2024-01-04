@@ -11,7 +11,7 @@ namespace vanity {
 
 // make a response with a value
 template<typename T>
-Response value_response(Response::Status status, T data) {
+Response value_response(Response::Status status, const T& data) {
 	return (Response() << status).serialize(data);
 }
 
@@ -27,7 +27,7 @@ inline Response empty_response(Response::Status status) {
 
 // make an OK response
 template<typename T>
-Response ok(T data){
+Response ok(const T& data){
 	return value_response(Response::ok, data);
 }
 
@@ -43,7 +43,7 @@ inline Response ok() {
 
 // make an ERROR response
 template<typename T>
-Response error(T data) {
+Response error(const T& data) {
 	return value_response(Response::error, data);
 }
 
@@ -59,7 +59,7 @@ inline Response error() {
 
 // make a NULL response
 template<typename T>
-Response null(T data) {
+Response null(const T& data) {
 	return value_response(Response::null, data);
 }
 
@@ -80,7 +80,7 @@ inline Response pong() {
 
 // make a DENIED response
 template<typename T>
-Response denied(T data) {
+Response denied(const T& data) {
 	return value_response(Response::denied, data);
 }
 
@@ -96,7 +96,7 @@ inline Response denied() {
 
 // make an INTERNAL_ERROR response
 template<typename T>
-Response internal_error(T data) {
+Response internal_error(const T& data) {
 	return value_response(Response::internal_error, data);
 }
 
@@ -112,7 +112,7 @@ inline Response internal_error() {
 
 // make a BAD_TYPE response
 template<typename T>
-Response bad_type(T data) {
+Response bad_type(const T& data) {
 	return value_response(Response::bad_type, data);
 }
 
@@ -128,7 +128,7 @@ inline Response bad_type() {
 
 // make a BAD_REQUEST response
 template<typename T>
-Response bad_request(T data) {
+Response bad_request(const T& data) {
 	return value_response(Response::bad_request, data);
 }
 
@@ -144,7 +144,7 @@ inline Response bad_request() {
 
 // make a BAD_STATE response
 template<typename T>
-Response bad_state(T data) {
+Response bad_state(const T& data) {
 	return value_response(Response::bad_state, data);
 }
 
@@ -160,7 +160,7 @@ inline Response bad_state() {
 
 // make a QUEUED response
 template<typename T>
-Response queued(T data) {
+Response queued(const T& data) {
 	return value_response(Response::queued, data);
 }
 
@@ -176,7 +176,7 @@ inline Response queued() {
 
 // make an ASYNC response
 template<typename T>
-Response async(T data) {
+Response async(const T& data) {
 	return value_response(Response::async, data);
 }
 
