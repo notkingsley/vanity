@@ -7,6 +7,7 @@
 
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
+#include "pubsub_server.h"
 #include "server_config.h"
 #include "transaction_server.h"
 
@@ -19,6 +20,7 @@ namespace vanity {
 class Server:
 	public virtual DatabaseServer,
 	public virtual PipeServer,
+	public virtual PubSubServer,
 	public virtual TransactionServer
 {
 private:
@@ -50,9 +52,9 @@ public:
 
 	// run the server with the given configuration
 	void run() {
-		start();
+		Server::start();
 		EventServer::run();
-		stop();
+		Server::stop();
 	}
 };
 

@@ -23,6 +23,7 @@ protected:
 		persist,
 		terminate,
 		expire,
+		publish,
 	};
 
 private:
@@ -50,6 +51,9 @@ public:
 
 	// an expire event was received
 	virtual void event_expire() = 0;
+
+	// a publish event was received
+	virtual void event_publish() = 0;
 };
 
 } // namespace vanity

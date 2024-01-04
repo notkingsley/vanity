@@ -13,6 +13,7 @@ add_subdirectory(socket)
 add_executable(vanity
 	event_server.cpp
 	pipe_server.cpp
+	pubsub_server.cpp
 	request_server.cpp
 	request.cpp
 	response.cpp

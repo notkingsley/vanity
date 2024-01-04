@@ -21,6 +21,10 @@ void EventServer::event_loop()  {
 				event_expire();
 				break;
 			}
+			case server_event::publish: {
+				event_publish();
+				break;
+			}
 			case server_event::terminate: {
 				push_event(server_event::terminate);
 				return;
