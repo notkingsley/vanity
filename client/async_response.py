@@ -1,3 +1,5 @@
+from enum import Enum
+
 from client.response import (
     extract_status,
     extract_str,
@@ -5,6 +7,14 @@ from client.response import (
     Response,
     ServerConstant,
 )
+
+
+class AsyncType(Enum):
+    """
+    The type of asynchronous data.
+    """
+
+    PUBLISH = "PUBLISH"
 
 
 class AsyncData:
@@ -34,6 +44,18 @@ class PublishData(AsyncData):
         self.message = message
 
 
+def extract_async_type(msg: str) -> tuple[AsyncType, str]:
+    """
+    Extract an asynchronous data type.
+    :param msg: The response to extract from.
+    :return: The extracted AsyncType.
+    """
+    if msg.startswith(":PUBLISH"):
+        return AsyncType.PUBLISH, msg[8:].lstrip()
+    
+    raise InvalidResponse(f"Invalid async type: {msg}.")
+
+
 def extract_publish(msg: str) -> tuple[PublishData, str]:
     """
     Extract a publish response.
@@ -55,11 +77,12 @@ def extract_async(msg: str) -> tuple[AsyncData, str]:
     if status != ServerConstant.ASYNC:
         raise InvalidResponse(f"Invalid async status: {status}.")
 
-    data_type, msg = extract_str(msg)
-    if data_type == "publish":
-        return extract_publish(msg)
-
-    raise InvalidResponse(f"Invalid async data type: {data_type}.")
+    data_type, msg = extract_async_type(msg)
+    match data_type:
+        case AsyncType.PUBLISH:
+            return extract_publish(msg)
+        case _:
+            raise InvalidResponse(f"Invalid async data type: {data_type}.")
 
 
 class AsyncResponse(Response):
