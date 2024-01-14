@@ -11,6 +11,7 @@ add_subdirectory(db)
 add_subdirectory(socket)
 
 add_executable(vanity
+	config.cpp
 	event_server.cpp
 	pipe_server.cpp
 	pubsub_server.cpp

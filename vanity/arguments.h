@@ -8,6 +8,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
+
 #include "exceptions.h"
 
 namespace vanity{
@@ -23,6 +25,30 @@ private:
 
 	// keyword arguments
 	std::map<std::string, std::string> m_kwargs;
+
+	// multiple keyword arguments
+	std::map<std::string, std::vector<std::string>> m_multi_kwargs;
+
+	// add an argument
+	void add_arg(std::string arg) {
+		m_args.emplace(std::move(arg));
+	}
+
+	// add a keyword argument
+	void add_kwarg(std::string key, std::string value) {
+		if (m_multi_kwargs.contains(key)) {
+			m_multi_kwargs.at(key).emplace_back(std::move(value));
+			return;
+		}
+
+		if (not m_kwargs.contains(key)) {
+			m_kwargs.emplace(std::move(key), std::move(value));
+			return;
+		}
+
+		m_multi_kwargs.emplace(key, std::vector<std::string>{m_kwargs.at(key), std::move(value)});
+		m_kwargs.erase(key);
+	}
 
 	// extract till a '=' is found
 	static std::string extract_word(const std::string& arg, size_t& pos)
@@ -43,10 +69,8 @@ private:
 	// extract a key=value argument or key argument
 	void extract_argument(const std::string& arg, size_t& pos){
 		auto key = extract_word(arg, pos);
-		if (arg[pos] == '\0') {
-			m_args.emplace(std::move(key));
-			return;
-		}
+		if (arg[pos] == '\0')
+			return add_arg(std::move(key));
 
 		++pos;
 		if (arg[pos] == '\0')
@@ -56,7 +80,7 @@ private:
 		if (arg[pos] != '\0')
 			throw MalformedArgument("unexpected = after -" + value);
 
-		m_kwargs.emplace(std::move(key), std::move(value));
+		add_kwarg(std::move(key), std::move(value));
 	}
 
 	// extract the argument
@@ -95,9 +119,19 @@ public:
 		return m_kwargs.contains(key);
 	}
 
+	// check if a multi keyword argument is present
+	bool has_multi_kwarg(const std::string& key) const {
+		return m_multi_kwargs.contains(key);
+	}
+
 	// get a keyword argument
 	const std::string& get_kwarg(const std::string& key) const {
 		return m_kwargs.at(key);
+	}
+
+	// get a multi keyword argument
+	const std::vector<std::string>& get_multi_kwarg(const std::string& key) const {
+		return m_multi_kwargs.at(key);
 	}
 };
 

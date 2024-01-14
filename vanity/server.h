@@ -5,10 +5,10 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
+#include "config.h"
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
 #include "pubsub_server.h"
-#include "server_config.h"
 #include "transaction_server.h"
 
 
@@ -44,7 +44,7 @@ private:
 
 public:
 	// create a server
-	explicit Server(const ServerConfig& config):
+	explicit Server(const Config& config):
 		AuthServer(config.users_db),
 		Logger(config.log_file, config.log_level),
 		PersistentServer(config.db_file),
