@@ -61,8 +61,8 @@ True
 The underlying syntax, used over the sockets and expected by the included [vanity_cli](client/vanity_cli.py), is much less appealing (see the [docs](docs/SYNTAX.md) for more details):
 ```bash
 $ ./client/vanity_cli.py localhost 9955
-> PING (11)hello world
-PONG:STR (11)hello world
+> PING
+PONG
 > STR_SET (3)foo (3)bar
 OK
 > GET (3)foo
