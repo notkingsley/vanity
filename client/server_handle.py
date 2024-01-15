@@ -8,13 +8,13 @@ class ServerHandle:
 	A ServerHandle starts a server instance and can be used to stop it.
 	"""
 	EXECUTABLE_PATH = "vanity/cmake-build-debug/vanity"
-	DEFAULT_PORT = 9955
 	STARTUP_DELAY = 0.01
 
 	def __init__(
 		self,
 		*,
-		port: int | None = DEFAULT_PORT,
+		port: int | None = None,
+		ports: list[int] | None = None,
 		executable_path: str = EXECUTABLE_PATH,
 		no_db_persist: bool = True,
 		no_users_persist: bool = True,
@@ -27,7 +27,8 @@ class ServerHandle:
 	):
 		"""
 		Create a new ServerHandle.
-		:param port: The port to run the server on, use server default if None
+		:param port: The port to run the server on (any or both of port and ports can be specified)
+		:param ports: Extra ports to run the server on (any or both of port and ports can be specified)
 		:param executable_path: The path to the server executable.
 		:param no_db_persist: Whether to persist the database.
 		:param no_users_persist: Whether to persist the users file.
@@ -39,10 +40,17 @@ class ServerHandle:
 		:param users_file: The file to store user's login info in if no_users_persist is False.
 		"""
 		self.args = [executable_path]
-		self.port = port
 
+		_ports = set()
 		if port is not None:
-			self.args.append(f"--port={port}")
+			_ports.add(port)
+		
+		if ports is not None:
+			_ports.update(ports)
+		
+		if _ports:
+			for port in _ports:
+				self.args.append(f"--port={port}")
 
 		if use_cwd:
 			self.args.append(f"--use-cwd")
