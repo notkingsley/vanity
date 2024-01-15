@@ -55,7 +55,7 @@ private:
 
 public:
 	// create a socket server
-	SocketServer(std::vector<uint16_t> ports);
+	explicit SocketServer(std::vector<uint16_t> ports);
 
 	// destroy the socket server
 	~SocketServer() override = default;
@@ -93,9 +93,6 @@ protected:
 	// start listening on all ports and start polling as a background task
 	void start();
 
-	// some polled socket is ready
-	void socket_ready();
-
 	// the server is being exited. this stops and joins the poll thread
 	// and deletes the socket handlers (and the sockets themselves)
 	void stop();
@@ -108,9 +105,6 @@ private:
 
 	// this epoll instance is ready
 	void epoll_ready(Epoll& epoll);
-
-	// bind to and start listening on port
-	void bind(uint16_t port);
 
 	// bind all ports
 	void bind_all();

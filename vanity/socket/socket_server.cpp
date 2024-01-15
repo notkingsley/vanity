@@ -11,11 +11,51 @@ SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(port
 	m_super_epoll.add(m_write_epoll);
 }
 
-void SocketServer::event_socket_ready() {
-	socket_ready();
+void SocketServer::start() {
+	bind_all();
+	m_running = true;
+	m_poll_thread = std::thread{&SocketServer::poll, this};
 }
 
-void SocketServer::socket_ready() {
+void SocketServer::stop() {
+	m_running = false;
+	m_poll_thread.join();
+	m_clients.clear();
+	m_connection_servers.clear();
+}
+
+void SocketServer::add_client(ConcreteClient &&client) {
+	auto it = m_clients.emplace(std::move(client)).first;
+	m_read_epoll.add(const_cast<ConcreteClient&>((*it)));
+}
+
+void SocketServer::remove_client(ConcreteClient &client) {
+	m_read_epoll.remove(client);
+	m_clients.erase(client);
+}
+
+void SocketServer::add_socket_writer(SocketWriter &writer) {
+	m_write_epoll.add(writer);
+}
+
+void SocketServer::remove_socket_writer(SocketWriter &writer) {
+	m_write_epoll.remove(writer);
+}
+
+void SocketServer::bind_all() {
+	m_connection_servers.reserve(m_ports.size());
+	for (auto& port : m_ports) {
+		m_connection_servers.emplace_back(port);
+		m_read_epoll.add(m_connection_servers.back());
+		logger().info("Listening on port " + std::to_string(port));
+	}
+}
+
+void SocketServer::send(Client &client, Response&& response) {
+	client.write(*this, response.move());
+}
+
+void SocketServer::event_socket_ready() {
 	constexpr int super_poll_size = 2;
 	epoll_event events[super_poll_size] {};
 
@@ -32,21 +72,6 @@ void SocketServer::socket_ready() {
 	}
 
 	m_polled.set();
-}
-
-void SocketServer::bind(uint16_t port) {
-	m_connection_servers.emplace_back(port);
-	m_read_epoll.add(m_connection_servers.back());
-	logger().info("Listening on port " + std::to_string(port));
-}
-
-void SocketServer::bind_all() {
-	for (auto& port : m_ports)
-		bind(port);
-}
-
-void SocketServer::send(Client &client, Response&& response) {
-	client.write(*this, response.move());
 }
 
 void SocketServer::poll() {
@@ -77,19 +102,6 @@ void SocketServer::poll() {
 	}
 }
 
-void SocketServer::start() {
-	bind_all();
-	m_running = true;
-	m_poll_thread = std::thread{&SocketServer::poll, this};
-}
-
-void SocketServer::stop() {
-	m_running = false;
-	m_poll_thread.join();
-	m_clients.clear();
-	m_connection_servers.clear();
-}
-
 void SocketServer::epoll_ready(Epoll &epoll) {
 	constexpr int poll_size = 10;
 	epoll_event events[poll_size] {};
@@ -111,24 +123,6 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 			handler->ready(*this);
 		}
 	}
-}
-
-void SocketServer::add_client(ConcreteClient &&client) {
-	auto it = m_clients.emplace(std::move(client)).first;
-	m_read_epoll.add(const_cast<ConcreteClient&>((*it)));
-}
-
-void SocketServer::remove_client(ConcreteClient &client) {
-	m_read_epoll.remove(client);
-	m_clients.erase(client);
-}
-
-void SocketServer::add_socket_writer(SocketWriter &writer) {
-	m_write_epoll.add(writer);
-}
-
-void SocketServer::remove_socket_writer(SocketWriter &writer) {
-	m_write_epoll.remove(writer);
 }
 
 } // namespace vanity
