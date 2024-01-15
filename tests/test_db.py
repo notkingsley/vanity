@@ -692,3 +692,35 @@ class SwitchDBTest(unittest.TestCase):
 		self.assertTrue(response.is_ok())
 		response = self.client.switch_db(15)
 		self.assertTrue(response.is_ok())
+
+
+class MultiplePortsTest(unittest.TestCase):
+	"""
+	Test accessing the same server on multiple ports.
+	"""
+	@classmethod
+	def setUpClass(cls) -> None:
+		cls.port1 = get_free_port()
+		cls.port2 = get_free_port()
+		cls.server_handle = ServerHandle(ports= [cls.port1, cls.port2])
+		cls.server_handle.start()
+
+	@classmethod
+	def tearDownClass(cls) -> None:
+		cls.server_handle.stop()
+
+	def setUp(self) -> None:
+		self.client1 = make_client(self.port1)
+		self.client2 = make_client(self.port2)
+	
+	def tearDown(self) -> None:
+		self.client1.close()
+		self.client2.close()
+	
+	def test_set_get(self):
+		"""
+		Test that we can set a value and then get it.
+		"""
+		self.client1.str_set("test_set_get_key", "test_set_get_value")
+		response = self.client2.get("test_set_get_key")
+		self.assertEqual(response.value, "test_set_get_value")
