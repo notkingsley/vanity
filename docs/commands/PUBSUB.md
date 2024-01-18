@@ -37,6 +37,16 @@ PubSub is supported by the following commands:
   OK :INT 1
   ```
 
+- `SUBSCRIBED`
+  Returns an array of channels currently subscribed to.
+
+  Example:
+  ```
+  SUBSCRIBED
+  OK :ARR (1)[(7)channel]
+  ```
+  
+
 - `UNSUBSCRIBE<channel>`
   Unsubscribes from a channel.  
   Returns an `OK` response, with a value containing the number of channels currently subscribed to.  
@@ -48,3 +58,13 @@ PubSub is supported by the following commands:
   UNSUBSCRIBE (7)channel
   OK :INT 0
   ```
+
+- `UNSUBSCRIBE_ALL`
+  Unsubscribes from all channels.  
+  Returns an `OK` response.
+
+  Example:
+  ```
+  UNSUBSCRIBE_ALL
+  OK
+  ``
