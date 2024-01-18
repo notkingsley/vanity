@@ -598,9 +598,21 @@ class CommandInterface(ABC):
         """
         return self.request("SUBSCRIBE", channel)
 
+    def subscribed(self):
+        """
+        Get the channels subscribed to
+        """
+        return self.request("SUBSCRIBED")
+
     def unsubscribe(self, channel: str):
         """
         Unsubscribe from a channel
         :param channel: the channel to unsubscribe from
         """
         return self.request("UNSUBSCRIBE", channel)
+
+    def unsubscribe_all(self):
+        """
+        Unsubscribe from all channels
+        """
+        return self.request("UNSUBSCRIBE_ALL")
