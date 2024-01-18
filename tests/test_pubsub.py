@@ -313,3 +313,51 @@ class TestPubSub(unittest.TestCase):
         self.assertTrue(isinstance(response.data, PublishData))
         self.assertEqual(response.data.channel, "test")
         self.assertEqual(response.data.message, "testval")
+
+    def test_get_subscribed_channels(self):
+        """
+        Test getting subscribed channels.
+        """
+        response = self.client.subscribe("test")
+        self.assertTrue(response.is_ok())
+
+        response = self.client.subscribe("foo")
+        self.assertTrue(response.is_ok())
+
+        response = self.client.subscribed()
+        self.assertTrue(response.is_ok())
+        self.assertTrue(response.type_is_array())
+        self.assertEqual(set(response.value), {"test", "foo"})
+
+        response = self.client.unsubscribe("test")
+        self.assertTrue(response.is_ok())
+
+        response = self.client.subscribed()
+        self.assertTrue(response.is_ok())
+        self.assertTrue(response.type_is_array())
+        self.assertEqual(response.value, ["foo"])
+
+    def test_unsubscribe_all(self):
+        """
+        Test unsubscribing all channels.
+        """
+        response = self.client.subscribe("test")
+        self.assertTrue(response.is_ok())
+
+        response = self.client.subscribe("foo")
+        self.assertTrue(response.is_ok())
+
+        response = self.client.unsubscribe_all()
+        self.assertTrue(response.is_ok())
+
+        self._publish("test", "testval")
+        self._publish("foo", "bar")
+        self._load_async()
+
+        response = self.client.read_async(block=False)
+        self.assertIsNone(response)
+
+        response = self.client.subscribed()
+        self.assertTrue(response.is_ok())
+        self.assertTrue(response.type_is_array())
+        self.assertEqual(response.value, [])
