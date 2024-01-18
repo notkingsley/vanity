@@ -31,7 +31,9 @@ enum class operation_t{
 
 	PUBLISH,
 	SUBSCRIBE,
+	SUBSCRIBED,
 	UNSUBSCRIBE,
+	UNSUBSCRIBE_ALL,
 
 	DEL,
 	TYPE,
@@ -117,7 +119,9 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::TRANSACT_DISCARD,   "TRANSACT_DISCARD"},
 
 	{operation_t::PUBLISH,            "PUBLISH"},
+	{operation_t::SUBSCRIBED,         "SUBSCRIBED"},
 	{operation_t::SUBSCRIBE,          "SUBSCRIBE"},
+	{operation_t::UNSUBSCRIBE_ALL,    "UNSUBSCRIBE_ALL"},
 	{operation_t::UNSUBSCRIBE,        "UNSUBSCRIBE"},
 
 	{operation_t::DEL,                "DEL"},
@@ -213,7 +217,9 @@ inline bool unknown_is_permitted(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -304,7 +310,9 @@ inline bool user_is_permitted(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -475,7 +483,9 @@ inline bool peer_is_permitted(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 			return false;
 
 		default:
@@ -507,7 +517,9 @@ inline bool admin_is_permitted(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -630,7 +642,9 @@ inline behaviour_t normal_behaviour(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::DEL:
 		case operation_t::TYPE:
@@ -720,7 +734,9 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 
 		case operation_t::PUBLISH:
 		case operation_t::SUBSCRIBE:
+		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
+		case operation_t::UNSUBSCRIBE_ALL:
 			return behaviour_t::DEFAULT;
 
 

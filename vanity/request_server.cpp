@@ -199,9 +199,21 @@ void RequestServer::dispatch_op(Client &client, operation_t op, Request& request
 			request_subscribe(client, request.get_exact<STR>(end));
 			break;
 		}
+		case operation_t::SUBSCRIBED:
+		{
+			request.ensure_end_if(end);
+			request_subscribed(client);
+			break;
+		}
 		case operation_t::UNSUBSCRIBE:
 		{
 			request_unsubscribe(client, request.get_exact<STR>(end));
+			break;
+		}
+		case operation_t::UNSUBSCRIBE_ALL:
+		{
+			request.ensure_end_if(end);
+			request_unsubscribe_all(client);
 			break;
 		}
 
@@ -625,9 +637,19 @@ void RequestServer::dry_dispatch_op(operation_t op, Request& request, bool end) 
 			request.get_exact<STR>(end);
 			break;
 		}
+		case operation_t::SUBSCRIBED:
+		{
+			request.ensure_end_if(end);
+			break;
+		}
 		case operation_t::UNSUBSCRIBE:
 		{
 			request.get_exact<STR>(end);
+			break;
+		}
+		case operation_t::UNSUBSCRIBE_ALL:
+		{
+			request.ensure_end_if(end);
 			break;
 		}
 

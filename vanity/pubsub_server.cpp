@@ -26,6 +26,12 @@ void PubSubServer::request_subscribe(Client &client, const std::string &channel)
 	send(client, ok(channels.size()));
 }
 
+void PubSubServer::request_subscribed(Client &client) {
+	auto &channels_set = session_channels(client);
+	std::vector<std::string> channel_arr{channels_set.begin(), channels_set.end()};
+	send(client, ok(channel_arr));
+}
+
 void PubSubServer::request_unsubscribe(Client &client, const std::string &channel) {
 	auto &channels = session_channels(client);
 	{
@@ -34,6 +40,17 @@ void PubSubServer::request_unsubscribe(Client &client, const std::string &channe
 	}
 	channels.erase(channel);
 	send(client, ok(channels.size()));
+}
+
+void PubSubServer::request_unsubscribe_all(Client &client) {
+	auto &channels = session_channels(client);
+	{
+		std::lock_guard lock(m_subscriptions_mutex);
+		for (auto& channel : channels)
+			erase_subscription(client, channel);
+	}
+	channels.clear();
+	send(client, ok());
 }
 
 void PubSubServer::request_publish(Client &client, const std::string &channel, const std::string &message) {

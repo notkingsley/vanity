@@ -234,8 +234,14 @@ public:
 	// a subscribe request was received from a client
 	virtual void request_subscribe(Client& client, const std::string& channel) = 0;
 
+	// a subscribed request was received from a client
+	virtual void request_subscribed(Client& client) = 0;
+
 	// an unsubscribe request was received from a client
 	virtual void request_unsubscribe(Client& client, const std::string& channel) = 0;
+
+	// an unsubscribe_all request was received from a client
+	virtual void request_unsubscribe_all(Client& client) = 0;
 
 	// a publish request was received from a client
 	virtual void request_publish(Client& client, const std::string& channel, const std::string& message) = 0;

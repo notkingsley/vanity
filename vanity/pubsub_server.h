@@ -43,8 +43,14 @@ public:
 	// a subscribe request was received from a client
 	void request_subscribe(Client& client, const std::string& channel) override;
 
+	// a subscribed request was received from a client
+	void request_subscribed(Client& client) override;
+
 	// an unsubscribe request was received from a client
 	void request_unsubscribe(Client& client, const std::string& channel) override;
+
+	// an unsubscribe_all request was received from a client
+	void request_unsubscribe_all(Client& client) override;
 
 	// a publish request was received from a client
 	void request_publish(Client& client, const std::string& channel, const std::string& message) override;
