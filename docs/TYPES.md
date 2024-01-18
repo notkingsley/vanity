@@ -19,7 +19,6 @@ where `<type_name>` is the name of the type, and is one of the following:
 - LIST for a `<list>`
 - SET for a `<set>`
 - HASH for a `<hash>`
-- PIPE for a `<pipe>` (a pipe is a sequence of requests)
 - AGG for an `<agg>` (an aggregate response is a sequence of responses)
 
 Note: Currently, no type annotations are used in requests, but they are used in responses.
@@ -90,17 +89,6 @@ The `<value>` is the value of the object, and is defined for each type as follow
 
     Note: HASH is only allowed to contain strings, and the strings are always in pairs, with the first string being the key, and the second string being the value.
 
-- `<pipe>` => `<length><pipe_body>`  
-    where  
-    - `<length>` is a length as defined above,
-    - `<pipe_body>` is the pipe itself. Exactly len characters are read after the opening closing parentheses and no escape sequences are recognized.
-
-- `<pipe_body>` => `<request>...`  
-    where  
-    - `<request>` is a request as defined in the SYNTAX documentation,
-
-    No extra characters are expected to demarcate the sequence of requests.
-
 - `<agg>` => `<length><agg_body>`  
     where  
     - `<length>` is a length as defined above,
@@ -108,6 +96,6 @@ The `<value>` is the value of the object, and is defined for each type as follow
 
 - `<agg_body>` => `<response>...`  
     where  
-    - `<response>` is a response as defined in the SYNTAX documentation,
+    - `<response>` is a response as defined in the [SYNTAX documentation](SYNTAX.md),
 
     No extra characters are expected to demarcate the sequence of responses.
