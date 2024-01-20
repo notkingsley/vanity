@@ -5,8 +5,8 @@
 #ifndef VANITY_AGGREGATING_CLIENT_H
 #define VANITY_AGGREGATING_CLIENT_H
 
-#include "aggregate_response.h"
 #include "fake_client.h"
+#include "response/aggregate_response.h"
 
 namespace vanity {
 
