@@ -25,20 +25,18 @@ class Server:
 {
 private:
 	// start background server tasks
-	void start(){
+	void start()
+	{
 		SocketServer::start();
-		SerialAuthServer::start();
 		DatabaseServer::start();
-
 		logger().info("Started server");
 	}
 
 	// stop any running tasks and exit the server
-	void stop(){
+	void stop()
+	{
 		DatabaseServer::stop();
-		SerialAuthServer::stop();
 		SocketServer::stop();
-
 		logger().info("Stopped server");
 	}
 
@@ -48,10 +46,12 @@ public:
 		AuthServer(config.users_db),
 		Logger(config.log_file, config.log_level),
 		PersistentServer(config.db_file),
-		SocketServer(config.ports) {};
+		SocketServer(config.ports)
+	{};
 
 	// run the server with the given configuration
-	void run() {
+	void run()
+	{
 		Server::start();
 		EventServer::run();
 		Server::stop();

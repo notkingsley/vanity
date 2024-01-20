@@ -6,6 +6,7 @@ add_subdirectory(bcrypt)
 
 add_library(vanity_auth STATIC
 	auth_server.cpp
+	locked_auth_server.cpp
 	serial_auth_server.cpp
 )
 

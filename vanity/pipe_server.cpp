@@ -20,42 +20,11 @@ public:
 		: AggregatingClient(client, pipe_size) {};
 };
 
-
 void PipeServer::request_pipe(Client &client, Request& request) {
 	size_t len = request.get_len();
 	PipedClient piped_client{client, len};
 	do_handle_many(piped_client, request, len);
 	piped_client.perform_write(*this);
-}
-
-void PipeServer::request_add_user(Client &client, const std::string &username, const std::string &password) {
-	if (dynamic_cast<PipedClient*>(&client))
-		return send(client, error("ADD_USER command not allowed in PIPE request"));
-	SerialAuthServer::request_add_user(client, username, password);
-}
-
-void PipeServer::request_edit_user(Client &client, const std::string &username, client_auth auth_level) {
-	if (dynamic_cast<PipedClient*>(&client))
-		return send(client, error("EDIT_USER command not allowed in PIPE request"));
-	SerialAuthServer::request_edit_user(client, username, auth_level);
-}
-
-void PipeServer::request_del_user(Client &client, const std::string &username) {
-	if (dynamic_cast<PipedClient*>(&client))
-		return send(client, error("DEL_USER command not allowed in PIPE request"));
-	SerialAuthServer::request_del_user(client, username);
-}
-
-void PipeServer::request_auth(Client &client, const std::string &username, const std::string &password) {
-	if (dynamic_cast<PipedClient*>(&client))
-		return send(client, error("AUTH command not allowed in PIPE request"));
-	SerialAuthServer::request_auth(client, username, password);
-}
-
-void PipeServer::request_change_password(Client &client, const std::string &new_password) {
-	if (dynamic_cast<PipedClient*>(&client))
-		return send(client, error("CHANGE_PASSWORD command not allowed in PIPE request"));
-	SerialAuthServer::request_change_password(client, new_password);
 }
 
 void PipeServer::request_exit(Client &client) {
