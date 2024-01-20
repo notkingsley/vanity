@@ -30,6 +30,9 @@ private:
 	// the default password
 	static constexpr const char* M_DEFAULT_PASSWORD = "vanity";
 
+	// the environment variable to get the default password from
+	static constexpr const char* M_DEFAULT_PASSWORD_ENV = "VANITY_DEFAULT_PASSWORD";
+
 	// the minimum username length
 	static constexpr int M_MIN_USERNAME_LENGTH = 4;
 
@@ -39,7 +42,7 @@ private:
 	// this is a map of currently recognized logins
 	// it maps a username to the hash of a password
 	std::unordered_map<std::string, auth_info> m_logins = {
-		{M_DEFAULT_USERNAME, {make_hash(M_DEFAULT_PASSWORD), client_auth::ADMIN}}
+		{M_DEFAULT_USERNAME, default_auth_info()}
 	};
 
 	// file to persist the database to, if any
@@ -67,6 +70,9 @@ public:
 private:
 	// persist the login data to disk
 	void persist_logins() const;
+
+	// get the default login info
+	static auth_info default_auth_info() noexcept;
 };
 
 } // namespace vanity

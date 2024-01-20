@@ -108,10 +108,13 @@ void AuthServer::request_edit_user(Client &client, const std::string &username, 
 	m_logins[username].auth = auth_level;
 	persist_logins();
 
+	auto log_message = "User " + session_username(client) + " made " + username;
 	if (auth_level == client_auth::USER)
-		logger().info("User " + session_username(client) + " made " + username + " a USER");
+		log_message += " a USER";
 	else
-		logger().info("User " + session_username(client) + " made " + username + " an ADMIN");
+		log_message += " an ADMIN";
+	logger().info(log_message);
+
 	send(client, ok());
 }
 
@@ -159,6 +162,14 @@ void AuthServer::request_change_password(Client &client, const std::string &new_
 
 	logger().info("changed password for user: " + username);
 	send(client, ok());
+}
+
+auth_info AuthServer::default_auth_info() noexcept {
+	const char* password = std::getenv(M_DEFAULT_PASSWORD_ENV);
+	if (not password)
+		password = M_DEFAULT_PASSWORD;
+
+	return {make_hash(password), client_auth::ADMIN};
 }
 
 } // namespace vanity
