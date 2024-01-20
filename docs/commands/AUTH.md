@@ -1,8 +1,6 @@
 This document describes the AUTH-related commands and responses.
 
 ## Auth commands
-Note: none of these commands are allowed in a `PIPE` request.
-
 - `ADD_USER<username><password>`  
     Adds a new user to the server.  
     An `OK` response indicates success, an `ERROR` response indicates failure, with the `<body>` containing the reason.  
