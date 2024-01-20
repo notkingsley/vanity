@@ -3,8 +3,77 @@
 //
 
 #include "auth_server.h"
+#include "utils/serializer.h"
 
 namespace vanity {
+
+// write an auth_info to the output stream
+template<>
+void serializer::write(std::ofstream& out, const auth_info& value)
+{
+	write(out, value.hash);
+	write(out, value.auth);
+}
+
+// read an auth_info from the input stream
+template<>
+auth_info serializer::read(std::ifstream& in)
+{
+	auth_info value;
+	value.hash = read<std::string>(in);
+	value.auth = read<client_auth>(in);
+	return value;
+}
+
+// write a std::unordered_map<std::string, auth_info> to the output stream
+template<>
+void serializer::write(std::ofstream& out, const std::unordered_map<std::string, auth_info>& value)
+{
+	write(out, value.size());
+	for (const auto& [key, val] : value) {
+		write(out, key);
+		write(out, val);
+	}
+}
+
+// read a std::unordered_map<std::string, auth_info> from the input stream
+template<>
+std::unordered_map<std::string, auth_info> serializer::read(std::ifstream& in)
+{
+	std::unordered_map<std::string, auth_info> value;
+	auto size = read<std::streamsize>(in);
+	for (size_t i = 0; i < size; ++i) {
+		auto key = read<std::string>(in);
+		auto val = read<auth_info>(in);
+		value.emplace(std::move(key), std::move(val));
+	}
+	return value;
+}
+
+AuthServer::AuthServer(std::optional<std::filesystem::path> users_db) noexcept
+		: m_users_db{std::move(users_db)}
+{
+	if (m_users_db and std::filesystem::exists(m_users_db.value())) {
+		std::ifstream in{m_users_db.value(), std::ios::binary};
+		m_logins = serializer::read<std::unordered_map<std::string, auth_info>>(in);
+		in.close();
+		logger().info("Loaded logins from " + m_users_db.value().string());
+	}
+}
+
+void AuthServer::persist_logins() const {
+	if (not m_users_db)
+		return;
+
+	auto tmp {m_users_db.value()};
+	tmp.replace_filename("tmp." + tmp.filename().string());
+	std::ofstream out{tmp, std::ios::binary};
+	serializer::write(out, m_logins);
+	out.close();
+	std::filesystem::rename(tmp, m_users_db.value());
+
+	logger().info("Persisted logins to " + m_users_db.value().string());
+}
 
 void AuthServer::request_add_user(Client &client, const std::string &username, const std::string &password) {
 	if (username.length() < M_MIN_USERNAME_LENGTH)
@@ -90,149 +159,6 @@ void AuthServer::request_change_password(Client &client, const std::string &new_
 
 	logger().info("changed password for user: " + username);
 	send(client, ok());
-}
-
-// write something to an output stream
-template<typename T>
-void write(std::ofstream &out, const T& value);
-
-// read something from an input stream
-template<typename T>
-T read(std::ifstream &in);
-
-// write a size_t to the output stream
-template<>
-void write(std::ofstream &out, const size_t& value)
-{
-	out.write(reinterpret_cast<const char *>(&value), sizeof(value));
-}
-
-// read a size_t from the input stream
-template<>
-size_t read(std::ifstream &in)
-{
-	size_t value;
-	in.read(reinterpret_cast<char *>(&value), sizeof(value));
-	return value;
-}
-
-// write a long to the output stream
-template<>
-void write(std::ofstream &out, const long& value)
-{
-	out.write(reinterpret_cast<const char *>(&value), sizeof(value));
-}
-
-// read a long from the input stream
-template<>
-long read(std::ifstream &in)
-{
-	long value;
-	in.read(reinterpret_cast<char *>(&value), sizeof(value));
-	return value;
-}
-
-// write a client_auth to the output stream
-template<>
-void write(std::ofstream& out, const client_auth& value)
-{
-	out.write(reinterpret_cast<const char *>(&value), sizeof(value));
-}
-
-// read a client_auth from the input stream
-template<>
-client_auth read(std::ifstream& in)
-{
-	client_auth value;
-	in.read(reinterpret_cast<char *>(&value), sizeof(value));
-	return value;
-}
-
-// write a string to the output stream
-template<>
-void write(std::ofstream &out, const std::string& value)
-{
-	write(out, value.size());
-	out.write(value.data(), value.size());
-}
-
-// read a string from the input stream
-template<>
-std::string read<std::string>(std::ifstream &in)
-{
-	auto size = read<std::streamsize>(in);
-	std::string str{};
-	str.resize(size);
-	in.read(str.data(), size);
-	return str;
-}
-
-// write an auth_info to the output stream
-template<>
-void write(std::ofstream& out, const auth_info& value)
-{
-	write(out, value.hash);
-	write(out, value.auth);
-}
-
-// read an auth_info from the input stream
-template<>
-auth_info read(std::ifstream& in)
-{
-	auth_info value;
-	value.hash = read<std::string>(in);
-	value.auth = read<client_auth>(in);
-	return value;
-}
-
-// write a std::unordered_map<std::string, auth_info> to the output stream
-template<>
-void write(std::ofstream& out, const std::unordered_map<std::string, auth_info>& value)
-{
-	write(out, value.size());
-	for (const auto& [key, val] : value) {
-		write(out, key);
-		write(out, val);
-	}
-}
-
-// read a std::unordered_map<std::string, auth_info> from the input stream
-template<>
-std::unordered_map<std::string, auth_info> read(std::ifstream& in)
-{
-	std::unordered_map<std::string, auth_info> value;
-	auto size = read<std::streamsize>(in);
-	for (size_t i = 0; i < size; ++i) {
-		auto key = read<std::string>(in);
-		auto val = read<auth_info>(in);
-		value.emplace(std::move(key), std::move(val));
-	}
-	return value;
-}
-
-AuthServer::AuthServer(std::optional<std::filesystem::path> users_db) noexcept
-	: m_users_db{std::move(users_db)}
-{
-	if (m_users_db and std::filesystem::exists(m_users_db.value())) {
-		std::ifstream in{m_users_db.value(), std::ios::binary};
-		m_logins = read<std::unordered_map<std::string, auth_info>>(in);
-		in.close();
-		logger().info("Loaded logins from " + m_users_db.value().string());
-	}
-}
-
-void AuthServer::persist_logins() const {
-	if (not m_users_db)
-		return;
-
-	auto tmp {m_users_db.value()};
-	tmp.replace_filename("tmp." + tmp.filename().string());
-	std::ofstream out{tmp, std::ios::binary};
-	write(out, m_logins);
-	out.close();
-	std::filesystem::rename(tmp, m_users_db.value());
-
-	logger().info("Persisted logins to " + m_users_db.value().string());
 }
 
 } // namespace vanity
