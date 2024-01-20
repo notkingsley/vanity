@@ -16,7 +16,6 @@ namespace vanity {
  */
 class TransactionServer:
 	public virtual BaseDatabaseServer,
-	public virtual RequestServer,
 	public virtual SocketServer
 {
 public:

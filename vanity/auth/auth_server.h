@@ -21,7 +21,7 @@ struct auth_info {
 /*
  * An AuthServer allows authentication of clients/peers and related operations
  */
-class AuthServer : public virtual RequestServer, protected virtual Logger, private Hasher
+class AuthServer : public virtual RequestServer, private Hasher
 {
 private:
 	// the default username
