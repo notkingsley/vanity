@@ -3,7 +3,7 @@
 //
 
 #include "client/aggregating_client.h"
-#include "request_tracker.h"
+#include "request/request_tracker.h"
 #include "transaction_server.h"
 
 namespace vanity {

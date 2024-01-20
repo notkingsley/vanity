@@ -6,7 +6,7 @@
 #define VANITY_TRANSACTION_SERVER_H
 
 #include "db/servers/base_database_server.h"
-#include "request_server.h"
+#include "request/request_server.h"
 #include "socket/socket_server.h"
 
 namespace vanity {

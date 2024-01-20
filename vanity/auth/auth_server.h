@@ -9,7 +9,7 @@
 
 #include "hasher.h"
 #include "utils/logging.h"
-#include "request_server.h"
+#include "request/request_server.h"
 
 namespace vanity {
 
