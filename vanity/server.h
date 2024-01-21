@@ -29,12 +29,14 @@ private:
 	{
 		SocketServer::start();
 		DatabaseServer::start();
+		RepeatEventServer::start();
 		logger().info("Started server");
 	}
 
 	// stop any running tasks and exit the server
 	void stop()
 	{
+		RepeatEventServer::stop();
 		DatabaseServer::stop();
 		SocketServer::stop();
 		logger().info("Stopped server");

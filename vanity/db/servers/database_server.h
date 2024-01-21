@@ -31,13 +31,10 @@ public:
 	// start any background tasks
 	void start(){
 		BaseDatabaseServer::start();
-		PersistentServer::start();
-		AutoExpiryDatabaseServer::start();
 	}
 
 	// stop any background tasks
 	void stop(){
-		AutoExpiryDatabaseServer::stop();
 		PersistentServer::stop();
 		BaseDatabaseServer::stop();
 	}

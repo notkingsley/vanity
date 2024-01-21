@@ -17,6 +17,9 @@ PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file)
 
 		logger().info("Loaded databases from " + m_db_file.value().string());
 	}
+
+	if (m_db_file)
+		repeat_event_every(server_event::persist, M_PERSIST_INTERVAL);
 }
 
 bool PersistentServer::persist() {
@@ -44,26 +47,8 @@ void PersistentServer::request_persist(Client & client) {
 		send(client, error("Persistence disabled"));
 }
 
-void PersistentServer::start() {
-	if (not m_db_file)
-		return;
-
-	m_stopped.clear();
-	m_persist_loop_thread = std::thread(&PersistentServer::persist_loop, this);
-}
-
 void PersistentServer::stop() {
-	if (not m_db_file)
-		return;
-
 	persist();
-	m_stopped.set();
-	m_persist_loop_thread.join();
-}
-
-void PersistentServer::persist_loop() {
-	while (not m_stopped.wait(M_PERSIST_INTERVAL))
-		push_event(server_event::persist);
 }
 
 void PersistentServer::event_persist() {
