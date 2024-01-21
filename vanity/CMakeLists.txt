@@ -17,6 +17,7 @@ add_executable(vanity
 	event_server.cpp
 	pipe_server.cpp
 	pubsub_server.cpp
+	repeat_event_server.cpp
 	session_server.cpp
 	transaction_server.cpp
     vanity.cpp
