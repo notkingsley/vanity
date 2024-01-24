@@ -53,10 +53,10 @@ private:
 
 protected:
 	// register an event to be repeated every interval microseconds
-	void repeat_event_every(server_event event, microseconds interval);
+	void repeat(server_event event, microseconds interval);
 
 	// register an event to be repeated every interval microseconds
-	void repeat_event_every(server_event event, long interval);
+	void repeat(server_event event, long interval);
 
 public:
 	// start repeating events

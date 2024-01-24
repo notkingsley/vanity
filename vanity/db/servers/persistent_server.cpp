@@ -19,7 +19,7 @@ PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file)
 	}
 
 	if (m_db_file)
-		repeat_event_every(server_event::persist, M_PERSIST_INTERVAL);
+		repeat(server_event::persist, M_PERSIST_INTERVAL);
 }
 
 bool PersistentServer::persist() {

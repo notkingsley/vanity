@@ -7,7 +7,7 @@
 namespace vanity {
 
 AutoExpiryDatabaseServer::AutoExpiryDatabaseServer() {
-	repeat_event_every(server_event::expire, M_EXPIRE_INTERVAL);
+	repeat(server_event::expire, M_EXPIRE_INTERVAL);
 }
 
 void AutoExpiryDatabaseServer::event_expire() {

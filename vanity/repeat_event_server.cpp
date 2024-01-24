@@ -6,12 +6,12 @@
 
 namespace vanity {
 
-void RepeatEventServer::repeat_event_every(server_event event, microseconds interval) {
+void RepeatEventServer::repeat(server_event event, microseconds interval) {
 	m_repeat_events.push({now() + interval, interval, event});
 }
 
-void RepeatEventServer::repeat_event_every(server_event event, long interval) {
-	repeat_event_every(event, microseconds(interval));
+void RepeatEventServer::repeat(server_event event, long interval) {
+	repeat(event, microseconds(interval));
 }
 
 void RepeatEventServer::repeat_loop() {
