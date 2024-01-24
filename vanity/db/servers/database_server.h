@@ -5,7 +5,6 @@
 #ifndef VANITY_DATABASE_SERVER_H
 #define VANITY_DATABASE_SERVER_H
 
-#include "auto_expiry_database_server.h"
 #include "expiry_database_server.h"
 #include "hash_database_server.h"
 #include "list_database_server.h"
@@ -19,7 +18,6 @@ namespace vanity {
  * A DatabaseServer allows us to respond to database requests
  */
 class DatabaseServer :
-	public virtual AutoExpiryDatabaseServer,
 	public virtual ExpiryDatabaseServer,
 	public virtual HashDatabaseServer,
 	public virtual ListDatabaseServer,

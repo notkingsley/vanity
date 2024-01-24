@@ -6,15 +6,38 @@
 #define VANITY_EXPIRY_DATABASE_SERVER_H
 
 #include "base_database_server.h"
+#include "repeat_event_server.h"
+#include "utils/event.h"
+
 
 namespace vanity {
 
 /*
  * An ExpiryDatabaseServer allows us to respond to database requests for expiring keys
  */
-class ExpiryDatabaseServer: public virtual BaseDatabaseServer
+class ExpiryDatabaseServer:
+	public virtual BaseDatabaseServer,
+	public virtual RepeatEventServer
 {
+private:
+	using time_point = std::chrono::time_point<std::chrono::system_clock>;
+
+	// time between automatic emitted server_events in microseconds
+	static constexpr long M_EXPIRE_INTERVAL = 10 * 1000 * 1000;
+
+	// convert a double in seconds to a time_point
+	static time_point seconds_to_time_point(double seconds);
+
+	// convert a std::chrono::tp to a double in seconds
+	static double time_point_to_seconds(time_point tp);
+
 public:
+	// create an AutoExpiryDatabaseServer
+	ExpiryDatabaseServer();
+
+	// an expire event was received
+	void event_expire() override;
+
 	// a set_expiry request was received from a client
 	void request_set_expiry(Client& client, const std::string& key, double seconds) override;
 
@@ -23,13 +46,6 @@ public:
 
 	// a clear_expiry request was received from a client
 	void request_clear_expiry(Client& client, const std::string& key) override;
-
-private:
-	// convert a double in seconds to a std::chrono::time_point
-	static std::chrono::time_point<std::chrono::system_clock> seconds_to_time_point(double seconds);
-
-	// convert a std::chrono::time_point to a double in seconds
-	static double time_point_to_seconds(std::chrono::time_point<std::chrono::system_clock> time_point);
 };
 
 } // namespace vanity
