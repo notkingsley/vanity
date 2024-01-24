@@ -15,7 +15,7 @@ namespace vanity {
 
 // a threadsafe queue.
 template <class T>
-class queue
+class Queue
 {
 private:
 	std::queue<T> m_queue;
@@ -24,17 +24,17 @@ private:
 
 public:
 	// default constructor
-	queue() = default;
+	Queue() = default;
 
 	// move constructor
-	queue(queue&& other) noexcept
+	Queue(Queue&& other) noexcept
 	{
 		std::scoped_lock lock{m_mutex, other.m_mutex};
 		m_queue = std::move(other.m_queue);
 	}
 
 	// move assignment
-	queue& operator=(queue&& other) noexcept
+	Queue& operator=(Queue&& other) noexcept
 	{
 		std::scoped_lock lock{m_mutex, other.m_mutex};
 		m_queue = std::move(other.m_queue);

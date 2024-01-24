@@ -22,7 +22,7 @@ template<typename task_type, typename data_type, typename ret_type>
 class TaskSerializer
 {
 private:
-	queue<std::tuple<task_type, data_type, std::promise<ret_type>>> m_queue;
+	Queue<std::tuple<task_type, data_type, std::promise<ret_type>>> m_queue;
 	std::thread m_run_thread;
 	bool m_running {false};
 

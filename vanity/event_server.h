@@ -28,7 +28,7 @@ protected:
 
 private:
 	// events that need attention are sent through here
-	queue<server_event> m_event_queue;
+	Queue<server_event> m_event_queue;
 
 	// the event loop
 	void event_loop();
