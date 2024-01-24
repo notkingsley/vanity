@@ -12,8 +12,8 @@
 namespace vanity
 {
 
-// event is a class that can be used to synchronize threads
-class event
+// Event is a class that can be used to synchronize threads
+class Event
 {
 private:
 	std::condition_variable m_cond;
@@ -22,15 +22,15 @@ private:
 
 public:
 	// default constructor
-	event() = default;
+	Event() = default;
 
 	// move constructor
-	event(event&& other) noexcept{
+	Event(Event&& other) noexcept{
 		m_state = other.m_state; // copy state
 	}
 
 	// move assignment
-	event& operator=(event&& other) noexcept{
+	Event& operator=(Event&& other) noexcept{
 		std::lock_guard lock{m_mutex};
 		m_state = other.m_state; // copy state
 		return *this;

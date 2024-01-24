@@ -39,7 +39,7 @@ private:
 	std::thread m_poll_thread {};
 
 	// whether the reported socket_ready has been polled
-	event m_polled {};
+	Event m_polled {};
 
 	// the epoll instance for reading
 	Epoll m_read_epoll;

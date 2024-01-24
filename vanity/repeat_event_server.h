@@ -35,7 +35,7 @@ private:
 	std::priority_queue<repeated_event> m_repeat_events;
 
 	// whether the repeat events have been stopped
-	event m_stopped;
+	Event m_stopped;
 
 	// the repeat_loop thread
 	std::thread m_repeat_loop_thread;
