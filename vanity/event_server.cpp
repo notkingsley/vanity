@@ -41,7 +41,15 @@ void EventServer::terminate() {
 }
 
 void EventServer::run() {
+	std::array<std::thread, M_THREADS - 1> threads;
+	for (auto& thread : threads)
+		thread = std::thread{[this] { event_loop(); }};
+
 	event_loop();
+	for (auto& thread : threads)
+		thread.join();
+
+	m_event_queue.clear();
 }
 
 } // namespace vanity

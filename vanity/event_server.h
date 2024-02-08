@@ -27,6 +27,9 @@ protected:
 	};
 
 private:
+	// number of threads to use
+	static constexpr int M_THREADS = 4;
+
 	// events that need attention are sent through here
 	Queue<server_event> m_event_queue;
 
