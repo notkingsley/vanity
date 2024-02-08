@@ -4,7 +4,11 @@
 
 int main(int argc, char **argv)
 {
-	vanity::Server server{vanity::Config{{argc, argv}}};
+	using vanity::Config, vanity::Server;
+	Server server{Config{{argc, argv}}};
+
 	vanity::signal::set_server(&server);
 	server.run();
+
+	return 0;
 }
