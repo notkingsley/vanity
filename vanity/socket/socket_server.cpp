@@ -95,10 +95,8 @@ void SocketServer::poll() {
 		if (n > 0){
 			push_event(server_event::socket_ready);
 			m_polled.wait();
-		}
-
-		if (not m_running)
 			m_polled.clear();
+		}
 	}
 }
 
