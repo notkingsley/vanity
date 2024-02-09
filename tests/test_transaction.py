@@ -116,6 +116,10 @@ class TestTransaction(unittest.TestCase):
             self.assertTrue(response.is_bad_state())
             response = transaction.change_password("test")
             self.assertTrue(response.is_bad_state())
+            response = transaction.auth_level()
+            self.assertTrue(response.is_bad_state())
+            response = transaction.username()
+            self.assertTrue(response.is_bad_state())
 
         self.assertEqual(transaction.result.value, [])
 
@@ -174,9 +178,9 @@ class TestTransaction(unittest.TestCase):
         self.assertTrue(response.value[2].is_queued())  # str_set foo
         self.assertTrue(response.value[3].is_queued())  # get test
         self.assertTrue(response.value[4].is_ok())  # transact_commit
-        self.assertTrue(response.value[4].type_is_agg()) # transact_commit
-        self.assertTrue(response.value[4].value[0].is_ok()) # str_set foo
-        self.assertTrue(response.value[4].value[1].is_ok()) # get test
+        self.assertTrue(response.value[4].type_is_agg())  # transact_commit
+        self.assertTrue(response.value[4].value[0].is_ok())  # str_set foo
+        self.assertTrue(response.value[4].value[1].is_ok())  # get test
         self.assertEqual(response.value[4].value[1].value, "testval")  # get test
         self.assertEqual(response.value[5].value, "bar")  # get foo
 

@@ -128,6 +128,20 @@ class UnknownUserTest(unittest.TestCase):
         response = self.client.change_password("test_change_password_no_login")
         self.assertTrue(response.is_denied())
 
+    def test_check_auth_level_no_login(self):
+        """
+        Test that we can check the authentication level if we don't login.
+        """
+        response = self.client.auth_level()
+        self.assertEqual(response.value, AuthLevel.UNKNOWN)
+
+    def test_check_username_no_login(self):
+        """
+        Test that we can't check the username if we don't login.
+        """
+        response = self.client.username()
+        self.assertTrue(response.is_denied())
+
 
 class UserAuthTest(unittest.TestCase):
     """
@@ -250,6 +264,20 @@ class UserAuthTest(unittest.TestCase):
             response = client.auth("test_user_auth", "test_change_password")
             self.assertTrue(response.is_ok())
 
+    def test_check_auth_level(self):
+        """
+        Test that we can check the authentication level if we login.
+        """
+        response = self.client.auth_level()
+        self.assertEqual(response.value, AuthLevel.USER)
+
+    def test_check_username(self):
+        """
+        Test that we can check the username if we login.
+        """
+        response = self.client.username()
+        self.assertEqual(response.value, "test_user_auth")
+
 
 class DefaultAuthTest(unittest.TestCase):
     """
@@ -295,8 +323,8 @@ class DefaultAuthTest(unittest.TestCase):
                 client.DEFAULT_ADMIN_PASSWORD,
             )
             self.assertTrue(response.is_ok())
-            response = client.edit_user("invalid_username", AuthLevel.ADMIN)
-            self.assertFalse(response.is_denied())
+            response = client.auth_level()
+            self.assertEqual(response.value, AuthLevel.ADMIN)
 
 
 class AccountsTest(unittest.TestCase):
@@ -354,8 +382,8 @@ class AccountsTest(unittest.TestCase):
                 "test_default_add_user_is_not_admin_password",
             )
             self.assertTrue(response.is_ok())
-            response = client.edit_user("invalid_username", AuthLevel.ADMIN)
-            self.assertTrue(response.is_denied())
+            response = client.auth_level()
+            self.assertEqual(response.value, AuthLevel.USER)
 
     def test_add_user_fail_if_not_admin(self):
         """
@@ -393,8 +421,8 @@ class AccountsTest(unittest.TestCase):
         with make_client(self.port, no_login=True) as client:
             response = client.auth("test_edit_user", "test_edit_user_password")
             self.assertTrue(response.is_ok())
-            response = client.edit_user("invalid_username", AuthLevel.ADMIN)
-            self.assertFalse(response.is_denied())
+            response = client.auth_level()
+            self.assertEqual(response.value, AuthLevel.ADMIN)
 
     def test_edit_user_fail(self):
         """
@@ -499,6 +527,20 @@ class AccountsTest(unittest.TestCase):
         response = self.client.del_user("test_del_user_fail_if_self")
         self.assertTrue(response.is_error())
 
+    def test_check_auth_level(self):
+        """
+        Test that we can check the authentication level as an admin.
+        """
+        response = self.client.auth_level()
+        self.assertEqual(response.value, AuthLevel.ADMIN)
+
+    def test_check_username(self):
+        """
+        Test that we can check the username as an admin.
+        """
+        response = self.client.username()
+        self.assertEqual(response.value, self.client.DEFAULT_ADMIN_USERNAME)
+
 
 class AuthPersistenceTests(unittest.TestCase):
     """
@@ -600,8 +642,8 @@ class AuthPersistenceTests(unittest.TestCase):
                 "test_make_admin_persist", "test_make_admin_persist_password"
             )
             self.assertTrue(response.is_ok())
-            response = client.edit_user("invalid_username", AuthLevel.ADMIN)
-            self.assertFalse(response.is_denied())
+            response = client.auth_level()
+            self.assertEqual(response.value, AuthLevel.ADMIN)
 
     def test_delete_user_persist(self):
         """
