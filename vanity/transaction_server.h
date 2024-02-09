@@ -32,9 +32,6 @@ public:
 	bool dispatch_transaction_request(Client& client, Request& request, bool end, bool strict) override;
 
 private:
-	// push a validated request to the transaction
-	static void push(Client& client, std::string_view request);
-
 	// get a reference to a client's current transaction data
 	static transaction_data& data(Client& client);
 

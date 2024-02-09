@@ -64,43 +64,44 @@ bool RequestServer::dispatch_request(Client &client, Request& request, bool end,
 		}
 		case behaviour_t::NOT_PERMITTED: {
 			if (strict)
-				dry_dispatch_op(request.get_operation(), request, end);
+				dry_dispatch_op(request, end);
 			send(client, bad_state());
 			return false;
 		}
 		case behaviour_t::CONTEXTUAL: {
-			switch (state) {
-				case conn_state::NORMAL:
-					return dispatch_normal_request(client, request, end, strict);
-				case conn_state::TRANSACTION:
-					return dispatch_transaction_request(client, request, end, strict);
-				default:
-					throw std::runtime_error("invalid state");
-			}
+			break;
 		}
-		default:
+		default: {
 			throw std::runtime_error("invalid behaviour");
+		}
+	}
+
+	switch (state) {
+		case conn_state::NORMAL:
+			return dispatch_normal_request(client, request, end, strict);
+		case conn_state::TRANSACTION:
+			return dispatch_transaction_request(client, request, end, strict);
+		default:
+			throw std::runtime_error("invalid state");
 	}
 }
 
 bool RequestServer::dispatch_normal_request(Client &client, Request& request, bool end, bool strict) {
-	operation_t op = request.get_operation();
-
-	if (not client.has_perm(op)){
-		if (strict)
-			dry_dispatch_op(op, request, end);
-
-		send(client, denied());
-		return false;
+	if (client.has_perm(request.peek_operation())) {
+		dispatch_op(client, request, end);
+		return true;
 	}
 
-	dispatch_op(client, op, request, end);
-	return true;
+	if (strict)
+		dry_dispatch_op(request, end);
+
+	send(client, denied());
+	return false;
 }
 
-void RequestServer::dispatch_op(Client &client, operation_t op, Request& request, bool end) {
+void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
-	switch (op) {
+	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
 			request.ensure_end();
@@ -548,9 +549,9 @@ void RequestServer::dispatch_op(Client &client, operation_t op, Request& request
 	}
 }
 
-void RequestServer::dry_dispatch_op(operation_t op, Request& request, bool end) {
+void RequestServer::dry_dispatch_op(Request& request, bool end) {
 	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
-	switch (op) {
+	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
 			request.ensure_end();

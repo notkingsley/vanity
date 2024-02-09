@@ -44,16 +44,11 @@ void TransactionServer::request_transact_discard(Client &client) {
 }
 
 bool TransactionServer::dispatch_transaction_request(Client &client, Request &request, bool end, bool strict) {
-	RequestTracker tracker{request};
-	operation_t op = request.get_operation();
-	dry_dispatch_op(op, request, end);
-	push(client, tracker.view());
+	RequestTracker tracker {request};
+	dry_dispatch_op(request, end);
+	data(client).push(tracker.view());
 	send(client, queued());
 	return true;
-}
-
-void TransactionServer::push(Client &client, std::string_view request) {
-	data(client).push(request);
 }
 
 transaction_data& TransactionServer::data(Client &client) {

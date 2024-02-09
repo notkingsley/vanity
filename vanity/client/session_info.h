@@ -45,7 +45,7 @@ struct transaction_data
 
 	// push a command to the transaction and increment the number of commands
 	template<class T>
-	void push(T& command) {
+	void push(const T& command) {
 		commands += command;
 		++size;
 	}
