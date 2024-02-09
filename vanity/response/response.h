@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 
 #include "db/db/types.h"
+#include "client/session_info.h"
 
 
 namespace vanity {
@@ -67,6 +68,11 @@ struct type_to_string<db::set_t> {
 template <>
 struct type_to_string<db::hash_t> {
 	static constexpr const char* value = ":HASH ";
+};
+
+template <>
+struct type_to_string<client_auth> {
+	static constexpr const char* value = ":AUTH_LEVEL ";
 };
 
 /*
@@ -167,6 +173,9 @@ public:
 
 	// serialize the database's primary type to a Response
 	Response& serialize(const primary_serialize_type& data);
+
+	// serialize a client_auth to a Response
+	Response& serialize(client_auth data);
 
 	// serialize nothing to a Response (does nothing)
 	Response& serialize();

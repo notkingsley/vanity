@@ -167,6 +167,22 @@ Response &Response::serialize(const primary_serialize_type &data) {
 	}
 }
 
+Response &Response::serialize(client_auth data) {
+	serialize_type<client_auth>();
+	switch (data) {
+		case client_auth::USER:
+			return *this << "user";
+		case client_auth::ADMIN:
+			return *this << "admin";
+		case client_auth::UNKNOWN:
+			return *this << "anonymous";
+		case client_auth::PEER:
+			return *this << "peer";
+		default:
+			throw std::runtime_error("invalid type");
+	}
+}
+
 Response &Response::serialize() {
 	return *this;
 }
