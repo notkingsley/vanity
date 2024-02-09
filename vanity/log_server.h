@@ -5,10 +5,10 @@
 #ifndef VANITY_LOG_SERVER_H
 #define VANITY_LOG_SERVER_H
 
-#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <mutex>
 
 
 namespace vanity {
@@ -32,6 +32,9 @@ private:
 	// the log file
 	std::ofstream m_log_file;
 
+	// mutex for the logger
+	std::mutex m_log_mutex;
+
 	// the current log level
 	LogLevel m_log_level;
 
@@ -51,8 +54,8 @@ public:
 	Logger& operator=(const Logger&) = delete;
 
 	// move
-	Logger(Logger&&)  noexcept = default;
-	Logger& operator=(Logger&&)  noexcept = default;
+	Logger(Logger&&)  noexcept = delete;
+	Logger& operator=(Logger&&)  noexcept = delete;
 
 	// set the log level
 	// silently fails if logger is DISABLED
@@ -68,43 +71,24 @@ public:
 
 	// flush the logger
 	void flush(){
+		std::lock_guard lock(m_log_mutex);
 		m_log_file.flush();
 	}
 
 	// log a message
 	void log(const std::string& msg, LogLevel log_level){
 		using std::chrono::system_clock;
+		if (log_level < m_log_level or m_log_level == LogLevel::DISABLED)
+			return;
 
-		const char* log_level_str = nullptr;
-		switch (log_level) {
-			case LogLevel::DEBUG:
-				log_level_str = "DEBUG";
-				break;
-			case LogLevel::INFO:
-				log_level_str = "INFO";
-				break;
-			case LogLevel::WARNING:
-				log_level_str = "WARNING";
-				break;
-			case LogLevel::ERROR:
-				log_level_str = "ERROR";
-				break;
-			case LogLevel::CRITICAL:
-				log_level_str = "CRITICAL";
-				break;
-			case LogLevel::DISABLED:
-				break;
-		}
-
-		if (log_level >= m_log_level and m_log_level != LogLevel::DISABLED){
-			auto now = system_clock::to_time_t(system_clock::now());
-			m_log_file
-				<< std::put_time(std::localtime(&now), "%T | ")
-				<< log_level_str
-				<< ": "
-				<< msg
-				<< std::endl;
-		}
+		auto now = system_clock::to_time_t(system_clock::now());
+		std::lock_guard lock(m_log_mutex);
+		m_log_file
+			<< std::put_time(std::localtime(&now), "%T | ")
+			<< log_level_str(log_level)
+			<< ": "
+			<< msg
+			<< std::endl;
 	}
 
 	// log a debug message
@@ -136,6 +120,26 @@ public:
 		log(msg, LogLevel::INFO);
 		return *this;
 	}
+
+	// get the string representation of the log level
+	static std::string log_level_str(LogLevel log_level){
+		switch (log_level) {
+			case LogLevel::DEBUG:
+				return "DEBUG";
+			case LogLevel::INFO:
+				return "INFO";
+			case LogLevel::WARNING:
+				return "WARNING";
+			case LogLevel::ERROR:
+				return "ERROR";
+			case LogLevel::CRITICAL:
+				return "CRITICAL";
+			case LogLevel::DISABLED:
+				return "DISABLED";
+			default:
+				throw std::runtime_error("invalid log level");
+		}
+	}
 };
 
 /*
@@ -160,8 +164,8 @@ public:
 	LogServer& operator=(const LogServer&) = delete;
 
 	// move
-	LogServer(LogServer&&)  noexcept = default;
-	LogServer& operator=(LogServer&&)  noexcept = default;
+	LogServer(LogServer&&)  noexcept = delete;
+	LogServer& operator=(LogServer&&)  noexcept = delete;
 
 	// get the underlying logger
 	Logger & logger() {
