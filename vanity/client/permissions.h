@@ -21,6 +21,8 @@ enum class operation_t{
 	DEL_USER,
 	AUTH,
 	CHANGE_PASSWORD,
+	AUTH_LEVEL,
+	USERNAME,
 
 	SWITCH_DB,
 	PERSIST,
@@ -105,11 +107,13 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::PING,               "PING"},
 	{operation_t::PIPE,               "PIPE"},
 
+	{operation_t::AUTH_LEVEL,         "AUTH_LEVEL"},
 	{operation_t::AUTH,               "AUTH"},
 	{operation_t::ADD_USER,           "ADD_USER"},
 	{operation_t::EDIT_USER,          "EDIT_USER"},
 	{operation_t::DEL_USER,           "DEL_USER"},
 	{operation_t::CHANGE_PASSWORD,    "CHANGE_PASSWORD"},
+	{operation_t::USERNAME,           "USERNAME"},
 
 	{operation_t::SWITCH_DB,          "SWITCH_DB"},
 	{operation_t::PERSIST,            "PERSIST"},
@@ -197,6 +201,7 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::EXIT:
 
 		case operation_t::AUTH:
+		case operation_t::AUTH_LEVEL:
 			return true;
 
 
@@ -207,6 +212,7 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 		case operation_t::CHANGE_PASSWORD:
+		case operation_t::USERNAME:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
@@ -300,6 +306,8 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::PIPE:
 
 		case operation_t::CHANGE_PASSWORD:
+		case operation_t::AUTH_LEVEL:
+		case operation_t::USERNAME:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
@@ -476,6 +484,8 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
+		case operation_t::AUTH_LEVEL:
+		case operation_t::USERNAME:
 
 		case operation_t::TRANSACT_BEGIN:
 		case operation_t::TRANSACT_COMMIT:
@@ -507,6 +517,8 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 		case operation_t::CHANGE_PASSWORD:
+		case operation_t::AUTH_LEVEL:
+		case operation_t::USERNAME:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
@@ -634,6 +646,8 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 		case operation_t::CHANGE_PASSWORD:
+		case operation_t::AUTH_LEVEL:
+		case operation_t::USERNAME:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:
@@ -747,6 +761,8 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
 		case operation_t::CHANGE_PASSWORD:
+		case operation_t::AUTH_LEVEL:
+		case operation_t::USERNAME:
 
 		case operation_t::SWITCH_DB:
 		case operation_t::PERSIST:

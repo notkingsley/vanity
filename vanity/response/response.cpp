@@ -171,13 +171,13 @@ Response &Response::serialize(client_auth data) {
 	serialize_type<client_auth>();
 	switch (data) {
 		case client_auth::USER:
-			return *this << "user";
+			return *this << "USER";
 		case client_auth::ADMIN:
-			return *this << "admin";
+			return *this << "ADMIN";
 		case client_auth::UNKNOWN:
-			return *this << "anonymous";
+			return *this << "UNKNOWN";
 		case client_auth::PEER:
-			return *this << "peer";
+			return *this << "PEER";
 		default:
 			throw std::runtime_error("invalid type");
 	}

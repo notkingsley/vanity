@@ -48,6 +48,12 @@ private:
 	// file to persist the database to, if any
 	const std::optional<std::filesystem::path> m_users_db;
 
+	// persist the login data to disk
+	void persist_logins() const;
+
+	// get the default login info
+	static auth_info default_auth_info() noexcept;
+
 public:
 	// create an AuthServer with an optional persistence file
 	explicit AuthServer(std::optional<std::filesystem::path> users_db) noexcept;
@@ -67,12 +73,11 @@ public:
 	// a change_password request was received from a client
 	void request_change_password(Client& client, const std::string& new_password) override;
 
-private:
-	// persist the login data to disk
-	void persist_logins() const;
+	// an auth_level request was received from a client
+	void request_auth_level(Client& client) override;
 
-	// get the default login info
-	static auth_info default_auth_info() noexcept;
+	// a username request was received from a client
+	void request_username(Client& client) override;
 };
 
 } // namespace vanity

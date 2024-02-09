@@ -166,6 +166,18 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			request_change_password(client, password);
 			break;
 		}
+		case operation_t::AUTH_LEVEL:
+		{
+			request.get_exact<>(end);
+			request_auth_level(client);
+			break;
+		}
+		case operation_t::USERNAME:
+		{
+			request.get_exact<>(end);
+			request_username(client);
+			break;
+		}
 
 		case operation_t::SWITCH_DB:
 		{
@@ -629,6 +641,16 @@ void RequestServer::dry_dispatch(Request& request, bool end) {
 		case operation_t::CHANGE_PASSWORD:
 		{
 			request.get_exact<STR>(end);
+			break;
+		}
+		case operation_t::AUTH_LEVEL:
+		{
+			request.get_exact<>(end);
+			break;
+		}
+		case operation_t::USERNAME:
+		{
+			request.get_exact<>(end);
 			break;
 		}
 

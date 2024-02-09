@@ -164,6 +164,14 @@ void AuthServer::request_change_password(Client &client, const std::string &new_
 	send(client, ok());
 }
 
+void AuthServer::request_auth_level(Client &client) {
+	send(client, ok(session_auth(client)));
+}
+
+void AuthServer::request_username(Client &client) {
+	send(client, ok(session_username(client)));
+}
+
 auth_info AuthServer::default_auth_info() noexcept {
 	const char* password = std::getenv(M_DEFAULT_PASSWORD_ENV);
 	if (not password)

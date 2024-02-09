@@ -111,6 +111,12 @@ public:
 	// a change_password request was received from a client
 	virtual void request_change_password(Client& client, const std::string& password) = 0;
 
+	// an auth_level request was received from a client
+	virtual void request_auth_level(Client& client) = 0;
+
+	// a username request was received from a client
+	virtual void request_username(Client& client) = 0;
+
 	// a list_len request was received from a client
 	virtual void request_list_len(Client& client, const std::string& key) = 0;
 
