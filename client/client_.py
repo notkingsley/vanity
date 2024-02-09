@@ -2,9 +2,10 @@ from collections import deque
 from itertools import chain
 
 from client.async_response import AsyncResponse, make_response
+from client.auth_level import AuthLevel
 from client.response import Response
 from client.socket_client import SocketClient
-from client.command_interface import AuthLevel, CommandInterface
+from client.command_interface import CommandInterface
 
 
 def format(msg: str | int | float | list | set | dict | AuthLevel) -> str:

@@ -1,18 +1,7 @@
 from abc import ABC, abstractmethod
-from enum import Enum
 
+from client.auth_level import AuthLevel
 from client.response import Response
-
-
-class AuthLevel(Enum):
-    """
-    Auth levels for users.
-    """
-
-    UNKNOWN = "UNKNOWN"
-    USER = "USER"
-    PEER = "PEER"
-    ADMIN = "ADMIN"
 
 
 class CommandInterface(ABC):

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from warnings import warn
 
+from client.auth_level import AuthLevel
+
 
 class ServerConstant(Enum):
     """
@@ -37,6 +39,7 @@ class ServerType(Enum):
     BOOL = "BOOL"
     HASH = "HASH"
     AGG = "AGG"
+    AUTH_LEVEL = "AUTH_LEVEL"
 
 
 class InvalidResponse(Exception):
@@ -54,7 +57,8 @@ def extract_status(msg: str) -> tuple[ServerConstant | None, str]:
     """
     for constant in ServerConstant:
         if msg.startswith(constant.value):
-            return constant, msg[len(constant.value) :].lstrip()
+            legnth = len(constant.value)
+            return constant, msg[legnth:].lstrip()
 
     return None, msg
 
@@ -103,7 +107,8 @@ def extract_int(msg: str) -> tuple[int | None, str]:
     if not num:
         return None, msg
     try:
-        return int(num), msg[len(num) :].lstrip()
+        length = len(num)
+        return int(num), msg[length:].lstrip()
     except ValueError:
         return None, msg
 
@@ -124,7 +129,8 @@ def extract_float(msg: str):
     if not num:
         return None, msg
     try:
-        return float(num), msg[len(num) :].lstrip()
+        length = len(num)
+        return float(num), msg[length:].lstrip()
     except ValueError:
         return None, msg
 
@@ -149,7 +155,7 @@ def extract_array(msg: str):
         elements.append(element)
 
     if not msg.startswith("]"):
-        raise InvalidResponse(f"Message did not end with ']'.")
+        raise InvalidResponse("Message did not end with ']'.")
     msg = msg[1:].lstrip()
 
     return elements, msg
@@ -182,7 +188,7 @@ def extract_tuple(msg: str):
         elements.append(element)
 
     if not msg.startswith(")"):
-        raise InvalidResponse(f"Message did not end with ')'.")
+        raise InvalidResponse("Message did not end with ')'.")
     msg = msg[1:].lstrip()
 
     return elements, msg
@@ -208,7 +214,7 @@ def extract_list(msg: str):
         elements.append(element)
 
     if not msg.startswith("]"):
-        raise InvalidResponse(f"Message did not end with ']'.")
+        raise InvalidResponse("Message did not end with ']'.")
     msg = msg[1:].lstrip()
 
     return elements, msg
@@ -298,6 +304,20 @@ def extract_agg(msg: str):
     return responses, msg
 
 
+def extract_auth_level(msg: str):
+    """
+    Extract an auth level from a response.
+    :param msg: The response to extract from.
+    :return: The extracted auth level, or None if no auth level could be deciphered.
+    """
+    for level in AuthLevel:
+        if msg.startswith(level.value):
+            length = len(level.value)
+            return level, msg[length:].lstrip()
+
+    return None, msg
+
+
 def extract_as(msg: str, _type: ServerType):
     """
     Extract a value from a response as a given type.
@@ -328,6 +348,8 @@ def extract_as(msg: str, _type: ServerType):
             return extract_hash(msg)
         case ServerType.AGG:
             return extract_agg(msg)
+        case ServerType.AUTH_LEVEL:
+            return extract_auth_level(msg)
         case _:
             raise ValueError(f"Invalid type: {_type}.")
 
@@ -370,6 +392,9 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
     elif msg.startswith(":AGG"):
         return ServerType.AGG, msg[4:].lstrip()
 
+    elif msg.startswith(":AUTH_LEVEL"):
+        return ServerType.AUTH_LEVEL, msg[11:].lstrip()
+
     return None, msg
 
 
@@ -402,9 +427,22 @@ class RawResponse:
     Represents a raw response just after extraction.
     """
 
+    ValueType = (
+        str
+        | int
+        | float
+        | list
+        | set
+        | dict
+        | bool
+        | list["Response"]
+        | AuthLevel
+        | None
+    )
+
     status: ServerConstant | None
     type: ServerType | None
-    value: str | int | float | list | set | dict | bool | list["Response"] | None
+    value: ValueType
     body: str | None
 
 
@@ -579,3 +617,9 @@ class Response:
         :return: True if the response is an aggregate, False otherwise.
         """
         return self.type == ServerType.AGG
+
+    def type_is_auth_level(self) -> bool:
+        """
+        :return: True if the response is of type AUTH_LEVEL, False otherwise.
+        """
+        return self.type == ServerType.AUTH_LEVEL
