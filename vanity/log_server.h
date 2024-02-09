@@ -2,8 +2,8 @@
 // Created by kingsli on 9/25/23.
 //
 
-#ifndef VANITY_LOGGING_H
-#define VANITY_LOGGING_H
+#ifndef VANITY_LOG_SERVER_H
+#define VANITY_LOG_SERVER_H
 
 #include <chrono>
 #include <filesystem>
@@ -26,7 +26,7 @@ enum class LogLevel
 /*
  * A simple logger class
  */
-class logger_base
+class Logger
 {
 private:
 	// the log file
@@ -37,22 +37,22 @@ private:
 
 public:
 	// create a logger
-	logger_base(const std::filesystem::path& log_file, LogLevel log_level){
+	Logger(const std::filesystem::path& log_file, LogLevel log_level){
 		m_log_level = log_level;
 		if (m_log_level != LogLevel::DISABLED)
 			m_log_file.open(log_file, std::ios::out | std::ios::app);
 	}
 
 	// destroy the logger
-	~logger_base() = default;
+	~Logger() = default;
 
 	// no copy
-	logger_base(const logger_base&) = delete;
-	logger_base& operator=(const logger_base&) = delete;
+	Logger(const Logger&) = delete;
+	Logger& operator=(const Logger&) = delete;
 
 	// move
-	logger_base(logger_base&&)  noexcept = default;
-	logger_base& operator=(logger_base&&)  noexcept = default;
+	Logger(Logger&&)  noexcept = default;
+	Logger& operator=(Logger&&)  noexcept = default;
 
 	// set the log level
 	// silently fails if logger is DISABLED
@@ -74,19 +74,33 @@ public:
 	// log a message
 	void log(const std::string& msg, LogLevel log_level){
 		using std::chrono::system_clock;
-		static const char* log_level_str[] = {
-			"DEBUG",
-			"INFO",
-			"WARNING",
-			"ERROR",
-			"CRITICAL",
-		};
+
+		const char* log_level_str = nullptr;
+		switch (log_level) {
+			case LogLevel::DEBUG:
+				log_level_str = "DEBUG";
+				break;
+			case LogLevel::INFO:
+				log_level_str = "INFO";
+				break;
+			case LogLevel::WARNING:
+				log_level_str = "WARNING";
+				break;
+			case LogLevel::ERROR:
+				log_level_str = "ERROR";
+				break;
+			case LogLevel::CRITICAL:
+				log_level_str = "CRITICAL";
+				break;
+			case LogLevel::DISABLED:
+				break;
+		}
 
 		if (log_level >= m_log_level and m_log_level != LogLevel::DISABLED){
 			auto now = system_clock::to_time_t(system_clock::now());
 			m_log_file
 				<< std::put_time(std::localtime(&now), "%T | ")
-				<< log_level_str[static_cast<int>(log_level)]
+				<< log_level_str
 				<< ": "
 				<< msg
 				<< std::endl;
@@ -118,43 +132,43 @@ public:
 		log(msg, LogLevel::CRITICAL);
 	}
 
-	logger_base& operator<<(const std::string& msg){
+	Logger& operator<<(const std::string& msg){
 		log(msg, LogLevel::INFO);
 		return *this;
 	}
 };
 
 /*
- * A Logger allows us to log messages
+ * A LogServer allows us to log messages
  */
-class Logger
+class LogServer
 {
 private:
 	// the logger
-	mutable logger_base m_logger;
+	Logger m_logger;
 
 public:
-	// create a logger
-	explicit Logger(const std::filesystem::path& log_file, LogLevel log_level)
+	// create a LogServer
+	explicit LogServer(const std::filesystem::path& log_file, LogLevel log_level)
 		: m_logger{log_file, log_level} {}
 
 	// destroy the log server
-	~Logger() = default;
+	~LogServer() = default;
 
 	// no copy
-	Logger(const Logger&) = delete;
-	Logger& operator=(const Logger&) = delete;
+	LogServer(const LogServer&) = delete;
+	LogServer& operator=(const LogServer&) = delete;
 
 	// move
-	Logger(Logger&&)  noexcept = default;
-	Logger& operator=(Logger&&)  noexcept = default;
+	LogServer(LogServer&&)  noexcept = default;
+	LogServer& operator=(LogServer&&)  noexcept = default;
 
 	// get the underlying logger
-	logger_base & logger() const {
+	Logger & logger() {
 		return m_logger;
 	}
 };
 
 } // namespace vanity
 
-#endif //VANITY_LOGGING_H
+#endif //VANITY_LOG_SERVER_H

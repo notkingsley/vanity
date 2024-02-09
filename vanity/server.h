@@ -46,7 +46,7 @@ public:
 	// create a server
 	explicit Server(const Config& config):
 		AuthServer(config.users_db),
-		Logger(config.log_file, config.log_level),
+		LogServer(config.log_file, config.log_level),
 		PersistentServer(config.db_file),
 		SocketServer(config.ports)
 	{};

@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "arguments.h"
-#include "utils/logging.h"
+#include "log_server.h"
 
 namespace vanity {
 

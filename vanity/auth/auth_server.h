@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "hasher.h"
-#include "utils/logging.h"
+#include "log_server.h"
 #include "request/request_server.h"
 
 namespace vanity {
@@ -49,7 +49,7 @@ private:
 	const std::optional<std::filesystem::path> m_users_db;
 
 	// persist the login data to disk
-	void persist_logins() const;
+	void persist_logins();
 
 	// get the default login info
 	static auth_info default_auth_info() noexcept;

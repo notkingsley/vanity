@@ -61,7 +61,7 @@ AuthServer::AuthServer(std::optional<std::filesystem::path> users_db) noexcept
 	}
 }
 
-void AuthServer::persist_logins() const {
+void AuthServer::persist_logins() {
 	if (not m_users_db)
 		return;
 

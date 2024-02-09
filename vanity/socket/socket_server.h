@@ -11,7 +11,7 @@
 #include "socket.h"
 #include "socket_connection_server.h"
 #include "utils/event.h"
-#include "utils/logging.h"
+#include "log_server.h"
 
 
 namespace vanity{
@@ -23,7 +23,7 @@ class SocketConnectionServer;
  * A SocketServer allows us to listen on one or more sockets,
  * accept connections and read/write data
  */
-class SocketServer : public virtual EventServer, public virtual Logger
+class SocketServer : public virtual EventServer, public virtual LogServer
 {
 private:
 	// the current set of clients
