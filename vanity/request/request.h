@@ -27,6 +27,7 @@ enum class object_t{
 	LIST,
 	SET,
 	HASH,
+	CLIENT_AUTH,
 };
 
 const std::initializer_list<std::pair<object_t, std::string>> OBJECT_T_STRINGS {
@@ -37,6 +38,7 @@ const std::initializer_list<std::pair<object_t, std::string>> OBJECT_T_STRINGS {
 	{object_t::LIST,  "LIST"},
 	{object_t::SET,   "SET"},
 	{object_t::HASH,  "HASH"},
+	{object_t::CLIENT_AUTH, "CLIENT_AUTH"},
 };
 
 template<object_t _obj>
@@ -75,6 +77,11 @@ struct concrete_traits<object_t::SET> {
 template<>
 struct concrete_traits<object_t::HASH> {
 	using type = std::unordered_map<std::string, std::string>;
+};
+
+template<>
+struct concrete_traits<object_t::CLIENT_AUTH> {
+	using type = client_auth;
 };
 
 template <object_t ...Args>
@@ -335,6 +342,11 @@ inline std::unordered_map<std::string, std::string> Request::get<object_t::HASH>
 
 	expect('}', "hash not closed with '}' bracket");
 	return hash;
+}
+
+template<>
+inline client_auth Request::get<object_t::CLIENT_AUTH>() {
+	return get_client_auth();
 }
 
 } // namespace vanity

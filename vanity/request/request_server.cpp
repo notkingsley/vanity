@@ -100,7 +100,9 @@ bool RequestServer::dispatch_normal_request(Client &client, Request& request, bo
 }
 
 void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
+	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
+
 	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
@@ -141,9 +143,7 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		}
 		case operation_t::EDIT_USER:
 		{
-			auto username = request.get<STR>();
-			auto auth = request.get_client_auth();
-			request.get_exact<>(end);
+			auto [username, auth] = request.get_exact<STR, CLIENT_AUTH>(end);
 			request_edit_user(client, username, auth);
 			break;
 		}
@@ -550,7 +550,9 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 }
 
 void RequestServer::dry_dispatch_op(Request& request, bool end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR, object_t::LIST, object_t::SET, object_t::HASH;
+	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
+	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
+
 	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
@@ -585,9 +587,7 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		}
 		case operation_t::EDIT_USER:
 		{
-			request.get<STR>();
-			request.get_client_auth();
-			request.get_exact<>(end);
+			request.get_exact<STR, CLIENT_AUTH>(end);
 			break;
 		}
 		case operation_t::DEL_USER:
