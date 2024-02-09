@@ -121,6 +121,18 @@ class CommandInterface(ABC):
         """
         return self.request("CHANGE_PASSWORD", password)
 
+    def auth_level(self):
+        """
+        Get the current client's auth level.
+        """
+        return self.request("AUTH_LEVEL")
+
+    def username(self):
+        """
+        Get the current client's username.
+        """
+        return self.request("USERNAME")
+
     def type(self, key: str):
         """
         Get the type of a key.
