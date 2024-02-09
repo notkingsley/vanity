@@ -104,26 +104,26 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
-			request.ensure_end();
+			request.get_exact<>(true);
 			request_terminate(client);
-			break;
-		}
-		case operation_t::PING:
-		{
-			request.ensure_end_if(end);
-			request_ping(client);
 			break;
 		}
 		case operation_t::EXIT:
 		{
-			request.ensure_end();
+			request.get_exact<>(true);
 			request_exit(client);
+			break;
+		}
+		case operation_t::PING:
+		{
+			request.get_exact<>(end);
+			request_ping(client);
 			break;
 		}
 		case operation_t::PIPE:
 		{
 			request_pipe(client, request);
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 
@@ -143,7 +143,7 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		{
 			auto username = request.get<STR>();
 			auto auth = request.get_client_auth();
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_edit_user(client, username, auth);
 			break;
 		}
@@ -165,26 +165,26 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		}
 		case operation_t::PERSIST:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_persist(client);
 			break;
 		}
 
 		case operation_t::TRANSACT_BEGIN:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_transact_begin(client);
 			break;
 		}
 		case operation_t::TRANSACT_COMMIT:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_transact_commit(client);
 			break;
 		}
 		case operation_t::TRANSACT_DISCARD:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_transact_discard(client);
 			break;
 		}
@@ -202,7 +202,7 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SUBSCRIBED:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_subscribed(client);
 			break;
 		}
@@ -213,7 +213,7 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		}
 		case operation_t::UNSUBSCRIBE_ALL:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_unsubscribe_all(client);
 			break;
 		}
@@ -235,13 +235,13 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 		}
 		case operation_t::RESET:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_reset(client);
 			break;
 		}
 		case operation_t::KEYS:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			request_keys(client);
 			break;
 		}
@@ -554,22 +554,22 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
 		{
-			request.ensure_end();
-			break;
-		}
-		case operation_t::PING:
-		{
-			request.ensure_end_if(end);
+			request.get_exact<>(true);
 			break;
 		}
 		case operation_t::EXIT:
 		{
-			request.ensure_end();
+			request.get_exact<>(true);
+			break;
+		}
+		case operation_t::PING:
+		{
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::PIPE:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 
@@ -587,7 +587,7 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		{
 			request.get<STR>();
 			request.get_client_auth();
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::DEL_USER:
@@ -608,23 +608,23 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		}
 		case operation_t::PERSIST:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 
 		case operation_t::TRANSACT_BEGIN:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::TRANSACT_COMMIT:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::TRANSACT_DISCARD:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 
@@ -640,7 +640,7 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		}
 		case operation_t::SUBSCRIBED:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::UNSUBSCRIBE:
@@ -650,7 +650,7 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		}
 		case operation_t::UNSUBSCRIBE_ALL:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 
@@ -671,12 +671,12 @@ void RequestServer::dry_dispatch_op(Request& request, bool end) {
 		}
 		case operation_t::RESET:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::KEYS:
 		{
-			request.ensure_end_if(end);
+			request.get_exact<>(end);
 			break;
 		}
 		case operation_t::COPY_TO:
