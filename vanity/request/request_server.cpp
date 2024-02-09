@@ -156,18 +156,21 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::DEL_USER:
 		{
-			request_del_user(client, request.get_exact<STR>(end));
+			auto username = request.get_exact<STR>(end);
+			request_del_user(client, username);
 			break;
 		}
 		case operation_t::CHANGE_PASSWORD:
 		{
-			request_change_password(client, request.get_exact<STR>(end));
+			auto password = request.get_exact<STR>(end);
+			request_change_password(client, password);
 			break;
 		}
 
 		case operation_t::SWITCH_DB:
 		{
-			request_switch_db(client, request.get_exact<INT>(end));
+			auto index = request.get_exact<INT>(end);
+			request_switch_db(client, index);
 			break;
 		}
 		case operation_t::PERSIST:
@@ -204,7 +207,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SUBSCRIBE:
 		{
-			request_subscribe(client, request.get_exact<STR>(end));
+			auto channel = request.get_exact<STR>(end);
+			request_subscribe(client, channel);
 			break;
 		}
 		case operation_t::SUBSCRIBED:
@@ -215,7 +219,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::UNSUBSCRIBE:
 		{
-			request_unsubscribe(client, request.get_exact<STR>(end));
+			auto channel = request.get_exact<STR>(end);
+			request_unsubscribe(client, channel);
 			break;
 		}
 		case operation_t::UNSUBSCRIBE_ALL:
@@ -227,17 +232,20 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 
 		case operation_t::DEL:
 		{
-			request_del(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_del(client, key);
 			break;
 		}
 		case operation_t::TYPE:
 		{
-			request_type(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_type(client, key);
 			break;
 		}
 		case operation_t::EXISTS:
 		{
-			request_exists(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_exists(client, key);
 			break;
 		}
 		case operation_t::RESET:
@@ -285,18 +293,21 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::GET_EXPIRY:
 		{
-			request_get_expiry(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_get_expiry(client, key);
 			break;
 		}
 		case operation_t::CLEAR_EXPIRY:
 		{
-			request_clear_expiry(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_clear_expiry(client, key);
 			break;
 		}
 
 		case operation_t::GET:
 		{
-			request_get(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_get(client, key);
 			break;
 		}
 		case operation_t::STR_SET:
@@ -331,18 +342,21 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::STR_LEN:
 		{
-			request_str_len(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_str_len(client, key);
 			break;
 		}
 		case operation_t::MANY_GET:
 		{
-			request_many_get(client, request.get_exact<ARR>(end));
+			auto keys = request.get_exact<ARR>(end);
+			request_many_get(client, keys);
 			break;
 		}
 
 		case operation_t::LIST_LEN:
 		{
-			request_list_len(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_list_len(client, key);
 			break;
 		}
 		case operation_t::LIST_GET:
@@ -408,7 +422,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SET_ALL:
 		{
-			request_set_all(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_set_all(client, key);
 			break;
 		}
 		case operation_t::SET_REMOVE:
@@ -425,7 +440,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SET_LEN:
 		{
-			request_set_len(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_set_len(client, key);
 			break;
 		}
 		case operation_t::SET_CONTAINS:
@@ -442,7 +458,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SET_UNION:
 		{
-			request_set_union(client, request.get_exact<ARR>(end));
+			auto keys = request.get_exact<ARR>(end);
+			request_set_union(client, keys);
 			break;
 		}
 		case operation_t::SET_UNION_INTO:
@@ -453,12 +470,14 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SET_UNION_LEN:
 		{
-			request_set_union_len(client, request.get_exact<ARR>(end));
+			auto keys = request.get_exact<ARR>(end);
+			request_set_union_len(client, keys);
 			break;
 		}
 		case operation_t::SET_INTERSECT:
 		{
-			request_set_intersection(client, request.get_exact<ARR>(end));
+			auto keys = request.get_exact<ARR>(end);
+			request_set_intersection(client, keys);
 			break;
 		}
 		case operation_t::SET_INTERSECT_INTO:
@@ -469,7 +488,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::SET_INTERSECT_LEN:
 		{
-			request_set_intersection_len(client, request.get_exact<ARR>(end));
+			auto keys = request.get_exact<ARR>(end);
+			request_set_intersection_len(client, keys);
 			break;
 		}
 		case operation_t::SET_DIFF:
@@ -499,7 +519,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::HASH_ALL:
 		{
-			request_hash_all(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_hash_all(client, key);
 			break;
 		}
 		case operation_t::HASH_GET:
@@ -516,7 +537,8 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::HASH_LEN:
 		{
-			request_hash_len(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_hash_len(client, key);
 			break;
 		}
 		case operation_t::HASH_KEY_LEN:
@@ -533,12 +555,14 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::HASH_KEYS:
 		{
-			request_hash_keys(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_hash_keys(client, key);
 			break;
 		}
 		case operation_t::HASH_VALUES:
 		{
-			request_hash_values(client, request.get_exact<STR>(end));
+			auto key = request.get_exact<STR>(end);
+			request_hash_values(client, key);
 			break;
 		}
 		case operation_t::HASH_UPDATE:
