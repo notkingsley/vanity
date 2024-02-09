@@ -23,7 +23,7 @@ public:
 void PipeServer::request_pipe(Client &client, Request& request) {
 	size_t len = request.get_len();
 	PipedClient piped_client{client, len};
-	do_handle_many(piped_client, request, len);
+	do_handle(piped_client, request, len);
 	piped_client.perform_write(*this);
 }
 

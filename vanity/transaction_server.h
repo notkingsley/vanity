@@ -29,7 +29,7 @@ public:
 	void request_transact_discard(Client& client) override;
 
 	// dispatch a request in a transaction context
-	bool dispatch_transaction_request(Client& client, Request& request, bool end, bool strict) override;
+	bool dispatch_transaction_context(Client& client, Request& request, bool end, bool strict) override;
 
 private:
 	// get a reference to a client's current transaction data

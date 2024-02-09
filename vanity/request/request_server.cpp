@@ -8,13 +8,21 @@ namespace vanity {
 
 void RequestServer::handle(const std::string& msg, Client& client) {
 	Request request{msg};
-	do_handle(client, request, true, false);
+	do_handle(client, request, 1);
 }
 
-bool RequestServer::do_handle(Client &client, Request& request, bool end, bool strict) {
-	try
-	{
-		return dispatch_request(client, request, end, strict);
+void RequestServer::do_handle(Client &client, Request &request, size_t len) {
+	if (len == 0)
+		return;
+
+	for (size_t i = 0; i < len - 1; ++i)
+		do_handle_single(client, request, false, true);
+	do_handle_single(client, request, true, false);
+}
+
+bool RequestServer::do_handle_single(Client &client, Request& request, bool end, bool strict) {
+	try {
+		return dispatch_by_behavior(client, request, end, strict);
 	}
 	catch (const InvalidRequest& e)
 	{
@@ -46,60 +54,59 @@ bool RequestServer::do_handle(Client &client, Request& request, bool end, bool s
 	}
 }
 
-void RequestServer::do_handle_many(Client &client, Request &request, size_t len) {
-	if (len == 0)
-		return;
-
-	for (size_t i = 0; i < len - 1; ++i)
-		do_handle(client, request, false, true);
-	do_handle(client, request, true, false);
-}
-
-bool RequestServer::dispatch_request(Client &client, Request& request, bool end, bool strict) {
-	auto state = session_state(client);
-
-	switch (behaviour(request.peek_operation(), state)) {
+bool RequestServer::dispatch_by_behavior(Client &client, Request& request, bool end, bool strict) {
+	switch (behaviour(request.peek_operation(), session_state(client))) {
 		case behaviour_t::DEFAULT: {
-			return dispatch_normal_request(client, request, end, strict);
+			return dispatch_default_behavior(client, request, end, strict);
 		}
 		case behaviour_t::NOT_PERMITTED: {
-			if (strict)
-				dry_dispatch_op(request, end);
-			send(client, bad_state());
-			return false;
+			return dispatch_not_permitted_behavior(client, request, end, strict);
 		}
 		case behaviour_t::CONTEXTUAL: {
-			break;
+			return dispatch_contextual_behavior(client, request, end, strict);
 		}
 		default: {
 			throw std::runtime_error("invalid behaviour");
 		}
 	}
+}
 
-	switch (state) {
+bool RequestServer::dispatch_default_behavior(Client& client, Request& request, bool end, bool strict) {
+	return dispatch_normal_context(client, request, end, strict);
+}
+
+bool RequestServer::dispatch_not_permitted_behavior(Client& client, Request& request, bool end, bool strict) {
+	return refuse_with_response(client, request, end, strict, bad_state());
+}
+
+bool RequestServer::dispatch_contextual_behavior(Client& client, Request& request, bool end, bool strict) {
+	switch (session_state(client)) {
 		case conn_state::NORMAL:
-			return dispatch_normal_request(client, request, end, strict);
+			return dispatch_normal_context(client, request, end, strict);
 		case conn_state::TRANSACTION:
-			return dispatch_transaction_request(client, request, end, strict);
+			return dispatch_transaction_context(client, request, end, strict);
 		default:
 			throw std::runtime_error("invalid state");
 	}
 }
 
-bool RequestServer::dispatch_normal_request(Client &client, Request& request, bool end, bool strict) {
-	if (client.has_perm(request.peek_operation())) {
-		dispatch_op(client, request, end);
-		return true;
-	}
+bool RequestServer::dispatch_normal_context(Client &client, Request& request, bool end, bool strict) {
+	if (not client.has_perm(request.peek_operation()))
+		return refuse_with_response(client, request, end, strict, denied());
 
+	dispatch(client, request, end);
+	return true;
+}
+
+bool RequestServer::refuse_with_response(Client& client, Request& request, bool end, bool strict, Response&& response) {
 	if (strict)
-		dry_dispatch_op(request, end);
+		dry_dispatch(request, end);
 
-	send(client, denied());
+	send(client, response.move());
 	return false;
 }
 
-void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
+void RequestServer::dispatch(Client &client, Request& request, bool end) {
 	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
 	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
 
@@ -549,7 +556,7 @@ void RequestServer::dispatch_op(Client &client, Request& request, bool end) {
 	}
 }
 
-void RequestServer::dry_dispatch_op(Request& request, bool end) {
+void RequestServer::dry_dispatch(Request& request, bool end) {
 	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
 	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
 

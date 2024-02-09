@@ -32,7 +32,7 @@ void TransactionServer::request_transact_commit(Client &client) {
 	{
 		TempState trn_state{client, conn_state::NORMAL};
 		auto trn_lock= database(client).lock();
-		do_handle_many(trn_client, trn_request, trn_data.size);
+		do_handle(trn_client, trn_request, trn_data.size);
 	}
 	exit_transaction(client);
 	trn_client.perform_write(*this);
@@ -43,9 +43,9 @@ void TransactionServer::request_transact_discard(Client &client) {
 	send(client, ok());
 }
 
-bool TransactionServer::dispatch_transaction_request(Client &client, Request &request, bool end, bool strict) {
+bool TransactionServer::dispatch_transaction_context(Client &client, Request &request, bool end, bool strict) {
 	RequestTracker tracker {request};
-	dry_dispatch_op(request, end);
+	dry_dispatch(request, end);
 	data(client).push(tracker.view());
 	send(client, queued());
 	return true;
