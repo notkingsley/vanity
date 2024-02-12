@@ -244,6 +244,14 @@ void write(std::ofstream &out, const std::unordered_map<K, V>& value)
 		write<std::pair<K, V>>(out, pair);
 }
 
+// write a string_view to the output stream
+template<>
+void write(std::ofstream &out, const std::string_view& value)
+{
+	write(out, value.size());
+	out.write(value.data(), value.size());
+}
+
 } // namespace vanity::serializer
 
 #endif //VANITY_SERIALIZER_H
