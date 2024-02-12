@@ -47,21 +47,26 @@ private:
 	// extract the logging configuration
 	void extract_logging(const Arguments& args, const path& root_dir);
 
+	// extract the wal file
+	void extract_wal_file(const Arguments& args, const path& root_dir);
+
 public:
-	constexpr static auto DEFAULT_PORTS = std::array<uint16_t, 2>{9955, 19955};
 	constexpr static auto DEFAULT_LOG_LEVEL = LogLevel::INFO;
 	constexpr static auto DEFAULT_HOME_DIR = ".vanity";
 	constexpr static auto DEFAULT_DB_FILE = "vanity.db";
-	constexpr static auto DEFAULT_USERS_DB = "users.db";
 	constexpr static auto DEFAULT_LOG_FILE = "vanity.log";
+	constexpr static auto DEFAULT_WAL_FILE = "vanity.wal";
+	constexpr static auto DEFAULT_USERS_DB = "vanity.users";
+	constexpr static auto DEFAULT_PORTS = std::array<uint16_t, 2>{9955, 19955};
 
 	std::optional<path> users_db;
 	std::optional<path> db_file;
+	std::optional<path> wal_file;
 	path log_file;
 	std::vector<uint16_t> ports;
 	LogLevel log_level = DEFAULT_LOG_LEVEL;
 
-	explicit Config(const Arguments& args);
+	Config(const Arguments& args);
 };
 
 } // namespace vanity

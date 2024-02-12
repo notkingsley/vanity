@@ -9,10 +9,10 @@ namespace vanity {
 static inline void to_lower(std::string& str)
 {
 	std::transform(
-			str.begin(),
-			str.end(),
-			str.begin(),
-			[](unsigned char c){ return std::tolower(c); }
+		str.begin(),
+		str.end(),
+		str.begin(),
+		[](unsigned char c){ return std::tolower(c); }
 	);
 }
 
@@ -22,6 +22,7 @@ Config::Config(const Arguments &args) {
 	extract_db_file(args, root_dir);
 	extract_users_db(args, root_dir);
 	extract_logging(args, root_dir);
+	extract_wal_file(args, root_dir);
 }
 
 auto Config::extract_root_dir(const Arguments& args) -> path {
@@ -121,6 +122,22 @@ void Config::extract_logging(const Arguments& args, const path& root_dir) {
 	}
 	_extract_log_file(args, root_dir);
 	_extract_log_level(args);
+}
+
+void Config::extract_wal_file(const Arguments &args, const Config::path &root_dir) {
+	if (args.has("no_wal")) {
+		wal_file = std::nullopt;
+		return;
+	}
+
+	if (not args.has_kwarg("wal_file")) {
+		wal_file = root_dir / DEFAULT_WAL_FILE;
+		return;
+	}
+
+	wal_file = args.get_kwarg("wal_file");
+	if (wal_file->is_relative())
+		wal_file = root_dir / *wal_file;
 }
 
 } // namespace vanity
