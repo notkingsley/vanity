@@ -29,11 +29,12 @@ void TransactionServer::request_transact_commit(Client &client) {
 	auto &trn_data = data(client);
 	TransactionClient trn_client{client, trn_data.size};
 	Request trn_request{trn_data.commands};
+
 	{
-		TempState trn_state{client, conn_state::NORMAL};
 		auto trn_lock= database(client).lock();
 		do_handle(trn_client, trn_request, trn_data.size);
 	}
+
 	exit_transaction(client);
 	trn_client.perform_write(*this);
 }
@@ -44,6 +45,9 @@ void TransactionServer::request_transact_discard(Client &client) {
 }
 
 bool TransactionServer::dispatch_transaction_context(Client &client, Request &request, bool end) {
+	if (dynamic_cast<TransactionClient*>(&client))
+		return dispatch_normal_context(client, request, end);
+
 	RequestTracker tracker {request};
 	dry_dispatch(request, end);
 	data(client).push(tracker.view());
