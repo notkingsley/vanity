@@ -43,7 +43,7 @@ void TransactionServer::request_transact_discard(Client &client) {
 	send(client, ok());
 }
 
-bool TransactionServer::dispatch_transaction_context(Client &client, Request &request, bool end, bool strict) {
+bool TransactionServer::dispatch_transaction_context(Client &client, Request &request, bool end) {
 	RequestTracker tracker {request};
 	dry_dispatch(request, end);
 	data(client).push(tracker.view());

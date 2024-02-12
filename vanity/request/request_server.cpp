@@ -16,13 +16,14 @@ void RequestServer::do_handle(Client &client, Request &request, size_t len) {
 		return;
 
 	for (size_t i = 0; i < len - 1; ++i)
-		do_handle_single(client, request, false, true);
-	do_handle_single(client, request, true, false);
+		do_handle_single(client, request, false);
+	do_handle_single(client, request, true);
 }
 
-bool RequestServer::do_handle_single(Client &client, Request& request, bool end, bool strict) {
-	try {
-		return dispatch_by_behavior(client, request, end, strict);
+bool RequestServer::do_handle_single(Client &client, Request& request, bool end) {
+	try
+	{
+		return dispatch_by_behavior(client, request, end);
 	}
 	catch (const InvalidRequest& e)
 	{
@@ -54,16 +55,16 @@ bool RequestServer::do_handle_single(Client &client, Request& request, bool end,
 	}
 }
 
-bool RequestServer::dispatch_by_behavior(Client &client, Request& request, bool end, bool strict) {
+bool RequestServer::dispatch_by_behavior(Client &client, Request& request, bool end) {
 	switch (behaviour(request.peek_operation(), session_state(client))) {
 		case behaviour_t::DEFAULT: {
-			return dispatch_default_behavior(client, request, end, strict);
+			return dispatch_default_behavior(client, request, end);
 		}
 		case behaviour_t::NOT_PERMITTED: {
-			return dispatch_not_permitted_behavior(client, request, end, strict);
+			return dispatch_not_permitted_behavior(client, request, end);
 		}
 		case behaviour_t::CONTEXTUAL: {
-			return dispatch_contextual_behavior(client, request, end, strict);
+			return dispatch_contextual_behavior(client, request, end);
 		}
 		default: {
 			throw std::runtime_error("invalid behaviour");
@@ -71,35 +72,35 @@ bool RequestServer::dispatch_by_behavior(Client &client, Request& request, bool 
 	}
 }
 
-bool RequestServer::dispatch_default_behavior(Client& client, Request& request, bool end, bool strict) {
-	return dispatch_normal_context(client, request, end, strict);
+bool RequestServer::dispatch_default_behavior(Client& client, Request& request, bool end) {
+	return dispatch_normal_context(client, request, end);
 }
 
-bool RequestServer::dispatch_not_permitted_behavior(Client& client, Request& request, bool end, bool strict) {
-	return refuse_with_response(client, request, end, strict, bad_state());
+bool RequestServer::dispatch_not_permitted_behavior(Client& client, Request& request, bool end) {
+	return refuse_with_response(client, request, bad_state(), end);
 }
 
-bool RequestServer::dispatch_contextual_behavior(Client& client, Request& request, bool end, bool strict) {
+bool RequestServer::dispatch_contextual_behavior(Client& client, Request& request, bool end) {
 	switch (session_state(client)) {
 		case conn_state::NORMAL:
-			return dispatch_normal_context(client, request, end, strict);
+			return dispatch_normal_context(client, request, end);
 		case conn_state::TRANSACTION:
-			return dispatch_transaction_context(client, request, end, strict);
+			return dispatch_transaction_context(client, request, end);
 		default:
 			throw std::runtime_error("invalid state");
 	}
 }
 
-bool RequestServer::dispatch_normal_context(Client &client, Request& request, bool end, bool strict) {
+bool RequestServer::dispatch_normal_context(Client &client, Request& request, bool end) {
 	if (not client.has_perm(request.peek_operation()))
-		return refuse_with_response(client, request, end, strict, denied());
+		return refuse_with_response(client, request, denied(), end);
 
 	dispatch(client, request, end);
 	return true;
 }
 
-bool RequestServer::refuse_with_response(Client& client, Request& request, bool end, bool strict, Response&& response) {
-	if (strict)
+bool RequestServer::refuse_with_response(Client& client, Request& request, Response&& response, bool end) {
+	if (not end)
 		dry_dispatch(request, end);
 
 	send(client, response.move());
