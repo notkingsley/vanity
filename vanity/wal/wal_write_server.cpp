@@ -20,13 +20,13 @@ void WALWriteServer::close_wal() {
 }
 
 void WALWriteServer::write_ahead(Client &client, operation_t op, const std::string_view &request) {
-	if (not m_wal_file.is_open())
-		return;
-
 	if (not should_wal(op))
 		return;
 
 	std::lock_guard lock(m_wal_mutex);
+	if (not m_wal_file.is_open())
+		return;
+
 	serializer::write(m_wal_file, session_db(client));
 	serializer::write(m_wal_file, request);
 	m_wal_file << std::endl;
