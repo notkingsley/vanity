@@ -47,7 +47,7 @@ bool SocketWriter::do_write(){
 	}
 	catch (SocketError& e)
 	{
-		if (e.get_errno() == EAGAIN)
+		if (e.is_retry())
 			return true;
 		throw;
 	}

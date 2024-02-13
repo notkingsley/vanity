@@ -83,7 +83,7 @@ void SocketServer::poll() {
 
 		if (n < 0){
 			SocketError err{{}};
-			if (err.get_errno() == EINTR)
+			if (err.is_interrupt())
 				continue;
 			else
 				logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));

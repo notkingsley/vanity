@@ -26,9 +26,25 @@ public:
 		m_msg += msg + " errno: " + std::to_string(m_errno);
 	}
 
-	const char* what() const noexcept override { return m_msg.c_str(); }
+	// get the error message
+	const char* what() const noexcept override {
+		return m_msg.c_str();
+	}
 
-	int get_errno() const noexcept { return m_errno; }
+	// get the errno
+	int get_errno() const noexcept {
+		return m_errno;
+	}
+
+	// check if the error is an EAGAIN or EWOULDBLOCK
+	bool is_retry() const noexcept {
+		return m_errno == EAGAIN || m_errno == EWOULDBLOCK;
+	}
+
+	// check if the error was an interrupt
+	bool is_interrupt() const noexcept {
+		return m_errno == EINTR;
+	}
 };
 
 // thrown from a ready() to indicate the client should be disconnected
