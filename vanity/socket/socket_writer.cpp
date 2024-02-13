@@ -24,19 +24,31 @@ int SocketWriter::socket_fd() const {
 }
 
 void SocketWriter::ready(SocketServer &server) {
+	std::lock_guard lock(m_mutex);
+	try_write_all();
+
+	if (m_messages.empty())
+		server.remove_socket_writer(*this);
+}
+
+void SocketWriter::write(SocketServer &server, std::string&& response) {
+	std::lock_guard lock(m_mutex);
+	auto was_empty = m_messages.empty();
+
+	m_messages.emplace(std::move(response));
+	try_write_all();
+
+	if (was_empty and !m_messages.empty())
+		server.add_socket_writer(*this);
+}
+
+void SocketWriter::try_write_all() {
 	while (!m_messages.empty()) {
 		if (do_write())
 			return;
 		m_messages.pop();
 		m_index = 0;
 	}
-	server.remove_socket_writer(*this);
-}
-
-void SocketWriter::write(SocketServer &server, std::string&& response) {
-	m_messages.emplace(std::move(response));
-	if (m_messages.size() == 1)
-		server.add_socket_writer(*this);
 }
 
 bool SocketWriter::do_write(){

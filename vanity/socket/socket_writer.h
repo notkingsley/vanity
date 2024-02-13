@@ -5,6 +5,7 @@
 #ifndef VANITY_SOCKET_WRITER_H
 #define VANITY_SOCKET_WRITER_H
 
+#include <mutex>
 #include <queue>
 
 #include "socket_event_handler.h"
@@ -22,6 +23,9 @@ private:
 
 	// the messages to write
 	std::queue<std::string> m_messages;
+
+	// the mutex to protect the messages queue
+	std::mutex m_mutex;
 
 	// the index of the next character to write in the current message
 	size_t m_index = 0;
@@ -55,6 +59,9 @@ private:
 	// write to the socket
 	// return false when done, true otherwise
 	bool do_write();
+
+	// try to write all messages in the queue
+	void try_write_all();
 };
 
 } // namespace vanity
