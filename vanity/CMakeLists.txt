@@ -11,6 +11,7 @@ add_subdirectory(db)
 add_subdirectory(request)
 add_subdirectory(response)
 add_subdirectory(socket)
+add_subdirectory(wal)
 
 add_executable(vanity
 	config.cpp
@@ -30,4 +31,5 @@ target_link_libraries(vanity
 	vanity_request
 	vanity_response
     vanity_socket
+	vanity_wal
 )

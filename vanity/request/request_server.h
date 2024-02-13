@@ -12,7 +12,7 @@
 #include "log_server.h"
 #include "request.h"
 #include "response/response_shortcuts.h"
-#include "session_server.h"
+#include "wal/wal_write_server.h"
 
 
 namespace vanity {
@@ -21,7 +21,10 @@ namespace vanity {
  * A RequestServer allows to process incoming requests
  * and dispatch them to the appropriate handler
  */
-class RequestServer : public virtual AbstractServer, public virtual LogServer, protected virtual SessionServer
+class RequestServer :
+	public virtual AbstractServer,
+	public virtual LogServer,
+	public virtual WALWriteServer
 {
 public:
 	// a message was received from a client

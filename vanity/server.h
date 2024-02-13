@@ -10,6 +10,7 @@
 #include "pipe_server.h"
 #include "pubsub_server.h"
 #include "transaction_server.h"
+#include "wal/wal_server.h"
 
 
 namespace vanity {
@@ -21,7 +22,8 @@ class Server:
 	public virtual DatabaseServer,
 	public virtual PipeServer,
 	public virtual PubSubServer,
-	public virtual TransactionServer
+	public virtual TransactionServer,
+	public virtual WALServer
 {
 private:
 	// start background server tasks
@@ -48,8 +50,11 @@ public:
 		AuthServer(config.users_db),
 		LogServer(config.log_file, config.log_level),
 		PersistentServer(config.db_file),
-		SocketServer(config.ports)
-	{};
+		SocketServer(config.ports),
+		WALServer(config.wal_file)
+	{
+		WALServer::recover();
+	};
 
 	// run the server with the given configuration
 	void run()
