@@ -26,6 +26,8 @@ class ServerHandle:
         no_logging: bool = True,
         users_file: str = None,
         env: dict[str, str] = None,
+        no_wal: bool = True,
+        wal_file: str = None,
     ):
         """
         Create a new ServerHandle.
@@ -41,6 +43,8 @@ class ServerHandle:
         :param log_level: The level to log at.
         :param users_file: The file to store user's login info in if no_users_persist is False.
         :param env: The environment variables to run the server with.
+        :param no_wal: Whether to use the write-ahead log.
+        :param wal_file: The file to store the write-ahead log in if no_wal is False.
         """
         self.args = [executable_path]
         self.env = env
@@ -52,21 +56,22 @@ class ServerHandle:
         if ports is not None:
             _ports.update(ports)
 
+        self.ports = _ports
         if _ports:
             for port in _ports:
                 self.args.append(f"--port={port}")
 
         if use_cwd:
-            self.args.append(f"--use-cwd")
+            self.args.append("--use-cwd")
 
         if no_db_persist:
-            self.args.append(f"--no-db-persist")
+            self.args.append("--no-db-persist")
         else:
             if persist_file:
                 self.args.append(f"--persist-file={persist_file}")
 
         if no_users_persist:
-            self.args.append(f"--no-users-persist")
+            self.args.append("--no-users-persist")
         else:
             if users_file:
                 self.args.append(f"--users-file={users_file}")
@@ -78,7 +83,13 @@ class ServerHandle:
             self.args.append(f"--log-level={log_level}")
 
         if no_logging:
-            self.args.append(f"--no-logging")
+            self.args.append("--no-logging")
+
+        if no_wal:
+            self.args.append("--no-wal")
+        else:
+            if wal_file:
+                self.args.append(f"--wal-file={wal_file}")
 
     def __enter__(self):
         self.start()
