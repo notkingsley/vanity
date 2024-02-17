@@ -79,6 +79,27 @@ This document describes the AUTH-related commands and responses.
     ```
 
 
+- `AUTH_LEVEL`  
+    Returns the authentication level of the currently authenticated user.  
+    An `OK` response is returned, with the `<value>` containing the authentication level, an `AUTH_LEVEL` object.  
+
+    Example:
+    ```
+    AUTH_LEVEL
+    OK:AUTH_LEVEL ADMIN
+    ```
+
+
+- `USERNAME`  
+    Returns the username of the currently authenticated user.  
+    An `OK` response is returned, with the `<value>` containing the username, a `<string>`.  
+
+    Example:
+    ```
+    USERNAME
+    OK:STR (5)user1
+    ```
+
 ### AUTH_LEVELS
 `<auth_level>` is one of the following:
 - `ADMIN`
@@ -95,5 +116,6 @@ This document describes the AUTH-related commands and responses.
     - `AUTH`
     - `PING`
     - `EXIT`
+    - `AUTH_LEVEL`
 - `PEER`
     A peer client. Not currently used.

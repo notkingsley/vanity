@@ -19,6 +19,7 @@ where `<type_name>` is the name of the type, and is one of the following:
 - LIST for a `<list>`
 - SET for a `<set>`
 - HASH for a `<hash>`
+- AUTH_LEVEL for an `<auth_level>`
 - AGG for an `<agg>` (an aggregate response is a sequence of responses)
 
 Note: Currently, no type annotations are used in requests, but they are used in responses.
@@ -49,7 +50,7 @@ The `<value>` is the value of the object, and is defined for each type as follow
     
     It would be necessary to add a whitespace after the FLOAT in the case the following object, if any, is also numeric. This is not necessary if the following object is not numeric.
 
-- `<bool>` => `true or false`  
+- `<bool>` => `true` or `false`  
     Note: Currently, it is an error to specify a BOOL in a request, but they are used in responses.
 
 - `<null>`  
@@ -88,6 +89,13 @@ The `<value>` is the value of the object, and is defined for each type as follow
     - `<string>` is a string as defined above, and the curly braces are part of the syntax.
 
     Note: HASH is only allowed to contain strings, and the strings are always in pairs, with the first string being the key, and the second string being the value.
+
+- `<auth_level>` => `UNKNOWN` or `USER` or `ADMIN`  
+    where
+    - `UNKNOWN` is the default authentication level, and is used to indicate that the user has not been authenticated.
+    - `USER` is the authentication level for a regular user.
+    - `ADMIN` is the authentication level for an administrator.
+    - The case of the string is significant and must be preserved as shown.
 
 - `<agg>` => `<length><agg_body>`  
     where  
