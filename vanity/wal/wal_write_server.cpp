@@ -32,4 +32,8 @@ void WALWriteServer::write_ahead(Client &client, operation_t op, const std::stri
 	m_wal_file << std::endl;
 }
 
+std::mutex &WALWriteServer::wal_mutex() {
+	return m_wal_mutex;
+}
+
 } // namespace vanity
