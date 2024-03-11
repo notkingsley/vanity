@@ -30,12 +30,6 @@ protected:
 	std::array<db_type, M_NUM_DATABASES> m_databases;
 
 public:
-	// start the database threads
-	void start();
-
-	// stop the database threads
-	void stop();
-
 	// get the client's current selected database
 	db_type& database(Client& client);
 

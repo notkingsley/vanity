@@ -6,16 +6,6 @@
 
 namespace vanity {
 
-void BaseDatabaseServer::start() {
-	for (auto &database : m_databases)
-		database.start(M_MAX_TIMEOUT * 1000 * 1000);
-}
-
-void BaseDatabaseServer::stop() {
-	for (auto &database : m_databases)
-		database.stop();
-}
-
 db_type& BaseDatabaseServer::database(Client &client) {
 	return m_databases[session_db(client)];
 }

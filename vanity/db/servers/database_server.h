@@ -27,14 +27,11 @@ class DatabaseServer :
 {
 public:
 	// start any background tasks
-	void start(){
-		BaseDatabaseServer::start();
-	}
+	void start() {}
 
 	// stop any background tasks
-	void stop(){
+	void stop() {
 		PersistentServer::stop();
-		BaseDatabaseServer::stop();
 	}
 };
 

@@ -46,9 +46,8 @@ public:
 	// acquire the lock
 	std::lock_guard<lock_type> lock();
 
-	// compatibility functions
-	void start(long) {}
-	void stop() {}
+	// return a reference to the mutex
+	lock_type& mutex();
 
 
 	// persist the database to a file stream
