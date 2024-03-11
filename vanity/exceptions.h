@@ -83,7 +83,7 @@ public:
 /*
  * Thrown for malformed arguments
  */
-class MalformedArgument : public std::exception
+class MalformedArgument : public Exception
 {
 private:
 	std::string m_msg;
@@ -91,6 +91,24 @@ private:
 public:
 	explicit MalformedArgument(std::string msg) : m_msg{std::move(msg)} {}
 	const char* what() const noexcept override { return m_msg.c_str(); }
+};
+
+/*
+ * Thrown when an invalid Journal is being read
+ */
+class CorruptJournal: public Exception
+{
+private:
+	std::string m_msg{" CorruptJournal: "};
+
+public:
+	explicit CorruptJournal(const std::string& msg) {
+		m_msg += msg;
+	}
+
+	const char* what() const noexcept override {
+		return m_msg.c_str();
+	}
 };
 
 } // namespace vanity
