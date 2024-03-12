@@ -6,9 +6,7 @@
 
 namespace vanity {
 
-WALServer::WALServer(const std::optional<std::filesystem::path> &wal_file)
-	:m_wal_file(wal_file)
-{
+WALServer::WALServer() {
 	if (m_wal_file)
 		wal_to(*m_wal_file);
 }

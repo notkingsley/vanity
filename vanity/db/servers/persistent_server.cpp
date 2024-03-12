@@ -6,18 +6,7 @@
 
 namespace vanity{
 
-PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file) noexcept
-	: m_db_file{std::move(db_file)}
-{
-	if(m_db_file and std::filesystem::exists(m_db_file.value())){
-		std::ifstream in{m_db_file.value(), std::ios::binary};
-		for (auto& db : m_databases)
-			db = db::Database::from(in);
-		in.close();
-
-		logger().info("Loaded databases from " + m_db_file.value().string());
-	}
-
+PersistentServer::PersistentServer() noexcept {
 	if (m_db_file)
 		repeat(server_event::persist, M_PERSIST_INTERVAL);
 }
@@ -25,17 +14,8 @@ PersistentServer::PersistentServer(std::optional<std::filesystem::path> db_file)
 bool PersistentServer::persist() {
 	if (!m_db_file)
 		return false;
-	{
-		auto tmp{m_db_file.value()};
-		tmp.replace_filename("tmp." + tmp.filename().string());
-		{
-			std::ofstream out{tmp, std::ios::binary};
-			for (auto& db : m_databases)
-				db.persist(out);
-			out.close();
-		}
-		std::filesystem::rename(tmp, m_db_file.value());
-	}
+
+	PersistJournalServer::persist_no_check();
 	logger().info("Persisted databases to " + m_db_file.value().string());
 	return true;
 }

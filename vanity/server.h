@@ -49,9 +49,8 @@ public:
 	explicit Server(const Config& config):
 		AuthServer(config.users_db),
 		LogServer(config.log_file, config.log_level),
-		PersistentServer(config.db_file),
 		SocketServer(config.ports),
-		WALServer(config.wal_file)
+		PersistJournalServer(config.wal_file, config.db_file, config.journal_file)
 	{
 		WALServer::recover();
 	};
