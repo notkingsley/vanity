@@ -18,11 +18,11 @@ void WALServer::recover() {
 		return;
 
 	auto &file = *m_wal_file;
-	if (std::filesystem::exists(file)) {
-		close_wal();
-		recover_from(file);
-		wal_to(file);
-	}
+	if (not std::filesystem::exists(file))
+		return;
+
+	ClosedWAL closed {*this, file};
+	recover_from(file);
 }
 
 } // namespace vanity

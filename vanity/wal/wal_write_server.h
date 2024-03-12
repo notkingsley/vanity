@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <utility>
 
 #include "utils/serializer.h"
 #include "session_server.h"
@@ -39,6 +40,26 @@ public:
 
 	// obtain a reference to the mutex
 	std::mutex& wal_mutex();
+};
+
+/*
+ * RAII mechanism to close and reopen a WALWriteServer
+ */
+class ClosedWAL
+{
+private:
+	// the WALWriteServer
+	WALWriteServer& m_wal;
+
+	// the WAL file to reopen
+	std::filesystem::path m_wal_file;
+
+public:
+	// close the WAL
+	explicit ClosedWAL(WALWriteServer& wal, std::filesystem::path  wal_file);
+
+	// reopen the WAL
+	~ClosedWAL();
 };
 
 } // namespace vanity
