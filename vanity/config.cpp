@@ -23,6 +23,7 @@ Config::Config(const Arguments &args) {
 	extract_users_db(args, root_dir);
 	extract_logging(args, root_dir);
 	extract_wal_file(args, root_dir);
+	extract_journal_file(args, root_dir);
 }
 
 auto Config::extract_root_dir(const Arguments& args) -> path {
@@ -138,6 +139,17 @@ void Config::extract_wal_file(const Arguments &args, const Config::path &root_di
 	wal_file = args.get_kwarg("wal_file");
 	if (wal_file->is_relative())
 		wal_file = root_dir / *wal_file;
+}
+
+void Config::extract_journal_file(const Arguments &args, const Config::path &root_dir) {
+	if (not args.has_kwarg("journal_file")) {
+		journal_file = root_dir / DEFAULT_JOURNAL_FILE;
+		return;
+	}
+
+	journal_file = args.get_kwarg("journal_file");
+	if (journal_file->is_relative())
+		journal_file = root_dir / *journal_file;
 }
 
 } // namespace vanity

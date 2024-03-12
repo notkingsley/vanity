@@ -50,6 +50,9 @@ private:
 	// extract the wal file
 	void extract_wal_file(const Arguments& args, const path& root_dir);
 
+	// extract the journal file
+	void extract_journal_file(const Arguments& args, const path& root_dir);
+
 public:
 	constexpr static auto DEFAULT_LOG_LEVEL = LogLevel::INFO;
 	constexpr static auto DEFAULT_HOME_DIR = ".vanity";
@@ -57,11 +60,13 @@ public:
 	constexpr static auto DEFAULT_LOG_FILE = "vanity.log";
 	constexpr static auto DEFAULT_WAL_FILE = "vanity.wal";
 	constexpr static auto DEFAULT_USERS_DB = "vanity.users";
+	constexpr static auto DEFAULT_JOURNAL_FILE = "vanity.journal";
 	constexpr static auto DEFAULT_PORTS = std::array<uint16_t, 2>{9955, 19955};
 
 	std::optional<path> users_db;
 	std::optional<path> db_file;
 	std::optional<path> wal_file;
+	std::optional<path> journal_file;
 	path log_file;
 	std::vector<uint16_t> ports;
 	LogLevel log_level = DEFAULT_LOG_LEVEL;
