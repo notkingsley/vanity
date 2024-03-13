@@ -152,7 +152,7 @@ class PersistenceTest(unittest.TestCase):
             self.assertEqual(response.value, {"red": "1", "green": "2", "blue": "3"})
 
 
-class WALPersistenceTest(unittest.TestCase):
+class WALPersistenceDisabledTest(unittest.TestCase):
     """
     Test that WAL recovery works if persistence is disabled.
     """
@@ -222,7 +222,9 @@ class WALPersistenceTest(unittest.TestCase):
         restart the server, and get the value.
         """
         with make_client(self.port) as client:
-            response = client.list_push_right("test_wal_persist_list", ["red", "green", "blue"])
+            response = client.list_push_right(
+                "test_wal_persist_list", ["red", "green", "blue"]
+            )
             self.assertTrue(response.is_ok())
 
         self.server_handle.restart()
@@ -262,3 +264,129 @@ class WALPersistenceTest(unittest.TestCase):
         with make_client(self.port) as client:
             response = client.hash_all("test_wal_persist_hash")
             self.assertEqual(response.value, {"red": "1", "green": "2", "blue": "3"})
+
+
+class WALPersistenceTest(unittest.TestCase):
+    """
+    Test that WAL recovery works if persistence is enabled.
+    """
+
+    def setUp(self) -> None:
+        self.db_file = os.getcwd() + "/" + "tmp.db"
+        self.wal_file = os.getcwd() + "/" + "tmp.wal"
+        self.port = get_free_port()
+        self.server_handle = ServerHandle(
+            port=self.port,
+            no_db_persist=False,
+            persist_file=self.db_file,
+            no_wal=False,
+            wal_file=self.wal_file,
+        )
+        self.server_handle.start()
+
+    def tearDown(self) -> None:
+        self.server_handle.stop()
+        os.remove(self.db_file)
+        os.remove(self.wal_file)
+
+    def test_wal_persist(self):
+        """
+        Test that we can set a value on wal persist, restart the server, and get the value.
+        """
+        with make_client(self.port) as client:
+            response = client.str_set("test_wal_persist", "test_wal_persist_value")
+            self.assertTrue(response.is_ok())
+            response = client.persist()
+            self.assertTrue(response.is_ok())
+
+        self.server_handle.restart()
+
+        with make_client(self.port) as client:
+            response = client.get("test_wal_persist")
+            self.assertEqual(response.value, "test_wal_persist_value")
+
+    def test_wal_persist_int_incr(self):
+        """
+        Test that we can set an integer value, increment it,
+        restart the server, and get the correct value.
+        """
+        with make_client(self.port) as client:
+            response = client.int_set("test_wal_persist_int_incr", 123)
+            self.assertTrue(response.is_ok())
+            response = client.incr_int("test_wal_persist_int_incr")
+            self.assertEqual(response.value, 124)
+            response = client.persist()
+            self.assertTrue(response.is_ok())
+
+        self.server_handle.restart()
+
+        with make_client(self.port) as client:
+            response = client.get("test_wal_persist_int_incr")
+            self.assertEqual(response.value, 124)
+
+    def test_wal_persist_float_incr(self):
+        """
+        Test that we can set a float value, increment it,
+        restart the server, and get the correct value.
+        """
+        with make_client(self.port) as client:
+            response = client.float_set("test_wal_persist_float_incr", 123.456)
+            self.assertTrue(response.is_ok())
+            response = client.incr_float("test_wal_persist_float_incr")
+            self.assertEqual(response.value, 124.456)
+            response = client.persist()
+            self.assertTrue(response.is_ok())
+
+        self.server_handle.restart()
+
+        with make_client(self.port) as client:
+            response = client.get("test_wal_persist_float_incr")
+            self.assertEqual(response.value, 124.456)
+
+    def test_wal_persist_list_push(self):
+        """
+        Test that we can set a list value, push to it,
+        restart the server, and get the correct value.
+        """
+        with make_client(self.port) as client:
+            response = client.list_push_right(
+                "test_wal_persist_list_push", ["red", "green", "blue"]
+            )
+            self.assertTrue(response.is_ok())
+            response = client.list_push_right(
+                "test_wal_persist_list_push", ["yellow", "purple"]
+            )
+            self.assertTrue(response.is_ok())
+            response = client.persist()
+            self.assertTrue(response.is_ok())
+
+        self.server_handle.restart()
+
+        with make_client(self.port) as client:
+            response = client.list_range("test_wal_persist_list_push", 0, -1)
+            self.assertEqual(
+                response.value, ["red", "green", "blue", "yellow", "purple"]
+            )
+
+    def test_wal_persist_set_add(self):
+        """
+        Test that we can set a set value, add to it,
+        restart the server, and get the correct value.
+        """
+        with make_client(self.port) as client:
+            response = client.set_add(
+                "test_wal_persist_set_add", {"red", "green", "blue"}
+            )
+            self.assertTrue(response.is_ok())
+            response = client.set_add("test_wal_persist_set_add", {"yellow", "purple"})
+            self.assertTrue(response.is_ok())
+            response = client.persist()
+            self.assertTrue(response.is_ok())
+
+        self.server_handle.restart()
+
+        with make_client(self.port) as client:
+            response = client.set_all("test_wal_persist_set_add")
+            self.assertEqual(
+                response.value, {"red", "green", "blue", "yellow", "purple"}
+            )
