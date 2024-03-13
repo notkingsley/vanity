@@ -46,8 +46,8 @@ JournalMaker<MOVING_EXISTING_DB_FILE>::journal_moved_existing_db_file() {
 }
 
 JournalMaker<MOVING_EXISTING_DB_FILE>
-JournalMaker<DB_FILE_EXIST>::journal_moving_existing_db_file(const path& existing_db_file) {
-	m_journal.journal(MOVING_EXISTING_DB_FILE, existing_db_file);
+JournalMaker<DB_FILE_EXIST>::journal_moving_existing_db_file(const path& old_db_file) {
+	m_journal.journal(MOVING_EXISTING_DB_FILE, old_db_file);
 	return JournalMaker<MOVING_EXISTING_DB_FILE>{std::move(m_journal)};
 }
 
@@ -78,6 +78,8 @@ RecoveredJournal::RecoveredJournal(const path &journal_file) {
 		return;
 
 	std::ifstream in{journal_file};
+	if (at_eof(in))
+		return;
 
 	m_state = serializer::read<JournalState>(in);
 	if (m_state == DB_FILE_NO_EXIST) {

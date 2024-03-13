@@ -134,7 +134,7 @@ private:
 public:
 	// write a MOVING_EXISTING_DB_FILE state to the journal
 	// returns a JournalMaker<MOVING_EXISTING_DB_FILE>
-	JournalMaker<MOVING_EXISTING_DB_FILE> journal_moving_existing_db_file(const path& existing_db_file);
+	JournalMaker<MOVING_EXISTING_DB_FILE> journal_moving_existing_db_file(const path& old_db_file);
 };
 
 template<>
