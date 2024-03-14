@@ -1,5 +1,5 @@
-import os
 import unittest
+from tempfile import TemporaryDirectory
 
 from client.server_handle import ServerHandle
 from tests.utils import get_free_port, make_client
@@ -40,18 +40,18 @@ class PersistenceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.tmp_file = os.getcwd() + "/" + "tmp.db"
+        self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
             port=self.port,
             no_db_persist=False,
-            persist_file=self.tmp_file,
+            working_dir=self.tmp_dir.name,
         )
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
-        os.remove(self.tmp_file)
+        self.tmp_dir.cleanup()
 
     def test_persist(self):
         """
@@ -158,19 +158,19 @@ class WALPersistenceDisabledTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.tmp_file = os.getcwd() + "/" + "tmp.wal"
+        self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
             port=self.port,
             no_db_persist=True,
             no_wal=False,
-            wal_file=self.tmp_file,
+            working_dir=self.tmp_dir.name,
         )
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
-        os.remove(self.tmp_file)
+        self.tmp_dir.cleanup()
 
     def test_wal_persist(self):
         """
@@ -272,22 +272,19 @@ class WALPersistenceTest(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.db_file = os.getcwd() + "/" + "tmp.db"
-        self.wal_file = os.getcwd() + "/" + "tmp.wal"
+        self.temp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
             port=self.port,
             no_db_persist=False,
-            persist_file=self.db_file,
             no_wal=False,
-            wal_file=self.wal_file,
+            working_dir=self.temp_dir.name,
         )
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
-        os.remove(self.db_file)
-        os.remove(self.wal_file)
+        self.temp_dir.cleanup()
 
     def test_wal_persist(self):
         """

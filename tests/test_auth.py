@@ -1,5 +1,5 @@
-import os
 import unittest
+from tempfile import TemporaryDirectory
 
 from client import AuthLevel, ServerHandle
 from tests.utils import get_free_port, make_client
@@ -548,18 +548,18 @@ class AuthPersistenceTests(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.tmp_file = os.getcwd() + "/" + "users_tmp.db"
+        self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
             port=self.port,
-            no_users_persist=False,
-            users_file=self.tmp_file,
+            no_auth_persist=False,
+            working_dir=self.tmp_dir.name,
         )
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
-        os.remove(self.tmp_file)
+        self.tmp_dir.cleanup()
 
     def test_add_user_persist(self):
         """
