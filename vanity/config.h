@@ -24,50 +24,54 @@ class Config
 private:
 	using path = std::filesystem::path;
 
-	// extract the root directory
-	static path extract_root_dir(const Arguments& args);
+	// extract the working directory
+	// should be called before any other extraction
+	void extract_working_dir(const Arguments& args);
+
+	// get the user's home directory
+	static path get_user_home_dir();
+
+	// get the user global working directory
+	static path get_user_working_dir();
 
 	// extract the ports
 	void extract_ports(const Arguments& args);
 
-	// extract the database file
-	void extract_db_file(const Arguments& args, const path& root_dir);
-
-	// extract the users database file
-	void extract_users_db(const Arguments& args, const path& root_dir);
-
-	// extract the log file
-	// assumes no_logging is not set
-	void _extract_log_file(const Arguments& args, const path& root_dir);
-
-	// extract the log level
-	// assumes no_logging is not set
-	void _extract_log_level(const Arguments& args);
+	// extract and returns the log level from the arguments
+	static LogLevel extract_log_level(const Arguments& args);
 
 	// extract the logging configuration
-	void extract_logging(const Arguments& args, const path& root_dir);
+	void extract_logging(const Arguments& args);
+
+	// extract the database file
+	void extract_db_file(const Arguments& args);
+
+	// extract the auth database file
+	void extract_auth_file(const Arguments& args);
 
 	// extract the wal file
-	void extract_wal_file(const Arguments& args, const path& root_dir);
+	void extract_wal_file(const Arguments& args);
 
 	// extract the journal file
-	void extract_journal_file(const Arguments& args, const path& root_dir);
+	void extract_journal_file(const Arguments&);
 
 public:
 	constexpr static auto DEFAULT_LOG_LEVEL = LogLevel::INFO;
 	constexpr static auto DEFAULT_HOME_DIR = ".vanity";
-	constexpr static auto DEFAULT_DB_FILE = "vanity.db";
-	constexpr static auto DEFAULT_LOG_FILE = "vanity.log";
-	constexpr static auto DEFAULT_WAL_FILE = "vanity.wal";
-	constexpr static auto DEFAULT_USERS_DB = "vanity.users";
-	constexpr static auto DEFAULT_JOURNAL_FILE = "vanity.journal";
 	constexpr static auto DEFAULT_PORTS = std::array<uint16_t, 2>{9955, 19955};
+	constexpr static auto DB_FILE = "vanity.db";
+	constexpr static auto LOG_FILE = "vanity.log";
+	constexpr static auto WAL_FILE = "vanity.wal";
+	constexpr static auto AUTH_FILE = "vanity.auth";
+	constexpr static auto JOURNAL_FILE = "vanity.journal";
 
-	std::optional<path> users_db;
+	std::optional<path> working_dir;
 	std::optional<path> db_file;
 	std::optional<path> wal_file;
+	std::optional<path> users_db;
 	std::optional<path> journal_file;
 	path log_file;
+
 	std::vector<uint16_t> ports;
 	LogLevel log_level = DEFAULT_LOG_LEVEL;
 

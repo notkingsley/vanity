@@ -17,23 +17,34 @@ static inline void to_lower(std::string& str)
 }
 
 Config::Config(const Arguments &args) {
-	auto root_dir = extract_root_dir(args);
+	extract_working_dir(args);
 	extract_ports(args);
-	extract_db_file(args, root_dir);
-	extract_users_db(args, root_dir);
-	extract_logging(args, root_dir);
-	extract_wal_file(args, root_dir);
-	extract_journal_file(args, root_dir);
+	extract_logging(args);
+	extract_db_file(args);
+	extract_auth_file(args);
+	extract_wal_file(args);
+	extract_journal_file(args);
 }
 
-auto Config::extract_root_dir(const Arguments& args) -> path {
-	auto root_dir = std::filesystem::current_path();
-	if (not args.has("use_cwd")){
-		root_dir = getpwuid(getuid())->pw_dir;
-		root_dir /= DEFAULT_HOME_DIR;
-		create_directories(root_dir);
-	}
-	return root_dir;
+void Config::extract_working_dir(const Arguments& args) {
+	if (args.has("no_working_dir"))
+		return;
+
+	using std::filesystem::absolute;
+	if (args.has_kwarg("working_dir"))
+		working_dir = absolute(args.get_kwarg("working_dir"));
+	else
+		working_dir = get_user_working_dir();
+
+	create_directories(*working_dir);
+}
+
+auto Config::get_user_home_dir() -> path {
+	return getpwuid(getuid())->pw_dir;
+}
+
+auto Config::get_user_working_dir() -> path {
+	return get_user_home_dir() / DEFAULT_HOME_DIR;
 }
 
 void Config::extract_ports(const Arguments& args) {
@@ -49,107 +60,55 @@ void Config::extract_ports(const Arguments& args) {
 			ports.push_back(port);
 }
 
-void Config::extract_db_file(const Arguments& args, const path& root_dir) {
-	if (args.has("no_db_persist")) {
-		db_file = std::nullopt;
-		return;
-	}
-
-	if (not args.has_kwarg("persist_file")){
-		db_file = root_dir / DEFAULT_DB_FILE;
-		return;
-	}
-
-	db_file = args.get_kwarg("persist_file");
-	if (db_file->is_relative())
-		db_file = root_dir / *db_file;
-}
-
-void Config::extract_users_db(const Arguments& args, const path& root_dir) {
-	if (args.has("no_users_persist")) {
-		users_db = std::nullopt;
-		return;
-	}
-
-	if (not args.has_kwarg("users_file")){
-		users_db = root_dir / DEFAULT_USERS_DB;
-		return;
-	}
-
-	users_db = args.get_kwarg("users_file");
-	if (users_db->is_relative())
-		users_db = root_dir / *users_db;
-}
-
-void Config::_extract_log_file(const Arguments& args, const path& root_dir) {
-	if (not args.has_kwarg("log_file")){
-		log_file = root_dir / DEFAULT_LOG_FILE;
-		return;
-	}
-
-	log_file = args.get_kwarg("log_file");
-	if (log_file.is_relative())
-		log_file = root_dir / log_file;
-}
-
-void Config::_extract_log_level(const Arguments& args) {
-	if (not args.has_kwarg("log_level")){
-		log_level = DEFAULT_LOG_LEVEL;
-		return;
-	}
+LogLevel Config::extract_log_level(const Arguments& args) {
+	if (not args.has_kwarg("log_level"))
+		return DEFAULT_LOG_LEVEL;
 
 	auto level = args.get_kwarg("log_level");
-		to_lower(level);
+	to_lower(level);
 
 	if (level == "debug")
-		log_level = LogLevel::DEBUG;
+		return LogLevel::DEBUG;
 	else if (level == "info")
-		log_level = LogLevel::INFO;
+		return LogLevel::INFO;
 	else if (level == "warning")
-		log_level = LogLevel::WARNING;
+		return LogLevel::WARNING;
 	else if (level == "error")
-		log_level = LogLevel::ERROR;
+		return LogLevel::ERROR;
 	else if (level == "critical")
-		log_level = LogLevel::CRITICAL;
+		return LogLevel::CRITICAL;
 	else
+		return LogLevel::DISABLED;
+}
+
+void Config::extract_logging(const Arguments& args) {
+	if (not working_dir or args.has("no_logging")) {
 		log_level = LogLevel::DISABLED;
+		return;
+	}
+
+	log_file = *working_dir / LOG_FILE;
+	log_level = extract_log_level(args);
 }
 
-void Config::extract_logging(const Arguments& args, const path& root_dir) {
-	if (args.has("no_logging")) {
-		log_level = LogLevel::DISABLED;
-		log_file = path{};
-		return;
-	}
-	_extract_log_file(args, root_dir);
-	_extract_log_level(args);
+void Config::extract_db_file(const Arguments& args) {
+	if (working_dir and not args.has("no_db_persist"))
+		db_file = *working_dir / DB_FILE;
 }
 
-void Config::extract_wal_file(const Arguments &args, const Config::path &root_dir) {
-	if (args.has("no_wal")) {
-		wal_file = std::nullopt;
-		return;
-	}
-
-	if (not args.has_kwarg("wal_file")) {
-		wal_file = root_dir / DEFAULT_WAL_FILE;
-		return;
-	}
-
-	wal_file = args.get_kwarg("wal_file");
-	if (wal_file->is_relative())
-		wal_file = root_dir / *wal_file;
+void Config::extract_auth_file(const Arguments& args) {
+	if (working_dir and not args.has("no_auth_persist"))
+		users_db = *working_dir / AUTH_FILE;
 }
 
-void Config::extract_journal_file(const Arguments &args, const Config::path &root_dir) {
-	if (not args.has_kwarg("journal_file")) {
-		journal_file = root_dir / DEFAULT_JOURNAL_FILE;
-		return;
-	}
+void Config::extract_wal_file(const Arguments &args) {
+	if (working_dir and not args.has("no_wal"))
+		wal_file = *working_dir / WAL_FILE;
+}
 
-	journal_file = args.get_kwarg("journal_file");
-	if (journal_file->is_relative())
-		journal_file = root_dir / *journal_file;
+void Config::extract_journal_file(const Arguments &) {
+	if (working_dir)
+		journal_file = *working_dir / JOURNAL_FILE;
 }
 
 } // namespace vanity
