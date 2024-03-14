@@ -75,10 +75,9 @@ SetDatabase::set_remove(const key_type &key, size_t count) {
 		removed.insert(set.extract(it));
 	}
 
-	if (set.empty()) {
-		m_data.erase(key);
-		clear_expiry(key);
-	}
+	if (set.empty())
+		del(key);
+
 	return removed;
 }
 
@@ -97,10 +96,9 @@ SetDatabase::set_discard(const key_type &key, const set_t& values) {
 	for (const auto& v : values)
 		set.erase(v);
 
-	if (set.empty()) {
-		m_data.erase(key);
-		clear_expiry(key);
-	}
+	if (set.empty())
+		del(key);
+
 	return size - set.size();
 }
 
@@ -155,10 +153,9 @@ SetDatabase::set_move(const key_type &source, const key_type &dest, const std::s
 	auto& dest_set = std::get<set_t>(dest_val);
 	dest_set.insert(source_set.extract(value));
 
-	if (source_set.empty()) {
-		m_data.erase(source);
-		clear_expiry(source);
-	}
+	if (source_set.empty())
+		del(source);
+
 	return true;
 }
 

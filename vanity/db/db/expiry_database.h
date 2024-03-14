@@ -25,6 +25,10 @@ protected:
 	// for shallow purge to stop
 	static constexpr double M_MIN_EXPIRED_PERCENTAGE = 0.25;
 
+private:
+	// expire a key
+	void expire(const key_type& key);
+
 public:
 	// create a new database
 	ExpiryDatabase();

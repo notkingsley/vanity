@@ -68,8 +68,7 @@ bool BaseDatabase::move_to(const key_type &from, const key_type &to) {
 	if (m_expiry_times.contains(from))
 		m_expiry_times[to] = m_expiry_times.at(from);
 
-	m_data.erase(from);
-	clear_expiry(from);
+	del(from);
 	return true;
 }
 
@@ -98,8 +97,7 @@ bool BaseDatabase::move_to_db(const key_type &from, BaseDatabase &to) {
 	if (m_expiry_times.contains(from))
 		to.m_expiry_times[from] = m_expiry_times.at(from);
 
-	m_data.erase(from);
-	clear_expiry(from);
+	del(from);
 	return true;
 }
 

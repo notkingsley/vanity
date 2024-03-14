@@ -107,10 +107,8 @@ ListDatabase::list_pop_left(const key_type &key, int64_t n) {
 
 	list_t result;
 	result.splice(result.begin(), list, list.begin(), it);
-	if (list.empty()) {
-		m_data.erase(key);
-		clear_expiry(key);
-	}
+	if (list.empty())
+		del(key);
 
 	return result;
 }
@@ -132,10 +130,8 @@ ListDatabase::list_pop_right(const key_type &key, int64_t n) {
 
 	list_t result;
 	result.splice(result.begin(), list, rit.base(), list.end());
-	if (list.empty()) {
-		m_data.erase(key);
-		clear_expiry(key);
-	}
+	if (list.empty())
+		del(key);
 
 	return result;
 }
@@ -180,7 +176,7 @@ ListDatabase::list_trim(const key_type &key, int64_t start, int64_t end) {
 
 	auto ret = size - list.size();
 	if (list.empty())
-		m_data.erase(key);
+		del(key);
 
 	return ret;
 }
@@ -225,10 +221,8 @@ ListDatabase::list_remove(const key_type &key, const std::string &element, int64
 	}
 
 	auto ret = size - list.size();
-	if (list.empty()) {
-		m_data.erase(key);
-		clear_expiry(key);
-	}
+	if (list.empty())
+		del(key);
 
 	return ret;
 };

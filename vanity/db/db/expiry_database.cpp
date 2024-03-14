@@ -12,9 +12,15 @@ namespace vanity::db {
 
 ExpiryDatabase::ExpiryDatabase() = default;
 
+void ExpiryDatabase::expire(const key_type& key) {
+	m_data.erase(key);
+	m_expiry_times.erase(key);
+}
+
 bool ExpiryDatabase::is_expired(const key_type &key) {
 	if (not m_expiry_times.contains(key))
 		return false;
+
 	return std::chrono::system_clock::now() > m_expiry_times[key];
 }
 
@@ -22,8 +28,7 @@ bool ExpiryDatabase::erase_if_expired(const key_type &key) {
 	if (not is_expired(key))
 		return false;
 
-	m_data.erase(key);
-	m_expiry_times.erase(key);
+	expire(key);
 	return true;
 }
 
@@ -40,6 +45,7 @@ std::optional<time_t> ExpiryDatabase::get_expiry(const BaseMap::key_type &key) {
 	erase_if_expired(key);
 	if (not m_expiry_times.contains(key))
 		return std::nullopt;
+
 	return m_expiry_times[key];
 }
 
@@ -59,13 +65,18 @@ void ExpiryDatabase::shallow_purge() {
 		std::vector<key_type> sampled_keys;
 		sampled_keys.reserve(sample_size);
 
-		std::sample(all_keys.begin(), all_keys.end(), std::back_inserter(sampled_keys), sample_size, gen);
-		size_t expired_count = std::count_if(sampled_keys.begin(), sampled_keys.end(), [this](const auto& key) {
-			return erase_if_expired(key);
-		});
+		sample(all_keys.begin(), all_keys.end(), back_inserter(sampled_keys), sample_size, gen);
+		size_t expired_count = std::count_if(
+			sampled_keys.begin(),
+			sampled_keys.end(),
+			[this](const auto& key) {
+				return erase_if_expired(key);
+			}
+		);
 
 		if (expired_count / sample_size < M_MIN_EXPIRED_PERCENTAGE)
 			break;
+
 		if (m_expiry_times.empty())
 			break;
 	}
