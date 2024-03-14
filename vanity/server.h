@@ -27,41 +27,17 @@ class Server:
 {
 private:
 	// start background server tasks
-	void start()
-	{
-		SocketServer::start();
-		DatabaseServer::start();
-		RepeatEventServer::start();
-		logger().info("Started server");
-	}
+	void start();
 
 	// stop any running tasks and exit the server
-	void stop()
-	{
-		RepeatEventServer::stop();
-		DatabaseServer::stop();
-		SocketServer::stop();
-		logger().info("Stopped server");
-	}
+	void stop();
 
 public:
 	// create a server
-	explicit Server(const Config& config):
-		AuthServer(config.users_db),
-		LogServer(config.log_file, config.log_level),
-		SocketServer(config.ports),
-		PersistJournalServer(config.wal_file, config.db_file, config.journal_file)
-	{
-		WALServer::recover();
-	};
+	explicit Server(const Config& config);
 
 	// run the server with the given configuration
-	void run()
-	{
-		Server::start();
-		EventServer::run();
-		Server::stop();
-	}
+	void run();
 };
 
 } // namespace vanity
