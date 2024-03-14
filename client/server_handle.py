@@ -17,34 +17,26 @@ class ServerHandle:
         port: int | None = None,
         ports: list[int] | None = None,
         executable_path: str = EXECUTABLE_PATH,
-        no_db_persist: bool = True,
-        no_users_persist: bool = True,
-        persist_file: str = None,
-        use_cwd: bool = False,
-        log_file: str = None,
-        log_level: Literal["debug", "info", "warning", "error", "critical"] = None,
-        no_logging: bool = True,
-        users_file: str = None,
         env: dict[str, str] = None,
+        working_dir: str = None,
+        no_db_persist: bool = True,
+        no_auth_persist: bool = True,
         no_wal: bool = True,
-        wal_file: str = None,
+        no_logging: bool = True,
+        log_level: Literal["debug", "info", "warning", "error", "critical"] = None,
     ):
         """
         Create a new ServerHandle.
         :param port: The port to run the server on (any or both of port and ports can be specified)
         :param ports: Extra ports to run the server on (any or both of port and ports can be specified)
         :param executable_path: The path to the server executable.
-        :param no_db_persist: Whether to persist the database.
-        :param no_users_persist: Whether to persist the users file.
-        :param persist_file: The file to persist the database to if no_db_persist is False.
-        :param use_cwd: if True, persist the db and users file (if not absolute) to the
-        current working directory of the executable instead of user's home directory.
-        :param log_file: The file to log to.
-        :param log_level: The level to log at.
-        :param users_file: The file to store user's login info in if no_users_persist is False.
         :param env: The environment variables to run the server with.
+        :param working_dir: The working directory to run the server in (None for no working directory).
+        :param no_db_persist: Whether to persist the database.
+        :param no_auth_persist: Whether to persist the users file.
         :param no_wal: Whether to use the write-ahead log.
-        :param wal_file: The file to store the write-ahead log in if no_wal is False.
+        :param no_logging: Whether to log.
+        :param log_level: The level to log at.
         """
         self.args = [executable_path]
         self.env = env
@@ -56,40 +48,30 @@ class ServerHandle:
         if ports is not None:
             _ports.update(ports)
 
-        self.ports = _ports
+        self.ports = list(_ports)
         if _ports:
             for port in _ports:
                 self.args.append(f"--port={port}")
 
-        if use_cwd:
-            self.args.append("--use-cwd")
+        if working_dir:
+            self.args.append(f"--working-dir={working_dir}")
+        else:
+            self.args.append("--no-working-dir")
 
         if no_db_persist:
             self.args.append("--no-db-persist")
-        else:
-            if persist_file:
-                self.args.append(f"--persist-file={persist_file}")
 
-        if no_users_persist:
-            self.args.append("--no-users-persist")
-        else:
-            if users_file:
-                self.args.append(f"--users-file={users_file}")
+        if no_auth_persist:
+            self.args.append("--no-auth-persist")
 
-        if log_file:
-            self.args.append(f"--log-file={log_file}")
-
-        if log_level:
-            self.args.append(f"--log-level={log_level}")
+        if no_wal:
+            self.args.append("--no-wal")
 
         if no_logging:
             self.args.append("--no-logging")
 
-        if no_wal:
-            self.args.append("--no-wal")
-        else:
-            if wal_file:
-                self.args.append(f"--wal-file={wal_file}")
+        if log_level:
+            self.args.append(f"--log-level={log_level}")
 
     def __enter__(self):
         self.start()
