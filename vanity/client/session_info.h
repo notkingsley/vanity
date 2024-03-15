@@ -86,7 +86,7 @@ struct session_info
 	conn_state state = conn_state::NORMAL;
 
 	// index of the database in use
-	int database = 0;
+	uint database = 0;
 };
 
 } // namespace vanity

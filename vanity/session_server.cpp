@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-int& SessionServer::session_db(Client &client) {
+uint& SessionServer::session_db(Client &client) {
 	return client.session_info().database;
 }
 

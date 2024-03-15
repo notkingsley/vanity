@@ -18,7 +18,7 @@ class SessionServer
 {
 public:
 	// get a reference to a client's current db
-	static int& session_db(Client& client);
+	static uint& session_db(Client& client);
 
 	// get a reference to a client's current auth level
 	static client_auth& session_auth(Client& client);
