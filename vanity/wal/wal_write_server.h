@@ -42,7 +42,7 @@ public:
 
 	// log a request that's about to happen
 	// requires op to be the operation extracted from the request
-	void write_ahead(Client& client, operation_t op, const std::string_view& request);
+	void wal_request(Client& client, operation_t op, const std::string_view& request);
 
 	// log an expiry that's about to happen
 	void wal_expiry(const std::string& key);

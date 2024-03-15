@@ -19,7 +19,7 @@ void WALWriteServer::close_wal() {
 		m_wal_file.close();
 }
 
-void WALWriteServer::write_ahead(Client &client, operation_t op, const std::string_view &request) {
+void WALWriteServer::wal_request(Client &client, operation_t op, const std::string_view &request) {
 	if (not should_wal(op))
 		return;
 
