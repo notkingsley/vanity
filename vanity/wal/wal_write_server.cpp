@@ -27,8 +27,19 @@ void WALWriteServer::write_ahead(Client &client, operation_t op, const std::stri
 	if (not m_wal_file.is_open())
 		return;
 
+	serializer::write(m_wal_file, wal_entry_t::request);
 	serializer::write(m_wal_file, session_db(client));
 	serializer::write(m_wal_file, request);
+	m_wal_file << std::endl;
+}
+
+void WALWriteServer::wal_expiry(const std::string &key) {
+	std::lock_guard lock(m_wal_mutex);
+	if (not m_wal_file.is_open())
+		return;
+
+	serializer::write(m_wal_file, wal_entry_t::expire);
+	serializer::write(m_wal_file, key);
 	m_wal_file << std::endl;
 }
 
@@ -37,7 +48,8 @@ std::mutex &WALWriteServer::wal_mutex() {
 }
 
 ClosedWAL::ClosedWAL(WALWriteServer &wal, std::filesystem::path wal_file)
-	: m_wal{wal}, m_wal_file{std::move(wal_file)} {
+	: m_wal{wal}, m_wal_file{std::move(wal_file)}
+{
 	m_wal.close_wal();
 }
 
