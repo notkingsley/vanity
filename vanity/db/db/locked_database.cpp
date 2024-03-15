@@ -128,6 +128,26 @@ void LockedDatabase::deep_purge() {
 	Database::deep_purge();
 }
 
+void LockedDatabase::on_expire(callback_t callback) {
+	std::lock_guard lock{m_mutex};
+	Database::on_expire(std::move(callback));
+}
+
+void LockedDatabase::disable_on_expire() {
+	std::lock_guard lock{m_mutex};
+	Database::disable_on_expire();
+}
+
+void LockedDatabase::expiry_enabled(bool enable) {
+	std::lock_guard lock{m_mutex};
+	Database::expiry_enabled(enable);
+}
+
+void LockedDatabase::force_expire(const key_type &key) {
+	std::lock_guard lock{m_mutex};
+	Database::force_expire(key);
+}
+
 
 void LockedDatabase::str_set(const key_type &key, const std::string &value) {
 	std::lock_guard lock{m_mutex};

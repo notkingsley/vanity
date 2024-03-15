@@ -133,6 +133,28 @@ public:
 	// should not be called often
 	void deep_purge();
 
+	// register a callback to be called pre-expiry of a key
+	// clears the existing callback, if any
+	void on_expire(callback_t callback);
+
+	// disable the callback for pre-expiry, if any
+	void disable_on_expire();
+
+	// enable or disable global expiry for this database
+	// when enabled, expiry works as normal and keys are expired
+	// when their expiry time is met
+	// when disabled, keys persist indefinitely - no matter what
+	// the expiry times say - unless it is re-enabled or force_expire()
+	// is used
+	void expiry_enabled(bool enable);
+
+	// manually trigger a key to be expired
+	// this bypasses all checks and will remove the key
+	// even if the expiry time isn't passed or if
+	// expiry has been otherwise disabled
+	// will not trigger the on_expire callback
+	void force_expire(const key_type& key);
+
 
 	// set a string value for a key
 	void str_set(const key_type& key, const std::string& value);

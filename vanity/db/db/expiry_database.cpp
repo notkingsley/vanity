@@ -4,6 +4,7 @@
 
 #include <random>
 #include <ranges>
+#include <utility>
 
 #include "expiry_database.h"
 
@@ -13,8 +14,15 @@ namespace vanity::db {
 ExpiryDatabase::ExpiryDatabase() = default;
 
 void ExpiryDatabase::expire(const key_type& key) {
+	if (m_on_expire)
+		m_on_expire(key);
+
+	_do_expire(key);
+}
+
+void ExpiryDatabase::_do_expire(const key_type &key) {
+	clear_expiry(key);
 	m_data.erase(key);
-	m_expiry_times.erase(key);
 }
 
 bool ExpiryDatabase::is_expired(const key_type &key) {
@@ -25,6 +33,9 @@ bool ExpiryDatabase::is_expired(const key_type &key) {
 }
 
 bool ExpiryDatabase::erase_if_expired(const key_type &key) {
+	if (not m_expiry_enabled)
+		return false;
+
 	if (not is_expired(key))
 		return false;
 
@@ -41,7 +52,7 @@ void ExpiryDatabase::set_expiry(const key_type &key, time_t expiry_time) {
 		m_expiry_times[key] = expiry_time;
 }
 
-std::optional<time_t> ExpiryDatabase::get_expiry(const BaseMap::key_type &key) {
+std::optional<time_t> ExpiryDatabase::get_expiry(const key_type &key) {
 	erase_if_expired(key);
 	if (not m_expiry_times.contains(key))
 		return std::nullopt;
@@ -85,6 +96,22 @@ void ExpiryDatabase::shallow_purge() {
 void ExpiryDatabase::deep_purge() {
 	for (auto& [key, _] : m_expiry_times)
 		erase_if_expired(key);
+}
+
+void ExpiryDatabase::on_expire(callback_t callback) {
+	m_on_expire = std::move(callback);
+}
+
+void ExpiryDatabase::disable_on_expire() {
+	on_expire({});
+}
+
+void ExpiryDatabase::expiry_enabled(bool enable) {
+	m_expiry_enabled = enable;
+}
+
+void ExpiryDatabase::force_expire(const key_type &key) {
+	_do_expire(key);
 }
 
 } // namespace vanity::db
