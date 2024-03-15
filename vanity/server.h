@@ -23,7 +23,7 @@ class Server:
 	public virtual PipeServer,
 	public virtual PubSubServer,
 	public virtual TransactionServer,
-	public virtual WALServer
+	public virtual WalServer
 {
 private:
 	// start background server tasks

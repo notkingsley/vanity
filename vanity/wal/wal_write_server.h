@@ -15,11 +15,12 @@
 
 namespace vanity {
 
+namespace wal {
+
 /*
- * A WALWriteServer writes to a Write Ahead Log
+ * A WalWriteServer writes to a Write Ahead Log
  */
-class WALWriteServer : public virtual SessionServer
-{
+class WalWriteServer : public virtual SessionServer {
 private:
 	// the WAL file
 	std::ofstream m_wal_file;
@@ -35,41 +36,44 @@ private:
 
 public:
 	// use file for the WAL
-	void wal_to(const std::filesystem::path& wal_file);
+	void wal_to(const std::filesystem::path &wal_file);
 
 	// close the WAL
 	void close_wal();
 
 	// log a request that's about to happen
 	// requires op to be the operation extracted from the request
-	void wal_request(Client& client, operation_t op, const std::string_view& request);
+	void wal_request(Client &client, operation_t op, const std::string_view &request);
 
 	// log an expiry that's about to happen
-	void wal_expiry(const std::string& key);
+	void wal_expiry(const std::string &key);
 
 	// obtain a reference to the mutex
-	std::mutex& wal_mutex();
+	std::mutex &wal_mutex();
 };
 
 /*
- * RAII mechanism to close and reopen a WALWriteServer
+ * RAII mechanism to close and reopen a WalWriteServer
  */
-class ClosedWAL
-{
+class ClosedWAL {
 private:
-	// the WALWriteServer
-	WALWriteServer& m_wal;
+	// the WalWriteServer
+	WalWriteServer &m_wal;
 
 	// the WAL file to reopen
 	std::filesystem::path m_wal_file;
 
 public:
 	// close the WAL
-	explicit ClosedWAL(WALWriteServer& wal, std::filesystem::path  wal_file);
+	explicit ClosedWAL(WalWriteServer &wal, std::filesystem::path wal_file);
 
 	// reopen the WAL
 	~ClosedWAL();
 };
+
+} // namespace wal
+
+using wal::WalWriteServer;
 
 } // namespace vanity
 

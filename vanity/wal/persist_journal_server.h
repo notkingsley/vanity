@@ -13,6 +13,8 @@
 
 namespace vanity {
 
+namespace wal {
+
 /*
  * An uncreative name, to tell the truth.
  * A Journalist handles the logic for journaling a persist operation
@@ -20,32 +22,31 @@ namespace vanity {
  *
  * You create a Journalist, perform the persist operation, and then call switch_and_journal()
  */
-class Journalist
-{
+class Journalist {
 private:
 	using path = std::filesystem::path;
 
 	using empty_journal_t = std::invoke_result_t<decltype(journal::new_journal_maker), path>;
 
 	// the database file
-	const path& m_db_file;
+	const path &m_db_file;
 
 	// the temporary database file
 	path m_tmp_db_file;
 
 	// the WAL file
-	const path& m_wal_file;
+	const path &m_wal_file;
 
 	// the empty journal
 	empty_journal_t m_empty_journal;
 
 	// return the path to a temporary database file
 	// the path returned must be distinct from db_file
-	static path make_temp_db_file(const path& db_file);
+	static path make_temp_db_file(const path &db_file);
 
 	// return the path to the old database file
 	// the path returned must be distinct from db_file
-	static path make_old_db_file(const path& db_file);
+	static path make_old_db_file(const path &db_file);
 
 	// delete the WAL
 	void clear_wal();
@@ -58,22 +59,21 @@ private:
 
 public:
 	// create a journalist
-	Journalist(const path& journal_file, const path& db_file, const path& wal_file);
+	Journalist(const path &journal_file, const path &db_file, const path &wal_file);
 
 	// journal the persist operation
 	void switch_and_journal();
 
 	// get the temporary database file
-	const path& tmp_db_file() const;
+	const path &tmp_db_file() const;
 };
 
 /*
  * A PersistJournalServer journals a persist operation to provide crash recovery
  */
-class PersistJournalServer:
-	public virtual BaseDatabaseServer,
-	public virtual WALWriteServer
-{
+class PersistJournalServer :
+		public virtual BaseDatabaseServer,
+		public virtual WalWriteServer {
 private:
 	using path = std::filesystem::path;
 
@@ -91,7 +91,7 @@ protected:
 
 private:
 	// perform the persist operation into file
-	void do_persist(const path& file);
+	void do_persist(const path &file);
 
 	// perform a persist operation with WAL enabled (journaling the operation)
 	// assumes the WAL file, the database file, and the journal file are all present
@@ -117,6 +117,10 @@ public:
 	// assumes the database file is present
 	void persist_no_check();
 };
+
+} // namespace wal
+
+using wal::PersistJournalServer;
 
 } // namespace vanity
 

@@ -4,9 +4,9 @@
 
 #include "wal_recovery_server.h"
 
-namespace vanity {
+namespace vanity::wal {
 
-void WALRecoveryServer::recover_from(const std::filesystem::path &wal_file)
+void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 {
 	std::array<WalRecoveryClient, M_NUM_DATABASES> clients;
 	for (int i = 0; i < M_NUM_DATABASES; ++i)
@@ -24,4 +24,4 @@ void WALRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 	}
 }
 
-} // namespace vanity
+} // namespace vanity::wal

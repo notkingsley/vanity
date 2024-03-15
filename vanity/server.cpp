@@ -12,7 +12,7 @@ Server::Server(const Config &config):
 	SocketServer(config.ports),
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file)
 {
-	WALServer::recover();
+	WalServer::recover();
 }
 
 void Server::start() {

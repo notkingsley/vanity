@@ -13,18 +13,18 @@
 #include "wal_recovery_client.h"
 
 
-namespace vanity {
+namespace vanity::wal {
 
 /*
- * A WALRecoveryServer recovers from a Write Ahead Log
+ * A WalRecoveryServer recovers from a Write Ahead Log
  */
-class WALRecoveryServer : public virtual BaseDatabaseServer
+class WalRecoveryServer : public virtual BaseDatabaseServer
 {
 public:
 	// recover from a WAL
 	void recover_from(const std::filesystem::path& wal_file);
 };
 
-} // namespace vanity
+} // namespace vanity::wal
 
 #endif //VANITY_WAL_RECOVERY_SERVER_H

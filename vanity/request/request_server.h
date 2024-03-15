@@ -24,7 +24,7 @@ namespace vanity {
 class RequestServer :
 	public virtual AbstractServer,
 	public virtual LogServer,
-	public virtual WALWriteServer
+	public virtual WalWriteServer
 {
 public:
 	// a message was received from a client

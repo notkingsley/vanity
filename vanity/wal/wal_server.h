@@ -13,20 +13,26 @@
 
 namespace vanity {
 
+namespace wal {
+
 /*
- * A WALServer is a Write Ahead Log Server
+ * A WalServer is a Write Ahead Log Server
  */
-class WALServer :
+class WalServer :
 	public virtual PersistJournalServer,
-	public virtual WALRecoveryServer
+	public virtual WalRecoveryServer
 {
 public:
 	// create a WAL server
-	explicit WALServer();
+	explicit WalServer();
 
 	// recover previous state from the WAL file
 	void recover();
 };
+
+} // namespace wal
+
+using wal::WalServer;
 
 } // namespace vanity
 

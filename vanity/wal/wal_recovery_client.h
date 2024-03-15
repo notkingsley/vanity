@@ -7,7 +7,7 @@
 
 #include "client/client.h"
 
-namespace vanity {
+namespace vanity::wal {
 
 class WalRecoveryClient : public Client
 {
@@ -41,6 +41,6 @@ public:
 
 };
 
-} // namespace vanity
+} // namespace vanity::wal
 
 #endif //VANITY_WAL_RECOVERY_CLIENT_H

@@ -4,14 +4,14 @@
 
 #include "wal_server.h"
 
-namespace vanity {
+namespace vanity::wal {
 
-WALServer::WALServer() {
+WalServer::WalServer() {
 	if (m_wal_file)
 		wal_to(*m_wal_file);
 }
 
-void WALServer::recover() {
+void WalServer::recover() {
 	if (not m_wal_file)
 		return;
 
@@ -23,4 +23,4 @@ void WALServer::recover() {
 	recover_from(file);
 }
 
-} // namespace vanity
+} // namespace vanity::wal

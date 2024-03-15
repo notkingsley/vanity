@@ -4,22 +4,22 @@
 
 #include "wal_write_server.h"
 
-namespace vanity {
+namespace vanity::wal {
 
-void WALWriteServer::wal_to(const std::filesystem::path &wal_file) {
+void WalWriteServer::wal_to(const std::filesystem::path &wal_file) {
 	std::lock_guard lock(m_wal_mutex);
 	if (m_wal_file.is_open())
 		m_wal_file.close();
 	m_wal_file.open(wal_file, std::ios::out | std::ios::app);
 }
 
-void WALWriteServer::close_wal() {
+void WalWriteServer::close_wal() {
 	std::lock_guard lock(m_wal_mutex);
 	if (m_wal_file.is_open())
 		m_wal_file.close();
 }
 
-void WALWriteServer::wal_request(Client &client, operation_t op, const std::string_view &request) {
+void WalWriteServer::wal_request(Client &client, operation_t op, const std::string_view &request) {
 	if (not should_wal(op))
 		return;
 
@@ -33,7 +33,7 @@ void WALWriteServer::wal_request(Client &client, operation_t op, const std::stri
 	m_wal_file << std::endl;
 }
 
-void WALWriteServer::wal_expiry(const std::string &key) {
+void WalWriteServer::wal_expiry(const std::string &key) {
 	std::lock_guard lock(m_wal_mutex);
 	if (not m_wal_file.is_open())
 		return;
@@ -43,11 +43,11 @@ void WALWriteServer::wal_expiry(const std::string &key) {
 	m_wal_file << std::endl;
 }
 
-std::mutex &WALWriteServer::wal_mutex() {
+std::mutex &WalWriteServer::wal_mutex() {
 	return m_wal_mutex;
 }
 
-ClosedWAL::ClosedWAL(WALWriteServer &wal, std::filesystem::path wal_file)
+ClosedWAL::ClosedWAL(WalWriteServer &wal, std::filesystem::path wal_file)
 	: m_wal{wal}, m_wal_file{std::move(wal_file)}
 {
 	m_wal.close_wal();
@@ -57,5 +57,4 @@ ClosedWAL::~ClosedWAL() {
 	m_wal.wal_to(m_wal_file);
 }
 
-
-} // namespace vanity
+} // namespace vanity::wal

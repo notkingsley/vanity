@@ -4,8 +4,7 @@
 
 #include "wal_recovery_client.h"
 
-namespace vanity {
-
+namespace vanity::wal {
 
 void WalRecoveryClient::ready(SocketServer &server) {
 	throw std::runtime_error("WalRecoveryClient::ready() called");
@@ -29,4 +28,4 @@ size_t WalRecoveryClient::read(char *buffer, size_t buffer_size) const {
 
 void WalRecoveryClient::write(SocketServer &server, Response &&response) { }
 
-} // namespace vanity
+} // namespace vanity::wal

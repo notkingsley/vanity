@@ -13,7 +13,7 @@
 #include "utils/serializer.h"
 
 
-namespace vanity::journal {
+namespace vanity::wal::journal {
 
 using path = std::filesystem::path;
 
@@ -204,6 +204,6 @@ public:
 	const path& get_existing_db_file() const;
 };
 
-} // namespace vanity::journal
+} // namespace vanity::wal::journal
 
 #endif //VANITY_JOURNAL_H

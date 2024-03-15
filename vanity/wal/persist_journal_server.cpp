@@ -4,7 +4,7 @@
 
 #include "persist_journal_server.h"
 
-namespace vanity {
+namespace vanity::wal {
 
 // return a path with the same parent as file, but with the given prefix
 static auto with_name_prefix(const std::filesystem::path& file, const char* prefix) {
@@ -20,12 +20,12 @@ Journalist::path Journalist::make_old_db_file(const path &db_file) {
 }
 
 void Journalist::clear_wal() {
-	std::filesystem::remove(m_wal_file);
+	remove(m_wal_file);
 }
 
 void Journalist::journal_db_file_no_exist() {
 	auto no_exist_journal = m_empty_journal.journal_db_file_no_exist();
-	std::filesystem::rename(m_tmp_db_file, m_db_file);
+	rename(m_tmp_db_file, m_db_file);
 	clear_wal();
 	no_exist_journal.journal_delete();
 }
@@ -34,13 +34,13 @@ void Journalist::journal_db_file_exist() {
 	auto old_db_file = make_old_db_file(m_db_file);
 	auto exist_journal = m_empty_journal.journal_db_file_exist();
 	auto moving_journal = exist_journal.journal_moving_existing_db_file(old_db_file);
-	std::filesystem::rename(m_db_file, old_db_file);
+	rename(m_db_file, old_db_file);
 	auto moved_journal = moving_journal.journal_moved_existing_db_file();
-	std::filesystem::rename(m_tmp_db_file, m_db_file);
+	rename(m_tmp_db_file, m_db_file);
 	auto moved_new_journal = moved_journal.journal_moved_new_db_file();
 	clear_wal();
 	moved_new_journal.journal_delete();
-	std::filesystem::remove(old_db_file);
+	remove(old_db_file);
 }
 
 Journalist::Journalist(const path &journal_file, const path &db_file, const path &wal_file):
@@ -51,7 +51,7 @@ Journalist::Journalist(const path &journal_file, const path &db_file, const path
 {}
 
 void Journalist::switch_and_journal() {
-	if (std::filesystem::exists(m_db_file))
+	if (exists(m_db_file))
 		journal_db_file_exist();
 	else
 		journal_db_file_no_exist();
@@ -99,7 +99,7 @@ void PersistJournalServer::persist_with_wal() {
 void PersistJournalServer::persist_without_wal() {
 	auto tmp = with_name_prefix(*m_db_file, "tmp.");
 	do_persist(tmp);
-	std::filesystem::rename(tmp, m_db_file.value());
+	rename(tmp, m_db_file.value());
 }
 
 void PersistJournalServer::load_databases() {
@@ -112,9 +112,7 @@ void PersistJournalServer::load_databases() {
 }
 
 void PersistJournalServer::pre_recover_with_wal() {
-	namespace fs = std::filesystem;
 	journal::RecoveredJournal recovered_journal{*m_journal_file};
-
 	switch (recovered_journal.get_state()) {
 		case journal::JournalState::EMPTY_JOURNAL:
 		{
@@ -122,8 +120,8 @@ void PersistJournalServer::pre_recover_with_wal() {
 		}
 		case journal::JournalState::DB_FILE_NO_EXIST:
 		{
-			if (fs::exists(*m_db_file))
-				fs::remove(*m_wal_file);
+			if (exists(*m_db_file))
+				remove(*m_wal_file);
 			break;
 		}
 		case journal::JournalState::DB_FILE_EXIST:
@@ -133,27 +131,27 @@ void PersistJournalServer::pre_recover_with_wal() {
 		case journal::JournalState::MOVING_EXISTING_DB_FILE:
 		{
 			const auto& old = recovered_journal.get_existing_db_file();
-			if (fs::exists(old) and fs::exists(*m_db_file))
+			if (exists(old) and exists(*m_db_file))
 				throw std::runtime_error("Journal violation: both old and current db files exist");
 
-			if (fs::exists(*m_db_file))
+			if (exists(*m_db_file))
 				break;
 
-			if (not fs::exists(old))
+			if (not exists(old))
 				throw std::runtime_error("Journal violation: none of old or current db files exist");
 
-			fs::rename(old, *m_db_file);
+			rename(old, *m_db_file);
 			break;
 		}
 		case journal::JournalState::MOVED_EXISTING_DB_FILE:
 		{
 			const auto& old = recovered_journal.get_existing_db_file();
-			fs::rename(old, *m_db_file);
+			rename(old, *m_db_file);
 			break;
 		}
 		case journal::JournalState::MOVED_NEW_DB_FILE:
 		{
-			fs::remove(*m_wal_file);
+			remove(*m_wal_file);
 			break;
 		}
 	}
@@ -180,4 +178,4 @@ void PersistJournalServer::persist_no_check() {
 		persist_without_wal();
 }
 
-} // namespace vanity
+} // namespace vanity::wal

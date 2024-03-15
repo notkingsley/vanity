@@ -4,7 +4,7 @@
 
 #include "journal.h"
 
-namespace vanity::journal {
+namespace vanity::wal::journal {
 
 Journal::Journal(const path &journal_file) : m_journal_file(journal_file), m_journal(journal_file) {}
 
@@ -128,4 +128,4 @@ const path &RecoveredJournal::get_existing_db_file() const {
 	return *m_moving_existing_db_file;
 }
 
-} // namespace vanity::journal
+} // namespace vanity::wal::journal
