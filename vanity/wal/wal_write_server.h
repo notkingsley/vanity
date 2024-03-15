@@ -28,12 +28,6 @@ private:
 	// mutex for the WAL
 	std::mutex m_wal_mutex;
 
-	enum class wal_entry_t : char {
-		request,
-		expire,
-		transaction,
-	};
-
 public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
@@ -46,7 +40,7 @@ public:
 	void wal_request(Client &client, operation_t op, const std::string_view &request);
 
 	// log an expiry that's about to happen
-	void wal_expiry(const std::string &key);
+	void wal_expiry(const std::string &key, uint db);
 
 	// obtain a reference to the mutex
 	std::mutex &wal_mutex();

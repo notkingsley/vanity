@@ -2,7 +2,9 @@
 // Created by kingsli on 2/12/24.
 //
 
+#include "wal_entry_t.h"
 #include "wal_write_server.h"
+
 
 namespace vanity::wal {
 
@@ -33,12 +35,13 @@ void WalWriteServer::wal_request(Client &client, operation_t op, const std::stri
 	m_wal_file << std::endl;
 }
 
-void WalWriteServer::wal_expiry(const std::string &key) {
+void WalWriteServer::wal_expiry(const std::string &key, uint db) {
 	std::lock_guard lock(m_wal_mutex);
 	if (not m_wal_file.is_open())
 		return;
 
 	serializer::write(m_wal_file, wal_entry_t::expire);
+	serializer::write(m_wal_file, db);
 	serializer::write(m_wal_file, key);
 	m_wal_file << std::endl;
 }
