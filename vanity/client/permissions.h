@@ -892,6 +892,7 @@ inline bool should_wal(operation_t operation)
 		case operation_t::KEYS:
 
 		case operation_t::GET_EXPIRY:
+		case operation_t::SET_EXPIRY:
 
 		case operation_t::GET:
 		case operation_t::STR_LEN:
@@ -929,7 +930,6 @@ inline bool should_wal(operation_t operation)
 		case operation_t::COPY_TO_DB:
 		case operation_t::MOVE_TO_DB:
 
-		case operation_t::SET_EXPIRY:
 		case operation_t::CLEAR_EXPIRY:
 
 		case operation_t::STR_SET:
