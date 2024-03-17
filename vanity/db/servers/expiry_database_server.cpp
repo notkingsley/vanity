@@ -16,16 +16,17 @@ void ExpiryDatabaseServer::event_expire() {
 }
 
 void ExpiryDatabaseServer::request_set_expiry(Client &client, const std::string &key, double seconds) {
-	database(client).set_expiry(key, seconds_to_time_point(seconds));
+	auto expiry_time = seconds_to_time_point(seconds);
+	wal_set_expiry(key, session_db(client), expiry_time);
+	database(client).set_expiry(key, expiry_time);
 	send(client, ok());
 }
 
 void ExpiryDatabaseServer::request_get_expiry(Client &client, const std::string &key) {
-	auto expiry_time = database(client).get_expiry(key);
-	if (not expiry_time.has_value())
-		send(client, null());
+	if (auto expiry_time = database(client).get_expiry(key))
+		send(client, ok(time_point_to_seconds(*expiry_time)));
 	else
-		send(client, ok(time_point_to_seconds(expiry_time.value())));
+		send(client, null());
 }
 
 void ExpiryDatabaseServer::request_clear_expiry(Client &client, const std::string &key) {

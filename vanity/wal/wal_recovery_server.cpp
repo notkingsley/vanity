@@ -11,7 +11,7 @@ namespace vanity::wal {
 void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 {
 	std::array<WalRecoveryClient, M_NUM_DATABASES> clients;
-	for (int i = 0; i < M_NUM_DATABASES; ++i)
+	for (uint i = 0; i < M_NUM_DATABASES; ++i)
 		session_db(clients[i]) = i;
 
 	std::ifstream wal{wal_file};
@@ -30,8 +30,14 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 				m_databases[db].force_expire(body);
 				break;
 			}
-			default:
+			case wal_entry_t::set_expiry: {
+				auto expiry_time = serializer::read<db::time_t>(wal);
+				m_databases[db].set_expiry(body, expiry_time);
+				break;
+			}
+			default: {
 				throw std::runtime_error("Bad wal_entry_t");
+			}
 		}
 
 		if (wal.get() != '\n')
