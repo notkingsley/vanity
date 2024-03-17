@@ -50,13 +50,13 @@ std::mutex &WalWriteServer::wal_mutex() {
 	return m_wal_mutex;
 }
 
-ClosedWAL::ClosedWAL(WalWriteServer &wal, std::filesystem::path wal_file)
+ClosedWal::ClosedWal(WalWriteServer &wal, std::filesystem::path wal_file)
 	: m_wal{wal}, m_wal_file{std::move(wal_file)}
 {
 	m_wal.close_wal();
 }
 
-ClosedWAL::~ClosedWAL() {
+ClosedWal::~ClosedWal() {
 	m_wal.wal_to(m_wal_file);
 }
 

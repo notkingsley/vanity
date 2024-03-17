@@ -9,7 +9,9 @@
 
 #include "db/servers/base_database_server.h"
 #include "journal.h"
+#include "wal_expiry_server.h"
 #include "wal_write_server.h"
+
 
 namespace vanity {
 
@@ -22,7 +24,8 @@ namespace wal {
  *
  * You create a Journalist, perform the persist operation, and then call switch_and_journal()
  */
-class Journalist {
+class Journalist
+{
 private:
 	using path = std::filesystem::path;
 
@@ -72,8 +75,10 @@ public:
  * A PersistJournalServer journals a persist operation to provide crash recovery
  */
 class PersistJournalServer :
-		public virtual BaseDatabaseServer,
-		public virtual WalWriteServer {
+	public virtual BaseDatabaseServer,
+	public virtual WalExpiryServer,
+	public virtual WalWriteServer
+{
 private:
 	using path = std::filesystem::path;
 
@@ -106,8 +111,7 @@ private:
 	// recover from a possible crash using the journal
 	// this should be called before any of db_file, wal_file, or journal_file are accessed
 	// it ensures that the database file and the WAL are in a consistent state
-	// assumes the WAL file, the database file, and the journal file are all present
-	void pre_recover_with_wal();
+	void pre_database_load();
 
 public:
 	// create a PersistJournalServer

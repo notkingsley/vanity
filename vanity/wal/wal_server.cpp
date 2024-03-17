@@ -16,11 +16,15 @@ void WalServer::recover() {
 		return;
 
 	auto &file = *m_wal_file;
-	if (not std::filesystem::exists(file))
+	if (not exists(file))
 		return;
 
-	ClosedWAL closed {*this, file};
-	recover_from(file);
+	pre_recovery();
+	{
+		ClosedWal closed {*this, file};
+		recover_from(file);
+	}
+	post_recovery();
 }
 
 } // namespace vanity::wal

@@ -20,7 +20,8 @@ namespace wal {
 /*
  * A WalWriteServer writes to a Write Ahead Log
  */
-class WalWriteServer : public virtual SessionServer {
+class WalWriteServer : public virtual SessionServer
+{
 private:
 	// the WAL file
 	std::ofstream m_wal_file;
@@ -49,7 +50,8 @@ public:
 /*
  * RAII mechanism to close and reopen a WalWriteServer
  */
-class ClosedWAL {
+class ClosedWal
+{
 private:
 	// the WalWriteServer
 	WalWriteServer &m_wal;
@@ -59,10 +61,10 @@ private:
 
 public:
 	// close the WAL
-	explicit ClosedWAL(WalWriteServer &wal, std::filesystem::path wal_file);
+	explicit ClosedWal(WalWriteServer &wal, std::filesystem::path wal_file);
 
 	// reopen the WAL
-	~ClosedWAL();
+	~ClosedWal();
 };
 
 } // namespace wal

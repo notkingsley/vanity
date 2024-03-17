@@ -69,49 +69,50 @@ void PersistJournalServer::do_persist(const path &file) {
 }
 
 void PersistJournalServer::persist_with_wal() {
-	ClosedWAL closed_wal{*this, *m_wal_file};
-	{
-		std::scoped_lock lock{
-			wal_mutex(),
-			m_databases[0].mutex(),
-			m_databases[1].mutex(),
-			m_databases[2].mutex(),
-			m_databases[3].mutex(),
-			m_databases[4].mutex(),
-			m_databases[5].mutex(),
-			m_databases[6].mutex(),
-			m_databases[7].mutex(),
-			m_databases[8].mutex(),
-			m_databases[9].mutex(),
-			m_databases[10].mutex(),
-			m_databases[11].mutex(),
-			m_databases[12].mutex(),
-			m_databases[13].mutex(),
-			m_databases[14].mutex(),
-			m_databases[15].mutex()
-		};
-		Journalist journalist{*m_journal_file, *m_db_file, *m_wal_file};
-		do_persist(journalist.tmp_db_file());
-		journalist.switch_and_journal();
-	}
+	ClosedWal closed_wal{*this, *m_wal_file};
+	std::scoped_lock lock{
+		wal_mutex(),
+		m_databases[0].mutex(),
+		m_databases[1].mutex(),
+		m_databases[2].mutex(),
+		m_databases[3].mutex(),
+		m_databases[4].mutex(),
+		m_databases[5].mutex(),
+		m_databases[6].mutex(),
+		m_databases[7].mutex(),
+		m_databases[8].mutex(),
+		m_databases[9].mutex(),
+		m_databases[10].mutex(),
+		m_databases[11].mutex(),
+		m_databases[12].mutex(),
+		m_databases[13].mutex(),
+		m_databases[14].mutex(),
+		m_databases[15].mutex()
+	};
+	Journalist journalist{*m_journal_file, *m_db_file, *m_wal_file};
+	do_persist(journalist.tmp_db_file());
+	journalist.switch_and_journal();
 }
 
 void PersistJournalServer::persist_without_wal() {
 	auto tmp = with_name_prefix(*m_db_file, "tmp.");
 	do_persist(tmp);
-	rename(tmp, m_db_file.value());
+	rename(tmp, *m_db_file);
 }
 
 void PersistJournalServer::load_databases() {
-	if (m_db_file and std::filesystem::exists(*m_db_file)) {
-		std::ifstream in{*m_db_file, std::ios::binary};
-		for (auto& db : m_databases)
-			db = db::Database::from(in);
-		in.close();
-	}
+	if (not m_db_file or not exists(*m_db_file))
+		return;
+
+	std::ifstream in{*m_db_file, std::ios::binary};
+	for (auto& db : m_databases)
+		db = db::Database::from(in);
 }
 
-void PersistJournalServer::pre_recover_with_wal() {
+void PersistJournalServer::pre_database_load() {
+	if (not m_wal_file or not m_db_file)
+		return;
+
 	journal::RecoveredJournal recovered_journal{*m_journal_file};
 	switch (recovered_journal.get_state()) {
 		case journal::JournalState::EMPTY_JOURNAL:
@@ -165,13 +166,14 @@ PersistJournalServer::PersistJournalServer(optional_path wal_file, optional_path
 	if (m_wal_file and m_db_file and not m_journal_file)
 		throw std::invalid_argument("Journal file must be provided if WAL and DB files are provided");
 
-	if (m_wal_file and m_db_file)
-		pre_recover_with_wal();
-
+	pre_database_load();
 	load_databases();
+	post_database_load();
 }
 
 void PersistJournalServer::persist_no_check() {
+	pre_persist();
+
 	if (m_wal_file and m_db_file)
 		persist_with_wal();
 	else

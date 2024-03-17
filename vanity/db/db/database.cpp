@@ -14,10 +14,9 @@ Database &Database::operator=(Database &&other) noexcept
 }
 
 Database::Database(Database &&other) noexcept
-		: BaseDatabase(std::move(other)) { }
+	: BaseDatabase(std::move(other)) { }
 
 void Database::persist(std::ofstream &out) {
-	deep_purge();
 	serializer::write(out, m_data);
 	serializer::write(out, m_expiry_times);
 }
@@ -25,7 +24,7 @@ void Database::persist(std::ofstream &out) {
 Database Database::from(std::ifstream &in) {
 	Database db;
 
-	size_t size = serializer::read<size_t>(in);
+	auto size = serializer::read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
 		db.m_data.insert(serializer::read<db_pair_type>(in));
 
@@ -33,7 +32,6 @@ Database Database::from(std::ifstream &in) {
 	for (size_t i = 0; i < size; ++i)
 		db.m_expiry_times.insert(serializer::read<expiry_db_pair_type>(in));
 
-	db.deep_purge();
 	return db;
 }
 
