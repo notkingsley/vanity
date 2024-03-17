@@ -2,27 +2,27 @@
 // Created by kingsli on 12/21/23.
 //
 
-#ifndef VANITY_FAKE_CLIENT_H
-#define VANITY_FAKE_CLIENT_H
+#ifndef VANITY_PROXY_CLIENT_H
+#define VANITY_PROXY_CLIENT_H
 
 #include "client.h"
 
 namespace vanity {
 
 /*
- * A FakeClient implements the Client interface, while keeping
+ * A ProxyClient implements the Client interface, while keeping
  * a reference to another Client&, forwarding all calls
  * as a default implementation
  */
-class FakeClient : public Client
+class ProxyClient : public Client
 {
 private:
 	// the actual client
 	Client& m_client;
 
 public:
-	// create a FakeClient with an underlying client
-	explicit FakeClient(Client& client);
+	// create a ProxyClient with an underlying client
+	explicit ProxyClient(Client& client);
 
 	// the client has sent a message, and it is ready to be read
 	void ready(SocketServer& server) override;
@@ -50,4 +50,4 @@ protected:
 
 } // namespace vanity
 
-#endif //VANITY_FAKE_CLIENT_H
+#endif //VANITY_PROXY_CLIENT_H

@@ -4,7 +4,7 @@ include_directories(.)
 
 add_library(vanity_client STATIC
 	concrete_client.cpp
-	fake_client.cpp
+	proxy_client.cpp
 )
 
 # cyclical dependency, see socket/CMakeLists.txt
