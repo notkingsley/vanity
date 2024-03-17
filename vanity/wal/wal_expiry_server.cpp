@@ -32,11 +32,8 @@ void WalExpiryServer::pre_persist() {
 }
 
 void WalExpiryServer::post_database_load() {
-	for (uint n = 0; n < M_NUM_DATABASES; ++n) {
-		auto& db = m_databases[n];
-		db.expiry_enabled(false);
-		db.on_expire([this, n](auto key){ on_expire(key, n);});
-	}
+	for (uint n = 0; n < M_NUM_DATABASES; ++n)
+		m_databases[n].on_expire([this, n](auto key){ on_expire(key, n);});
 }
 
 } // namespace vanity::wal
