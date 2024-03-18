@@ -771,6 +771,8 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::MOVE_TO_DB:
 
 		case operation_t::TRANSACT_BEGIN:
+
+		case operation_t::SET_EXPIRY:
 			return behaviour_t::NOT_PERMITTED;
 
 
@@ -782,7 +784,6 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::COPY_TO:
 		case operation_t::MOVE_TO:
 
-		case operation_t::SET_EXPIRY:
 		case operation_t::GET_EXPIRY:
 		case operation_t::CLEAR_EXPIRY:
 
