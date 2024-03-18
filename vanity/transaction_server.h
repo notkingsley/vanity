@@ -31,6 +31,9 @@ public:
 	// dispatch a request in a transaction context
 	bool dispatch_transaction_context(Client& client, Request& request, bool end) override;
 
+	// redo a previously WAL-ed transaction
+	void wal_redo_transaction(Client& client, const std::string& commands, size_t size);
+
 private:
 	// get a reference to a client's current transaction data
 	static transaction_data& data(Client& client);

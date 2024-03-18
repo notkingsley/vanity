@@ -56,6 +56,9 @@ public:
 	// redoing each entry in the WAL
 	void wal_set_expiry(const std::string& key, uint db, db::time_t expiry_time);
 
+	// log a transaction that's about to happen
+	void wal_transaction(Client& client, const std::string& commands, size_t size);
+
 	// obtain a reference to the mutex
 	std::mutex &wal_mutex();
 };

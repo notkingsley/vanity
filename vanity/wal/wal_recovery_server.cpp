@@ -40,6 +40,12 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 				wal_redo_set_expiry(body, db, expiry_time);
 				break;
 			}
+			case wal_entry_t::transaction:
+			{
+				auto size = serializer::read<size_t>(wal);
+				wal_redo_transaction(clients[db], body, size);
+				break;
+			}
 			default:
 			{
 				throw std::runtime_error("Bad wal_entry_t");

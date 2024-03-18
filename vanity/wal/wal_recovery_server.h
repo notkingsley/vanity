@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include "db/servers/expiry_database_server.h"
+#include "transaction_server.h"
 #include "utils/serializer.h"
 #include "wal_expiry_server.h"
 
@@ -18,7 +19,10 @@ namespace vanity::wal {
 /*
  * A WalRecoveryServer recovers from a Write Ahead Log
  */
-class WalRecoveryServer : public virtual ExpiryDatabaseServer, public virtual WalExpiryServer
+class WalRecoveryServer:
+	public virtual ExpiryDatabaseServer,
+	public virtual TransactionServer,
+	public virtual WalExpiryServer
 {
 public:
 	// recover from a WAL
