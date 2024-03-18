@@ -48,6 +48,9 @@ public:
 	// from a file are move constructed, replacing the ones that
 	// were existing at construction
 	void post_database_load();
+
+	// redo a previously WALed expire operation
+	void wal_redo_expire(const std::string &key, uint db);
 };
 
 

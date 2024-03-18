@@ -271,6 +271,9 @@ public:
 	};
 
 protected:
+	// redo a previously WALed request
+	void wal_redo_request(const std::string& request, Client &client);
+
 	// dispatch multiple requests using do_handle, expecting the message to end after the last one
 	// this calls do_handle_single on each request in the message,
 	// so a response will be sent for each one no matter what

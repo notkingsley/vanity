@@ -46,6 +46,9 @@ public:
 
 	// a clear_expiry request was received from a client
 	void request_clear_expiry(Client& client, const std::string& key) override;
+
+	// redo a previously WALed set_expiry operation
+	void wal_redo_set_expiry(const std::string& key, uint db, db::time_t expiry_time);
 };
 
 } // namespace vanity

@@ -36,4 +36,8 @@ void WalExpiryServer::post_database_load() {
 		m_databases[n].on_expire([this, n](auto key){ on_expire(key, n);});
 }
 
+void WalExpiryServer::wal_redo_expire(const std::string &key, uint db) {
+	m_databases[db].force_expire(key);
+}
+
 } // namespace vanity::wal
