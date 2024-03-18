@@ -5,7 +5,7 @@
 #ifndef VANITY_CLIENT_H
 #define VANITY_CLIENT_H
 
-#include "permissions.h"
+#include "operations.h"
 #include "response/response.h"
 #include "socket_client.h"
 

@@ -2,8 +2,8 @@
 // Created by kingsli on 10/9/23.
 //
 
-#ifndef VANITY_PERMISSIONS_H
-#define VANITY_PERMISSIONS_H
+#ifndef VANITY_OPERATIONS_H
+#define VANITY_OPERATIONS_H
 
 #include "session_info.h"
 
@@ -966,4 +966,4 @@ inline bool should_wal(operation_t operation)
 
 } // namespace vanity
 
-#endif //VANITY_PERMISSIONS_H
+#endif //VANITY_OPERATIONS_H
