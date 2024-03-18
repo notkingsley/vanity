@@ -113,6 +113,9 @@ private:
 	// it ensures that the database file and the WAL are in a consistent state
 	void pre_database_load();
 
+	// return a lock on the wal mutex and all databases
+	auto lock_all();
+
 public:
 	// create a PersistJournalServer
 	PersistJournalServer(optional_path wal_file, optional_path db_file, optional_path journal_file);

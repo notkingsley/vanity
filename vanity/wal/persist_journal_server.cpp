@@ -68,28 +68,16 @@ void PersistJournalServer::do_persist(const path &file) {
 		db.persist(out);
 }
 
+auto PersistJournalServer::lock_all() {
+	return [this]<size_t... I>(std::integer_sequence<size_t, I...>) {
+		return std::scoped_lock { wal_mutex(), m_databases[I].mutex()... };
+	}(std::make_index_sequence<M_NUM_DATABASES>{});
+}
+
 void PersistJournalServer::persist_with_wal() {
-	ClosedWal closed_wal{*this, *m_wal_file};
-	std::scoped_lock lock{
-		wal_mutex(),
-		m_databases[0].mutex(),
-		m_databases[1].mutex(),
-		m_databases[2].mutex(),
-		m_databases[3].mutex(),
-		m_databases[4].mutex(),
-		m_databases[5].mutex(),
-		m_databases[6].mutex(),
-		m_databases[7].mutex(),
-		m_databases[8].mutex(),
-		m_databases[9].mutex(),
-		m_databases[10].mutex(),
-		m_databases[11].mutex(),
-		m_databases[12].mutex(),
-		m_databases[13].mutex(),
-		m_databases[14].mutex(),
-		m_databases[15].mutex()
-	};
-	Journalist journalist{*m_journal_file, *m_db_file, *m_wal_file};
+	ClosedWal closed_wal {*this, *m_wal_file};
+	auto lock {lock_all()};
+	Journalist journalist {*m_journal_file, *m_db_file, *m_wal_file};
 	do_persist(journalist.tmp_db_file());
 	journalist.switch_and_journal();
 }
