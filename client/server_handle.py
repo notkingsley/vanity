@@ -1,3 +1,4 @@
+import os
 import subprocess
 from time import sleep
 from typing import Literal
@@ -9,6 +10,7 @@ class ServerHandle:
     """
 
     EXECUTABLE_PATH = "vanity/cmake-build-debug/vanity"
+    VANITY_LOCK_FILE = "vanity.lock"
     STARTUP_DELAY = 0.01
 
     def __init__(
@@ -53,6 +55,7 @@ class ServerHandle:
             for port in _ports:
                 self.args.append(f"--port={port}")
 
+        self.working_dir = working_dir
         if working_dir:
             self.args.append(f"--working-dir={working_dir}")
         else:
@@ -94,6 +97,8 @@ class ServerHandle:
         self.process.kill()
         self.process.wait()
         self.process = None
+        if self.working_dir:
+            os.remove(os.path.join(self.working_dir, self.VANITY_LOCK_FILE))
 
     def restart(self):
         """
