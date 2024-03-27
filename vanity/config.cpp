@@ -21,8 +21,9 @@ Config::Config(const Arguments &args) {
 	extract_ports(args);
 	extract_logging(args);
 	extract_db_file(args);
-	extract_auth_file(args);
 	extract_wal_file(args);
+	extract_auth_file(args);
+	extract_lock_file(args);
 	extract_journal_file(args);
 }
 
@@ -109,6 +110,11 @@ void Config::extract_wal_file(const Arguments &args) {
 void Config::extract_journal_file(const Arguments &) {
 	if (working_dir)
 		journal_file = *working_dir / JOURNAL_FILE;
+}
+
+void Config::extract_lock_file(const Arguments &args) {
+	if (working_dir)
+		lock_file = *working_dir / LOCK_FILE;
 }
 
 } // namespace vanity

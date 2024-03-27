@@ -55,21 +55,26 @@ private:
 	// extract the journal file
 	void extract_journal_file(const Arguments&);
 
+	// extract the lock file
+	void extract_lock_file(const Arguments& args);
+
 public:
 	constexpr static auto DEFAULT_LOG_LEVEL = LogLevel::INFO;
+	constexpr static auto DEFAULT_PORTS = {9955, 19955};
 	constexpr static auto DEFAULT_HOME_DIR = ".vanity";
-	constexpr static auto DEFAULT_PORTS = std::array<uint16_t, 2>{9955, 19955};
 	constexpr static auto DB_FILE = "vanity.db";
 	constexpr static auto LOG_FILE = "vanity.log";
 	constexpr static auto WAL_FILE = "vanity.wal";
 	constexpr static auto AUTH_FILE = "vanity.auth";
+	constexpr static auto LOCK_FILE = "vanity.lock";
 	constexpr static auto JOURNAL_FILE = "vanity.journal";
 
-	std::optional<path> working_dir;
-	std::optional<path> db_file;
-	std::optional<path> wal_file;
-	std::optional<path> users_db;
 	std::optional<path> journal_file;
+	std::optional<path> working_dir;
+	std::optional<path> lock_file;
+	std::optional<path> users_db;
+	std::optional<path> wal_file;
+	std::optional<path> db_file;
 	path log_file;
 
 	std::vector<uint16_t> ports;
