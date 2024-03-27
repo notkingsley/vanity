@@ -26,6 +26,9 @@ class Server:
 	public virtual WalServer
 {
 private:
+	// lock file
+	std::optional<std::filesystem::path> m_lock_file;
+
 	// start background server tasks
 	void start();
 

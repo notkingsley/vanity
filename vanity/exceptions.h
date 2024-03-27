@@ -5,6 +5,9 @@
 #ifndef VANITY_EXCEPTIONS_H
 #define VANITY_EXCEPTIONS_H
 
+#include <cstring>
+
+
 namespace vanity {
 
 /*
@@ -23,7 +26,7 @@ private:
 
 public:
 	explicit SocketError(const std::string& msg) : m_errno{errno} {
-		m_msg += msg + " errno: " + std::to_string(m_errno);
+		m_msg += msg + " errno: " + strerror(m_errno);
 	}
 
 	// get the error message
@@ -103,6 +106,24 @@ private:
 
 public:
 	explicit CorruptJournal(const std::string& msg) {
+		m_msg += msg;
+	}
+
+	const char* what() const noexcept override {
+		return m_msg.c_str();
+	}
+};
+
+/*
+ * Thrown when the FileLock fails to acquire a lock
+ */
+class FileLockError : public Exception
+{
+private:
+	std::string m_msg{" FileLockError: "};
+
+public:
+	explicit FileLockError(const std::string& msg) {
 		m_msg += msg;
 	}
 
