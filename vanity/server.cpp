@@ -7,7 +7,7 @@
 namespace vanity {
 
 Server::Server(const Config &config):
-	AuthServer(config.users_db),
+	AuthServer(config.auth_file),
 	LogServer(config.log_file, config.log_level),
 	SocketServer(config.ports),
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file)

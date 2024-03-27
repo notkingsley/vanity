@@ -99,7 +99,7 @@ void Config::extract_db_file(const Arguments& args) {
 
 void Config::extract_auth_file(const Arguments& args) {
 	if (working_dir and not args.has("no_auth_persist"))
-		users_db = *working_dir / AUTH_FILE;
+		auth_file = *working_dir / AUTH_FILE;
 }
 
 void Config::extract_wal_file(const Arguments &args) {

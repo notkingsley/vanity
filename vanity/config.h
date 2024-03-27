@@ -72,7 +72,7 @@ public:
 	std::optional<path> journal_file;
 	std::optional<path> working_dir;
 	std::optional<path> lock_file;
-	std::optional<path> users_db;
+	std::optional<path> auth_file;
 	std::optional<path> wal_file;
 	std::optional<path> db_file;
 	path log_file;
