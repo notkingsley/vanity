@@ -31,9 +31,6 @@ public:
 	// but when the client makes a request
 	virtual void close() = 0;
 
-	// read from the socket
-	virtual size_t read(char* buffer, size_t buffer_size) const = 0;
-
 	// write a response to the client
 	virtual void write(WriteManager& manager, Response&& response) = 0;
 };

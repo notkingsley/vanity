@@ -27,10 +27,6 @@ public:
 	// throws if called
 	void close() override;
 
-	// read from the socket
-	// throws if called
-	size_t read(char* buffer, size_t buffer_size) const override;
-
 	// write a response to the client
 	// this does exactly nothing
 	void write(WriteManager& manager, Response&& response) override;

@@ -42,9 +42,6 @@ public:
 	// get the socket file descriptor
 	int socket_fd() const override;
 
-	// read from the socket
-	size_t read(char* buffer, size_t buffer_size) const;
-
 	// write a message to the socket
 	void write(WriteManager& manager, std::string&& response);
 };

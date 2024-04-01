@@ -36,10 +36,6 @@ void ConcreteClient::close() {
 	m_closed = true;
 }
 
-size_t ConcreteClient::read(char *buffer, size_t buffer_size) const {
-	return SocketClient::read(buffer, buffer_size);
-}
-
 void ConcreteClient::write(WriteManager& manager, Response &&response) {
 	SocketClient::write(manager, response.extract_data());
 }

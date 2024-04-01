@@ -34,9 +34,6 @@ public:
 	// but when the client makes a request
 	void close() override;
 
-	// read from the socket
-	size_t read(char* buffer, size_t buffer_size) const override;
-
 	// write a response to the client
 	void write(WriteManager& manager, Response&& response) override;
 

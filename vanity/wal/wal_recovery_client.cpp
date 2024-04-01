@@ -18,10 +18,6 @@ void WalRecoveryClient::close() {
 	throw std::runtime_error("WalRecoveryClient::close() called");
 }
 
-size_t WalRecoveryClient::read(char *buffer, size_t buffer_size) const {
-	throw std::runtime_error("WalRecoveryClient::read() called");
-}
-
 void WalRecoveryClient::write(WriteManager& manager, Response &&response) { }
 
 } // namespace vanity::wal
