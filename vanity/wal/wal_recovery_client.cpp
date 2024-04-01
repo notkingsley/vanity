@@ -6,10 +6,6 @@
 
 namespace vanity::wal {
 
-void WalRecoveryClient::ready(SocketServer &server) {
-	throw std::runtime_error("WalRecoveryClient::ready() called");
-}
-
 bool WalRecoveryClient::has_perm(operation_t op) const {
 	return true;
 }

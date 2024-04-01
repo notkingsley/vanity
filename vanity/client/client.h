@@ -7,8 +7,7 @@
 
 #include "operations.h"
 #include "response/response.h"
-#include "socket/socket_client.h"
-#include "socket/socket_event_handler.h"
+#include "socket/write_manager.h"
 
 
 namespace vanity {
@@ -23,9 +22,6 @@ class Client
 {
 public:
 	using WriteManager = socket::WriteManager;
-
-	// the client has sent a message, and it is ready to be read
-	virtual void ready(SocketServer& server) = 0;
 
 	// check if the client has permission to perform an op
 	virtual bool has_perm(operation_t op) const = 0;
@@ -45,4 +41,5 @@ public:
 };
 
 } // namespace vanity
+
 #endif // VANITY_CLIENT_H

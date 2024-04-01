@@ -16,10 +16,6 @@ private:
 	struct session_info m_session_info;
 
 public:
-	// the client has sent a message, and it is ready to be read
-	// throws if called
-	void ready(SocketServer& server) override;
-
 	// check if the client has permission to perform an op
 	// this always returns true
 	bool has_perm(operation_t op) const override;

@@ -8,10 +8,6 @@ namespace vanity {
 
 ProxyClient::ProxyClient(Client &client)  : m_client(client) {}
 
-void ProxyClient::ready(SocketServer &server) {
-	return m_client.ready(server);
-}
-
 bool ProxyClient::has_perm(operation_t op) const {
 	return m_client.has_perm(op);
 }

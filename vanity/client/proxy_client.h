@@ -24,9 +24,6 @@ public:
 	// create a ProxyClient with an underlying client
 	explicit ProxyClient(Client& client);
 
-	// the client has sent a message, and it is ready to be read
-	void ready(SocketServer& server) override;
-
 	// check if the client has permission to perform an op
 	bool has_perm(operation_t op) const override;
 

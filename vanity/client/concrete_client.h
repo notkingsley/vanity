@@ -6,6 +6,8 @@
 #define VANITY_CONCRETE_CLIENT_H
 
 #include "client.h"
+#include "socket/socket_client.h"
+
 
 namespace vanity {
 
