@@ -6,7 +6,8 @@
 #define VANITY_CONCRETE_CLIENT_H
 
 #include "client.h"
-#include "socket/socket_client.h"
+#include "socket/socket_reader.h"
+#include "socket/socket_writer.h"
 
 
 namespace vanity {
@@ -16,11 +17,24 @@ namespace vanity {
  * accepted by a SocketServer
  * This is the actual implementation of a Client
  */
-class ConcreteClient : public Client, public SocketClient
+class ConcreteClient : public Client, public socket::SocketReadHandler
 {
 private:
+	using Socket = socket::Socket;
+	using SocketReader = socket::SocketReader;
+	using SocketWriter = socket::SocketWriter;
+
 	// the client's session info
 	struct session_info m_session_info;
+
+	// the writer for the socket
+	SocketWriter m_writer;
+
+	// the reader for the socket
+	SocketReader m_reader;
+
+	// the socket to read from
+	Socket m_socket;
 
 	// if this client has been requested to be closed
 	bool m_closed = false;
@@ -28,6 +42,12 @@ private:
 public:
 	// create a client
 	explicit ConcreteClient(Socket&& socket);
+
+	// move constructor
+	ConcreteClient(ConcreteClient&&) noexcept;
+
+	// move assignment
+	ConcreteClient& operator=(ConcreteClient&&) noexcept = delete;
 
 	// the client has sent a message, and it is ready to be read
 	void ready(SocketServer& server) override;
@@ -44,6 +64,9 @@ public:
 
 	// write a response to the client
 	void write(WriteManager& manager, Response&& response) override;
+
+	// get the socket file descriptor
+	int socket_fd() const override;
 };
 
 bool operator==(const ConcreteClient& lhs, const ConcreteClient& rhs);

@@ -7,7 +7,7 @@
 
 namespace vanity {
 
-ConcreteClient::ConcreteClient(Socket&& socket) : SocketClient(std::move(socket)) {}
+ConcreteClient::ConcreteClient(Socket&& socket) : m_socket(std::move(socket)), m_writer(m_socket) {}
 
 void ConcreteClient::ready(SocketServer &server) {
 	try{
@@ -37,13 +37,19 @@ void ConcreteClient::close() {
 }
 
 void ConcreteClient::write(WriteManager& manager, Response &&response) {
-	SocketClient::write(manager, response.extract_data());
+	m_writer.write(manager, response.extract_data());
 }
+
+int ConcreteClient::socket_fd() const {
+	return m_socket.fd();
+}
+
+ConcreteClient::ConcreteClient(ConcreteClient &&other) noexcept
+	: m_socket(std::move(other.m_socket)), m_writer(m_socket) {}
+
 
 bool operator==(const ConcreteClient& lhs, const ConcreteClient& rhs) {
 	return &lhs == &rhs;
 }
 
-}
-
-// namespace vanity
+} // namespace vanity
