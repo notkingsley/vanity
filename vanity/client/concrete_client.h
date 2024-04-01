@@ -27,7 +27,7 @@ private:
 
 public:
 	// create a client
-	explicit ConcreteClient(ClientSocket&& socket);
+	explicit ConcreteClient(Socket&& socket);
 
 	// the client has sent a message, and it is ready to be read
 	void ready(SocketServer& server) override;

@@ -14,42 +14,43 @@
 namespace vanity::socket {
 
 /*
-A socket holding a connection
+ * A socket holding a connection
 */
-class Socket
+class BaseSocket
 {
 protected:
 	// the file descriptor of the socket
 	int m_fd{};
 
 	// can't be instantiated directly
-	Socket() = default;
+	BaseSocket() = default;
 
 public:
 	// close the connection
-	~Socket();
+	~BaseSocket();
 
 	// no copy
-	Socket(const Socket&) = delete;
-	Socket& operator=(const Socket&) = delete;
+	BaseSocket(const BaseSocket&) = delete;
+	BaseSocket& operator=(const BaseSocket&) = delete;
 
 	// move constructor
-	Socket(Socket&& other) noexcept;
-	Socket& operator=(Socket&& other) noexcept;
+	BaseSocket(BaseSocket&& other) noexcept;
+	BaseSocket& operator=(BaseSocket&& other) noexcept;
 
 	// get the socket's file descriptor
 	int fd() const;
 };
 
 /*
-A class representing a socket connection that has been received
+ * A class representing a socket connection that has been received
+ * This class is used to read and write to the socket
 */
-class ClientSocket : public Socket
+class Socket : public BaseSocket
 {
 public:
-	// instantiate a ClientSocket object,
+	// instantiate a Socket object,
 	// blocks until a connection is received
-	explicit ClientSocket(int server_fd);
+	explicit Socket(int server_fd);
 
 	// read a string from the socket
 	size_t read(char* buffer, size_t buffer_size) const;
@@ -59,15 +60,15 @@ public:
 };
 
 /*
-A server socket binds and listens for connections
+ * A server socket binds and listens for connections
 */
-class ServerSocket : public Socket
+class ServerSocket : public BaseSocket
 {
 public:
 	ServerSocket();
 
 	// accept a connection
-	ClientSocket accept();
+	Socket accept();
 
 	// start listening for connections
 	void listen(int port);

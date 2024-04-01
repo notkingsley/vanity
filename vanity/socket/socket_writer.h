@@ -20,7 +20,7 @@ class SocketWriter : public SocketWriteHandler
 {
 private:
 	// the socket to write to
-	const ClientSocket& m_socket;
+	const Socket& m_socket;
 
 	// the messages to write
 	std::queue<std::string> m_messages;
@@ -33,7 +33,7 @@ private:
 
 public:
 	// create a SocketWriter
-	explicit SocketWriter(const ClientSocket& socket);
+	explicit SocketWriter(const Socket& socket);
 
 	// move constructor
 	SocketWriter(SocketWriter&& other) noexcept;

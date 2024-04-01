@@ -5,28 +5,28 @@
 
 namespace vanity::socket {
 
-Socket::~Socket()
+BaseSocket::~BaseSocket()
 {
 	if (m_fd >= 0)
 		close(m_fd);
 }
 
-Socket::Socket(Socket &&other) noexcept {
+BaseSocket::BaseSocket(BaseSocket &&other) noexcept {
 	m_fd = other.m_fd;
 	other.m_fd = -1;
 }
 
-Socket &Socket::operator=(Socket &&other) noexcept {
+BaseSocket &BaseSocket::operator=(BaseSocket &&other) noexcept {
 	m_fd = other.m_fd;
 	other.m_fd = -1;
 	return *this;
 }
 
-int Socket::fd() const {
+int BaseSocket::fd() const {
 	return m_fd;
 }
 
-ClientSocket::ClientSocket(int server_fd)
+Socket::Socket(int server_fd)
 {
 	sockaddr_in m_addr{};
 	socklen_t m_addr_size = sizeof(m_addr);
@@ -36,7 +36,7 @@ ClientSocket::ClientSocket(int server_fd)
 		throw SocketError("Could not accept the connection");
 }
 
-size_t ClientSocket::read(char* buffer, size_t buffer_size) const
+size_t Socket::read(char* buffer, size_t buffer_size) const
 {
 	auto bytes_read = ::read(m_fd, buffer, buffer_size);
 	if (bytes_read < 0)
@@ -45,7 +45,7 @@ size_t ClientSocket::read(char* buffer, size_t buffer_size) const
 	return bytes_read;
 }
 
-size_t ClientSocket::write(const char *buffer, size_t buffer_size) const {
+size_t Socket::write(const char *buffer, size_t buffer_size) const {
 	auto bytes_written = ::write(m_fd, buffer, buffer_size);
 	if (bytes_written < 0)
 		throw SocketError("Could not write to the socket");
@@ -75,9 +75,9 @@ void ServerSocket::listen(int port)
 		throw SocketError("Could not listen on the socket");
 }
 
-ClientSocket ServerSocket::accept()
+Socket ServerSocket::accept()
 {
-	return ClientSocket{m_fd};
+	return Socket{m_fd};
 }
 
 } // namespace vanity::socket

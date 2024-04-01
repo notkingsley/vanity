@@ -14,7 +14,7 @@ class AbstractServer;
 namespace socket {
 
 /*
-A SocketReader reads and buffers text from a ClientSocket,
+A SocketReader reads and buffers text from a Socket,
 emitting a message when one is read
 */
 class SocketReader

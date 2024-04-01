@@ -7,7 +7,7 @@
 
 namespace vanity {
 
-ConcreteClient::ConcreteClient(ClientSocket&& socket) : SocketClient(std::move(socket)) {}
+ConcreteClient::ConcreteClient(Socket&& socket) : SocketClient(std::move(socket)) {}
 
 void ConcreteClient::ready(SocketServer &server) {
 	try{

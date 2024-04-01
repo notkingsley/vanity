@@ -7,7 +7,7 @@
 namespace vanity::socket {
 
 
-SocketClient::SocketClient(ClientSocket &&socket)
+SocketClient::SocketClient(Socket &&socket)
 	: m_socket(std::move(socket)), m_writer(m_socket) {}
 
 SocketClient::SocketClient(SocketClient &&other) noexcept

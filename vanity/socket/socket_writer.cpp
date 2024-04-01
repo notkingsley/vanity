@@ -9,7 +9,7 @@
 
 namespace vanity::socket {
 
-SocketWriter::SocketWriter(const ClientSocket &socket)
+SocketWriter::SocketWriter(const Socket &socket)
 	: m_socket{socket} { }
 
 SocketWriter::SocketWriter(SocketWriter &&other) noexcept

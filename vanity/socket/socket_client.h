@@ -21,7 +21,7 @@ class SocketClient : public SocketReadHandler
 {
 protected:
 	// the socket to read from
-	ClientSocket m_socket;
+	Socket m_socket;
 
 	// the reader for the socket
 	SocketReader m_reader;
@@ -31,7 +31,7 @@ protected:
 
 public:
 	// create a client
-	explicit SocketClient(ClientSocket&& socket);
+	explicit SocketClient(Socket&& socket);
 
 	// move constructor
 	SocketClient(SocketClient&& other) noexcept;
@@ -52,7 +52,7 @@ public:
 } // namespace socket
 
 using socket::SocketClient;
-using socket::ClientSocket;
+using socket::Socket;
 
 } // namespace vanity
 
