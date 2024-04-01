@@ -31,30 +31,22 @@ protected:
 
 public:
 	// create a client
-	explicit SocketClient(ClientSocket&& socket)
-		: m_socket(std::move(socket)), m_writer(m_socket) {};
+	explicit SocketClient(ClientSocket&& socket);
 
 	// move constructor
-	SocketClient(SocketClient&& other) noexcept
-		: m_socket(std::move(other.m_socket)), m_writer(m_socket) {};
+	SocketClient(SocketClient&& other) noexcept;
 
 	// move assignment
 	SocketClient& operator=(SocketClient&& other) noexcept = delete;
 
 	// get the socket file descriptor
-	int socket_fd() const override { return m_socket.fd(); };
+	int socket_fd() const override;
 
 	// read from the socket
-	size_t read(char* buffer, size_t buffer_size) const
-	{
-		return m_socket.read(buffer, buffer_size);
-	}
+	size_t read(char* buffer, size_t buffer_size) const;
 
 	// write a message to the socket
-	void write(SocketServer& server, std::string&& response)
-	{
-		m_writer.write(server, std::move(response));
-	}
+	void write(SocketServer& server, std::string&& response);
 };
 
 } // namespace socket
