@@ -1,15 +1,14 @@
-#include "abstract_server.h"
 #include "socket_reader.h"
-
 
 namespace vanity::socket {
 
-bool SocketReader::read(AbstractServer& server, Client& client, Socket& socket)
+bool SocketReader::read(Socket& socket, const callback_t& callback)
 {
 	if (m_message_left == 0) {
 		uint32_t size = 0;
-		if (socket.read((char*)&size, sizeof(size)) == 0)
+		if (socket.read(reinterpret_cast<char*>(&size), sizeof(size)) == 0)
 			return false;
+
 		m_message_left = ntohl(size);
 		m_message.resize(m_message_left);
 	}
@@ -22,8 +21,8 @@ bool SocketReader::read(AbstractServer& server, Client& client, Socket& socket)
 		return false;
 
 	m_message_left -= bytes_read;
-	if (m_message_left == 0){
-		server.handle(m_message, client);
+	if (m_message_left == 0) {
+		callback(m_message);
 		m_message.clear();
 	}
 

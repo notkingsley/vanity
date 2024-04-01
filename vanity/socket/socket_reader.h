@@ -1,17 +1,12 @@
 #ifndef VANITY_SOCKET_READER_H
 #define VANITY_SOCKET_READER_H
 
+#include <functional>
+
 #include "socket.h"
 
-namespace vanity {
 
-// forward declaration
-class Client;
-
-// forward declaration
-class AbstractServer;
-
-namespace socket {
+namespace vanity::socket {
 
 /*
 A SocketReader reads and buffers text from a Socket,
@@ -27,14 +22,14 @@ private:
 	size_t m_message_left = 0;
 
 public:
+	using callback_t = std::function<void(const std::string&)>;
+
 	// Read from the client's socket, buffering until a message is read
-	// transparently calls server.handle() when a message is read
+	// transparently calls the callback with the message
 	// returns true if the socket is open, false if it is closed
-	bool read(AbstractServer& server, Client& client, Socket& socket);
+	bool read(Socket& socket, const callback_t& callback);
 };
 
-} // namespace socket
-
-} // namespace vanity
+} // namespace vanity::socket
 
 #endif // VANITY_SOCKET_READER_H
