@@ -7,7 +7,6 @@
 
 #include "socket/socket_reader.h"
 #include "socket/socket_writer.h"
-#include "socket/write_manager.h"
 
 
 namespace vanity {
