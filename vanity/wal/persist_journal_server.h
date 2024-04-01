@@ -51,9 +51,6 @@ private:
 	// the path returned must be distinct from db_file
 	static path make_old_db_file(const path &db_file);
 
-	// delete the WAL
-	void clear_wal();
-
 	// journal when the database file does not exist
 	void journal_db_file_no_exist();
 

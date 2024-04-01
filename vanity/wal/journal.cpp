@@ -28,42 +28,42 @@ void Journal::wipe() {
 	std::filesystem::remove(m_journal_file);
 }
 
-void JournalMaker<MOVED_NEW_DB_FILE>::journal_delete() {
+void JournalMaker<MOVED_NEW_DB_FILE>::delete_() {
 	m_journal.wipe();
 }
 
 JournalMaker<MOVED_NEW_DB_FILE>
-JournalMaker<MOVED_EXISTING_DB_FILE>::journal_moved_new_db_file() {
+JournalMaker<MOVED_EXISTING_DB_FILE>::moved_new_db_file() {
 	m_journal.journal(MOVED_NEW_DB_FILE);
 	m_journal.close();
 	return JournalMaker<MOVED_NEW_DB_FILE>{std::move(m_journal)};
 }
 
 JournalMaker<MOVED_EXISTING_DB_FILE>
-JournalMaker<MOVING_EXISTING_DB_FILE>::journal_moved_existing_db_file() {
+JournalMaker<MOVING_EXISTING_DB_FILE>::moved_existing_db_file() {
 	m_journal.journal(MOVED_EXISTING_DB_FILE);
 	return JournalMaker<MOVED_EXISTING_DB_FILE>{std::move(m_journal)};
 }
 
 JournalMaker<MOVING_EXISTING_DB_FILE>
-JournalMaker<DB_FILE_EXIST>::journal_moving_existing_db_file(const path& old_db_file) {
+JournalMaker<DB_FILE_EXIST>::moving_existing_db_file(const path& old_db_file) {
 	m_journal.journal(MOVING_EXISTING_DB_FILE, old_db_file);
 	return JournalMaker<MOVING_EXISTING_DB_FILE>{std::move(m_journal)};
 }
 
-void JournalMaker<DB_FILE_NO_EXIST>::journal_delete() {
+void JournalMaker<DB_FILE_NO_EXIST>::delete_() {
 	m_journal.wipe();
 }
 
 JournalMaker<DB_FILE_NO_EXIST>
-JournalMaker<EMPTY_JOURNAL>::journal_db_file_no_exist() {
+JournalMaker<EMPTY_JOURNAL>::db_file_no_exist() {
 	m_journal.journal(DB_FILE_NO_EXIST);
 	m_journal.close();
 	return JournalMaker<DB_FILE_NO_EXIST>{std::move(m_journal)};
 }
 
 JournalMaker<DB_FILE_EXIST>
-JournalMaker<EMPTY_JOURNAL>::journal_db_file_exist() {
+JournalMaker<EMPTY_JOURNAL>::db_file_exist() {
 	m_journal.journal(DB_FILE_EXIST);
 	return JournalMaker<DB_FILE_EXIST>{std::move(m_journal)};
 }
@@ -116,8 +116,6 @@ RecoveredJournal::RecoveredJournal(const path &journal_file) {
 
 	if (not at_eof(in))
 		throw CorruptJournal{"Journal is corrupted: extra data after MOVED_NEW_DB_FILE"};
-
-	in.close();
 }
 
 JournalState RecoveredJournal::get_state() const {
@@ -126,6 +124,10 @@ JournalState RecoveredJournal::get_state() const {
 
 const path &RecoveredJournal::get_existing_db_file() const {
 	return *m_moving_existing_db_file;
+}
+
+bool RecoveredJournal::at_eof(std::ifstream &in) {
+	return in.peek() == std::ifstream::traits_type::eof();
 }
 
 } // namespace vanity::wal::journal

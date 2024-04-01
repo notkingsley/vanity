@@ -19,27 +19,23 @@ Journalist::path Journalist::make_old_db_file(const path &db_file) {
 	return with_name_prefix(db_file, "old.");
 }
 
-void Journalist::clear_wal() {
-	remove(m_wal_file);
-}
-
 void Journalist::journal_db_file_no_exist() {
-	auto no_exist_journal = m_empty_journal.journal_db_file_no_exist();
+	auto no_exist = m_empty_journal.db_file_no_exist();
 	rename(m_tmp_db_file, m_db_file);
-	clear_wal();
-	no_exist_journal.journal_delete();
+	remove(m_wal_file);
+	no_exist.delete_();
 }
 
 void Journalist::journal_db_file_exist() {
 	auto old_db_file = make_old_db_file(m_db_file);
-	auto exist_journal = m_empty_journal.journal_db_file_exist();
-	auto moving_journal = exist_journal.journal_moving_existing_db_file(old_db_file);
+	auto exist = m_empty_journal.db_file_exist();
+	auto moving = exist.moving_existing_db_file(old_db_file);
 	rename(m_db_file, old_db_file);
-	auto moved_journal = moving_journal.journal_moved_existing_db_file();
+	auto moved = moving.moved_existing_db_file();
 	rename(m_tmp_db_file, m_db_file);
-	auto moved_new_journal = moved_journal.journal_moved_new_db_file();
-	clear_wal();
-	moved_new_journal.journal_delete();
+	auto moved_new = moved.moved_new_db_file();
+	remove(m_wal_file);
+	moved_new.delete_();
 	remove(old_db_file);
 }
 

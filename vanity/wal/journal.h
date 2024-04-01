@@ -80,7 +80,7 @@ private:
 
 public:
 	// delete the journal
-	void journal_delete();
+	void delete_();
 };
 
 template<>
@@ -98,7 +98,7 @@ private:
 public:
 	// write a MOVED_NEW_DB_FILE state to the journal
 	// returns a JournalMaker<MOVED_NEW_DB_FILE>
-	JournalMaker<MOVED_NEW_DB_FILE> journal_moved_new_db_file();
+	JournalMaker<MOVED_NEW_DB_FILE> moved_new_db_file();
 };
 
 template<>
@@ -116,7 +116,7 @@ private:
 public:
 	// write a MOVED_EXISTING_DB_FILE state to the journal and close it
 	// returns a JournalMaker<MOVED_EXISTING_DB_FILE>
-	JournalMaker<MOVED_EXISTING_DB_FILE> journal_moved_existing_db_file();
+	JournalMaker<MOVED_EXISTING_DB_FILE> moved_existing_db_file();
 };
 
 template<>
@@ -134,7 +134,7 @@ private:
 public:
 	// write a MOVING_EXISTING_DB_FILE state to the journal
 	// returns a JournalMaker<MOVING_EXISTING_DB_FILE>
-	JournalMaker<MOVING_EXISTING_DB_FILE> journal_moving_existing_db_file(const path& old_db_file);
+	JournalMaker<MOVING_EXISTING_DB_FILE> moving_existing_db_file(const path& old_db_file);
 };
 
 template<>
@@ -151,7 +151,7 @@ private:
 
 public:
 	// delete the journal
-	void journal_delete();
+	void delete_();
 };
 
 template<>
@@ -168,16 +168,19 @@ class JournalMaker<EMPTY_JOURNAL>
 public:
 	// write a DB_FILE_NO_EXIST state to the journal
 	// this closes the journal after writing
-	JournalMaker<DB_FILE_NO_EXIST> journal_db_file_no_exist();
+	JournalMaker<DB_FILE_NO_EXIST> db_file_no_exist();
 
 	// write a DB_FILE_EXIST state to the journal
 	// returns a JournalMaker<DB_FILE_EXIST>
-	JournalMaker<DB_FILE_EXIST> journal_db_file_exist();
+	JournalMaker<DB_FILE_EXIST> db_file_exist();
 };
 
 // create a new JournalMaker<EMPTY_JOURNAL>
 JournalMaker<EMPTY_JOURNAL> new_journal_maker(const path& journal_file);
 
+/*
+ * A RecoveredJournal reads a journal file and stores the state
+ */
 class RecoveredJournal
 {
 private:
@@ -188,9 +191,7 @@ private:
 	std::optional<path> m_moving_existing_db_file;
 
 	// check if the ifstream is at the end of the file
-	static bool at_eof(std::ifstream& in) {
-		return in.peek() == std::ifstream::traits_type::eof();
-	}
+	static bool at_eof(std::ifstream& in);
 
 public:
 	// create a recovered journal from a journal file
