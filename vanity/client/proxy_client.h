@@ -41,7 +41,7 @@ public:
 	size_t read(char* buffer, size_t buffer_size) const override;
 
 	// write a response to the client
-	void write(SocketServer& server, Response&& response) override;
+	void write(WriteManager& manager, Response&& response) override;
 
 protected:
 	// get a reference to the underlying client

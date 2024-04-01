@@ -8,10 +8,11 @@
 #include "client/concrete_client.h"
 #include "epoll.h"
 #include "event_server.h"
+#include "log_server.h"
 #include "socket.h"
 #include "socket_connection_server.h"
 #include "utils/event.h"
-#include "log_server.h"
+#include "write_manager.h"
 
 
 namespace vanity {
@@ -25,7 +26,7 @@ class SocketConnectionServer;
  * A SocketServer allows us to listen on one or more sockets,
  * accept connections and read/write data
  */
-class SocketServer : public virtual EventServer, public virtual LogServer
+class SocketServer : public virtual EventServer, public virtual LogServer, public virtual WriteManager
 {
 private:
 	// the current set of clients
@@ -86,7 +87,7 @@ public:
 	virtual void remove_client(ConcreteClient& client);
 
 	// add a socket writer
-	void add_socket_writer(SocketWriter& writer);
+	void add_writer(SocketWriter& writer) override;
 
 	// remove a socket writer
 	void remove_socket_writer(SocketWriter& writer);

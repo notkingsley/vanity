@@ -29,13 +29,13 @@ public:
 		: ProxyClient(client), m_response(resp_size) {}
 
 	// write the response to the aggregate instead of the client
-	void write(SocketServer& server, Response&& response) override {
+	void write(WriteManager& manager, Response&& response) override {
 		m_response.append(response);
 	}
 
 	// write the aggregate response to the client
-	void perform_write(SocketServer& server) {
-		client().write(server, m_response.move());
+	void perform_write(WriteManager& manager) {
+		client().write(manager, m_response.move());
 	}
 };
 

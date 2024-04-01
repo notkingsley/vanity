@@ -19,8 +19,8 @@ size_t SocketClient::read(char *buffer, size_t buffer_size) const {
 	return m_socket.read(buffer, buffer_size);
 }
 
-void SocketClient::write(SocketServer &server, std::string &&response) {
-	m_writer.write(server, std::move(response));
+void SocketClient::write(WriteManager& manager, std::string &&response) {
+	m_writer.write(manager, std::move(response));
 }
 
 } // namespace vanity::socket

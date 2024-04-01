@@ -7,6 +7,7 @@
 
 #include "socket/socket_reader.h"
 #include "socket/socket_writer.h"
+#include "socket/write_manager.h"
 
 
 namespace vanity {
@@ -46,7 +47,7 @@ public:
 	size_t read(char* buffer, size_t buffer_size) const;
 
 	// write a message to the socket
-	void write(SocketServer& server, std::string&& response);
+	void write(WriteManager& manager, std::string&& response);
 };
 
 } // namespace socket

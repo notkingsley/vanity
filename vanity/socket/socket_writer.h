@@ -9,6 +9,7 @@
 #include <queue>
 
 #include "socket_event_handler.h"
+#include "write_manager.h"
 
 namespace vanity::socket {
 
@@ -47,7 +48,7 @@ public:
 	SocketWriter& operator=(const SocketWriter& other) = delete;
 
 	// register to the server's epoll to write a response
-	void write(SocketServer& server, std::string&& response);
+	void write(WriteManager& manager, std::string&& response);
 
 	// get the socket file descriptor
 	int socket_fd() const override;

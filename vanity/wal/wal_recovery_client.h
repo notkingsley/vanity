@@ -37,7 +37,7 @@ public:
 
 	// write a response to the client
 	// this does exactly nothing
-	void write(SocketServer& server, Response&& response) override;
+	void write(WriteManager& manager, Response&& response) override;
 
 };
 

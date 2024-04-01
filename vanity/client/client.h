@@ -17,11 +17,13 @@ namespace vanity {
  * A Client is, well, a client
  *
  * This is merely an interface for a client,
- * the methods are implemented by ConcreteClient
+ * the methods are implemented by various types of clients
  */
 class Client
 {
 public:
+	using WriteManager = socket::WriteManager;
+
 	// the client has sent a message, and it is ready to be read
 	virtual void ready(SocketServer& server) = 0;
 
@@ -39,7 +41,7 @@ public:
 	virtual size_t read(char* buffer, size_t buffer_size) const = 0;
 
 	// write a response to the client
-	virtual void write(SocketServer& server, Response&& response) = 0;
+	virtual void write(WriteManager& manager, Response&& response) = 0;
 };
 
 } // namespace vanity

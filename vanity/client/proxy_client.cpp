@@ -28,8 +28,8 @@ size_t ProxyClient::read(char *buffer, size_t buffer_size) const {
 	return m_client.read(buffer, buffer_size);
 }
 
-void ProxyClient::write(SocketServer &server, Response &&response) {
-	m_client.write(server, std::move(response));
+void ProxyClient::write(WriteManager& manager, Response &&response) {
+	m_client.write(manager, std::move(response));
 }
 
 Client &ProxyClient::client() const {

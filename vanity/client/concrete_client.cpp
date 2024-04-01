@@ -37,8 +37,8 @@ size_t ConcreteClient::read(char *buffer, size_t buffer_size) const {
 	return SocketClient::read(buffer, buffer_size);
 }
 
-void ConcreteClient::write(SocketServer &server, Response &&response) {
-	SocketClient::write(server, response.extract_data());
+void ConcreteClient::write(WriteManager& manager, Response &&response) {
+	SocketClient::write(manager, response.extract_data());
 }
 
 bool operator==(const ConcreteClient& lhs, const ConcreteClient& rhs) {

@@ -31,7 +31,7 @@ void SocketWriter::ready(SocketServer &server) {
 		server.remove_socket_writer(*this);
 }
 
-void SocketWriter::write(SocketServer &server, std::string&& response) {
+void SocketWriter::write(WriteManager& manager, std::string&& response) {
 	std::lock_guard lock(m_mutex);
 	auto was_empty = m_messages.empty();
 
@@ -39,7 +39,7 @@ void SocketWriter::write(SocketServer &server, std::string&& response) {
 	try_write_all();
 
 	if (was_empty and !m_messages.empty())
-		server.add_socket_writer(*this);
+		manager.add_writer(*this);
 }
 
 void SocketWriter::try_write_all() {
