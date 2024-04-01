@@ -6,26 +6,28 @@
 
 namespace vanity::wal::journal {
 
-Journal::Journal(const path &journal_file) : m_journal_file(journal_file), m_journal(journal_file) {}
+Journal::Journal(const path &journal_file) {
+	m_journal_data = std::make_unique<journal_data>(journal_file, journal_file);
+}
 
 void Journal::journal(JournalState state) {
-	serializer::write(m_journal, state);
-	m_journal.flush();
+	serializer::write(m_journal_data->file, state);
+	m_journal_data->file.flush();
 }
 
 void Journal::journal(JournalState state, const path &existing_db_file) {
-	serializer::write(m_journal, state);
-	serializer::write(m_journal, absolute(existing_db_file).string());
-	m_journal.flush();
+	serializer::write(m_journal_data->file, state);
+	serializer::write(m_journal_data->file, absolute(existing_db_file).string());
+	m_journal_data->file.flush();
 }
 
 void Journal::close() {
-	m_journal.close();
+	m_journal_data->file.close();
 }
 
 void Journal::wipe() {
 	close();
-	std::filesystem::remove(m_journal_file);
+	remove(m_journal_data->file_path);
 }
 
 void JournalMaker<MOVED_NEW_DB_FILE>::delete_() {
@@ -74,7 +76,7 @@ new_journal_maker(const path& journal_file) {
 }
 
 RecoveredJournal::RecoveredJournal(const path &journal_file) {
-	if (not std::filesystem::exists(journal_file))
+	if (not exists(journal_file))
 		return;
 
 	std::ifstream in{journal_file};

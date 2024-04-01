@@ -38,11 +38,17 @@ enum JournalState
 class Journal
 {
 private:
-	// the file stream
-	std::ofstream m_journal;
+	struct journal_data
+	{
+		// the file stream
+		std::ofstream file;
 
-	// the associated file
-	path m_journal_file;
+		// the associated file
+		path file_path;
+	};
+
+	// the journal data, unique_ptr to avoid stack overhead when moving
+	std::unique_ptr<journal_data> m_journal_data;
 
 public:
 	// create a journal
@@ -66,15 +72,23 @@ public:
 template<JournalState state>
 class JournalMaker;
 
-template<>
-class JournalMaker<MOVED_NEW_DB_FILE>
+// holds the Journal for a JournalMaker class
+class BaseJournalMaker
 {
-private:
+protected:
 	// the journal file
 	Journal m_journal;
 
 	// create a journal maker
-	explicit JournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+	explicit BaseJournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+};
+
+template<>
+class JournalMaker<MOVED_NEW_DB_FILE> : private BaseJournalMaker
+{
+private:
+	// create a journal maker
+	explicit JournalMaker(Journal journal) : BaseJournalMaker(std::move(journal)) {}
 
 	friend class JournalMaker<MOVED_EXISTING_DB_FILE>;
 
@@ -84,14 +98,11 @@ public:
 };
 
 template<>
-class JournalMaker<MOVED_EXISTING_DB_FILE>
+class JournalMaker<MOVED_EXISTING_DB_FILE> : private BaseJournalMaker
 {
 private:
-	// the journal file
-	Journal m_journal;
-
 	// create a journal maker
-	explicit JournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+	explicit JournalMaker(Journal journal) : BaseJournalMaker(std::move(journal)) {}
 
 	friend class JournalMaker<MOVING_EXISTING_DB_FILE>;
 
@@ -102,14 +113,11 @@ public:
 };
 
 template<>
-class JournalMaker<MOVING_EXISTING_DB_FILE>
+class JournalMaker<MOVING_EXISTING_DB_FILE> : private BaseJournalMaker
 {
 private:
-	// the journal file
-	Journal m_journal;
-
 	// create a journal maker
-	explicit JournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+	explicit JournalMaker(Journal journal) : BaseJournalMaker(std::move(journal)) {}
 
 	friend class JournalMaker<DB_FILE_EXIST>;
 
@@ -120,14 +128,11 @@ public:
 };
 
 template<>
-class JournalMaker<DB_FILE_EXIST>
+class JournalMaker<DB_FILE_EXIST> : private BaseJournalMaker
 {
 private:
-	// the journal file
-	Journal m_journal;
-
 	// create a journal maker
-	explicit JournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+	explicit JournalMaker(Journal journal) : BaseJournalMaker(std::move(journal)) {}
 
 	friend class JournalMaker<EMPTY_JOURNAL>;
 
@@ -138,14 +143,11 @@ public:
 };
 
 template<>
-class JournalMaker<DB_FILE_NO_EXIST>
+class JournalMaker<DB_FILE_NO_EXIST> : private BaseJournalMaker
 {
 private:
-	// the journal file
-	Journal m_journal;
-
 	// create a journal maker
-	explicit JournalMaker(Journal journal) : m_journal(std::move(journal)) {}
+	explicit JournalMaker(Journal journal) : BaseJournalMaker(std::move(journal)) {}
 
 	friend class JournalMaker<EMPTY_JOURNAL>;
 
@@ -155,13 +157,10 @@ public:
 };
 
 template<>
-class JournalMaker<EMPTY_JOURNAL>
+class JournalMaker<EMPTY_JOURNAL> : private BaseJournalMaker
 {
-	// the journal file
-	Journal m_journal;
-
 	// create a journal maker
-	explicit JournalMaker(const path& journal_file) : m_journal(journal_file) {}
+	explicit JournalMaker(const path& journal_file) : BaseJournalMaker(Journal(journal_file)) {}
 
 	friend JournalMaker<EMPTY_JOURNAL> new_journal_maker(const path& journal_file);
 
