@@ -14,10 +14,6 @@ struct session_info &WalRecoveryClient::session_info() {
 	return m_session_info;
 }
 
-void WalRecoveryClient::close() {
-	throw std::runtime_error("WalRecoveryClient::close() called");
-}
-
 void WalRecoveryClient::write(WriteManager& manager, Response &&response) { }
 
 } // namespace vanity::wal

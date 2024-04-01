@@ -16,10 +16,6 @@ struct session_info &ProxyClient::session_info() {
 	return m_client.session_info();
 }
 
-void ProxyClient::close() {
-	m_client.close();
-}
-
 void ProxyClient::write(WriteManager& manager, Response &&response) {
 	m_client.write(manager, std::move(response));
 }

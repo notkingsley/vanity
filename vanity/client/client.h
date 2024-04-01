@@ -27,10 +27,6 @@ public:
 	// return the client's session info
 	virtual struct session_info& session_info() = 0;
 
-	// request to close the client, not effective immediately
-	// but when the client makes a request
-	virtual void close() = 0;
-
 	// write a response to the client
 	virtual void write(WriteManager& manager, Response&& response) = 0;
 };

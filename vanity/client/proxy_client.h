@@ -30,10 +30,6 @@ public:
 	// return the client's session info
 	struct session_info& session_info() override;
 
-	// request to close the client, not effective immediately
-	// but when the client makes a request
-	void close() override;
-
 	// write a response to the client
 	void write(WriteManager& manager, Response&& response) override;
 

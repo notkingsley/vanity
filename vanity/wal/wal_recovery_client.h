@@ -23,10 +23,6 @@ public:
 	// return the client's session info
 	struct session_info& session_info() override;
 
-	// request to close the client
-	// throws if called
-	void close() override;
-
 	// write a response to the client
 	// this does exactly nothing
 	void write(WriteManager& manager, Response&& response) override;

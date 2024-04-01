@@ -14,7 +14,7 @@ void ConcreteClient::ready(SocketServer &server) {
 		auto callback = [this, &server](const std::string &data) {
 			server.handle(data, *this);
 		};
-		if (m_closed or not m_reader.read(m_socket, callback))
+		if (not m_reader.read(m_socket, callback))
 			// Warning: this will delete this object
 			server.remove_client(*this);
 	}
@@ -30,10 +30,6 @@ bool ConcreteClient::has_perm(operation_t op) const {
 
 struct session_info &ConcreteClient::session_info() {
 	return m_session_info;
-}
-
-void ConcreteClient::close() {
-	m_closed = true;
 }
 
 void ConcreteClient::write(WriteManager& manager, Response &&response) {
