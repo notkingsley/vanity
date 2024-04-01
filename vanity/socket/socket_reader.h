@@ -3,13 +3,15 @@
 
 #include "socket.h"
 
-namespace vanity{
+namespace vanity {
 
 // forward declaration
 class Client;
 
 // forward declaration
 class AbstractServer;
+
+namespace socket {
 
 /*
 A SocketReader reads and buffers text from a ClientSocket,
@@ -30,6 +32,8 @@ public:
 	// returns true if the socket is open, false if it is closed
 	bool read(AbstractServer& server, Client& client);
 };
+
+} // namespace socket
 
 } // namespace vanity
 

@@ -11,7 +11,7 @@
 #include "exceptions.h"
 
 
-namespace vanity{
+namespace vanity::socket {
 
 /*
 A socket holding a connection
@@ -73,6 +73,6 @@ public:
 	void listen(int port);
 };
 
-} // namespace vanity
+} // namespace vanity::socket
 
 #endif // VANITY_SOCKET_H

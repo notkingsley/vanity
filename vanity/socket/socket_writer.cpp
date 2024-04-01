@@ -7,7 +7,7 @@
 #include "socket_writer.h"
 
 
-namespace vanity {
+namespace vanity::socket {
 
 SocketWriter::SocketWriter(const ClientSocket &socket)
 	: m_socket{socket} { }
@@ -65,4 +65,4 @@ bool SocketWriter::do_write(){
 	}
 }
 
-} // namespace vanity
+} // namespace vanity::socket

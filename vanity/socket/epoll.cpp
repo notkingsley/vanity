@@ -6,7 +6,7 @@
 
 #include "epoll.h"
 
-namespace vanity {
+namespace vanity::socket {
 
 EpollBase::EpollBase() {
 	m_fd = epoll_create1(0);
@@ -66,4 +66,4 @@ void SuperEpoll::remove(Epoll &epoll) const {
 		throw SocketError("Could not remove epoll from epoll");
 }
 
-} // namespace vanity
+} // namespace vanity::socket

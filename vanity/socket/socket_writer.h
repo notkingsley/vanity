@@ -10,7 +10,7 @@
 
 #include "socket_event_handler.h"
 
-namespace vanity {
+namespace vanity::socket {
 
 /*
  * A SocketWriter allows to write to a socket
@@ -64,6 +64,6 @@ private:
 	void try_write_all();
 };
 
-} // namespace vanity
+} // namespace vanity::socket
 
 #endif //VANITY_SOCKET_WRITER_H

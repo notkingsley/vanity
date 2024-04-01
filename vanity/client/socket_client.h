@@ -11,6 +11,8 @@
 
 namespace vanity {
 
+namespace socket {
+
 /*
  * A SocketClient is a handle for an active connection,
  * and a handler for socket read events
@@ -54,6 +56,11 @@ public:
 		m_writer.write(server, std::move(response));
 	}
 };
+
+} // namespace socket
+
+using socket::SocketClient;
+using socket::ClientSocket;
 
 } // namespace vanity
 

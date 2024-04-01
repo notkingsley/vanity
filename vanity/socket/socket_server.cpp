@@ -4,7 +4,7 @@
 
 #include "socket_server.h"
 
-namespace vanity {
+namespace vanity::socket {
 
 SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} {
 	m_super_epoll.add(m_read_epoll);
@@ -123,4 +123,4 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 	}
 }
 
-} // namespace vanity
+} // namespace vanity::socket

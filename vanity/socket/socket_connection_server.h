@@ -9,7 +9,7 @@
 #include "socket.h"
 #include "socket_event_handler.h"
 
-namespace vanity{
+namespace vanity::socket {
 
 /*
  * A SocketConnectionServer accepts connections with a
@@ -32,6 +32,6 @@ public:
 	void ready(SocketServer& server) override;
 };
 
-} // namespace vanity
+} // namespace vanity::socket
 
 #endif //VANITY_SOCKET_CONNECTION_SERVER_H

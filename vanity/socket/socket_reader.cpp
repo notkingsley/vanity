@@ -2,7 +2,7 @@
 #include "socket_reader.h"
 
 
-namespace vanity{
+namespace vanity::socket {
 
 bool SocketReader::read(AbstractServer& server, Client& client)
 {
@@ -30,4 +30,4 @@ bool SocketReader::read(AbstractServer& server, Client& client)
 	return true;
 }
 
-} // namespace vanity
+} // namespace vanity::socket

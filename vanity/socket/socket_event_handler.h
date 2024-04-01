@@ -9,7 +9,9 @@
 #include <string>
 #include <sys/epoll.h>
 
-namespace vanity{
+namespace vanity {
+
+namespace socket {
 
 // forward declaration
 class SocketServer;
@@ -52,6 +54,10 @@ public:
 	// get write event bit mask
 	uint32_t get_event_mask() const override { return EPOLLOUT; };
 };
+
+} // namespace socket
+
+using socket::SocketServer;
 
 } // namespace vanity
 

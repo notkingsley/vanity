@@ -8,7 +8,7 @@
 #include "socket.h"
 #include "socket_event_handler.h"
 
-namespace vanity {
+namespace vanity::socket {
 
 /*
  * A base class for epoll objects
@@ -66,6 +66,6 @@ public:
 	void remove(Epoll& epoll) const;
 };
 
-} // namespace vanity
+} // namespace vanity::socket
 
 #endif //VANITY_SOCKET_EPOLL_H

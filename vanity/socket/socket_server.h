@@ -14,7 +14,9 @@
 #include "log_server.h"
 
 
-namespace vanity{
+namespace vanity {
+
+namespace socket {
 
 // forward declaration
 class SocketConnectionServer;
@@ -109,6 +111,10 @@ private:
 	// bind all ports
 	void bind_all();
 };
+
+} // namespace socket
+
+using socket::SocketServer;
 
 } // namespace vanity
 

@@ -1,10 +1,9 @@
 #include <unistd.h>
 
 #include "socket.h"
-#include "socket_event_handler.h"
 
 
-namespace vanity{
+namespace vanity::socket {
 
 Socket::~Socket()
 {
@@ -57,7 +56,7 @@ size_t ClientSocket::write(const char *buffer, size_t buffer_size) const {
 
 ServerSocket::ServerSocket()
 {
-	m_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	m_fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (m_fd < 0)
 		throw SocketError("Could not create the server socket");
 }
@@ -81,4 +80,4 @@ ClientSocket ServerSocket::accept()
 	return ClientSocket{m_fd};
 }
 
-} // namespace vanity
+} // namespace vanity::socket

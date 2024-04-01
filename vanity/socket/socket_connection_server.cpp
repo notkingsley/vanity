@@ -5,7 +5,7 @@
 #include "socket_connection_server.h"
 #include "socket_server.h"
 
-namespace vanity{
+namespace vanity::socket {
 
 SocketConnectionServer::SocketConnectionServer(uint16_t port) {
 	m_socket.listen(port);
@@ -20,4 +20,4 @@ void SocketConnectionServer::ready(SocketServer& server) {
 	server.add_client(ConcreteClient{m_socket.accept()});
 }
 
-} // namespace vanity
+} // namespace vanity::socket

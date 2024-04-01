@@ -8,6 +8,8 @@
 #include "operations.h"
 #include "response/response.h"
 #include "socket_client.h"
+#include "socket/socket_event_handler.h"
+
 
 namespace vanity {
 
