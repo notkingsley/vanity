@@ -30,7 +30,7 @@ public:
 	// Read from the client's socket, buffering until a message is read
 	// transparently calls server.handle() when a message is read
 	// returns true if the socket is open, false if it is closed
-	bool read(AbstractServer& server, Client& client);
+	bool read(AbstractServer& server, Client& client, Socket& socket);
 };
 
 } // namespace socket

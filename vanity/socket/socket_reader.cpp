@@ -4,17 +4,17 @@
 
 namespace vanity::socket {
 
-bool SocketReader::read(AbstractServer& server, Client& client)
+bool SocketReader::read(AbstractServer& server, Client& client, Socket& socket)
 {
 	if (m_message_left == 0) {
 		uint32_t size = 0;
-		if (client.read((char*)&size, sizeof(size)) == 0)
+		if (socket.read((char*)&size, sizeof(size)) == 0)
 			return false;
 		m_message_left = ntohl(size);
 		m_message.resize(m_message_left);
 	}
 
-	size_t bytes_read = client.read(
+	size_t bytes_read = socket.read(
 		m_message.data() + m_message.size() - m_message_left,
 		m_message_left
 	);

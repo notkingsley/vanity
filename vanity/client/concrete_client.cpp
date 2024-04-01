@@ -11,7 +11,7 @@ ConcreteClient::ConcreteClient(Socket&& socket) : SocketClient(std::move(socket)
 
 void ConcreteClient::ready(SocketServer &server) {
 	try{
-		if(m_closed or not m_reader.read(server, *this))
+		if(m_closed or not m_reader.read(server, *this, m_socket))
 			// Warning: this will delete this object
 			server.remove_client(*this);
 	}
