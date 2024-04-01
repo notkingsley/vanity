@@ -33,7 +33,7 @@ void WalExpiryServer::pre_persist() {
 
 void WalExpiryServer::post_database_load() {
 	for (uint n = 0; n < M_NUM_DATABASES; ++n)
-		m_databases[n].on_expire([this, n](auto key){ on_expire(key, n);});
+		m_databases[n].on_expire([this, n](auto& key){ on_expire(key, n);});
 }
 
 void WalExpiryServer::wal_redo_expire(const std::string &key, uint db) {
