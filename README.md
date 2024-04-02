@@ -28,17 +28,14 @@ There's a lot more to come, but this is a good start.
 See [features](#features) above. 
 Major stuff coming up:
 
-- Distribution/Replication (weeeeeeeeee):  
-  The server will be able to run on multiple nodes, with data distributed across them.  
-  This will be achieved with a consistent hashing algorithm, and a gossip protocol for node discovery and failure detection.  
-  The system will be able to handle node failures and rebalance data accordingly.  
-  The system will also be able to replicate data across nodes for fault tolerance.  
-  The system will be able to handle network partitions and merge data when the partition heals.  
-  The system will be able to handle node joins and leaves without downtime.  
-  The system will be able to handle data rebalancing without downtime
+- Replication (weeeeeeeeee):  
+  Asynchronous, single-leader to provide eventual consistency.  
 
 - More data types (maybe):  
   ```bitmap```, ```hyperloglog```, ```geospatial```, and ```streams```.
+
+- Partitioning (maybe, haha):  
+  Sharding, likely with hash-based key partitioning and fixed-size partitions.
 
 ## Syntax
 **Vanity** implements its own [protocol](docs/SYNTAX.md) over sockets. It was not designed to be human-readable, but it's not too bad.  
