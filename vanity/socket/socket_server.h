@@ -9,7 +9,7 @@
 #include "epoll.h"
 #include "event_server.h"
 #include "log_server.h"
-#include "socket_connection_server.h"
+#include "socket_listener.h"
 #include "utils/event.h"
 
 
@@ -18,7 +18,7 @@ namespace vanity {
 namespace socket {
 
 // forward declaration
-class SocketConnectionServer;
+class SocketListener;
 
 /*
  * A SocketServer allows us to listen on one or more sockets,
@@ -34,7 +34,7 @@ private:
 	std::unordered_set<ConcreteClient> m_clients;
 
 	// active SocketConnectionServers
-	std::vector<SocketConnectionServer> m_connection_servers;
+	std::vector<SocketListener> m_listeners;
 
 	// all ports
 	std::vector<uint16_t> m_ports;

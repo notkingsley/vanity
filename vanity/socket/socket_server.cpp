@@ -21,7 +21,7 @@ void SocketServer::stop() {
 	m_running = false;
 	m_poll_thread.join();
 	m_clients.clear();
-	m_connection_servers.clear();
+	m_listeners.clear();
 }
 
 void SocketServer::add_client(ConcreteClient &&client) {
@@ -43,10 +43,10 @@ void SocketServer::remove_socket_writer(SocketWriter &writer) {
 }
 
 void SocketServer::bind_all() {
-	m_connection_servers.reserve(m_ports.size());
+	m_listeners.reserve(m_ports.size());
 	for (auto& port : m_ports) {
-		m_connection_servers.emplace_back(port);
-		m_read_epoll.add(m_connection_servers.back());
+		m_listeners.emplace_back(port);
+		m_read_epoll.add(m_listeners.back());
 		logger().info("Listening on port " + std::to_string(port));
 	}
 }

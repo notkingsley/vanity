@@ -2,8 +2,8 @@
 // Created by kingsli on 9/7/23.
 //
 
-#ifndef VANITY_SOCKET_CONNECTION_SERVER_H
-#define VANITY_SOCKET_CONNECTION_SERVER_H
+#ifndef VANITY_SOCKET_LISTENER_H
+#define VANITY_SOCKET_LISTENER_H
 
 #include "socket.h"
 #include "socket_read_handler.h"
@@ -12,17 +12,17 @@
 namespace vanity::socket {
 
 /*
- * A SocketConnectionServer accepts connections with a
+ * A SocketListener accepts connections with a
  * server socket and yields Clients to the server
  */
-class SocketConnectionServer : public SocketReadHandler
+class SocketListener : public SocketReadHandler
 {
 private:
 	ServerSocket m_socket;
 
 public:
 	// start to listen on port
-	explicit SocketConnectionServer(uint16_t port);
+	explicit SocketListener(uint16_t port);
 
 	// get the socket file descriptor
 	int socket_fd() const override;
@@ -34,4 +34,4 @@ public:
 
 } // namespace vanity::socket
 
-#endif //VANITY_SOCKET_CONNECTION_SERVER_H
+#endif //VANITY_SOCKET_LISTENER_H
