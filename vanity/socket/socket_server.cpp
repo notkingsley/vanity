@@ -38,7 +38,7 @@ void SocketServer::add_writer(SocketWriter &writer) {
 	m_write_epoll.add(writer);
 }
 
-void SocketServer::remove_socket_writer(SocketWriter &writer) {
+void SocketServer::remove_writer(SocketWriter &writer) {
 	m_write_epoll.remove(writer);
 }
 

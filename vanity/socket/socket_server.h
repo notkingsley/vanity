@@ -91,7 +91,7 @@ public:
 	void add_writer(SocketWriter& writer) override;
 
 	// remove a socket writer
-	void remove_socket_writer(SocketWriter& writer);
+	void remove_writer(SocketWriter& writer) override;
 
 protected:
 	// start listening on all ports and start polling as a background task
