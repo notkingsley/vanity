@@ -6,7 +6,6 @@
 #include <thread>
 
 #include "client/concrete_client.h"
-#include "client_manager.h"
 #include "epoll.h"
 #include "event_server.h"
 #include "log_server.h"
@@ -17,9 +16,6 @@
 namespace vanity {
 
 namespace socket {
-
-// forward declaration
-class SocketListener;
 
 /*
  * A SocketServer allows us to listen on one or more sockets,
