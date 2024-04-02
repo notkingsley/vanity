@@ -9,7 +9,6 @@
 #include <queue>
 
 #include "socket_write_handler.h"
-#include "write_manager.h"
 
 
 namespace vanity::socket {
@@ -55,7 +54,7 @@ public:
 	int socket_fd() const override;
 
 	// attempt to write all messages
-	void ready(SocketServer& server) override;
+	void ready(WriteManager& manager) override;
 
 private:
 	// write to the socket

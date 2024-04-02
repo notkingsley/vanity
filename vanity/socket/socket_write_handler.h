@@ -8,10 +8,10 @@
 #include <string>
 #include <sys/epoll.h>
 
-namespace vanity::socket {
+#include "write_manager.h"
 
-// forward declaration
-class SocketServer;
+
+namespace vanity::socket {
 
 /*
  * A SocketWriteHandler is the common interface for registering for write events
@@ -31,7 +31,7 @@ public:
 
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
-	virtual void ready(SocketServer& server) = 0;
+	virtual void ready(WriteManager& manager) = 0;
 };
 
 } // namespace vanity::socket

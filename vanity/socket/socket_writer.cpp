@@ -23,12 +23,12 @@ int SocketWriter::socket_fd() const {
 	return m_socket.fd();
 }
 
-void SocketWriter::ready(SocketServer &server) {
+void SocketWriter::ready(WriteManager& manager) {
 	std::lock_guard lock(m_mutex);
 	try_write_all();
 
 	if (m_messages.empty())
-		server.remove_socket_writer(*this);
+		manager.remove_writer(*this);
 }
 
 void SocketWriter::write(WriteManager& manager, std::string&& response) {
