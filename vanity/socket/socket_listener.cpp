@@ -2,8 +2,9 @@
 // Created by kingsli on 9/7/23.
 //
 
+#include "client/concrete_client.h"
 #include "socket_listener.h"
-#include "socket_server.h"
+
 
 namespace vanity::socket {
 
@@ -15,9 +16,9 @@ int SocketListener::socket_fd() const {
 	return m_socket.fd();
 }
 
-void SocketListener::ready(SocketServer& server) {
+void SocketListener::ready(ClientManager& manager) {
 	// assumed to never fail
-	server.add_client(ConcreteClient{m_socket.accept()});
+	manager.add_client(ConcreteClient{m_socket.accept()});
 }
 
 } // namespace vanity::socket

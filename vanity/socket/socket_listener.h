@@ -29,7 +29,7 @@ public:
 
 	// the socket is ready for reading
 	// return true if the socket should be kept, false otherwise
-	void ready(SocketServer& server) override;
+	void ready(ClientManager& manager) override;
 };
 
 } // namespace vanity::socket

@@ -24,7 +24,6 @@ private:
 	using Socket = socket::Socket;
 	using SocketReader = socket::SocketReader;
 	using SocketWriter = socket::SocketWriter;
-	using SocketServer = socket::SocketServer;
 
 	// the client's session info
 	struct session_info m_session_info;
@@ -49,7 +48,7 @@ public:
 	ConcreteClient& operator=(ConcreteClient&&) noexcept = delete;
 
 	// the client has sent a message, and it is ready to be read
-	void ready(SocketServer& server) override;
+	void ready(ClientManager& manager) override;
 
 	// check if the client has permission to perform an op
 	bool has_perm(operation_t op) const override;

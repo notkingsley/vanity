@@ -3,24 +3,21 @@
 //
 
 #include "concrete_client.h"
-#include "socket/socket_server.h"
 
 namespace vanity {
 
 ConcreteClient::ConcreteClient(Socket&& socket) : m_socket(std::move(socket)), m_writer(m_socket) {}
 
-void ConcreteClient::ready(SocketServer &server) {
+void ConcreteClient::ready(ClientManager& manager) {
 	try{
-		auto callback = [this, &server](const std::string &data) {
-			server.handle(data, *this);
-		};
+		auto callback = manager.handle_callback(*this);
 		if (not m_reader.read(m_socket, callback))
 			// Warning: this will delete this object
-			server.remove_client(*this);
+			manager.remove_client(*this);
 	}
 	catch (DestroyClient& e) {
 		// Warning: this will delete this object
-		server.remove_client(*this);
+		manager.remove_client(*this);
 	}
 }
 

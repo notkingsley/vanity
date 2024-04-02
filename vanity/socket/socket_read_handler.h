@@ -8,10 +8,10 @@
 #include <string>
 #include <sys/epoll.h>
 
-namespace vanity::socket {
+#include "client_manager.h"
 
-// forward declaration
-class SocketServer;
+
+namespace vanity::socket {
 
 /*
  * A SocketReadHandler is the common interface for registering for read events
@@ -31,7 +31,7 @@ public:
 
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
-	virtual void ready(SocketServer& server) = 0;
+	virtual void ready(ClientManager& manager) = 0;
 };
 
 } // namespace vanity::socket
