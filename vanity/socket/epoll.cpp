@@ -34,22 +34,36 @@ int EpollBase::wait(epoll_event *events, int max_events, int timeout) const {
 	return epoll_wait(m_fd, events, max_events, timeout);
 }
 
-
-void Epoll::add(SocketEventHandler& handler) const {
+void Epoll::add(uint32_t event_mask, void *data_ptr, int fd) const {
 	epoll_event event{};
-	event.events = handler.get_event_mask();
-	event.data.ptr = &handler;
-	int ctl = epoll_ctl(m_fd, EPOLL_CTL_ADD, handler.socket_fd(), &event);
+	event.events = event_mask;
+	event.data.ptr = data_ptr;
+	int ctl = epoll_ctl(m_fd, EPOLL_CTL_ADD, fd, &event);
 	if (ctl < 0)
 		throw SocketError("Could not add client to epoll");
 }
 
-void Epoll::remove(const SocketEventHandler &handler) const {
-	int ctl = epoll_ctl(m_fd, EPOLL_CTL_DEL, handler.socket_fd(), nullptr);
+void Epoll::remove(int fd) const {
+	int ctl = epoll_ctl(m_fd, EPOLL_CTL_DEL, fd, nullptr);
 	if (ctl < 0)
 		throw SocketError("Could not remove client from epoll");
 }
 
+void Epoll::add(SocketReadHandler &handler) const {
+	add(handler.get_event_mask(), &handler, handler.socket_fd());
+}
+
+void Epoll::remove(const SocketReadHandler &handler) const {
+	remove(handler.socket_fd());
+}
+
+void Epoll::add(SocketWriteHandler &handler) const {
+	add(handler.get_event_mask(), &handler, handler.socket_fd());
+}
+
+void Epoll::remove(const SocketWriteHandler &handler) const {
+	remove(handler.socket_fd());
+}
 
 void SuperEpoll::add(Epoll &epoll) const {
 	epoll_event event{};

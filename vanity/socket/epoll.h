@@ -43,14 +43,27 @@ public:
  */
 class Epoll : public EpollBase
 {
+private:
 	friend class SuperEpoll;
+
+	// add an object to the epoll
+	void add(uint32_t event_mask, void* data_ptr, int fd) const;
+
+	// remove an object from the epoll
+	void remove(int fd) const;
 
 public:
 	// add an object to the epoll
-	void add(SocketEventHandler& handler) const;
+	void add(SocketReadHandler& handler) const;
 
 	// remove an object from the epoll
-	void remove(const SocketEventHandler& handler) const;
+	void remove(const SocketReadHandler& handler) const;
+
+	// add an object to the epoll
+	void add(SocketWriteHandler& handler) const;
+
+	// remove an object from the epoll
+	void remove(const SocketWriteHandler& handler) const;
 };
 
 /*
