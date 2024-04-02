@@ -24,17 +24,17 @@ void SocketServer::stop() {
 	m_listeners.clear();
 }
 
-void SocketServer::add_client(ConcreteClient &&client) {
-	auto it = m_clients.emplace(std::move(client)).first;
-	m_read_epoll.add(const_cast<ConcreteClient&>((*it)));
+void SocketServer::add_client(TcpClient &&client) {
+	auto& client_ = *m_clients.emplace(std::move(client)).first;
+	m_read_epoll.add(const_cast<TcpClient&>(client_));
 }
 
-void SocketServer::remove_client(ConcreteClient &client) {
+void SocketServer::remove_client(TcpClient &client) {
 	m_read_epoll.remove(client);
 	m_clients.erase(client);
 }
 
-auto SocketServer::handle_callback(ConcreteClient& client) -> handle_callback_t {
+auto SocketServer::handle_callback(TcpClient& client) -> handle_callback_t {
 	return [this, &client](auto msg) {
 		handle(msg, client);
 	};

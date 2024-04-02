@@ -5,7 +5,7 @@
 #include <memory>
 #include <thread>
 
-#include "client/concrete_client.h"
+#include "client/tcp_client.h"
 #include "epoll.h"
 #include "event_server.h"
 #include "log_server.h"
@@ -29,7 +29,7 @@ class SocketServer:
 {
 private:
 	// the current set of clients
-	std::unordered_set<ConcreteClient> m_clients;
+	std::unordered_set<TcpClient> m_clients;
 
 	// active SocketConnectionServers
 	std::vector<SocketListener> m_listeners;
@@ -77,13 +77,13 @@ public:
 	void send(Client& client, Response&& response) override;
 
 	// add a new client
-	void add_client(ConcreteClient&& client) override;
+	void add_client(TcpClient&& client) override;
 
 	// remove a client
-	void remove_client(ConcreteClient& client) override;
+	void remove_client(TcpClient& client) override;
 
 	// get a callback for when a message is received
-	handle_callback_t handle_callback(ConcreteClient& client) override;
+	handle_callback_t handle_callback(TcpClient& client) override;
 
 	// add a socket writer
 	void add_writer(SocketWriter& writer) override;

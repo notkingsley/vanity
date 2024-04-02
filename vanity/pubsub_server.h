@@ -58,8 +58,8 @@ public:
 	// a publish event was received
 	void event_publish() override;
 
-	// remove a client from all channels
-	void remove_client(ConcreteClient& client) override;
+	// remove a tcp_client from all channels
+	void remove_client(TcpClient& tcp_client) override;
 
 private:
 	// erase a client from a channel

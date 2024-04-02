@@ -11,7 +11,7 @@
 namespace vanity {
 
 // forward declaration
-class ConcreteClient;
+class TcpClient;
 
 /*
  * A ClientManager is an interface for managing clients
@@ -25,13 +25,13 @@ public:
 	virtual ~ClientManager() = default;
 
 	// add a client
-	virtual void add_client(ConcreteClient&& client) = 0;
+	virtual void add_client(TcpClient&& client) = 0;
 
 	// remove a client
-	virtual void remove_client(ConcreteClient& client) = 0;
+	virtual void remove_client(TcpClient& client) = 0;
 
 	// get a callback for when a message is received
-	virtual handle_callback_t handle_callback(ConcreteClient& client) = 0;
+	virtual handle_callback_t handle_callback(TcpClient& client) = 0;
 };
 
 } // namespace vanity

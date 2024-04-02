@@ -2,8 +2,8 @@
 // Created by kingsli on 11/15/23.
 //
 
-#ifndef VANITY_CONCRETE_CLIENT_H
-#define VANITY_CONCRETE_CLIENT_H
+#ifndef VANITY_TCP_CLIENT_H
+#define VANITY_TCP_CLIENT_H
 
 #include "client.h"
 #include "socket/socket_read_handler.h"
@@ -14,11 +14,9 @@
 namespace vanity {
 
 /*
- * A ConcreteClient is a client that has been
- * accepted by a SocketServer
- * This is the actual implementation of a Client
+ * A TcpClient is a client that's connected via TCP
  */
-class ConcreteClient : public Client, public socket::SocketReadHandler
+class TcpClient : public Client, public socket::SocketReadHandler
 {
 private:
 	using Socket = socket::Socket;
@@ -39,13 +37,13 @@ private:
 
 public:
 	// create a client
-	explicit ConcreteClient(Socket&& socket);
+	explicit TcpClient(Socket&& socket);
 
 	// move constructor
-	ConcreteClient(ConcreteClient&&) noexcept;
+	TcpClient(TcpClient&&) noexcept;
 
 	// move assignment
-	ConcreteClient& operator=(ConcreteClient&&) noexcept = delete;
+	TcpClient& operator=(TcpClient&&) noexcept = delete;
 
 	// the client has sent a message, and it is ready to be read
 	void ready(ClientManager& manager) override;
@@ -63,19 +61,19 @@ public:
 	int socket_fd() const override;
 };
 
-bool operator==(const ConcreteClient& lhs, const ConcreteClient& rhs);
+bool operator==(const TcpClient& lhs, const TcpClient& rhs);
 
 } // namespace vanity
 
 namespace std {
 
 template<>
-struct hash<vanity::ConcreteClient> : public hash<const vanity::ConcreteClient*> {
-	size_t operator()(const vanity::ConcreteClient &c) const {
-		return hash<const vanity::ConcreteClient*>::operator()(&c);
+struct hash<vanity::TcpClient> : public hash<const vanity::TcpClient*> {
+	size_t operator()(const vanity::TcpClient &c) const {
+		return hash<const vanity::TcpClient*>::operator()(&c);
 	}
 };
 
 } // namespace std
 
-#endif //VANITY_CONCRETE_CLIENT_H
+#endif //VANITY_TCP_CLIENT_H

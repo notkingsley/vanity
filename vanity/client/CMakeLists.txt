@@ -3,7 +3,7 @@ project(vanity_client)
 include_directories(.)
 
 add_library(vanity_client STATIC
-	concrete_client.cpp
+	tcp_client.cpp
 	proxy_client.cpp
 )
 
