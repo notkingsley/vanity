@@ -14,7 +14,7 @@
 namespace vanity::socket {
 
 /*
- * A socket holding a connection
+ * A socket of some kind
 */
 class BaseSocket
 {
@@ -42,16 +42,18 @@ public:
 };
 
 /*
- * A class representing a socket connection that has been received
+ * A socket connection that has been received
  * This class is used to read and write to the socket
 */
 class Socket : public BaseSocket
 {
-public:
-	// instantiate a Socket object,
-	// blocks until a connection is received
-	explicit Socket(int server_fd);
+private:
+	// private constructor
+	explicit Socket(int fd);
 
+	friend class ServerSocket;
+
+public:
 	// read a string from the socket
 	size_t read(char* buffer, size_t buffer_size) const;
 

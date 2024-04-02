@@ -5,8 +5,7 @@
 
 namespace vanity::socket {
 
-BaseSocket::~BaseSocket()
-{
+BaseSocket::~BaseSocket() {
 	if (m_fd >= 0)
 		close(m_fd);
 }
@@ -26,58 +25,56 @@ int BaseSocket::fd() const {
 	return m_fd;
 }
 
-Socket::Socket(int server_fd)
-{
-	sockaddr_in m_addr{};
-	socklen_t m_addr_size = sizeof(m_addr);
-
-	m_fd = accept4(server_fd, (sockaddr*)&m_addr, &m_addr_size, SOCK_NONBLOCK);
-	if (m_fd < 0)
-		throw SocketError("Could not accept the connection");
+Socket::Socket(int fd) {
+	m_fd = fd;
 }
 
 size_t Socket::read(char* buffer, size_t buffer_size) const
 {
-	auto bytes_read = ::read(m_fd, buffer, buffer_size);
-	if (bytes_read < 0)
+	auto bytes = ::read(m_fd, buffer, buffer_size);
+	if (bytes < 0)
 		throw SocketError("Could not read from the socket");
 
-	return bytes_read;
+	return bytes;
 }
 
 size_t Socket::write(const char *buffer, size_t buffer_size) const {
-	auto bytes_written = ::write(m_fd, buffer, buffer_size);
-	if (bytes_written < 0)
+	auto bytes = ::write(m_fd, buffer, buffer_size);
+	if (bytes < 0)
 		throw SocketError("Could not write to the socket");
 
-	return bytes_written;
+	return bytes;
 }
 
 
-ServerSocket::ServerSocket()
-{
+ServerSocket::ServerSocket() {
 	m_fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 	if (m_fd < 0)
 		throw SocketError("Could not create the server socket");
 }
 
-void ServerSocket::listen(int port)
-{
-	sockaddr_in m_addr{};
-	m_addr.sin_family = AF_INET;
-	m_addr.sin_addr.s_addr = INADDR_ANY;
-	m_addr.sin_port = htons(port);
+void ServerSocket::listen(int port) {
+	sockaddr_in addr{};
+	addr.sin_family = AF_INET;
+	addr.sin_addr.s_addr = INADDR_ANY;
+	addr.sin_port = htons(port);
 
-	if (bind(m_fd, (sockaddr*)&m_addr, sizeof(m_addr)) < 0)
+	if (bind(m_fd, (sockaddr*)&addr, sizeof(addr)) < 0)
 		throw SocketError("Could not bind the socket");
 
 	if (::listen(m_fd, SOMAXCONN) < 0)
 		throw SocketError("Could not listen on the socket");
 }
 
-Socket ServerSocket::accept()
-{
-	return Socket{m_fd};
+Socket ServerSocket::accept() {
+	sockaddr_in addr{};
+	socklen_t addr_size = sizeof(addr);
+
+	auto fd = accept4(m_fd, (sockaddr*)&addr, &addr_size, SOCK_NONBLOCK);
+	if (m_fd < 0)
+		throw SocketError("Could not accept the connection");
+
+	return Socket{fd};
 }
 
 } // namespace vanity::socket
