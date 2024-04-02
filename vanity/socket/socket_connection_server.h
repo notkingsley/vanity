@@ -5,9 +5,9 @@
 #ifndef VANITY_SOCKET_CONNECTION_SERVER_H
 #define VANITY_SOCKET_CONNECTION_SERVER_H
 
-
 #include "socket.h"
-#include "socket_event_handler.h"
+#include "socket_read_handler.h"
+
 
 namespace vanity::socket {
 

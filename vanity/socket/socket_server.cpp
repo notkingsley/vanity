@@ -116,11 +116,24 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 		if (n == 0)
 			break;
 
-		for (int i = 0; i < n; ++i){
-			auto handler = static_cast<SocketEventHandler *>(events[i].data.ptr);
-			handler->ready(*this);
-		}
+		for (int i = 0; i < n; ++i)
+			if (&epoll == &m_read_epoll)
+				read_ready(events[i]);
+			else if (&epoll == &m_write_epoll)
+				write_ready(events[i]);
+			else
+				logger().error("Unknown epoll");
 	}
+}
+
+void SocketServer::read_ready(epoll_event &event) {
+	auto handler = static_cast<SocketReadHandler*>(event.data.ptr);
+	handler->ready(*this);
+}
+
+void SocketServer::write_ready(epoll_event &event) {
+	auto handler = static_cast<SocketWriteHandler*>(event.data.ptr);
+	handler->ready(*this);
 }
 
 } // namespace vanity::socket

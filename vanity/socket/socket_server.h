@@ -110,6 +110,12 @@ private:
 	// this epoll instance is ready
 	void epoll_ready(Epoll& epoll);
 
+	// an event was gotten from the read epoll
+	void read_ready(epoll_event& event);
+
+	// an event was gotten from the write epoll
+	void write_ready(epoll_event& event);
+
 	// bind all ports
 	void bind_all();
 };

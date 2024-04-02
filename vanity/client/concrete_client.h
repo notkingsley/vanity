@@ -6,6 +6,7 @@
 #define VANITY_CONCRETE_CLIENT_H
 
 #include "client.h"
+#include "socket/socket_read_handler.h"
 #include "socket/socket_reader.h"
 #include "socket/socket_writer.h"
 
@@ -23,6 +24,7 @@ private:
 	using Socket = socket::Socket;
 	using SocketReader = socket::SocketReader;
 	using SocketWriter = socket::SocketWriter;
+	using SocketServer = socket::SocketServer;
 
 	// the client's session info
 	struct session_info m_session_info;
