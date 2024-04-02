@@ -34,6 +34,12 @@ void SocketServer::remove_client(ConcreteClient &client) {
 	m_clients.erase(client);
 }
 
+auto SocketServer::handle_callback(ConcreteClient& client) -> handle_callback_t {
+	return [this, &client](auto msg) {
+		handle(msg, client);
+	};
+}
+
 void SocketServer::add_writer(SocketWriter &writer) {
 	m_write_epoll.add(writer);
 }

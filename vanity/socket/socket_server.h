@@ -6,6 +6,7 @@
 #include <thread>
 
 #include "client/concrete_client.h"
+#include "client_manager.h"
 #include "epoll.h"
 #include "event_server.h"
 #include "log_server.h"
@@ -25,6 +26,7 @@ class SocketListener;
  * accept connections and read/write data
  */
 class SocketServer:
+	public virtual ClientManager,
 	public virtual EventServer,
 	public virtual LogServer,
 	public virtual WriteManager
@@ -79,13 +81,13 @@ public:
 	void send(Client& client, Response&& response) override;
 
 	// add a new client
-	void add_client(ConcreteClient&& client);
+	void add_client(ConcreteClient&& client) override;
 
 	// remove a client
-	// this is virtual because it's the most pragmatic solution
-	// without introducing hooks or callbacks which are unnecessary
-	// for now. this should be temporary, however.
-	virtual void remove_client(ConcreteClient& client);
+	void remove_client(ConcreteClient& client) override;
+
+	// get a callback for when a message is received
+	handle_callback_t handle_callback(ConcreteClient& client) override;
 
 	// add a socket writer
 	void add_writer(SocketWriter& writer) override;
