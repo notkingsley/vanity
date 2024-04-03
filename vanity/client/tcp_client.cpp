@@ -2,7 +2,9 @@
 // Created by kingsli on 11/15/23.
 //
 
+#include "exceptions.h"
 #include "tcp_client.h"
+
 
 namespace vanity {
 

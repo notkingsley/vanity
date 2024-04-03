@@ -5,6 +5,8 @@
 #include <unistd.h>
 
 #include "epoll.h"
+#include "exceptions.h"
+
 
 namespace vanity::socket {
 

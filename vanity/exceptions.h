@@ -6,6 +6,7 @@
 #define VANITY_EXCEPTIONS_H
 
 #include <cstring>
+#include <string>
 
 
 namespace vanity {
@@ -39,9 +40,9 @@ public:
 		return m_errno;
 	}
 
-	// check if the error is an EAGAIN or EWOULDBLOCK
+	// check if the error is an EAGAIN
 	bool is_retry() const noexcept {
-		return m_errno == EAGAIN || m_errno == EWOULDBLOCK;
+		return m_errno == EAGAIN;
 	}
 
 	// check if the error was an interrupt
