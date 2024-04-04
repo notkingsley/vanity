@@ -5,6 +5,7 @@
 #ifndef VANITY_SERVER_H
 #define VANITY_SERVER_H
 
+#include "auth/locked_auth_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
@@ -20,6 +21,7 @@ namespace vanity {
  */
 class Server:
 	public virtual DatabaseServer,
+	public virtual LockedAuthServer,
 	public virtual PipeServer,
 	public virtual PubSubServer,
 	public virtual TransactionServer,

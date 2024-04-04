@@ -6,8 +6,7 @@
 #define VANITY_TRANSACTION_SERVER_H
 
 #include "db/servers/base_database_server.h"
-#include "request/request_server.h"
-#include "socket/socket_server.h"
+#include "client/write_manager.h"
 
 namespace vanity {
 
@@ -16,7 +15,7 @@ namespace vanity {
  */
 class TransactionServer:
 	public virtual BaseDatabaseServer,
-	public virtual SocketServer
+	public virtual WriteManager
 {
 public:
 	// a transact_begin request was received from a client

@@ -1,19 +1,19 @@
-//
+//B
 // Created by kingsli on 11/15/23.
 //
 
 #ifndef VANITY_PIPE_SERVER_H
 #define VANITY_PIPE_SERVER_H
 
-#include "auth/locked_auth_server.h"
-#include "socket/socket_server.h"
+#include "client/write_manager.h"
+#include "request/request_server.h"
 
 namespace vanity {
 
 /*
  * A PipeServer is a server that handles PIPE requests
  */
-class PipeServer : public virtual LockedAuthServer, public virtual SocketServer
+class PipeServer : public virtual RequestServer, public virtual WriteManager
 {
 public:
 	// a pipe request was received from a client
