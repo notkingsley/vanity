@@ -30,7 +30,6 @@ public:
 	virtual int socket_fd() const = 0;
 
 	// the registered event has occurred
-	// return true if the handler should be kept, false otherwise
 	virtual void ready(WriteManager& manager) = 0;
 };
 

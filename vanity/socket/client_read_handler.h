@@ -21,7 +21,6 @@ class ClientReadHandler : public SocketReadHandler
 {
 public:
 	// the registered event has occurred
-	// return true if the handler should be kept, false otherwise
 	virtual void ready(ClientManager& manager) = 0;
 
 private:
