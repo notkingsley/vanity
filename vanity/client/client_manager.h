@@ -7,6 +7,10 @@
 
 #include <functional>
 #include <string>
+#include <stdexcept>
+
+#include "read_manager.h"
+
 
 namespace vanity {
 
@@ -16,13 +20,10 @@ class TcpClient;
 /*
  * A ClientManager is an interface for managing clients
  */
-class ClientManager
+class ClientManager : public ReadManager
 {
 public:
 	using handle_callback_t = std::function<void(const std::string&)>;
-
-	// virtual destructor
-	virtual ~ClientManager() = default;
 
 	// add a client
 	virtual void add_client(TcpClient&& client) = 0;
@@ -32,6 +33,15 @@ public:
 
 	// get a callback for when a message is received
 	virtual handle_callback_t handle_callback(TcpClient& client) = 0;
+
+private:
+	void add_read_handler(SocketReadHandler& read_handler) override {
+		throw std::runtime_error("ClientManager does not support adding read handlers");
+	};
+
+	void remove_read_handler(SocketReadHandler& read_handler) override {
+		throw std::runtime_error("ClientManager does not support removing read handlers");
+	};
 };
 
 } // namespace vanity
