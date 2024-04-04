@@ -20,7 +20,7 @@ class TcpClient;
 /*
  * A ClientManager is an interface for managing clients
  */
-class ClientManager : public ReadManager
+class ClientManager : public virtual ReadManager
 {
 public:
 	using handle_callback_t = std::function<void(const std::string&)>;
