@@ -6,7 +6,7 @@
 #define VANITY_TCP_CLIENT_H
 
 #include "client.h"
-#include "socket/socket_read_handler.h"
+#include "socket/client_read_handler.h"
 #include "socket/socket_reader.h"
 #include "socket/socket_writer.h"
 
@@ -16,7 +16,7 @@ namespace vanity {
 /*
  * A TcpClient is a client that's connected via TCP
  */
-class TcpClient : public Client, public socket::SocketReadHandler
+class TcpClient : public Client, public socket::ClientReadHandler
 {
 private:
 	using Socket = socket::Socket;

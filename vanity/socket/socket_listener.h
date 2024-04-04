@@ -6,7 +6,7 @@
 #define VANITY_SOCKET_LISTENER_H
 
 #include "socket.h"
-#include "socket_read_handler.h"
+#include "client_read_handler.h"
 
 
 namespace vanity::socket {
@@ -15,7 +15,7 @@ namespace vanity::socket {
  * A SocketListener accepts connections with a
  * server socket and yields Clients to the server
  */
-class SocketListener : public SocketReadHandler
+class SocketListener : public ClientReadHandler
 {
 private:
 	ServerSocket m_socket;

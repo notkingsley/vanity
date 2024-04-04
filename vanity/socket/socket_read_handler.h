@@ -5,7 +5,6 @@
 #ifndef VANITY_SOCKET_READ_HANDLER_H
 #define VANITY_SOCKET_READ_HANDLER_H
 
-#include <string>
 #include <sys/epoll.h>
 
 #include "client/client_manager.h"
