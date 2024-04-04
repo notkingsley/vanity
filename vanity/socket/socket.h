@@ -1,14 +1,9 @@
 #ifndef VANITY_SOCKET_H
 #define VANITY_SOCKET_H
 
-#include <exception>
 #include <cerrno>
 #include <string>
-#include <utility>
 #include <netdb.h>
-#include <sys/epoll.h>
-
-#include "exceptions.h"
 
 
 namespace vanity::socket {
@@ -47,13 +42,10 @@ public:
 */
 class Socket : public BaseSocket
 {
-private:
-	// private constructor
+public:
+	// create a socket from a file descriptor
 	explicit Socket(int fd);
 
-	friend class ServerSocket;
-
-public:
 	// read a string from the socket
 	size_t read(char* buffer, size_t buffer_size) const;
 

@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#include "exceptions.h"
 #include "socket.h"
 
 
