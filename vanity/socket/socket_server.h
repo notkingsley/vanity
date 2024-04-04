@@ -6,9 +6,8 @@
 #include <thread>
 
 #include "client/tcp_client.h"
-#include "epoll.h"
+#include "epoll_server.h"
 #include "event_server.h"
-#include "log_server.h"
 #include "socket_listener.h"
 #include "utils/event.h"
 
@@ -23,9 +22,8 @@ namespace socket {
  */
 class SocketServer:
 	public virtual ClientManager,
-	public virtual EventServer,
-	public virtual LogServer,
-	public virtual WriteManager
+	public virtual EpollServer,
+	public virtual EventServer
 {
 private:
 	// the current set of clients
@@ -42,15 +40,6 @@ private:
 
 	// whether the reported socket_ready has been polled
 	Event m_polled {};
-
-	// the epoll instance for reading
-	Epoll m_read_epoll;
-
-	// the epoll instance for writing
-	Epoll m_write_epoll;
-
-	// the epoll instance for polling the other epoll instances
-	SuperEpoll m_super_epoll;
 
 	// whether the polling thread is still running
 	bool m_running {false};
@@ -85,12 +74,6 @@ public:
 	// get a callback for when a message is received
 	handle_callback_t handle_callback(TcpClient& client) override;
 
-	// add a socket writer
-	void add_writer(SocketWriter& writer) override;
-
-	// remove a socket writer
-	void remove_writer(SocketWriter& writer) override;
-
 protected:
 	// start listening on all ports and start polling as a background task
 	void start();
@@ -105,15 +88,6 @@ private:
 	// event queue when some socket is ready
 	void poll();
 
-	// this epoll instance is ready
-	void epoll_ready(Epoll& epoll);
-
-	// an event was gotten from the read epoll
-	void read_ready(epoll_event& event);
-
-	// an event was gotten from the write epoll
-	void write_ready(epoll_event& event);
-
 	// cast this to a ClientManager
 	ClientManager& as_client_manager();
 
@@ -122,6 +96,8 @@ private:
 
 	// bind all ports
 	void bind_all();
+
+	void read_ready(SocketReadHandler *handler) override;
 };
 
 } // namespace socket

@@ -6,10 +6,7 @@
 
 namespace vanity::socket {
 
-SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} {
-	m_super_epoll.add(m_read_epoll);
-	m_super_epoll.add(m_write_epoll);
-}
+SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} { }
 
 void SocketServer::start() {
 	bind_all();
@@ -25,12 +22,12 @@ void SocketServer::stop() {
 }
 
 void SocketServer::add_client(TcpClient &&client) {
-	auto& client_ = *m_clients.emplace(std::move(client)).first;
-	m_read_epoll.add(const_cast<TcpClient&>(client_));
+	auto& c = *m_clients.emplace(std::move(client)).first;
+	epoll_add(const_cast<TcpClient&>(c));
 }
 
 void SocketServer::remove_client(TcpClient &client) {
-	m_read_epoll.remove(client);
+	epoll_remove(client);
 	m_clients.erase(client);
 }
 
@@ -40,19 +37,12 @@ auto SocketServer::handle_callback(TcpClient& client) -> handle_callback_t {
 	};
 }
 
-void SocketServer::add_writer(SocketWriter &writer) {
-	m_write_epoll.add(writer);
-}
-
-void SocketServer::remove_writer(SocketWriter &writer) {
-	m_write_epoll.remove(writer);
-}
-
 void SocketServer::bind_all() {
 	m_listeners.reserve(m_ports.size());
+
 	for (auto& port : m_ports) {
 		m_listeners.emplace_back(port);
-		m_read_epoll.add(m_listeners.back());
+		epoll_add(m_listeners.back());
 		logger().info("Listening on port " + std::to_string(port));
 	}
 }
@@ -62,43 +52,18 @@ void SocketServer::send(Client &client, Response&& response) {
 }
 
 void SocketServer::event_socket_ready() {
-	constexpr int super_poll_size = 2;
-	epoll_event events[super_poll_size] {};
-
-	int n = m_super_epoll.wait(events, super_poll_size, 0);
-
-	if (n < 0) {
-		SocketError err{{}};
-		logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
-	}
-
-	for (int i = 0; i < n; ++i) {
-		auto epoll = static_cast<Epoll *>(events[i].data.ptr);
-		epoll_ready(*epoll);
-	}
-
+	epoll_ready();
 	m_polled.set();
 }
 
 void SocketServer::poll() {
-	constexpr int poll_size = 1;
-	epoll_event events[poll_size] {};
-
 	while (true) {
-		int n = m_super_epoll.wait(events, poll_size, M_MAX_TIMEOUT * 1000);
-
-		if (n < 0){
-			SocketError err{{}};
-			if (err.is_interrupt())
-				continue;
-			else
-				logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
-		}
+		auto n = epoll_wait(M_MAX_TIMEOUT * 1000);
 
 		if (n == 0 and not m_running)
 			break;
 
-		if (n > 0){
+		if (n > 0) {
 			push_event(server_event::socket_ready);
 			m_polled.wait();
 			m_polled.clear();
@@ -106,44 +71,11 @@ void SocketServer::poll() {
 	}
 }
 
-void SocketServer::epoll_ready(Epoll &epoll) {
-	constexpr int poll_size = 10;
-	epoll_event events[poll_size] {};
-
-	while (true) {
-		int n = epoll.wait(events, poll_size, 0);
-
-		if (n < 0){
-			SocketError err{{}};
-			logger().error("Could not wait for epoll: " + std::to_string(err.get_errno()));
-			break;
-		}
-
-		if (n == 0)
-			break;
-
-		for (int i = 0; i < n; ++i)
-			if (&epoll == &m_read_epoll)
-				read_ready(events[i]);
-			else if (&epoll == &m_write_epoll)
-				write_ready(events[i]);
-			else
-				logger().error("Unknown epoll");
-	}
-}
-
-void SocketServer::read_ready(epoll_event &event) {
-	auto handler = static_cast<SocketReadHandler*>(event.data.ptr);
-
+void SocketServer::read_ready(SocketReadHandler *handler) {
 	if (auto client = dynamic_cast<ClientReadHandler*>(handler))
 		client->ready(as_client_manager());
 	else
 		handler->ready(as_read_manager());
-}
-
-void SocketServer::write_ready(epoll_event &event) {
-	auto handler = static_cast<SocketWriteHandler*>(event.data.ptr);
-	handler->ready(*this);
 }
 
 ClientManager &SocketServer::as_client_manager() {

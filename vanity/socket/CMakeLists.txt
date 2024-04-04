@@ -4,6 +4,7 @@ include_directories(.)
 
 add_library(vanity_socket STATIC
     epoll.cpp
+	epoll_server.cpp
     socket.cpp
 	socket_listener.cpp
     socket_reader.cpp
