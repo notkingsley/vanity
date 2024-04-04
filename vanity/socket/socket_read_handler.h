@@ -7,7 +7,7 @@
 
 #include <sys/epoll.h>
 
-#include "client/client_manager.h"
+#include "client/read_manager.h"
 
 
 namespace vanity::socket {
@@ -30,7 +30,7 @@ public:
 
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
-	virtual void ready(ClientManager& manager) = 0;
+	virtual void ready(ReadManager& manager) = 0;
 };
 
 } // namespace vanity::socket

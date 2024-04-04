@@ -23,6 +23,11 @@ public:
 	// the registered event has occurred
 	// return true if the handler should be kept, false otherwise
 	virtual void ready(ClientManager& manager) = 0;
+
+private:
+	void ready(ReadManager& manager) override {
+		throw std::runtime_error("ClientReadHandler does not support ReadManager");
+	};
 };
 
 } // namespace vanity::socket

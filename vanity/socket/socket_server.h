@@ -114,6 +114,12 @@ private:
 	// an event was gotten from the write epoll
 	void write_ready(epoll_event& event);
 
+	// cast this to a ClientManager
+	ClientManager& as_client_manager();
+
+	// cast this to a ReadManager
+	ReadManager& as_read_manager();
+
 	// bind all ports
 	void bind_all();
 };

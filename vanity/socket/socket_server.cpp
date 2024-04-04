@@ -134,12 +134,24 @@ void SocketServer::epoll_ready(Epoll &epoll) {
 
 void SocketServer::read_ready(epoll_event &event) {
 	auto handler = static_cast<SocketReadHandler*>(event.data.ptr);
-	handler->ready(*this);
+
+	if (auto client = dynamic_cast<ClientReadHandler*>(handler))
+		client->ready(as_client_manager());
+	else
+		handler->ready(as_read_manager());
 }
 
 void SocketServer::write_ready(epoll_event &event) {
 	auto handler = static_cast<SocketWriteHandler*>(event.data.ptr);
 	handler->ready(*this);
+}
+
+ClientManager &SocketServer::as_client_manager() {
+	return *this;
+}
+
+ReadManager &SocketServer::as_read_manager() {
+	return *this;
 }
 
 } // namespace vanity::socket
