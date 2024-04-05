@@ -97,7 +97,7 @@ private:
 	// bind all ports
 	void bind_all();
 
-	void read_ready(SocketReadHandler *handler) override;
+	void read_handler_ready(SocketReadHandler *handler) override;
 };
 
 } // namespace socket

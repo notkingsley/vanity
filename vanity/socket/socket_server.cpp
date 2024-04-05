@@ -71,7 +71,7 @@ void SocketServer::poll() {
 	}
 }
 
-void SocketServer::read_ready(SocketReadHandler *handler) {
+void SocketServer::read_handler_ready(SocketReadHandler *handler) {
 	if (auto client = dynamic_cast<ClientReadHandler*>(handler))
 		client->ready(as_client_manager());
 	else

@@ -31,7 +31,7 @@ void EpollServer::epoll_remove(SocketReadHandler &handler) {
 }
 
 int EpollServer::epoll_wait(int timeout) {
-	static constexpr int poll_size = 10;
+	static constexpr int poll_size = 1;
 	static epoll_event events[poll_size] {};
 
 	int n = m_super_epoll.wait(events, poll_size, timeout);
@@ -46,8 +46,8 @@ int EpollServer::epoll_wait(int timeout) {
 }
 
 void EpollServer::epoll_ready() {
-	constexpr int super_poll_size = 2;
-	epoll_event events[super_poll_size] {};
+	static constexpr int super_poll_size = 2;
+	static epoll_event events[super_poll_size] {};
 
 	int n = m_super_epoll.wait(events, super_poll_size, 0);
 
@@ -63,8 +63,8 @@ void EpollServer::epoll_ready() {
 }
 
 void EpollServer::epoll_ready(Epoll &epoll) {
-	constexpr int poll_size = 10;
-	epoll_event events[poll_size] {};
+	static constexpr int poll_size = 10;
+	static epoll_event events[poll_size] {};
 
 	while (true) {
 		int n = epoll.wait(events, poll_size, 0);
@@ -90,7 +90,7 @@ void EpollServer::epoll_ready(Epoll &epoll) {
 
 void EpollServer::read_ready(epoll_event &event) {
 	auto handler = static_cast<SocketReadHandler*>(event.data.ptr);
-	read_ready(handler);
+	read_handler_ready(handler);
 }
 
 void EpollServer::write_ready(epoll_event &event) {

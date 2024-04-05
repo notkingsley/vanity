@@ -56,7 +56,7 @@ protected:
 	void epoll_ready();
 
 	// a SocketReadHandler is ready
-	virtual void read_ready(SocketReadHandler* handler) = 0;
+	virtual void read_handler_ready(SocketReadHandler* handler) = 0;
 
 private:
 	// this epoll instance is ready
