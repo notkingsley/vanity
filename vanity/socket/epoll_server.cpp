@@ -14,6 +14,14 @@ EpollServer::EpollServer() {
 	m_super_epoll.add(m_write_epoll);
 }
 
+void EpollServer::add_read_handler(SocketReadHandler &read_handler) {
+	epoll_add(read_handler);
+}
+
+void EpollServer::remove_read_handler(SocketReadHandler &read_handler) {
+	epoll_remove(read_handler);
+}
+
 void EpollServer::add_writer(SocketWriter &writer) {
 	m_write_epoll.add(writer);
 }

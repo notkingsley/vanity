@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <string>
-#include <stdexcept>
 
 #include "read_manager.h"
 
@@ -33,15 +32,6 @@ public:
 
 	// get a callback for when a message is received
 	virtual handle_callback_t handle_callback(TcpClient& client) = 0;
-
-private:
-	void add_read_handler(SocketReadHandler& read_handler) override {
-		throw std::runtime_error("ClientManager does not support adding read handlers");
-	};
-
-	void remove_read_handler(SocketReadHandler& read_handler) override {
-		throw std::runtime_error("ClientManager does not support removing read handlers");
-	};
 };
 
 } // namespace vanity

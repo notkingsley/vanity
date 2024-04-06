@@ -34,6 +34,12 @@ public:
 	// create an epoll server
 	EpollServer();
 
+	// add a read_handler
+	void add_read_handler(SocketReadHandler& read_handler) override;
+
+	// remove a read_handler
+	void remove_read_handler(SocketReadHandler& read_handler) override;
+
 	// add a socket writer
 	void add_writer(SocketWriter& writer) override;
 
