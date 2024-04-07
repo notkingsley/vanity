@@ -1,3 +1,4 @@
+#include <arpa/inet.h>
 #include <unistd.h>
 
 #include "exceptions.h"
@@ -33,10 +34,13 @@ Socket::Socket(int fd) {
 size_t Socket::read(char* buffer, size_t buffer_size) const
 {
 	auto bytes = ::read(m_fd, buffer, buffer_size);
-	if (bytes < 0)
-		throw SocketError("Could not read from the socket");
+	if (bytes >= 0)
+		return bytes;
 
-	return bytes;
+	if (errno == ECONNRESET)
+		return 0;
+
+	throw SocketError("Could not read from the socket");
 }
 
 size_t Socket::write(const char *buffer, size_t buffer_size) const {
@@ -45,6 +49,21 @@ size_t Socket::write(const char *buffer, size_t buffer_size) const {
 		throw SocketError("Could not write to the socket");
 
 	return bytes;
+}
+
+Socket Socket::connect(const char *host, uint16_t port) {
+	auto fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+	if (fd < 0)
+		throw SocketError("Could not create the socket");
+
+	sockaddr_in addr{};
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+	inet_pton(AF_INET, host, &addr.sin_addr);
+	if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) and errno != EINPROGRESS)
+		throw SocketError("Could not connect to the server");
+
+	return Socket{fd};
 }
 
 

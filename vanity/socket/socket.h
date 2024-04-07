@@ -51,6 +51,8 @@ public:
 
 	// write from a buffer to the socket
 	size_t write(const char* buffer, size_t buffer_size) const;
+
+	static Socket connect(const char* host, uint16_t port);
 };
 
 /*
