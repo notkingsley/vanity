@@ -14,7 +14,14 @@ namespace vanity {
 /*
  * common base class for all exceptions
  */
-class Exception : public std::exception {};
+class Exception : public std::exception
+{
+public:
+	Exception() = default;
+	~Exception() override = default;
+	
+	Exception(const Exception&) = default;
+};
 
 /*
 There was a connection related error
@@ -22,7 +29,7 @@ There was a connection related error
 class SocketError : public Exception
 {
 private:
-	std::string m_msg {" SocketError: "};
+	std::string m_msg {"SocketError: "};
 	int m_errno;
 
 public:
@@ -58,7 +65,7 @@ class DestroyClient : Exception {};
 class InvalidRequest : Exception
 {
 private:
-	std::string m_msg{" InvalidRequest: "};
+	std::string m_msg {"InvalidRequest: "};
 
 public:
 	explicit InvalidRequest(const std::string& msg){
@@ -72,7 +79,7 @@ public:
 
 // thrown when an error occurs in the hashing process
 class HashError : public Exception {
-	std::string m_msg{" HashError: "};
+	std::string m_msg {"HashError: "};
 
 public:
 	explicit HashError(const std::string& msg) {
@@ -103,7 +110,7 @@ public:
 class CorruptJournal: public Exception
 {
 private:
-	std::string m_msg{" CorruptJournal: "};
+	std::string m_msg {"CorruptJournal: "};
 
 public:
 	explicit CorruptJournal(const std::string& msg) {
@@ -121,10 +128,28 @@ public:
 class FileLockError : public Exception
 {
 private:
-	std::string m_msg{" FileLockError: "};
+	std::string m_msg {"FileLockError: "};
 
 public:
 	explicit FileLockError(const std::string& msg) {
+		m_msg += msg;
+	}
+
+	const char* what() const noexcept override {
+		return m_msg.c_str();
+	}
+};
+
+/*
+ * Thrown when the Logger encounters an error
+ */
+class LogError : public Exception
+{
+private:
+	std::string m_msg {"LogError: "};
+	
+public:
+	explicit LogError(const std::string& msg) {
 		m_msg += msg;
 	}
 
