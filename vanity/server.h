@@ -10,6 +10,7 @@
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
 #include "pubsub_server.h"
+#include "socket/socket_server.h"
 #include "transaction_server.h"
 #include "wal/wal_server.h"
 
@@ -24,6 +25,7 @@ class Server:
 	public virtual LockedAuthServer,
 	public virtual PipeServer,
 	public virtual PubSubServer,
+	public virtual socket::SocketServer,
 	public virtual TransactionServer,
 	public virtual WalServer
 {

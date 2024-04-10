@@ -9,15 +9,20 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "client/client_server.h"
+#include "event_server.h"
 #include "request/request_server.h"
-#include "socket/socket_server.h"
+
 
 namespace vanity {
 
 /*
  * A pubsub server handles the vanity pubsub protocol.
  */
-class PubSubServer : public virtual RequestServer, public virtual SocketServer
+class PubSubServer:
+	public virtual ClientServer,
+	public virtual EventServer,
+	public virtual RequestServer
 {
 public:
 	// data about to be published

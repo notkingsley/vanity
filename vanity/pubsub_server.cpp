@@ -13,7 +13,7 @@ void PubSubServer::remove_client(TcpClient& tcp_client) {
 		for (auto& channel : session_channels(client))
 			erase_subscription(client, channel);
 	}
-	SocketServer::remove_client(tcp_client);
+	ClientServer::remove_client(tcp_client);
 }
 
 void PubSubServer::request_subscribe(Client &client, const std::string &channel) {
