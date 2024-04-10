@@ -23,6 +23,8 @@ add_executable(vanity
 	session_server.cpp
 	transaction_server.cpp
     vanity.cpp
+	bind_server.cpp
+	bind_server.h
 )
 
 target_link_libraries(vanity

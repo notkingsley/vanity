@@ -11,7 +11,7 @@ Server::Server(const Config &config):
 	AuthServer(config.auth_file),
 	LogServer(config.log_file, config.log_level),
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file),
-	SocketServer(config.ports),
+	BindServer(config.ports),
 	m_lock_file{config.lock_file}
 {
 	WalServer::recover();

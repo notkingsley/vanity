@@ -6,10 +6,8 @@
 
 namespace vanity::socket {
 
-SocketServer::SocketServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} { }
-
 void SocketServer::start() {
-	bind_all();
+	BindServer::start();
 	m_running = true;
 	m_poll_thread = std::thread{&SocketServer::poll, this};
 }
@@ -18,17 +16,7 @@ void SocketServer::stop() {
 	m_running = false;
 	m_poll_thread.join();
 	ClientServer::stop();
-	m_listeners.clear();
-}
-
-void SocketServer::bind_all() {
-	m_listeners.reserve(m_ports.size());
-
-	for (auto& port : m_ports) {
-		m_listeners.emplace_back(port);
-		epoll_add(m_listeners.back());
-		logger().info("Listening on port " + std::to_string(port));
-	}
+	BindServer::stop();
 }
 
 void SocketServer::event_socket_ready() {

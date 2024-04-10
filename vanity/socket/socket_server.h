@@ -5,10 +5,9 @@
 #include <memory>
 #include <thread>
 
+#include "bind_server.h"
 #include "client/client_server.h"
-#include "epoll_server.h"
 #include "event_server.h"
-#include "socket_listener.h"
 #include "utils/event.h"
 
 
@@ -21,16 +20,11 @@ namespace socket {
  * accept connections and read/write data
  */
 class SocketServer:
+	public virtual BindServer,
 	public virtual ClientServer,
 	public virtual EventServer
 {
 private:
-	// active SocketConnectionServers
-	std::vector<SocketListener> m_listeners;
-
-	// all ports
-	std::vector<uint16_t> m_ports;
-
 	// the poll thread
 	std::thread m_poll_thread {};
 
@@ -41,19 +35,8 @@ private:
 	bool m_running {false};
 
 public:
-	// create a socket server
-	explicit SocketServer(std::vector<uint16_t> ports);
-
 	// destroy the socket server
 	~SocketServer() override = default;
-
-	// no copy
-	SocketServer(const SocketServer&) = delete;
-	SocketServer& operator=(const SocketServer&) = delete;
-
-	// no move
-	SocketServer(SocketServer&& other) noexcept = delete;
-	SocketServer& operator=(SocketServer&& other) noexcept = delete;
 
 	// a socket_ready event was received
 	void event_socket_ready() override;
@@ -71,9 +54,6 @@ private:
 	// yield server_event::socket_ready to the
 	// event queue when some socket is ready
 	void poll();
-
-	// bind all ports
-	void bind_all();
 };
 
 } // namespace socket
