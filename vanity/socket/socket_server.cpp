@@ -17,24 +17,8 @@ void SocketServer::start() {
 void SocketServer::stop() {
 	m_running = false;
 	m_poll_thread.join();
-	m_clients.clear();
+	ClientServer::stop();
 	m_listeners.clear();
-}
-
-void SocketServer::add_client(TcpClient &&client) {
-	auto& c = *m_clients.emplace(std::move(client)).first;
-	epoll_add(const_cast<TcpClient&>(c));
-}
-
-void SocketServer::remove_client(TcpClient &client) {
-	epoll_remove(client);
-	m_clients.erase(client);
-}
-
-auto SocketServer::handle_callback(TcpClient& client) -> handle_callback_t {
-	return [this, &client](auto msg) {
-		handle(msg, client);
-	};
 }
 
 void SocketServer::bind_all() {
@@ -45,10 +29,6 @@ void SocketServer::bind_all() {
 		epoll_add(m_listeners.back());
 		logger().info("Listening on port " + std::to_string(port));
 	}
-}
-
-void SocketServer::send(Client &client, Response&& response) {
-	client.write(*this, response.move());
 }
 
 void SocketServer::event_socket_ready() {
@@ -69,21 +49,6 @@ void SocketServer::poll() {
 			m_polled.clear();
 		}
 	}
-}
-
-void SocketServer::read_handler_ready(SocketReadHandler *handler) {
-	if (auto client = dynamic_cast<ClientReadHandler*>(handler))
-		client->ready(as_client_manager());
-	else
-		handler->ready(as_read_manager());
-}
-
-ClientManager &SocketServer::as_client_manager() {
-	return *this;
-}
-
-ReadManager &SocketServer::as_read_manager() {
-	return *this;
 }
 
 } // namespace vanity::socket

@@ -5,7 +5,7 @@
 #include <memory>
 #include <thread>
 
-#include "client/tcp_client.h"
+#include "client/client_server.h"
 #include "epoll_server.h"
 #include "event_server.h"
 #include "socket_listener.h"
@@ -21,14 +21,10 @@ namespace socket {
  * accept connections and read/write data
  */
 class SocketServer:
-	public virtual ClientManager,
-	public virtual EpollServer,
+	public virtual ClientServer,
 	public virtual EventServer
 {
 private:
-	// the current set of clients
-	std::unordered_set<TcpClient> m_clients;
-
 	// active SocketConnectionServers
 	std::vector<SocketListener> m_listeners;
 
@@ -62,18 +58,6 @@ public:
 	// a socket_ready event was received
 	void event_socket_ready() override;
 
-	// send a message to a client
-	void send(Client& client, Response&& response) override;
-
-	// add a new client
-	void add_client(TcpClient&& client) override;
-
-	// remove a client
-	void remove_client(TcpClient& client) override;
-
-	// get a callback for when a message is received
-	handle_callback_t handle_callback(TcpClient& client) override;
-
 protected:
 	// start listening on all ports and start polling as a background task
 	void start();
@@ -88,16 +72,8 @@ private:
 	// event queue when some socket is ready
 	void poll();
 
-	// cast this to a ClientManager
-	ClientManager& as_client_manager();
-
-	// cast this to a ReadManager
-	ReadManager& as_read_manager();
-
 	// bind all ports
 	void bind_all();
-
-	void read_handler_ready(SocketReadHandler *handler) override;
 };
 
 } // namespace socket
