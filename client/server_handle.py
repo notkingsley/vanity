@@ -9,7 +9,7 @@ class ServerHandle:
     """
 
     EXECUTABLE_PATH = "vanity/cmake-build-debug/vanity"
-    STARTUP_DELAY = 0.01
+    STARTUP_DELAY = 0.03
 
     def __init__(
         self,
