@@ -117,13 +117,13 @@ void PersistJournalServer::pre_database_load() {
 		{
 			const auto& old = recovered_journal.get_existing_db_file();
 			if (exists(old) and exists(*m_db_file))
-				throw std::runtime_error("Journal violation: both old and current db files exist");
+				throw WALError("Journal violation: both old and current db files exist");
 
 			if (exists(*m_db_file))
 				break;
 
 			if (not exists(old))
-				throw std::runtime_error("Journal violation: none of old or current db files exist");
+				throw WALError("Journal violation: none of old or current db files exist");
 
 			rename(old, *m_db_file);
 			break;

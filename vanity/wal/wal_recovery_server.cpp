@@ -48,12 +48,12 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 			}
 			default:
 			{
-				throw std::runtime_error("Bad wal_entry_t");
+				throw WALError("Bad wal_entry_t");
 			}
 		}
 
 		if (wal.get() != '\n')
-			throw std::runtime_error("WAL file is corrupted: no newline after entry");
+			throw WALError("WAL file is corrupted: no newline after entry");
 	}
 }
 

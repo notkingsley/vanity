@@ -158,6 +158,24 @@ public:
 	}
 };
 
+/*
+ * Thrown when a WAL invariant is violated
+ */
+class WALError : public Exception
+{
+private:
+	std::string m_msg {"WALError: "};
+
+public:
+	explicit WALError(const std::string& msg) {
+		m_msg += msg;
+	}
+
+	const char* what() const noexcept override {
+		return m_msg.c_str();
+	}
+};
+
 } // namespace vanity
 
 #endif //VANITY_EXCEPTIONS_H
