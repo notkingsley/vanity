@@ -13,7 +13,7 @@ add_subdirectory(response)
 add_subdirectory(socket)
 add_subdirectory(wal)
 
-add_executable(vanity
+add_library(libvanity STATIC
 	bind_server.cpp
 	config.cpp
 	event_server.cpp
@@ -24,10 +24,9 @@ add_executable(vanity
 	server.cpp
 	session_server.cpp
 	transaction_server.cpp
-    vanity.cpp
 )
 
-target_link_libraries(vanity
+target_link_libraries(libvanity
 	vanity_auth
 	vanity_client
     vanity_db
@@ -35,4 +34,12 @@ target_link_libraries(vanity
 	vanity_response
     vanity_socket
 	vanity_wal
+)
+
+add_executable(vanity
+	vanity.cpp
+)
+
+target_link_libraries(vanity
+	libvanity
 )
