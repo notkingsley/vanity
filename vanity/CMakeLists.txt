@@ -14,17 +14,17 @@ add_subdirectory(socket)
 add_subdirectory(wal)
 
 add_executable(vanity
+	bind_server.cpp
 	config.cpp
 	event_server.cpp
 	pipe_server.cpp
+	poll_server.cpp
 	pubsub_server.cpp
 	repeat_event_server.cpp
 	server.cpp
 	session_server.cpp
 	transaction_server.cpp
     vanity.cpp
-	bind_server.cpp
-	bind_server.h
 )
 
 target_link_libraries(vanity
