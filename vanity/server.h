@@ -6,11 +6,12 @@
 #define VANITY_SERVER_H
 
 #include "auth/locked_auth_server.h"
+#include "bind_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
+#include "poll_server.h"
 #include "pubsub_server.h"
-#include "socket/socket_server.h"
 #include "transaction_server.h"
 #include "wal/wal_server.h"
 
@@ -21,11 +22,12 @@ namespace vanity {
  * Top level server
  */
 class Server:
+	public virtual BindServer,
 	public virtual DatabaseServer,
 	public virtual LockedAuthServer,
 	public virtual PipeServer,
+	public virtual PollServer,
 	public virtual PubSubServer,
-	public virtual socket::SocketServer,
 	public virtual TransactionServer,
 	public virtual WalServer
 {

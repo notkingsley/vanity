@@ -18,7 +18,8 @@ Server::Server(const Config &config):
 }
 
 void Server::start() {
-	SocketServer::start();
+	BindServer::start();
+	PollServer::start();
 	DatabaseServer::start();
 	RepeatEventServer::start();
 	logger().info("Started server");
@@ -27,7 +28,9 @@ void Server::start() {
 void Server::stop() {
 	RepeatEventServer::stop();
 	DatabaseServer::stop();
-	SocketServer::stop();
+	ClientServer::stop();
+	PollServer::stop();
+	BindServer::stop();
 	logger().info("Stopped server");
 }
 

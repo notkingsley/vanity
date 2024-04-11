@@ -8,8 +8,7 @@ add_library(vanity_socket STATIC
     socket.cpp
 	socket_listener.cpp
     socket_reader.cpp
-    socket_server.cpp
-    socket_writer.cpp
+	socket_writer.cpp
 )
 
 # cyclic dependency see client/CMakeLists.txt
