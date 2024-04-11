@@ -19,7 +19,7 @@ namespace vanity {
 class BindServer : public virtual socket::EpollServer
 {
 private:
-	// active SocketConnectionServers
+	// active SocketListeners
 	std::vector<socket::SocketListener> m_listeners;
 
 	// all ports
@@ -27,17 +27,6 @@ private:
 
 public:
 	explicit BindServer(std::vector<uint16_t> ports);
-
-	// destroy the socket server
-	~BindServer() override = default;
-
-	// no copy
-	BindServer(const BindServer&) = delete;
-	BindServer& operator=(const BindServer&) = delete;
-
-	// move
-	BindServer(BindServer&& other) noexcept = delete;
-	BindServer& operator=(BindServer&& other) noexcept = delete;
 
 protected:
 	// bind and start listening on all ports
