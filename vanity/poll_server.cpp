@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-void PollServer::event_socket_ready() {
+void PollServer::event_epoll_ready() {
 	epoll_ready();
 	m_polled.set();
 }
@@ -31,7 +31,7 @@ void PollServer::poll() {
 		if (n <= 0)
 			continue;
 
-		push_event(server_event::socket_ready);
+		push_event(server_event::epoll_ready);
 		m_polled.wait();
 		m_polled.clear();
 	}

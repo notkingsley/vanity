@@ -19,7 +19,7 @@ class EventServer : public virtual AbstractServer
 protected:
 	// some type of sever event that should be completed
 	enum class server_event{
-		socket_ready,
+		epoll_ready,
 		persist,
 		terminate,
 		expire,
@@ -46,8 +46,8 @@ public:
 	// request to terminate the server
 	void terminate() override;
 
-	// a socket_ready event was received
-	virtual void event_socket_ready() = 0;
+	// an epoll_ready event was received
+	virtual void event_epoll_ready() = 0;
 
 	// a persist event was received
 	virtual void event_persist() = 0;

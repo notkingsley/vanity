@@ -26,7 +26,7 @@ private:
 	// the poll thread
 	std::thread m_poll_thread {};
 
-	// whether the reported socket_ready has been polled
+	// whether the reported epoll_ready has been polled
 	Event m_polled {};
 
 	// whether the polling thread is still running
@@ -36,8 +36,8 @@ public:
 	// destroy the poll server
 	~PollServer() override = default;
 
-	// a socket_ready event was received
-	void event_socket_ready() override;
+	// an epoll_ready event was received
+	void event_epoll_ready() override;
 
 protected:
 	// start polling
@@ -48,8 +48,8 @@ protected:
 
 private:
 	// block on epoll on a separate thread.
-	// yield server_event::socket_ready to the
-	// event queue when some socket is ready
+	// yield server_event::epoll_ready to the
+	// event queue when some epoll is ready
 	void poll();
 };
 

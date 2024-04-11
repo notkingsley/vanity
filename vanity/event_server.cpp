@@ -9,8 +9,8 @@ namespace vanity {
 void EventServer::event_loop()  {
 	while (true)
 		switch (m_event_queue.get()) {
-			case server_event::socket_ready: {
-				event_socket_ready();
+			case server_event::epoll_ready: {
+				event_epoll_ready();
 				break;
 			}
 			case server_event::persist: {
