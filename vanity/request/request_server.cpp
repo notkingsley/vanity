@@ -123,8 +123,7 @@ bool RequestServer::refuse_with_response(Client& client, Request& request, Respo
 }
 
 void RequestServer::dispatch(Client &client, Request& request, bool end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
-	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
+	using enum object_t;
 
 	RequestTracker tracker {request};
 	auto op {request.get_operation()};
@@ -690,8 +689,7 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 }
 
 void RequestServer::dry_dispatch(Request& request, bool end) {
-	using object_t::STR, object_t::INT, object_t::FLOAT, object_t::ARR;
-	using object_t::LIST, object_t::SET, object_t::HASH, object_t::CLIENT_AUTH;
+	using enum object_t;
 
 	switch (request.get_operation()) {
 		case operation_t::TERMINATE:
