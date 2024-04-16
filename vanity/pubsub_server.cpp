@@ -6,14 +6,13 @@
 
 namespace vanity {
 
-void PubSubServer::remove_client(TcpClient& tcp_client) {
+void PubSubServer::remove_client(TcpClient& client) {
 	{
-		std::lock_guard lock(m_subscriptions_mutex);
-		auto& client = static_cast<Client&>(tcp_client);
+		std::lock_guard lock {m_subscriptions_mutex};
 		for (auto& channel : session_channels(client))
 			erase_subscription(client, channel);
 	}
-	ClientServer::remove_client(tcp_client);
+	ClientServer::remove_client(client);
 }
 
 void PubSubServer::request_subscribe(Client &client, const std::string &channel) {
