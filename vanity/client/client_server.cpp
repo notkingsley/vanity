@@ -6,6 +6,31 @@
 
 namespace vanity {
 
+/*
+ * Behaves like an std::unique_ptr that
+ * does not delete the pointer on destruction
+*/
+template<typename T>
+class bad_ptr
+{
+private:
+	std::unique_ptr<T> m_ptr;
+
+public:
+	// construct from a pointer
+	explicit bad_ptr(T* ptr) : m_ptr{ptr} { }
+
+	// convert to an std::unique_ptr&
+	operator const std::unique_ptr<T>&() {
+		return m_ptr;
+	}
+
+	// release the pointer without deleting it
+	~bad_ptr() {
+		std::ignore = m_ptr.release();
+	}
+};
+
 void ClientServer::read_handler_ready(SocketReadHandler *handler) {
 	if (auto client = dynamic_cast<socket::ClientReadHandler*>(handler))
 		client->ready(as_client_manager());
@@ -28,9 +53,7 @@ void ClientServer::add_client(TcpClient &&client) {
 
 void ClientServer::remove_client(TcpClient &client) {
 	epoll_remove(client);
-	std::unique_ptr<TcpClient> ptr{&client};
-	m_clients.erase(ptr);
-	ptr.release();
+	m_clients.erase(bad_ptr{&client});
 }
 
 auto ClientServer::handle_callback(TcpClient& client) -> handle_callback_t {
