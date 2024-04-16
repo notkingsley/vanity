@@ -11,16 +11,19 @@ namespace vanity {
 TcpClient::TcpClient(Socket&& socket) : m_socket(std::move(socket)), m_writer(m_socket) {}
 
 void TcpClient::ready(ClientManager& manager) {
-	try{
+	bool destroy_self = false;
+
+	try {
 		auto callback = manager.handle_callback(*this);
 		if (not m_reader.read(m_socket, callback))
-			// Warning: this will delete this object
-			manager.remove_client(*this);
+			destroy_self = true;
 	}
 	catch (DestroyClient& e) {
-		// Warning: this will delete this object
-		manager.remove_client(*this);
+		destroy_self = true;
 	}
+
+	if (destroy_self)
+		manager.remove_client(*this);
 }
 
 bool TcpClient::has_perm(operation_t op) const {
