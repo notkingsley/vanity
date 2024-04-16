@@ -37,7 +37,7 @@ private:
 
 public:
 	// add a new client
-	void add_client(TcpClient&& client) override;
+	TcpClient& add_client(TcpClient&& client) override;
 
 	// remove a client
 	void remove_client(TcpClient& client) override;

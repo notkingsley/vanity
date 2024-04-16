@@ -46,9 +46,10 @@ ReadManager &ClientServer::as_read_manager() {
 	return *this;
 }
 
-void ClientServer::add_client(TcpClient &&client) {
+TcpClient& ClientServer::add_client(TcpClient &&client) {
 	auto& ptr = *m_clients.emplace(std::make_unique<TcpClient>(std::move(client))).first;
 	epoll_add(*ptr);
+	return *ptr;
 }
 
 void ClientServer::remove_client(TcpClient &client) {

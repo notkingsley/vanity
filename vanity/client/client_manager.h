@@ -25,7 +25,8 @@ public:
 	using handle_callback_t = std::function<void(const std::string&)>;
 
 	// add a client
-	virtual void add_client(TcpClient&& client) = 0;
+	// return a reference to the permanent client
+	virtual TcpClient& add_client(TcpClient&& client) = 0;
 
 	// remove a client
 	virtual void remove_client(TcpClient& client) = 0;
