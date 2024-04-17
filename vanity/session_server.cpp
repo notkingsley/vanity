@@ -42,4 +42,8 @@ session_info::channels_t &SessionServer::session_channels(Client &client) {
 	return client.session_info().channels;
 }
 
+bool SessionServer::session_is_peer(Client &client) {
+	return session_auth(client) == client_auth::PEER;
+}
+
 } // namespace vanity
