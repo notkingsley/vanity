@@ -8,10 +8,14 @@
 namespace vanity {
 
 void RequestServer::wal_redo_request(const std::string &request, Client &client) {
-	handle(request, client);
+	handle_user(request, client);
 }
 
-void RequestServer::handle(const std::string& msg, Client& client) {
+void RequestServer::handle(const std::string &msg, Client &client) {
+	handle_user(msg, client);
+}
+
+void RequestServer::handle_user(const std::string& msg, Client& client) {
 	Request request{msg};
 	do_handle(client, request, 1);
 }
