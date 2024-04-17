@@ -255,6 +255,15 @@ public:
 	// a cluster_join request was received from a client
 	virtual void request_cluster_join(Client& client, const std::string& host, uint16_t port) = 0;
 
+	// a cluster_leave request was received from a client
+	virtual void request_cluster_leave(Client& client) = 0;
+
+	// a cluster_key request was received from a client
+	virtual void request_cluster_key(Client& client) = 0;
+
+	// a cluster_new request was received from a client
+	virtual void request_cluster_new(Client& client, const std::string& key) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

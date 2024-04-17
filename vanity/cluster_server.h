@@ -24,6 +24,9 @@ class ClusterServer : public virtual ClientServer, public virtual RequestServer
 		boost_hash::hash<std::string, uint16_t>
 	> m_peers;
 
+	// the key of the cluster, if any
+	std::optional<std::string> m_cluster_key;
+
 public:
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;
@@ -36,6 +39,15 @@ public:
 
 	// a cluster_join request was received from a client
 	void request_cluster_join(Client& client, const std::string& host, uint16_t port) override;
+
+	// a cluster_leave request was received from a client
+	void request_cluster_leave(Client& client) override;
+
+	// a cluster_key request was received from a client
+	void request_cluster_key(Client& client) override;
+
+	// a cluster_new request was received from a client
+	void request_cluster_new(Client& client, const std::string& key) override;
 };
 
 } // namespace vanity

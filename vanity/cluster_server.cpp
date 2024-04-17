@@ -24,7 +24,39 @@ TcpClient &ClusterServer::connect(const std::string &host, uint16_t port) {
 }
 
 void ClusterServer::request_cluster_join(Client &client, const std::string &host, uint16_t port) {
+	if (m_cluster_key)
+		return send(client, error("already in a cluster"));
+
+	throw std::runtime_error("not implemented");
 	connect(host, port);
+	send(client, ok());
+}
+
+void ClusterServer::request_cluster_leave(Client &client) {
+	if (not m_cluster_key)
+		return send(client, error("not in a cluster"));
+
+	for (auto& [_, peer] : m_peers)
+		remove_client(*peer);
+
+	m_peers.clear();
+	m_cluster_key.reset();
+	send(client, ok());
+}
+
+void ClusterServer::request_cluster_key(Client &client) {
+	if (m_cluster_key)
+		send(client, ok(*m_cluster_key));
+	else
+		send(client, null());
+}
+
+void ClusterServer::request_cluster_new(Client &client, const std::string &key) {
+	if (m_cluster_key)
+		return send(client, error("already in a cluster"));
+
+	m_cluster_key = key;
+	send(client, ok());
 }
 
 } // namespace vanity

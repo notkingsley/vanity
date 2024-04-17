@@ -693,6 +693,27 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			request_cluster_join(client, host, port);
 			break;
 		}
+		case operation_t::CLUSTER_KEY:
+		{
+			request.get_exact<>(end);
+			wal_request(client, op, tracker.view());
+			request_cluster_key(client);
+			break;
+		}
+		case operation_t::CLUSTER_LEAVE:
+		{
+			request.get_exact<>(end);
+			wal_request(client, op, tracker.view());
+			request_cluster_leave(client);
+			break;
+		}
+		case operation_t::CLUSTER_NEW:
+		{
+			auto key = request.get_exact<STR>(end);
+			wal_request(client, op, tracker.view());
+			request_cluster_new(client, key);
+			break;
+		}
 	}
 }
 

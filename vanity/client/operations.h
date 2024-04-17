@@ -101,6 +101,9 @@ enum class operation_t{
 	HASH_MANY_GET,
 
 	CLUSTER_JOIN,
+	CLUSTER_KEY,
+	CLUSTER_LEAVE,
+	CLUSTER_NEW,
 };
 
 const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STRINGS {
@@ -194,6 +197,9 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::HASH_MANY_GET,      "HASH_MANY_GET"},
 
 	{operation_t::CLUSTER_JOIN,       "CLUSTER_JOIN"},
+	{operation_t::CLUSTER_KEY,        "CLUSTER_KEY"},
+	{operation_t::CLUSTER_LEAVE,      "CLUSTER_LEAVE"},
+	{operation_t::CLUSTER_NEW,        "CLUSTER_NEW"},
 };
 
 // check if an operation is permitted for an unknown client
@@ -295,6 +301,9 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::HASH_MANY_GET:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return false;
 
 		default:
@@ -402,6 +411,9 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::DEL_USER:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return false;
 
 		default:
@@ -506,6 +518,9 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return false;
 
 		default:
@@ -607,6 +622,9 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::HASH_MANY_GET:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return true;
 
 
@@ -736,6 +754,9 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::HASH_MANY_GET:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return behaviour_t::DEFAULT;
 
 
@@ -767,6 +788,9 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::UNSUBSCRIBE_ALL:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return behaviour_t::DEFAULT;
 
 
@@ -939,6 +963,9 @@ inline bool should_wal(operation_t operation)
 		case operation_t::HASH_MANY_GET:
 
 		case operation_t::CLUSTER_JOIN:
+		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_LEAVE:
+		case operation_t::CLUSTER_NEW:
 			return false;
 
 
