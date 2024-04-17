@@ -255,6 +255,9 @@ public:
 	// a publish request was received from a client
 	virtual void request_publish(Client& client, const std::string& channel, const std::string& message) = 0;
 
+	// a cluster_join request was received from a client
+	virtual void request_cluster_join(Client& client, const std::string& host, uint16_t port) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

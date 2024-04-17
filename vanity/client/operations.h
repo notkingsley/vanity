@@ -99,6 +99,8 @@ enum class operation_t{
 	HASH_VALUES,
 	HASH_UPDATE,
 	HASH_MANY_GET,
+
+	CLUSTER_JOIN,
 };
 
 const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STRINGS {
@@ -190,6 +192,8 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::HASH_VALUES,        "HASH_VALUES"},
 	{operation_t::HASH_UPDATE,        "HASH_UPDATE"},
 	{operation_t::HASH_MANY_GET,      "HASH_MANY_GET"},
+
+	{operation_t::CLUSTER_JOIN,       "CLUSTER_JOIN"},
 };
 
 // check if an operation is permitted for an unknown client
@@ -289,6 +293,8 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::HASH_VALUES:
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
+
+		case operation_t::CLUSTER_JOIN:
 			return false;
 
 		default:
@@ -394,6 +400,8 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
 		case operation_t::DEL_USER:
+
+		case operation_t::CLUSTER_JOIN:
 			return false;
 
 		default:
@@ -496,6 +504,8 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
 		case operation_t::UNSUBSCRIBE_ALL:
+
+		case operation_t::CLUSTER_JOIN:
 			return false;
 
 		default:
@@ -595,6 +605,8 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::HASH_VALUES:
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
+
+		case operation_t::CLUSTER_JOIN:
 			return true;
 
 
@@ -722,6 +734,8 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::HASH_VALUES:
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
+
+		case operation_t::CLUSTER_JOIN:
 			return behaviour_t::DEFAULT;
 
 
@@ -751,6 +765,8 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::SUBSCRIBED:
 		case operation_t::UNSUBSCRIBE:
 		case operation_t::UNSUBSCRIBE_ALL:
+
+		case operation_t::CLUSTER_JOIN:
 			return behaviour_t::DEFAULT;
 
 
@@ -921,6 +937,8 @@ inline bool should_wal(operation_t operation)
 		case operation_t::HASH_KEYS:
 		case operation_t::HASH_VALUES:
 		case operation_t::HASH_MANY_GET:
+
+		case operation_t::CLUSTER_JOIN:
 			return false;
 
 
