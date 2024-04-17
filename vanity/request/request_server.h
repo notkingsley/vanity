@@ -27,9 +27,6 @@ class RequestServer :
 	public virtual WalWriteServer
 {
 public:
-	// a message was received from a client
-	void handle(const std::string& msg, Client& client) override;
-
 	// a pipe request was received from a client
 	virtual void request_pipe(Client& client, Request& request) = 0;
 

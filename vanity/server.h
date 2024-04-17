@@ -7,6 +7,7 @@
 
 #include "auth/locked_auth_server.h"
 #include "bind_server.h"
+#include "cluster_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
@@ -23,6 +24,7 @@ namespace vanity {
  */
 class Server:
 	public virtual BindServer,
+	public virtual ClusterServer,
 	public virtual DatabaseServer,
 	public virtual LockedAuthServer,
 	public virtual PipeServer,
