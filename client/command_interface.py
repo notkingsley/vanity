@@ -638,6 +638,15 @@ class CommandInterface(ABC):
         """
         return self.request("CLUSTER_NEW", key)
 
+    def cluster_join(self, key: str, host: str, port: int):
+        """
+        Join a cluster
+        :param key: the key of the cluster
+        :param host: the host of the peer
+        :param port: the port of the peer
+        """
+        return self.request("CLUSTER_JOIN", key, host, port)
+
     def peers(self):
         """
         Get the peers in a cluster
