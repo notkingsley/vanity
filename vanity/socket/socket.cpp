@@ -97,4 +97,16 @@ Socket ServerSocket::accept() {
 	return Socket{fd};
 }
 
+std::pair<std::string, uint16_t> ServerSocket::get_host_and_port() const {
+	sockaddr_in addr{};
+	socklen_t addr_size = sizeof(addr);
+
+	if (getsockname(m_fd, (sockaddr*)&addr, &addr_size) < 0)
+		throw SocketError("Could not get the socket name");
+
+	char host[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host));
+	return {host, ntohs(addr.sin_port)};
+}
+
 } // namespace vanity::socket

@@ -24,6 +24,9 @@ public:
 	// start to listen on port
 	explicit SocketListener(uint16_t port);
 
+	// return the host and port of the server
+	std::pair<std::string, uint16_t> get_host_and_port() const;
+
 	// get the socket file descriptor
 	int socket_fd() const override;
 

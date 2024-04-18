@@ -68,6 +68,9 @@ public:
 
 	// start listening for connections
 	void listen(int port);
+
+	// return the host and port of the server
+	std::pair<std::string, uint16_t> get_host_and_port() const;
 };
 
 } // namespace vanity::socket
