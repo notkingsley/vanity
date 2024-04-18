@@ -41,7 +41,7 @@ public:
 	TcpClient& connect(const std::string& host, uint16_t port);
 
 	// a cluster_join request was received from a client
-	void request_cluster_join(Client& client, const std::string& host, uint16_t port) override;
+	void request_cluster_join(Client& client, const std::string& key, const std::string& host, uint16_t port) override;
 
 	// a cluster_leave request was received from a client
 	void request_cluster_leave(Client& client) override;

@@ -23,7 +23,7 @@ TcpClient &ClusterServer::connect(const std::string &host, uint16_t port) {
 	return client;
 }
 
-void ClusterServer::request_cluster_join(Client &client, const std::string &host, uint16_t port) {
+void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string &host, uint16_t port) {
 	if (m_cluster_key)
 		return send(client, error("already in a cluster"));
 
