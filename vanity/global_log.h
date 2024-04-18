@@ -20,12 +20,14 @@ namespace vanity {
 constexpr bool GLOBAL_LOGGING = true;
 
 // the global logger
-Logger global_logger("global.log", LogLevel::DEBUG);
 
 // log something to the global logger
 void global_log(const std::string& msg) {
-	if constexpr (GLOBAL_LOGGING)
-		global_logger.debug(msg);
+	if constexpr (not GLOBAL_LOGGING)
+		return;
+
+	static Logger global_logger("global.log", LogLevel::DEBUG);
+	global_logger.debug(msg);
 }
 
 } // namespace vanity
