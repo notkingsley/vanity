@@ -54,6 +54,9 @@ public:
 
 	// a peers request was received from a client
 	void request_peers(Client& client) override;
+
+	// a peer_auth request was received from a client
+	void request_peer_auth(Client& client, const std::string& key) override;
 };
 
 } // namespace vanity

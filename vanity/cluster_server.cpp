@@ -72,4 +72,8 @@ void ClusterServer::request_peers(Client &client) {
 	send(client, ok(peers));
 }
 
+void ClusterServer::request_peer_auth(Client &client, const std::string &key) {
+	throw std::runtime_error("not implemented");
+}
+
 } // namespace vanity

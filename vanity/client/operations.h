@@ -106,6 +106,7 @@ enum class operation_t{
 	CLUSTER_NEW,
 
 	PEERS,
+	PEER_AUTH,
 };
 
 const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STRINGS {
@@ -204,6 +205,7 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::CLUSTER_NEW,        "CLUSTER_NEW"},
 
 	{operation_t::PEERS,              "PEERS"},
+	{operation_t::PEER_AUTH,          "PEER_AUTH"},
 };
 
 // check if an operation is permitted for an unknown client
@@ -216,6 +218,8 @@ inline bool unknown_is_permitted(operation_t operation)
 
 		case operation_t::AUTH:
 		case operation_t::AUTH_LEVEL:
+
+		case operation_t::PEER_AUTH:
 			return true;
 
 
@@ -422,6 +426,7 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_AUTH:
 			return false;
 
 		default:
@@ -531,6 +536,8 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEER_AUTH:
 			return false;
 
 		default:
@@ -641,6 +648,8 @@ inline bool admin_is_permitted(operation_t operation)
 
 
 		case operation_t::AUTH:
+
+		case operation_t::PEER_AUTH:
 			return false;
 
 		default:
@@ -771,6 +780,7 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_AUTH:
 			return behaviour_t::DEFAULT;
 
 
@@ -807,6 +817,7 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_AUTH:
 			return behaviour_t::DEFAULT;
 
 
@@ -984,6 +995,7 @@ inline bool should_wal(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_AUTH:
 			return false;
 
 
