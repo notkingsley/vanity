@@ -55,8 +55,11 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	if (m_cluster_key)
 		return send(client, error("already in a cluster"));
 
+	if (key.size() < M_MIN_CLUSTER_KEY_LEN)
+		return send(client, error("key is too short"));
+
 	m_cluster_key = key;
-	send(client, ok());
+	send(client, ok(*m_cluster_key));
 }
 
 } // namespace vanity

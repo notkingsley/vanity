@@ -17,6 +17,9 @@ namespace vanity {
  */
 class ClusterServer : public virtual ClientServer, public virtual RequestServer
 {
+private:
+	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
+
 	// known peers
 	std::unordered_map<
 	    std::pair<std::string, uint16_t>,
