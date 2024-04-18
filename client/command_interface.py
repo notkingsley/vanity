@@ -617,3 +617,23 @@ class CommandInterface(ABC):
         Unsubscribe from all channels
         """
         return self.request("UNSUBSCRIBE_ALL")
+
+    def cluster_key(self):
+        """
+        Get the key of a cluster
+        """
+        return self.request("CLUSTER_KEY")
+
+    def cluster_leave(self):
+        """
+        Leave a cluster
+        :param key: the key of the cluster
+        """
+        return self.request("CLUSTER_LEAVE")
+
+    def cluster_new(self, key: str):
+        """
+        Create a new cluster
+        :param key: the key of the cluster
+        """
+        return self.request("CLUSTER_NEW", key)
