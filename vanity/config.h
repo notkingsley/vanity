@@ -58,9 +58,20 @@ private:
 	// extract the lock file
 	void extract_lock_file(const Arguments& args);
 
+	// extract the host
+	void extract_host(const Arguments& args);
+
+	// extract the cluster port
+	void extract_cluster_port(const Arguments& args);
+
+	// get the default cluster port
+	// this pops the last port from the ports vector
+	uint16_t get_default_cluster_port();
+
 public:
 	constexpr static auto DEFAULT_LOG_LEVEL = LogLevel::INFO;
 	constexpr static auto DEFAULT_PORTS = {9955, 19955};
+	constexpr static auto DEFAULT_HOST = "localhost";
 	constexpr static auto DEFAULT_HOME_DIR = ".vanity";
 	constexpr static auto DB_FILE = "vanity.db";
 	constexpr static auto LOG_FILE = "vanity.log";
@@ -77,6 +88,8 @@ public:
 	std::optional<path> db_file;
 	path log_file;
 
+	std::string host;
+	uint16_t cluster_port;
 	std::vector<uint16_t> ports;
 	LogLevel log_level = DEFAULT_LOG_LEVEL;
 

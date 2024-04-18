@@ -18,7 +18,10 @@ static inline void to_lower(std::string& str)
 
 Config::Config(const Arguments &args) {
 	extract_working_dir(args);
+	extract_host(args);
 	extract_ports(args);
+	extract_cluster_port(args);
+
 	extract_logging(args);
 	extract_db_file(args);
 	extract_wal_file(args);
@@ -115,6 +118,26 @@ void Config::extract_journal_file(const Arguments &) {
 void Config::extract_lock_file(const Arguments &args) {
 	if (working_dir)
 		lock_file = *working_dir / LOCK_FILE;
+}
+
+void Config::extract_host(const Arguments &args) {
+	if (args.has_kwarg("host"))
+		host = args.get_kwarg("host");
+	else
+		host = DEFAULT_HOST;
+}
+
+void Config::extract_cluster_port(const Arguments &args) {
+	if (args.has_kwarg("cluster_port"))
+		cluster_port = std::stoi(args.get_kwarg("cluster_port"));
+	else
+		cluster_port = get_default_cluster_port();
+}
+
+uint16_t Config::get_default_cluster_port() {
+	auto port = ports.back();
+	ports.pop_back();
+	return port;
 }
 
 } // namespace vanity
