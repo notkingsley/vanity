@@ -28,6 +28,10 @@ private:
 public:
 	explicit BindServer(std::vector<uint16_t> ports);
 
+	// get the host and port of the peer socket
+	// this returns the host and port of the last listener
+	std::pair<std::string, uint16_t> get_peer_host_and_port() const;
+
 protected:
 	// bind and start listening on all ports
 	void start();

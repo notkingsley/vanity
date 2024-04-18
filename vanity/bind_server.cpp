@@ -22,4 +22,8 @@ void BindServer::stop() {
 	m_listeners.clear();
 }
 
+std::pair<std::string, uint16_t> BindServer::get_peer_host_and_port() const {
+	return m_listeners.back().get_host_and_port();
+}
+
 } // namespace vanity
