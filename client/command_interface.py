@@ -637,3 +637,9 @@ class CommandInterface(ABC):
         :param key: the key of the cluster
         """
         return self.request("CLUSTER_NEW", key)
+
+    def peers(self):
+        """
+        Get the peers in a cluster
+        """
+        return self.request("PEERS")
