@@ -84,7 +84,7 @@ public:
 
 		using std::chrono::system_clock;
 		auto now = system_clock::to_time_t(system_clock::now());
-		auto time = std::put_time(std::localtime(&now), "%T");
+		auto time = std::put_time(std::localtime(&now), "%T | ");
 
 		std::lock_guard lock(m_log_mutex);
 		m_log_file
