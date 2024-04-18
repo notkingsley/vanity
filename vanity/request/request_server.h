@@ -264,6 +264,9 @@ public:
 	// a cluster_new request was received from a client
 	virtual void request_cluster_new(Client& client, const std::string& key) = 0;
 
+	// a peers request was received from a client
+	virtual void request_peers(Client& client) = 0;
+
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) {
 		throw DestroyClient{};

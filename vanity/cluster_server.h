@@ -51,6 +51,9 @@ public:
 
 	// a cluster_new request was received from a client
 	void request_cluster_new(Client& client, const std::string& key) override;
+
+	// a peers request was received from a client
+	void request_peers(Client& client) override;
 };
 
 } // namespace vanity

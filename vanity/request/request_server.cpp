@@ -714,6 +714,14 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			request_cluster_new(client, key);
 			break;
 		}
+
+		case operation_t::PEERS:
+		{
+			request.get_exact<>(end);
+			wal_request(client, op, tracker.view());
+			request_peers(client);
+			break;
+		}
 	}
 }
 
@@ -1125,6 +1133,27 @@ void RequestServer::dry_dispatch(Request& request, bool end) {
 		case operation_t::CLUSTER_JOIN:
 		{
 			request.get_exact<STR, INT>(end);
+			break;
+		}
+		case operation_t::CLUSTER_KEY:
+		{
+			request.get_exact<>(end);
+			break;
+		}
+		case operation_t::CLUSTER_LEAVE:
+		{
+			request.get_exact<>(end);
+			break;
+		}
+		case operation_t::CLUSTER_NEW:
+		{
+			request.get_exact<STR>(end);
+			break;
+		}
+
+		case operation_t::PEERS:
+		{
+			request.get_exact<>(end);
 			break;
 		}
 	}

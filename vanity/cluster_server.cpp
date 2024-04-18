@@ -62,4 +62,14 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	send(client, ok(*m_cluster_key));
 }
 
+void ClusterServer::request_peers(Client &client) {
+	std::vector<std::string> peers;
+	peers.reserve(m_peers.size());
+
+	for (auto& [peer, _] : m_peers)
+		peers.push_back(peer.first + ":" + std::to_string(peer.second));
+
+	send(client, ok(peers));
+}
+
 } // namespace vanity

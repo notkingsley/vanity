@@ -104,6 +104,8 @@ enum class operation_t{
 	CLUSTER_KEY,
 	CLUSTER_LEAVE,
 	CLUSTER_NEW,
+
+	PEERS,
 };
 
 const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STRINGS {
@@ -200,6 +202,8 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::CLUSTER_KEY,        "CLUSTER_KEY"},
 	{operation_t::CLUSTER_LEAVE,      "CLUSTER_LEAVE"},
 	{operation_t::CLUSTER_NEW,        "CLUSTER_NEW"},
+
+	{operation_t::PEERS,              "PEERS"},
 };
 
 // check if an operation is permitted for an unknown client
@@ -304,6 +308,8 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return false;
 
 		default:
@@ -414,6 +420,8 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return false;
 
 		default:
@@ -496,6 +504,8 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::HASH_VALUES:
 		case operation_t::HASH_UPDATE:
 		case operation_t::HASH_MANY_GET:
+
+		case operation_t::PEERS:
 			return true;
 
 
@@ -625,6 +635,8 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return true;
 
 
@@ -757,6 +769,8 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return behaviour_t::DEFAULT;
 
 
@@ -791,6 +805,8 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return behaviour_t::DEFAULT;
 
 
@@ -966,6 +982,8 @@ inline bool should_wal(operation_t operation)
 		case operation_t::CLUSTER_KEY:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
+
+		case operation_t::PEERS:
 			return false;
 
 
