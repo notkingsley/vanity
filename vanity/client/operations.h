@@ -16,6 +16,9 @@ enum class operation_t{
 	PING,
 	PIPE,
 
+	BIND,
+	UNBIND,
+
 	ADD_USER,
 	EDIT_USER,
 	DEL_USER,
@@ -114,6 +117,9 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::TERMINATE,          "TERMINATE"},
 	{operation_t::PING,               "PING"},
 	{operation_t::PIPE,               "PIPE"},
+
+	{operation_t::BIND,               "BIND"},
+	{operation_t::UNBIND,             "UNBIND"},
 
 	{operation_t::AUTH_LEVEL,         "AUTH_LEVEL"},
 	{operation_t::AUTH,               "AUTH"},
@@ -225,6 +231,9 @@ inline bool unknown_is_permitted(operation_t operation)
 
 		case operation_t::TERMINATE:
 		case operation_t::PIPE:
+
+		case operation_t::BIND:
+		case operation_t::UNBIND:
 
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -413,6 +422,9 @@ inline bool user_is_permitted(operation_t operation)
 
 		case operation_t::TERMINATE:
 
+		case operation_t::BIND:
+		case operation_t::UNBIND:
+
 		case operation_t::RESET:
 
 		case operation_t::AUTH:
@@ -514,6 +526,9 @@ inline bool peer_is_permitted(operation_t operation)
 			return true;
 
 
+		case operation_t::BIND:
+		case operation_t::UNBIND:
+
 		case operation_t::AUTH:
 		case operation_t::CHANGE_PASSWORD:
 		case operation_t::ADD_USER:
@@ -554,6 +569,9 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::PING:
 		case operation_t::TERMINATE:
 		case operation_t::PIPE:
+
+		case operation_t::BIND:
+		case operation_t::UNBIND:
 
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -692,6 +710,9 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::TERMINATE:
 		case operation_t::PIPE:
 
+		case operation_t::BIND:
+		case operation_t::UNBIND:
+
 		case operation_t::AUTH:
 		case operation_t::ADD_USER:
 		case operation_t::EDIT_USER:
@@ -801,6 +822,9 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::PING:
 		case operation_t::EXIT:
 		case operation_t::TERMINATE:
+
+		case operation_t::BIND:
+		case operation_t::UNBIND:
 
 		case operation_t::TRANSACT_COMMIT:
 		case operation_t::TRANSACT_DISCARD:
@@ -932,6 +956,9 @@ inline bool should_wal(operation_t operation)
 		case operation_t::PING:
 		case operation_t::TERMINATE:
 		case operation_t::PIPE:
+
+		case operation_t::BIND:
+		case operation_t::UNBIND:
 
 		case operation_t::AUTH:
 		case operation_t::ADD_USER:

@@ -158,6 +158,21 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			break;
 		}
 
+		case operation_t::BIND:
+		{
+			auto [host, port] = request.get_exact<STR, INT>(end);
+			wal_request(client, op, tracker.view());
+			request_bind(client, host, port);
+			break;
+		}
+		case operation_t::UNBIND:
+		{
+			auto [host, port] = request.get_exact<STR, INT>(end);
+			wal_request(client, op, tracker.view());
+			request_unbind(client, host, port);
+			break;
+		}
+
 		case operation_t::AUTH:
 		{
 			auto [username, password] = request.get_exact<STR, STR>(end);
@@ -754,6 +769,17 @@ void RequestServer::dry_dispatch(Request& request, bool end) {
 		case operation_t::PIPE:
 		{
 			request.get_exact<>(end);
+			break;
+		}
+
+		case operation_t::BIND:
+		{
+			request.get_exact<STR, INT>(end);
+			break;
+		}
+		case operation_t::UNBIND:
+		{
+			request.get_exact<STR, INT>(end);
 			break;
 		}
 

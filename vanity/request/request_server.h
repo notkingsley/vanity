@@ -30,6 +30,12 @@ public:
 	// a pipe request was received from a client
 	virtual void request_pipe(Client& client, Request& request) = 0;
 
+	// a bind request was received from a client
+	virtual void request_bind(Client& client, const std::string& host, int64_t port) = 0;
+
+	// an unbind request was received from a client
+	virtual void request_unbind(Client& client, const std::string& host, int64_t port) = 0;
+
 	// a get request was received from a client
 	virtual void request_get(Client& client, const std::string& key) = 0;
 
