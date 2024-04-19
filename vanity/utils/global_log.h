@@ -5,7 +5,7 @@
 #ifndef VANITY_GLOBAL_LOG_H
 #define VANITY_GLOBAL_LOG_H
 
-#include "log_server.h"
+#include "logger.h"
 
 /*
  * This file defines a global logger
