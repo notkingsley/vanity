@@ -42,9 +42,8 @@ private:
 public:
 	explicit BindServer(std::string host, const std::vector<uint16_t>& ports, uint16_t cluster_port);
 
-	// get the host and port of the peer socket
-	// this returns the host and port of the last listener
-	std::pair<std::string, uint16_t> get_peer_host_and_port() const;
+	// get the host and port of the cluster listener
+	addr_type cluster_addr() const;
 
 	// a bind request was received from a client
 	void request_bind(Client& client, const std::string& host, int64_t port) override;

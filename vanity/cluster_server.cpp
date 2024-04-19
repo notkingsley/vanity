@@ -37,7 +37,7 @@ bool ClusterServer::validate_cluster_key(const std::string &key) {
 }
 
 std::string ClusterServer::get_own_address() const {
-	auto [host, port] = get_peer_host_and_port();
+	auto [host, port] = cluster_addr();
 	return make_address(host, port);
 }
 

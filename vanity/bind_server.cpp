@@ -25,7 +25,7 @@ void BindServer::stop() {
 	m_listeners.clear();
 }
 
-std::pair<std::string, uint16_t> BindServer::get_peer_host_and_port() const {
+std::pair<std::string, uint16_t> BindServer::cluster_addr() const {
 	return m_listeners.find({m_host, m_cluster_port})->second->get_host_and_port();
 }
 
