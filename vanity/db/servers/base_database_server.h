@@ -8,20 +8,20 @@
 #include <array>
 
 #include "db/db/locked_database.h"
-#include "db/db/serial_database.h"
 #include "request/request_server.h"
 
 
 namespace vanity {
-
-//using db_type = db::SerialDatabase;
-using db_type = db::LockedDatabase;
 
 /*
  * A BaseDatabaseServer holds the common functionality of a DatabaseServer
  */
 class BaseDatabaseServer : public virtual RequestServer
 {
+private:
+	// the type of database
+	using db_type = db::LockedDatabase;
+
 protected:
 	// number of databases
 	static constexpr size_t M_NUM_DATABASES = 16;
