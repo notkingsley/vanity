@@ -24,6 +24,14 @@ public:
 	// start to listen on port
 	explicit SocketListener(const char* host, uint16_t port);
 
+	// no copy
+	SocketListener(const SocketListener&) = delete;
+	SocketListener& operator=(const SocketListener&) = delete;
+
+	// no move
+	SocketListener(SocketListener&&) = delete;
+	SocketListener& operator=(SocketListener&&) = delete;
+
 	// return the host and port of the server
 	std::pair<std::string, uint16_t> get_host_and_port() const;
 
