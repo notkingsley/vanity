@@ -2,7 +2,9 @@
 // Created by kingsli on 12/21/23.
 //
 
+#include "client/operations.h"
 #include "request.h"
+
 
 namespace vanity {
 
