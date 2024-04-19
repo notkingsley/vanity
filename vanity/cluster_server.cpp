@@ -38,30 +38,20 @@ bool ClusterServer::validate_cluster_key(const std::string &key) {
 
 std::string ClusterServer::get_own_address() const {
 	auto [host, port] = get_peer_host_and_port();
-	return join_host_port(host, port);
+	return make_address(host, port);
 }
 
-TcpClient &ClusterServer::connect(const char* host, uint16_t port) {
-	return add_client(TcpClient{socket::Socket::connect(host, port)});
-}
-
-TcpClient &ClusterServer::new_peer(const std::string &host, uint16_t port) {
-	auto& peer = connect(host.c_str(), port);
-	session_auth(peer) = client_auth::PEER;
-	m_peers[&peer] = join_host_port(host, port);
-	return peer;
-}
-
-void ClusterServer::remove_peer(Client& client) {
-	remove_client(to_tcp(client));
+TcpClient &ClusterServer::connect(const std::string &host, uint16_t port) {
+	return add_client(TcpClient{socket::Socket::connect(host.c_str(), port)});
 }
 
 void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string &host, uint16_t port) {
 	if (m_cluster_key)
 		return send(client, error("already in a cluster"));
 
-	auto& peer = new_peer(host, port);
+	auto& peer = connect(host, port);
 	send(peer, peer_auth(key, get_own_address()));
+	register_peer(peer, make_address(host, port));
 
 	m_cluster_key = key;
 	send(client, ok());
@@ -71,10 +61,7 @@ void ClusterServer::request_cluster_leave(Client &client) {
 	if (not m_cluster_key)
 		return send(client, error("not in a cluster"));
 
-	for (auto& [peer, _] : m_peers)
-		remove_client(*peer);
-
-	m_peers.clear();
+	clear_peers();
 	m_cluster_key.reset();
 	send(client, ok());
 }
@@ -97,23 +84,12 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	send(client, ok(*m_cluster_key));
 }
 
-void ClusterServer::request_peers(Client &client) {
-	std::vector<std::string> peers;
-	peers.reserve(m_peers.size());
-
-	for (auto& [_, peer_addr] : m_peers)
-		peers.push_back(peer_addr);
-
-	send(client, ok(peers));
-}
-
 void ClusterServer::request_peer_auth(Client &client, const std::string &key, const std::string& addr) {
 	if (not validate_cluster_key(key))
 		return send(client, denied());
 
 	global_log("Peer authenticated: " + addr);
-	session_auth(client) = client_auth::PEER;
-	m_peers[&to_tcp(client)] = addr;
+	register_peer(client, addr);
 	send(client, ok());
 }
 
@@ -121,19 +97,8 @@ Response ClusterServer::peer_auth(const std::string &key, const std::string& add
 	return (Response() << "PEER_AUTH").serialize_string_body(key).serialize_string_body(addr);
 }
 
-std::string ClusterServer::join_host_port(const std::string &host, uint16_t port) {
+std::string ClusterServer::make_address(const std::string &host, uint16_t port) {
 	return host + ":" + std::to_string(port);
-}
-
-TcpClient& ClusterServer::to_tcp(Client &client) {
-	if (auto tcp = dynamic_cast<TcpClient*>(&client))
-		return *tcp;
-	else
-		throw std::runtime_error("expected a TcpClient");
-}
-
-void ClusterServer::pre_client_delete_peer(TcpClient &client) {
-	m_peers.erase(&client);
 }
 
 } // namespace vanity
