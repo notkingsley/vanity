@@ -4,15 +4,21 @@
 
 #include "bind_server.h"
 
+#include <iostream>
+
+
 namespace vanity {
 
-BindServer::BindServer(std::vector<uint16_t> ports) : m_ports{std::move(ports)} { }
+BindServer::BindServer(std::string host, std::vector<uint16_t> ports, uint16_t cluster_port):
+	m_ports{std::move(ports)}, m_cluster_port{cluster_port}, m_host{std::move(host)} {}
 
 void BindServer::start() {
-	m_listeners.reserve(m_ports.size());
+	auto ports = m_ports;
+	ports.push_back(m_cluster_port);
+	m_listeners.reserve(ports.size());
 
-	for (auto& port : m_ports) {
-		m_listeners.emplace_back(port);
+	for (auto& port : ports) {
+		m_listeners.emplace_back(m_host.c_str(), port);
 		epoll_add(m_listeners.back());
 		logger().info("Listening on port " + std::to_string(port));
 	}

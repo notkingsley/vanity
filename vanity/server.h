@@ -23,7 +23,6 @@ namespace vanity {
  * Top level server
  */
 class Server:
-	public virtual BindServer,
 	public virtual ClusterServer,
 	public virtual DatabaseServer,
 	public virtual LockedAuthServer,

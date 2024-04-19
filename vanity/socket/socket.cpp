@@ -1,4 +1,5 @@
 #include <arpa/inet.h>
+#include <stdexcept>
 #include <unistd.h>
 
 #include "exceptions.h"
@@ -52,15 +53,33 @@ size_t Socket::write(const char *buffer, size_t buffer_size) const {
 }
 
 Socket Socket::connect(const char *host, uint16_t port) {
-	auto fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-	if (fd < 0)
-		throw SocketError("Could not create the socket");
+	struct addrinfo hints{};
+	hints.ai_family = AF_INET;    // Allow IPv4
+	hints.ai_socktype = SOCK_STREAM; // Stream socket
+	hints.ai_flags = AI_PASSIVE;    // For wildcard IP address
+	hints.ai_protocol = 0;          // Any protocol
 
-	sockaddr_in addr{};
-	addr.sin_family = AF_INET;
-	addr.sin_port = htons(port);
-	inet_pton(AF_INET, host, &addr.sin_addr);
-	if (::connect(fd, (sockaddr*)&addr, sizeof(addr)) and errno != EINPROGRESS)
+	struct addrinfo *result;
+	auto s = getaddrinfo(host, std::to_string(port).c_str(), &hints, &result);
+	if (s != 0)
+		throw SocketError("getaddrinfo: " + std::string(gai_strerror(s)));
+
+	int fd;
+	struct addrinfo *rp;
+	for (rp = result; rp != nullptr; rp = rp->ai_next) {
+		fd = ::socket(rp->ai_family, rp->ai_socktype | SOCK_NONBLOCK, rp->ai_protocol);
+		if (fd == -1)
+			continue;
+
+		if (::connect(fd, rp->ai_addr, rp->ai_addrlen) != -1 || errno == EINPROGRESS)
+			break;                  // Success
+
+		close(fd);
+	}
+
+	freeaddrinfo(result);           // No longer needed
+
+	if (rp == nullptr)               // No address succeeded
 		throw SocketError("Could not connect to the server");
 
 	return Socket{fd};
@@ -73,13 +92,26 @@ ServerSocket::ServerSocket() {
 		throw SocketError("Could not create the server socket");
 }
 
-void ServerSocket::listen(int port) {
-	sockaddr_in addr{};
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = INADDR_ANY;
-	addr.sin_port = htons(port);
+void ServerSocket::listen(const char* host, uint16_t port) {
+	struct addrinfo hints{};
+	hints.ai_family = AF_INET;    // Allow IPv4
+	hints.ai_socktype = SOCK_STREAM; // Stream socket
+	hints.ai_flags = AI_PASSIVE;    // For wildcard IP address
+	hints.ai_protocol = 0;          // Any protocol
 
-	if (bind(m_fd, (sockaddr*)&addr, sizeof(addr)) < 0)
+	struct addrinfo *result;
+	auto s = getaddrinfo(host, std::to_string(port).c_str(), &hints, &result);
+	if (s != 0)
+		throw std::runtime_error("getaddrinfo: " + std::string(gai_strerror(s)));
+
+	struct addrinfo *rp;
+	for (rp = result; rp != nullptr; rp = rp->ai_next)
+		if (bind(m_fd, rp->ai_addr, rp->ai_addrlen) == 0)
+			break;                  // Success
+
+	freeaddrinfo(result);           // No longer needed
+
+	if (rp == nullptr)               // No address succeeded
 		throw SocketError("Could not bind the socket");
 
 	if (::listen(m_fd, SOMAXCONN) < 0)

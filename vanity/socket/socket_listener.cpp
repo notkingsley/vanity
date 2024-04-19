@@ -8,8 +8,8 @@
 
 namespace vanity::socket {
 
-SocketListener::SocketListener(uint16_t port) {
-	m_socket.listen(port);
+SocketListener::SocketListener(const char* host, uint16_t port) {
+	m_socket.listen(host, port);
 }
 
 std::pair<std::string, uint16_t> SocketListener::get_host_and_port() const {

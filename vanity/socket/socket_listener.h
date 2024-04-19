@@ -22,7 +22,7 @@ private:
 
 public:
 	// start to listen on port
-	explicit SocketListener(uint16_t port);
+	explicit SocketListener(const char* host, uint16_t port);
 
 	// return the host and port of the server
 	std::pair<std::string, uint16_t> get_host_and_port() const;

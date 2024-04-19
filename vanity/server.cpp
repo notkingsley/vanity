@@ -9,9 +9,9 @@ namespace vanity {
 
 Server::Server(const Config &config):
 	AuthServer(config.auth_file),
+	BindServer(config.host, config.ports, config.cluster_port),
 	LogServer(config.log_file, config.log_level),
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file),
-	BindServer(config.ports),
 	m_lock_file{config.lock_file}
 {
 	WalServer::recover();
