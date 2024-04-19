@@ -627,7 +627,6 @@ class CommandInterface(ABC):
     def cluster_leave(self):
         """
         Leave a cluster
-        :param key: the key of the cluster
         """
         return self.request("CLUSTER_LEAVE")
 
@@ -652,3 +651,17 @@ class CommandInterface(ABC):
         Get the peers in a cluster
         """
         return self.request("PEERS")
+
+    def bind(self, host: str, port: int):
+        """
+        Bind the server to a host and port
+        :param host: the host to bind to
+        :param port: the port to bind to
+        """
+        return self.request("BIND", host, port)
+
+    def unbind(self, host: str, port: int):
+        """
+        Unbind the server from a host and port
+        """
+        return self.request("UNBIND", host, port)
