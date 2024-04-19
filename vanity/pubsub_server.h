@@ -63,9 +63,6 @@ public:
 	// a publish event was received
 	void event_publish() override;
 
-	// remove a tcp_client from all channels
-	void remove_client(TcpClient& tcp_client) override;
-
 private:
 	// erase a client from a channel
 	// assumes m_subscriptions_mutex is locked
@@ -78,6 +75,10 @@ private:
 	// publish a message to a channel
 	// assumes m_subscriptions_mutex is locked
 	void publish(const PublishData& data);
+
+	// the pubsub hook pre-deleting a client
+	// this removes the tcp_client from all channels
+	void pre_client_delete_pubsub(TcpClient& client) override;
 };
 
 } // namespace vanity

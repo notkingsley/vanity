@@ -53,9 +53,7 @@ TcpClient &ClusterServer::new_peer(const std::string &host, uint16_t port) {
 }
 
 void ClusterServer::remove_peer(Client& client) {
-	auto& peer = to_tcp(client);
-	m_peers.erase(&peer);
-	remove_client(peer);
+	remove_client(to_tcp(client));
 }
 
 void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string &host, uint16_t port) {
@@ -132,6 +130,10 @@ TcpClient& ClusterServer::to_tcp(Client &client) {
 		return *tcp;
 	else
 		throw std::runtime_error("expected a TcpClient");
+}
+
+void ClusterServer::pre_client_delete_peer(TcpClient &client) {
+	m_peers.erase(&client);
 }
 
 } // namespace vanity

@@ -53,6 +53,7 @@ TcpClient& ClientServer::add_client(TcpClient &&client) {
 }
 
 void ClientServer::remove_client(TcpClient &client) {
+	pre_client_delete(client);
 	epoll_remove(client);
 	m_clients.erase(bad_ptr{&client});
 }
@@ -69,6 +70,11 @@ void ClientServer::send(Client &client, Response&& response) {
 
 void ClientServer::stop() {
 	m_clients.clear();
+}
+
+void ClientServer::pre_client_delete(TcpClient &client) {
+	pre_client_delete_pubsub(client);
+	pre_client_delete_peer(client);
 }
 
 } // namespace vanity

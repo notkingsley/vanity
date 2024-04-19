@@ -79,6 +79,11 @@ public:
 
 	// a peer_auth request was received from a client
 	void request_peer_auth(Client& client, const std::string& key, const std::string& addr) override;
+
+private:
+	// the peer hook pre-deleting a client
+	// this removes the tcp_client from the peers map
+	void pre_client_delete_peer(TcpClient& client) override;
 };
 
 } // namespace vanity

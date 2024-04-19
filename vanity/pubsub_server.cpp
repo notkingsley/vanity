@@ -6,15 +6,6 @@
 
 namespace vanity {
 
-void PubSubServer::remove_client(TcpClient& client) {
-	{
-		std::lock_guard lock {m_subscriptions_mutex};
-		for (auto& channel : session_channels(client))
-			erase_subscription(client, channel);
-	}
-	ClientServer::remove_client(client);
-}
-
 void PubSubServer::request_subscribe(Client &client, const std::string &channel) {
 	auto &channels = session_channels(client);
 	{
@@ -107,6 +98,12 @@ void PubSubServer::publish(const PublishData &data) {
 	auto response = async(data);
 	for (auto& client : m_subscriptions[data.channel])
 		send(*client, Response(response)); // copy response
+}
+
+void PubSubServer::pre_client_delete_pubsub(TcpClient &client) {
+	std::lock_guard lock {m_subscriptions_mutex};
+	for (auto& channel : session_channels(client))
+		erase_subscription(client, channel);
 }
 
 } // namespace vanity

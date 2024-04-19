@@ -52,6 +52,15 @@ protected:
 	// stop the server
 	// this will remove all clients
 	void stop();
+
+	// call the pubsub hook before deleting a client
+	virtual void pre_client_delete_pubsub(TcpClient& client) = 0;
+
+	// call the peer hook before deleting a client
+	virtual void pre_client_delete_peer(TcpClient& client) = 0;
+
+	// call all pre_client_delete hooks before deleting a client
+	void pre_client_delete(TcpClient& client);
 };
 
 } // namespace vanity
