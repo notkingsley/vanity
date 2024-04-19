@@ -14,8 +14,10 @@ class ServerHandle:
     def __init__(
         self,
         *,
+        host: str | None = None,
         port: int | None = None,
         ports: list[int] | None = None,
+        cluster_port: int | None = None,
         executable_path: str = EXECUTABLE_PATH,
         env: dict[str, str] = None,
         working_dir: str = None,
@@ -52,6 +54,12 @@ class ServerHandle:
         if _ports:
             for port in _ports:
                 self.args.append(f"--port={port}")
+
+        if host:
+            self.args.append(f"--host={host}")
+
+        if cluster_port:
+            self.args.append(f"--cluster-port={cluster_port}")
 
         if working_dir:
             self.args.append(f"--working-dir={working_dir}")
