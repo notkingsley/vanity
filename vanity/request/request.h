@@ -26,79 +26,47 @@ private:
 
 	// the current character in the request string
 	// shorthand for msg[pos]
-	char current() const {
-		return msg[pos];
-	}
+	char current() const;
 
 	// returns true if the request string has not been fully processed
 	// shorthand for pos < msg.size()
-	bool not_end() const {
-		return pos < msg.size();
-	}
+	bool not_end() const;
 
 	// returns true if the request string has been fully processed
 	// shorthand for pos >= msg.size()
-	bool end() const {
-		return pos >= msg.size();
-	}
+	bool end() const;
 
 	// increments the current position in the request string
 	// shorthand for ++pos
-	size_t operator++() {
-		return ++pos;
-	}
+	size_t operator++();
 
 	// increments the current position in the request string
 	// shorthand for pos += n
-	size_t operator+=(size_t n) {
-		return pos += n;
-	}
+	size_t operator+=(size_t n);
 
 	// compares from the current position in the request string to another string
 	// shorthand for msg.compare(pos, str.size(), str) == 0
-	bool compare(const std::string& str) const {
-		return msg.compare(pos, str.size(), str) == 0;
-
-	}
+	bool compare(const std::string& str) const;
 
 	// returns a substring of the request string from the current position
 	// shorthand for msg.substr(pos)
-	std::string substr() const {
-		return msg.substr(pos);
-	}
+	std::string substr() const;
 
 	// returns a substring of the request string from the current position
 	// shorthand for msg.substr(pos, n)
-	std::string substr(size_t n) const {
-		return msg.substr(pos, n);
-	}
+	std::string substr(size_t n) const;
 
 	// checks if there are up to n characters left in the request string
 	// shorthand for pos + n <= msg.size()
-	bool has_up_to(size_t n) const {
-		return pos + n <= msg.size();
-	}
+	bool has_up_to(size_t n) const;
 
 	// expects the current() character to be c and increments this
 	// or throw an InvalidRequest with err
-	void expect(char c, const char * err) {
-		if (current() != c)
-			throw InvalidRequest(err);
-		++*this;
-	}
+	void expect(char c, const char * err);
 
 	// increment until current() is not whitespace
 	// or the end of the request string is reached
 	void skip_whitespace();
-
-public:
-	// create a Request with a request string
-	explicit Request(const std::string& msg) : msg(msg) {}
-
-	// formats the request string and position logging
-	std::string format() const {
-		return msg + " at " + std::to_string(pos);
-	}
 
 	// ensure we are at the end of the request string
 	void ensure_end();
@@ -108,6 +76,19 @@ public:
 
 	// ensure we are not at the end of the request string
 	void ensure_not_end();
+
+public:
+	// create a Request with a request string
+	explicit Request(const std::string& msg);
+
+	// formats the request string and position for logging
+	std::string format() const;
+
+	// get the index of the current position in the request string
+	size_t index() const;
+
+	// get a view of the request string between two indices
+	std::string_view view(size_t start, size_t end) const;
 
 	// extract the operation type from the request
 	operation_t get_operation();
@@ -125,7 +106,7 @@ public:
 	// extract a (len) from part of a request
 	size_t get_len();
 
-	// extract an object from a request
+	// extract objects from a request
 	template<object_t ...Args>
 	concrete_t<Args...> get() {
 		return {get<Args>()...};
@@ -138,22 +119,6 @@ public:
 		auto ret = get<Args...>();
 		ensure_end_if(end);
 		return ret;
-	}
-
-	// get thd index of the current position in the request string
-	size_t index() const {
-		return pos;
-	}
-
-	// get a view of the request string between two indices
-	std::string_view view(size_t start, size_t end) const {
-		if (start > end)
-			throw std::out_of_range("start index greater than end index");
-
-		if (end > msg.size())
-			throw std::out_of_range("end index out of range");
-
-		return {msg.data() + start, end - start};
 	}
 };
 

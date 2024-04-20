@@ -8,12 +8,54 @@
 
 namespace vanity {
 
-void Request::skip_whitespace() {
+inline char Request::current() const {
+	return msg[pos];
+}
+
+inline bool Request::not_end() const {
+	return pos < msg.size();
+}
+
+inline bool Request::end() const {
+	return pos >= msg.size();
+}
+
+inline size_t Request::operator++() {
+	return ++pos;
+}
+
+inline size_t Request::operator+=(size_t n) {
+	return pos += n;
+}
+
+inline bool Request::compare(const std::string &str) const {
+	return msg.compare(pos, str.size(), str) == 0;
+}
+
+inline std::string Request::substr() const {
+	return msg.substr(pos);
+}
+
+std::string Request::substr(size_t n) const {
+	return msg.substr(pos, n);
+}
+
+bool Request::has_up_to(size_t n) const {
+	return pos + n <= msg.size();
+}
+
+inline void Request::expect(char c, const char *err) {
+	if (current() != c)
+		throw InvalidRequest(err);
+	++*this;
+}
+
+inline void Request::skip_whitespace() {
 	while (not_end() && isspace(current()))
 		++*this;
 }
 
-void Request::ensure_end() {
+inline void Request::ensure_end() {
 	skip_whitespace();
 	if (not_end())
 		throw InvalidRequest("unexpected character at end of message");
@@ -24,10 +66,30 @@ void Request::ensure_end_if(bool condition) {
 		ensure_end();
 }
 
-void Request::ensure_not_end() {
+inline void Request::ensure_not_end() {
 	skip_whitespace();
 	if (end())
 		throw InvalidRequest("unexpected end of message");
+}
+
+Request::Request(const std::string &msg) : msg(msg) {}
+
+std::string Request::format() const {
+	return msg + " at " + std::to_string(pos);
+}
+
+size_t Request::index() const {
+	return pos;
+}
+
+std::string_view Request::view(size_t start, size_t end) const {
+	if (start > end)
+		throw std::out_of_range("start index greater than end index");
+
+	if (end > msg.size())
+		throw std::out_of_range("end index out of range");
+
+	return {msg.data() + start, end - start};
 }
 
 operation_t Request::get_operation() {
