@@ -77,6 +77,34 @@ private:
 	// ensure we are not at the end of the request string
 	void ensure_not_end();
 
+	// extract an integer from the request
+	int64_t get_int();
+
+	// extract a float from the request
+	double get_float();
+
+	// extract a string from the request
+	std::string get_str();
+
+	// extract an array from the request
+	std::vector<std::string> get_arr();
+
+	// extract a list from the request
+	std::list<std::string> get_list();
+
+	// extract a set from the request
+	std::unordered_set<std::string> get_set();
+
+	// extract a hash from the request
+	std::unordered_map<std::string, std::string> get_hash();
+
+	// extract a client auth from the request
+	client_auth get_client_auth();
+
+	// extract the object type from the request
+	// currently unused
+	object_t get_object_t();
+
 public:
 	// create a Request with a request string
 	explicit Request(const std::string& msg);
@@ -95,13 +123,6 @@ public:
 
 	// like get_operation, but doesn't advance the position
 	operation_t peek_operation();
-
-	// extract the object type from the request
-	// currently unused
-	object_t get_object_t();
-
-	// extract the client auth level from the request
-	client_auth get_client_auth();
 
 	// extract a (len) from part of a request
 	size_t get_len();
@@ -124,103 +145,37 @@ public:
 
 template<>
 inline int64_t Request::get<object_t::INT>() {
-	ensure_not_end();
-	try {
-		size_t count = 0;
-		auto ret{std::stoll(substr(), &count)};
-		*this += count;
-		return ret;
-	}
-	catch (const std::out_of_range &e) {
-		throw InvalidRequest("integer out of range");
-	}
-	catch (const std::invalid_argument &e) {
-		throw InvalidRequest("invalid integer");
-	}
+	return get_int();
 }
 
 template<>
 inline double Request::get<object_t::FLOAT>() {
-	ensure_not_end();
-	try {
-		size_t count = 0;
-		auto ret{std::stod(substr(), &count)};
-		*this += count;
-		return ret;
-	}
-	catch (const std::out_of_range &e) {
-		throw InvalidRequest("float out of range");
-	}
-	catch (const std::invalid_argument &e) {
-		throw InvalidRequest("invalid float");
-	}
+	return get_float();
 }
 
 template<>
 inline std::string Request::get<object_t::STR>() {
-	size_t len = get_len();
-	if (not has_up_to(len))
-		throw InvalidRequest("string too short");
-
-	std::string ret = substr(len);
-	*this += len;
-	return ret;
+	return get_str();
 }
 
 template<>
 inline std::vector<std::string> Request::get<object_t::ARR>() {
-	size_t len = get_len();
-	expect('[', "array not opened with bracket");
-
-	std::vector<std::string> arr;
-	arr.reserve(len);
-	for (size_t i = 0; i < len; ++i)
-		arr.emplace_back(get<object_t::STR>());
-
-	expect(']', "array not closed with bracket");
-	return arr;
+	return get_arr();
 }
 
 template<>
 inline std::list<std::string> Request::get<object_t::LIST>() {
-	size_t len = get_len();
-	expect('[', "list not opened with bracket");
-
-	std::list<std::string> list;
-	for (size_t i = 0; i < len; ++i)
-		list.emplace_back(get<object_t::STR>());
-
-	expect(']', "list not closed with bracket");
-	return list;
+	return get_list();
 }
 
 template<>
 inline std::unordered_set<std::string> Request::get<object_t::SET>() {
-	size_t len = get_len();
-	expect('{', "set not opened with '{' bracket");
-
-	std::unordered_set<std::string> set;
-	for (size_t i = 0; i < len; ++i)
-		set.emplace(get<object_t::STR>());
-
-	expect('}', "set not closed with '}' bracket");
-	return set;
+	return get_set();
 }
 
 template<>
 inline std::unordered_map<std::string, std::string> Request::get<object_t::HASH>() {
-	size_t len = get_len();
-	expect('{', "hash not opened with '{' bracket");
-
-	std::unordered_map<std::string, std::string> hash;
-	for (size_t i = 0; i < len; ++i) {
-		auto key = get<object_t::STR>();
-		auto value = get<object_t::STR>();
-		hash.emplace(std::move(key), std::move(value));
-	}
-
-	expect('}', "hash not closed with '}' bracket");
-	return hash;
+	return get_hash();
 }
 
 template<>

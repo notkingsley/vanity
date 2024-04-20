@@ -36,11 +36,11 @@ inline std::string Request::substr() const {
 	return msg.substr(pos);
 }
 
-std::string Request::substr(size_t n) const {
+inline std::string Request::substr(size_t n) const {
 	return msg.substr(pos, n);
 }
 
-bool Request::has_up_to(size_t n) const {
+inline bool Request::has_up_to(size_t n) const {
 	return pos + n <= msg.size();
 }
 
@@ -155,6 +155,100 @@ size_t Request::get_len() {
 	catch (const std::invalid_argument &e) {
 		throw InvalidRequest("invalid length");
 	}
+}
+
+int64_t Request::get_int() {
+	ensure_not_end();
+	try {
+		size_t count = 0;
+		auto ret{std::stoll(substr(), &count)};
+		*this += count;
+		return ret;
+	}
+	catch (const std::out_of_range &e) {
+		throw InvalidRequest("integer out of range");
+	}
+	catch (const std::invalid_argument &e) {
+		throw InvalidRequest("invalid integer");
+	}
+}
+
+double Request::get_float() {
+	ensure_not_end();
+	try {
+		size_t count = 0;
+		auto ret{std::stod(substr(), &count)};
+		*this += count;
+		return ret;
+	}
+	catch (const std::out_of_range &e) {
+		throw InvalidRequest("float out of range");
+	}
+	catch (const std::invalid_argument &e) {
+		throw InvalidRequest("invalid float");
+	}
+}
+
+std::string Request::get_str() {
+	size_t len = get_len();
+	if (not has_up_to(len))
+		throw InvalidRequest("string too short");
+
+	std::string ret = substr(len);
+	*this += len;
+	return ret;
+}
+
+std::vector<std::string> Request::get_arr() {
+	size_t len = get_len();
+	expect('[', "array not opened with bracket");
+
+	std::vector<std::string> arr;
+	arr.reserve(len);
+	for (size_t i = 0; i < len; ++i)
+		arr.emplace_back(get<object_t::STR>());
+
+	expect(']', "array not closed with bracket");
+	return arr;
+}
+
+std::list<std::string> Request::get_list() {
+	size_t len = get_len();
+	expect('[', "list not opened with bracket");
+
+	std::list<std::string> list;
+	for (size_t i = 0; i < len; ++i)
+		list.emplace_back(get<object_t::STR>());
+
+	expect(']', "list not closed with bracket");
+	return list;
+}
+
+std::unordered_set<std::string> Request::get_set() {
+	size_t len = get_len();
+	expect('{', "set not opened with '{' bracket");
+
+	std::unordered_set<std::string> set;
+	for (size_t i = 0; i < len; ++i)
+		set.emplace(get<object_t::STR>());
+
+	expect('}', "set not closed with '}' bracket");
+	return set;
+}
+
+std::unordered_map<std::string, std::string> Request::get_hash() {
+	size_t len = get_len();
+	expect('{', "hash not opened with '{' bracket");
+
+	std::unordered_map<std::string, std::string> hash;
+	for (size_t i = 0; i < len; ++i) {
+		auto key = get<object_t::STR>();
+		auto value = get<object_t::STR>();
+		hash.emplace(std::move(key), std::move(value));
+	}
+
+	expect('}', "hash not closed with '}' bracket");
+	return hash;
 }
 
 } // namespace vanity
