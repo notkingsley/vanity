@@ -26,7 +26,7 @@ private:
 
 	// the current character in the request string
 	// shorthand for msg[pos]
-	char current() const;
+	const char& current() const;
 
 	// returns true if the request string has not been fully processed
 	// shorthand for pos < msg.size()
@@ -47,14 +47,6 @@ private:
 	// compares from the current position in the request string to another string
 	// shorthand for msg.compare(pos, str.size(), str) == 0
 	bool compare(const std::string& str) const;
-
-	// returns a substring of the request string from the current position
-	// shorthand for msg.substr(pos)
-	std::string substr() const;
-
-	// returns a substring of the request string from the current position
-	// shorthand for msg.substr(pos, n)
-	std::string substr(size_t n) const;
 
 	// checks if there are up to n characters left in the request string
 	// shorthand for pos + n <= msg.size()

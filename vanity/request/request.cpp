@@ -2,13 +2,83 @@
 // Created by kingsli on 12/21/23.
 //
 
+#include <limits>
+
 #include "client/operations.h"
 #include "request.h"
 
 
 namespace vanity {
 
-inline char Request::current() const {
+namespace {
+
+// Helper for all the sto* functions.
+//
+// This is a simplified copy of the
+// __gnu_cxx::__stoa conversion function.
+//
+// It is copied to avoid a compiler dependency
+// this provides weaker guarantees and
+// does NOT serve as a drop in replacement: for example
+// idx is assumed to be non-null
+template<typename TRet, typename Ret = TRet, typename... Base>
+Ret stoa(TRet (*func) (const char*, char**, Base...),
+		 const char* name, const char* str, std::size_t* idx,
+		 Base... base)
+{
+	struct Save_errno {
+		Save_errno() : m_errno(errno) { errno = 0; }
+		~Save_errno() { if (errno == 0) errno = m_errno; }
+		int m_errno;
+	} const save_errno;
+
+	struct Range_chk {
+		static bool S_chk(TRet, std::false_type) {
+			return false;
+		}
+
+		// only called when Ret is int
+		static bool S_chk(TRet val, std::true_type) {
+			static constexpr auto min = std::numeric_limits<int>::min();
+			static constexpr auto max = std::numeric_limits<int>::max();
+			return val < TRet(min) || val > TRet(max);
+		}
+	};
+
+	Ret ret;
+	char* end_ptr;
+	const TRet tmp = func(str, &end_ptr, base...);
+
+	if (end_ptr == str)
+		std::__throw_invalid_argument(name);
+	else if (errno == ERANGE || Range_chk::S_chk(tmp, std::is_same<Ret, int>{}))
+		std::__throw_out_of_range(name);
+	else
+		ret = tmp;
+
+	*idx = end_ptr - str;
+	return ret;
+}
+
+// selected rewrite of std::sto* functions
+inline long long int
+stoll(const char *str, size_t *idx) {
+	return stoa(&std::strtoll, "stoll", str, idx, 10);
+}
+
+inline unsigned long long int
+stoull(const char *str, size_t *idx) {
+	return stoa(&std::strtoull, "stoull", str, idx, 10);
+}
+
+inline double
+stod(const char* str, size_t* idx) {
+	return stoa(&std::strtod, "stod", str, idx);
+}
+
+} // namespace
+
+inline const char& Request::current() const {
 	return msg[pos];
 }
 
@@ -30,14 +100,6 @@ inline size_t Request::operator+=(size_t n) {
 
 inline bool Request::compare(const std::string &str) const {
 	return msg.compare(pos, str.size(), str) == 0;
-}
-
-inline std::string Request::substr() const {
-	return msg.substr(pos);
-}
-
-inline std::string Request::substr(size_t n) const {
-	return msg.substr(pos, n);
 }
 
 inline bool Request::has_up_to(size_t n) const {
@@ -143,16 +205,16 @@ size_t Request::get_len() {
 
 	try {
 		size_t count = 0;
-		size_t len = std::stoull(substr(), &count);
+		auto len {stoull(&current(), &count)};
 		*this += count;
 
 		expect(')', "expected length specifier");
 		return len;
 	}
-	catch (const std::out_of_range &e) {
+	catch (const std::out_of_range&) {
 		throw InvalidRequest("length out of range");
 	}
-	catch (const std::invalid_argument &e) {
+	catch (const std::invalid_argument&) {
 		throw InvalidRequest("invalid length");
 	}
 }
@@ -161,14 +223,14 @@ int64_t Request::get_int() {
 	ensure_not_end();
 	try {
 		size_t count = 0;
-		auto ret{std::stoll(substr(), &count)};
+		auto ret {stoll(&current(), &count)};
 		*this += count;
 		return ret;
 	}
-	catch (const std::out_of_range &e) {
+	catch (const std::out_of_range&) {
 		throw InvalidRequest("integer out of range");
 	}
-	catch (const std::invalid_argument &e) {
+	catch (const std::invalid_argument&) {
 		throw InvalidRequest("invalid integer");
 	}
 }
@@ -177,14 +239,14 @@ double Request::get_float() {
 	ensure_not_end();
 	try {
 		size_t count = 0;
-		auto ret{std::stod(substr(), &count)};
+		auto ret {stod(&current(), &count)};
 		*this += count;
 		return ret;
 	}
-	catch (const std::out_of_range &e) {
+	catch (const std::out_of_range&) {
 		throw InvalidRequest("float out of range");
 	}
-	catch (const std::invalid_argument &e) {
+	catch (const std::invalid_argument&) {
 		throw InvalidRequest("invalid float");
 	}
 }
@@ -194,7 +256,7 @@ std::string Request::get_str() {
 	if (not has_up_to(len))
 		throw InvalidRequest("string too short");
 
-	std::string ret = substr(len);
+	auto ret = msg.substr(pos, len);
 	*this += len;
 	return ret;
 }
