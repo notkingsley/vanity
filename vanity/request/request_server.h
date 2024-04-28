@@ -346,7 +346,7 @@ protected:
 	// convenience function that contains a giant switch statement to dispatch an operation_t
 	void dispatch(Client& client, Request& request, bool end);
 
-	// similar to dispatch_op, but merely advances pos by extracting the data without actually calling the request_ method
+	// similar to dispatch_op, but merely advances m_pos by extracting the data without actually calling the request_ method
 	static void dry_dispatch(Request& request, bool end);
 };
 
