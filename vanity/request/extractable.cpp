@@ -4,6 +4,7 @@
 
 #include <limits>
 
+#include "client/operations.h"
 #include "exceptions.h"
 #include "extractable.h"
 
@@ -122,14 +123,7 @@ inline void Extractable::ensure_not_end() {
 }
 
 client_auth Extractable::get_client_auth() {
-	skip_whitespace();
-	for (const auto &[auth, str]: CLIENT_AUTH_STRINGS)
-		if (compare(str)) {
-			*this += str.size();
-			return auth;
-		}
-
-	throw InvalidRequest("invalid auth level");
+	return get_from_list(CLIENT_AUTH_STRINGS, "invalid auth level");
 }
 
 size_t Extractable::get_len() {
@@ -245,5 +239,34 @@ std::unordered_map<std::string, std::string> Extractable::get_hash() {
 	expect('}', "hash not closed with '}' bracket");
 	return hash;
 }
+
+template<class T>
+T Extractable::peek_from_list(const Extractable::list_of_pairs<T> &list, const char *err) {
+	skip_whitespace();
+	for (const auto& [val, str]: list)
+		if (compare(str))
+			return val;
+
+	throw InvalidRequest(err);
+}
+
+template<class T>
+T Extractable::get_from_list(const list_of_pairs<T> &list, const char *err) {
+	skip_whitespace();
+	for (const auto& [val, str]: list)
+		if (compare(str)) {
+			*this += str.size();
+			return val;
+		}
+
+	throw InvalidRequest(err);
+}
+
+// explicit instantiations
+template object_t Extractable::get_from_list(const list_of_pairs<object_t>&, const char*);
+
+template operation_t Extractable::get_from_list(const list_of_pairs<operation_t>&, const char*);
+
+template operation_t Extractable::peek_from_list(const list_of_pairs<operation_t>&, const char*);
 
 } // namespace vanity

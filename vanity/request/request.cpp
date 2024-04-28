@@ -29,37 +29,15 @@ std::string_view Request::view(size_t start, size_t end) const {
 }
 
 operation_t Request::get_operation() {
-	skip_whitespace();
-	for (const auto &[op, str]: OPERATION_T_STRINGS)
-		if (compare(str)) {
-			*this += str.size();
-			return op;
-		}
-
-	throw InvalidRequest("invalid operation");
+	return get_from_list(OPERATION_T_STRINGS, "invalid operation");
 }
 
 operation_t Request::peek_operation() {
-	skip_whitespace();
-	for (const auto &[op, str]: OPERATION_T_STRINGS)
-		if (compare(str))
-			return op;
-
-	throw InvalidRequest("invalid operation");
+	return peek_from_list(OPERATION_T_STRINGS, "invalid operation");
 }
 
 object_t Request::get_object_t() {
-	skip_whitespace();
-	expect(':', "expected object type");
-
-	skip_whitespace();
-	for (const auto &[obj, str]: OBJECT_T_STRINGS)
-		if (compare(str)) {
-			*this += str.size();
-			return obj;
-		}
-
-	throw InvalidRequest("invalid object type");
+	return get_from_list(OBJECT_T_STRINGS, "invalid object type");
 }
 
 } // namespace vanity

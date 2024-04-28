@@ -86,6 +86,21 @@ protected:
 	// extract a client auth from the extractable
 	client_auth get_client_auth();
 
+	template<class T>
+	using list_of_pairs = std::initializer_list<std::pair<T, std::string>>;
+
+	// extract a value from a list of pairs
+	// by comparing the strings in the pairs
+	// in order to the extractable and returning the value
+	// of the first match or throw an InvalidRequest with err
+	template<class T>
+	T get_from_list(const list_of_pairs<T>& list, const char* err);
+
+	// peek a value from a list of pairs
+	// same as get_from_list but doesn't advance the position
+	template<class T>
+	T peek_from_list(const list_of_pairs<T>& list, const char* err);
+
 public:
 	// extract a (len) from part of an extractable
 	size_t get_len();
