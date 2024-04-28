@@ -121,40 +121,6 @@ inline void Extractable::ensure_not_end() {
 		throw InvalidRequest("unexpected end of message");
 }
 
-operation_t Extractable::get_operation() {
-	skip_whitespace();
-	for (const auto &[op, str]: OPERATION_T_STRINGS)
-		if (compare(str)) {
-			*this += str.size();
-			return op;
-		}
-
-	throw InvalidRequest("invalid operation");
-}
-
-operation_t Extractable::peek_operation() {
-	skip_whitespace();
-	for (const auto &[op, str]: OPERATION_T_STRINGS)
-		if (compare(str))
-			return op;
-
-	throw InvalidRequest("invalid operation");
-}
-
-object_t Extractable::get_object_t() {
-	skip_whitespace();
-	expect(':', "expected object type");
-
-	skip_whitespace();
-	for (const auto &[obj, str]: OBJECT_T_STRINGS)
-		if (compare(str)) {
-			*this += str.size();
-			return obj;
-		}
-
-	throw InvalidRequest("invalid object type");
-}
-
 client_auth Extractable::get_client_auth() {
 	skip_whitespace();
 	for (const auto &[auth, str]: CLIENT_AUTH_STRINGS)

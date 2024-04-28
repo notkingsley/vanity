@@ -6,8 +6,6 @@
 #define VANITY_EXTRACTABLE_H
 
 #include "object_t.h"
-#include "client/operations.h"
-
 
 namespace vanity {
 
@@ -88,17 +86,7 @@ protected:
 	// extract a client auth from the extractable
 	client_auth get_client_auth();
 
-	// extract the object type from the extractable
-	// currently unused
-	object_t get_object_t();
-
 public:
-	// extract the operation type from the extractable
-	operation_t get_operation();
-
-	// like get_operation, but doesn't advance the position
-	operation_t peek_operation();
-
 	// extract a (len) from part of an extractable
 	size_t get_len();
 
@@ -119,6 +107,12 @@ public:
 
 	// create an Extractable with a string
 	explicit Extractable(const std::string& msg, size_t pos = 0);
+
+	// copy constructor
+	Extractable(const Extractable& other) = default;
+
+	// move constructor
+	Extractable(Extractable&& other) = default;
 };
 
 template<>

@@ -6,6 +6,7 @@
 #define VANITY_REQUEST_H
 
 #include "extractable.h"
+#include "client/operations.h"
 
 namespace vanity {
 
@@ -28,6 +29,15 @@ public:
 	// get a view of the request string between two indices
 	std::string_view view(size_t start, size_t end) const;
 
+	// extract an object type from the extractable
+	// currently unused
+	object_t get_object_t();
+
+	// extract an operation type from the extractable
+	operation_t get_operation();
+
+	// like get_operation, but doesn't advance the position
+	operation_t peek_operation();
 };
 
 } // namespace vanity
