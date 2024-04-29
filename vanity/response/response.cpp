@@ -2,31 +2,12 @@
 // Created by kingsli on 10/26/23.
 //
 
-#include <cstring>
 #include <stdexcept>
 
 #include "response.h"
 
 
 namespace vanity {
-
-Response::Response() {
-	m_data.resize(M_LENGTH_SIZE);
-}
-
-std::string&& Response::extract_data() {
-	auto size = htonl(m_data.size() - M_LENGTH_SIZE);
-	std::memcpy(m_data.data(), &size, M_LENGTH_SIZE);
-	return std::move(m_data);
-}
-
-std::string_view Response::body() const {
-	return {m_data.data() + M_LENGTH_SIZE, m_data.size() - M_LENGTH_SIZE};
-}
-
-void Response::reserve(size_t size) {
-	m_data.reserve(size + m_data.size());
-}
 
 Response &&Response::move() {
 	return std::move(*this);
@@ -62,18 +43,17 @@ Response &Response::operator<<(Response::Status status) {
 }
 
 Response &Response::operator<<(const std::string &data) {
-	reserve(data.size());
-	m_data += data;
+	this->Sendable::operator<<(data);
 	return *this;
 }
 
 Response &Response::operator<<(const char *data) {
-	m_data += data;
+	this->Sendable::operator<<(data);
 	return *this;
 }
 
 Response &Response::operator<<(const char data) {
-	m_data += data;
+	this->Sendable::operator<<(data);
 	return *this;
 }
 

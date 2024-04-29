@@ -6,10 +6,10 @@
 #define VANITY_RESPONSE_H
 
 #include <concepts>
-#include <netinet/in.h>
 
 #include "db/db/types.h"
 #include "client/session_info.h"
+#include "sendable.h"
 
 
 namespace vanity {
@@ -78,15 +78,9 @@ struct type_to_string<client_auth> {
 /*
  * A Response allows a dynamically efficient method to compose a response
  */
-class Response
+class Response : public Sendable
 {
 private:
-	// the size of the length field
-	static constexpr auto M_LENGTH_SIZE = sizeof(decltype(htonl(0)));
-
-	// the response data
-	std::string m_data;
-
 	struct status_value {
 		static constexpr char const* const ok = "OK";
 		static constexpr char const* const error = "ERROR";
@@ -119,18 +113,6 @@ public:
 		queued,
 		async,
 	};
-
-	// default constructor
-	Response();
-
-	// destructively extract the response data
-	std::string&& extract_data();
-
-	// obtain a view of the (current) response body (without the length field)
-	std::string_view body() const;
-
-	// reserve space in the response
-	void reserve(size_t size);
 
 	// return this as a rvalue
 	Response&& move();
