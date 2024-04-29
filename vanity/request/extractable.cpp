@@ -7,6 +7,8 @@
 #include "client/operations.h"
 #include "exceptions.h"
 #include "extractable.h"
+#include "peer_request.h"
+#include "post_request.h"
 
 
 namespace vanity {
@@ -266,6 +268,10 @@ T Extractable::get_from_list(const list_of_pairs<T> &list, const char *err) {
 template object_t Extractable::get_from_list(const list_of_pairs<object_t>&, const char*);
 
 template operation_t Extractable::get_from_list(const list_of_pairs<operation_t>&, const char*);
+
+template peer_request_t Extractable::get_from_list(const list_of_pairs<peer_request_t>&, const char*);
+
+template peer_op_t Extractable::get_from_list(const list_of_pairs<peer_op_t>&, const char*);
 
 template operation_t Extractable::peek_from_list(const list_of_pairs<operation_t>&, const char*);
 
