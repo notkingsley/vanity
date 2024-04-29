@@ -10,12 +10,12 @@ namespace vanity {
 
 void ClusterServer::handle(const std::string &msg, Client &client) {
 	if (session_is_peer(client))
-		handle_peer(msg, client);
+		handle_peer_tmp(msg, client);
 	else
 		handle_user(msg, client);
 }
 
-void ClusterServer::handle_peer(const std::string &msg, Client &client) {
+void ClusterServer::handle_peer_tmp(const std::string &msg, Client &client) {
 	if (msg == "OK") {
 		return global_log("Connected to peer");
 	}
@@ -25,7 +25,7 @@ void ClusterServer::handle_peer(const std::string &msg, Client &client) {
 		return global_log("Peer denied connection");
 	}
 	else {
-		return global_log("Unknown message from peer: " + msg);
+		return handle_peer(msg, client);
 	}
 }
 

@@ -7,6 +7,7 @@
 
 #include "bind_server.h"
 #include "peer_server.h"
+#include "request/peer_request_server.h"
 #include "utils/hash.h"
 
 
@@ -15,7 +16,7 @@ namespace vanity {
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual BindServer, public virtual PeerServer
+class ClusterServer : public virtual BindServer, public virtual PeerRequestServer, public virtual PeerServer
 {
 private:
 	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
@@ -44,7 +45,7 @@ public:
 	void handle(const std::string& msg, Client& client) override;
 
 	// a message was received from a peer client
-	void handle_peer(const std::string& msg, Client& client);
+	void handle_peer_tmp(const std::string& msg, Client& client);
 
 	// a cluster_join request was received from a client
 	void request_cluster_join(Client& client, const std::string& key, const std::string& host, uint16_t port) override;
