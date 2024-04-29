@@ -46,7 +46,7 @@ public:
 	handle_callback_t handle_callback(TcpClient& client) override;
 
 	// send a message to a client
-	void send(Client& client, Response&& response) override;
+	void send(Client& client, Sendable&& sendable) override;
 
 protected:
 	// stop the server

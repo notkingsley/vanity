@@ -34,8 +34,8 @@ struct session_info &TcpClient::session_info() {
 	return m_session_info;
 }
 
-void TcpClient::write(WriteManager& manager, Response &&response) {
-	m_writer.write(manager, response.extract_data());
+void TcpClient::write(WriteManager& manager, Sendable &&sendable) {
+	m_writer.write(manager, sendable.extract_data());
 }
 
 int TcpClient::socket_fd() const {

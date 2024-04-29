@@ -26,6 +26,10 @@ void Sendable::reserve(size_t size) {
 	m_data.reserve(size + m_data.size());
 }
 
+Sendable &&Sendable::move() {
+	return std::move(*this);
+}
+
 Sendable &Sendable::operator<<(const std::string &data) {
 	reserve(data.size());
 	m_data += data;

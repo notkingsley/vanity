@@ -28,9 +28,9 @@ public:
 	AggregatingClient(Client& client, size_t resp_size)
 		: ProxyClient(client), m_response(resp_size) {}
 
-	// write the response to the aggregate instead of the client
-	void write(WriteManager& manager, Response&& response) override {
-		m_response.append(response);
+	// write the sendable to the aggregate instead of the client
+	void write(WriteManager& manager, Sendable&& sendable) override {
+		m_response.append(sendable);
 	}
 
 	// write the aggregate response to the client

@@ -27,8 +27,8 @@ public:
 	// a message was received from a client
 	virtual void handle(const std::string& msg, Client& client) = 0;
 
-	// send a response to a client
-	virtual void send(Client& client, Response&& response) = 0;
+	// send a sendable to a client
+	virtual void send(Client& client, Sendable&& sendable) = 0;
 
 	// request the server to terminate
 	virtual void terminate() = 0;

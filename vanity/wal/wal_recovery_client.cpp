@@ -14,6 +14,6 @@ struct session_info &WalRecoveryClient::session_info() {
 	return m_session_info;
 }
 
-void WalRecoveryClient::write(WriteManager& manager, Response &&response) { }
+void WalRecoveryClient::write(WriteManager& manager, Sendable &&sendable) { }
 
 } // namespace vanity::wal

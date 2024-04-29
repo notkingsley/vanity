@@ -54,8 +54,8 @@ public:
 	// return the client's session info
 	struct session_info& session_info() override;
 
-	// write a response to the client
-	void write(WriteManager& manager, Response&& response) override;
+	// write a sendable to the client
+	void write(WriteManager& manager, Sendable&& sendable) override;
 
 	// get the socket file descriptor
 	int socket_fd() const override;

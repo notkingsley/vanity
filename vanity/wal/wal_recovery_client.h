@@ -23,9 +23,9 @@ public:
 	// return the client's session info
 	struct session_info& session_info() override;
 
-	// write a response to the client
+	// write a sendable to the client
 	// this does exactly nothing
-	void write(WriteManager& manager, Response&& response) override;
+	void write(WriteManager& manager, Sendable&& sendable) override;
 
 };
 

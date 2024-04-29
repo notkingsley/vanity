@@ -64,8 +64,8 @@ auto ClientServer::handle_callback(TcpClient& client) -> handle_callback_t {
 	};
 }
 
-void ClientServer::send(Client &client, Response&& response) {
-	client.write(*this, response.move());
+void ClientServer::send(Client &client, Sendable&& sendable) {
+	client.write(*this, sendable.move());
 }
 
 void ClientServer::stop() {

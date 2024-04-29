@@ -6,7 +6,7 @@
 #define VANITY_CLIENT_H
 
 #include "operations.h"
-#include "response/response.h"
+#include "response/sendable.h"
 #include "write_manager.h"
 
 
@@ -28,7 +28,7 @@ public:
 	virtual struct session_info& session_info() = 0;
 
 	// write a response to the client
-	virtual void write(WriteManager& manager, Response&& response) = 0;
+	virtual void write(WriteManager& manager, Sendable&& response) = 0;
 };
 
 } // namespace vanity

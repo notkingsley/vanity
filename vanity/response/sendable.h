@@ -36,6 +36,9 @@ public:
 	// reserve space in the sendable
 	void reserve(size_t size);
 
+	// return this as a rvalue
+	Sendable&& move();
+
 	// add a string to the sendable
 	Sendable& operator<<(const std::string& data);
 

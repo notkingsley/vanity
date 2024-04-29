@@ -21,9 +21,9 @@ public:
 		serialize_length(size);
 	};
 
-	// append a response to the PipedResponse
-	void append(const Response& response) {
-		auto body = response.body();
+	// append a sendable to the PipedResponse
+	void append(const Sendable& sendable) {
+		auto body = sendable.body();
 		reserve(body.size());
 		*this << body.data();
 	};
