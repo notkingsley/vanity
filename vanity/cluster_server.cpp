@@ -84,7 +84,7 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	send(client, ok(*m_cluster_key));
 }
 
-void ClusterServer::request_peer_auth(Client &client, const std::string &key, const std::string& addr) {
+void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
 	if (not validate_cluster_key(key))
 		return send(client, denied());
 

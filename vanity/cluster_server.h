@@ -60,7 +60,7 @@ public:
 	void request_cluster_new(Client& client, const std::string& key) override;
 
 	// a peer_auth request was received from a client
-	void request_peer_auth(Client& client, const std::string& key, const std::string& addr) override;
+	void request_peer_auth(Client& client, int64_t id, const std::string& key, const std::string& addr) override;
 };
 
 } // namespace vanity
