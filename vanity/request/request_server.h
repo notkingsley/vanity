@@ -278,14 +278,10 @@ public:
 	virtual void request_peer_auth(Client& client, int64_t id, const std::string& key, const std::string& addr) = 0;
 
 	// an exit request was received from a client
-	virtual void request_exit(Client& client) {
-		throw DestroyClient{};
-	};
+	virtual void request_exit(Client& client) = 0;
 
 	// a terminate request was received from a client
-	virtual void request_terminate(Client& client) {
-		terminate();
-	};
+	virtual void request_terminate(Client& client) = 0;
 
 	// a ping request was received from a client
 	virtual void request_ping(Client& client) {

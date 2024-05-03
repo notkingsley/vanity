@@ -30,13 +30,15 @@ void PipeServer::request_pipe(Client &client, Request& request) {
 void PipeServer::request_exit(Client &client) {
 	if (dynamic_cast<PipedClient*>(&client))
 		return send(client, error("EXIT command not allowed in PIPE request"));
-	RequestServer::request_exit(client);
+
+	throw DestroyClient{};
 }
 
 void PipeServer::request_terminate(Client &client) {
 	if (dynamic_cast<PipedClient*>(&client))
 		return send(client, error("TERMINATE command not allowed in PIPE request"));
-	RequestServer::request_terminate(client);
+
+	terminate();
 }
 
 } // namespace vanity
