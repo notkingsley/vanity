@@ -43,6 +43,12 @@ private:
 	// create a new PostMessage and register the expected op
 	PostMessage new_message(peer_op_t op);
 
+	// create a new PostMessage to be sent as a plain user
+	// this is different from new_message in that the message
+	// created doesn't have the POST message prefix
+	// and the op comes before the id
+	PostMessage new_plain_message(peer_op_t op);
+
 protected:
 	// get the expected ops for a message id
 	// also removes the expected op
@@ -51,6 +57,23 @@ protected:
 public:
 	// compose and send a message to a peer
 	void post(Client& peer, peer_op_t op);
+
+	// compose and send a message to a peer
+	template<typename ...Args>
+	void post(Client& peer, peer_op_t op, Args&&... args) {
+		auto msg = new_message(op);
+		send(peer, (msg.serialize(args), ...).move());
+	}
+
+	// compose and send a message to a peer as a plain user
+	// this really exists to send the initial PEER_AUTH message
+	// to a peer that does not yet recognize us,
+	// so op is always PEER_AUTH
+	template<typename ...Args>
+	void post_plain(Client& peer, peer_op_t op, Args&&... args) {
+		auto msg = new_plain_message(op);
+		send(peer, (msg.serialize(args), ...).move());
+	}
 };
 
 } // namespace vanity

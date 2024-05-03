@@ -28,9 +28,18 @@ private:
 	// the string representations of the peer_op_t values
 	static const std::array<const char*, M_OP_COUNT> M_OP_STRINGS;
 
+	// a type to create a PostMessage to be sent as a plain user
+	struct as_plain_user_t { };
+
 public:
+	// only instance of as_plain_user_t
+	static constexpr auto as_plain_user = as_plain_user_t{};
+
 	// create a new PostMessage
 	PostMessage();
+
+	// create a new PostMessage to be sent as a plain user
+	explicit PostMessage(as_plain_user_t);
 
 	// add a peer_op_t to the message
 	PostMessage& operator<<(peer_op_t op);

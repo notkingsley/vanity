@@ -36,4 +36,10 @@ PostMessage PostMessageServer::new_message(peer_op_t op) {
 	return PostMessage{}.serialize(id) << op;
 }
 
+PostMessage PostMessageServer::new_plain_message(peer_op_t op) {
+	auto id = next_id();
+	expect_op(id, op);
+	return (PostMessage{PostMessage::as_plain_user} << op).serialize(id);
+}
+
 } // namespace vanity

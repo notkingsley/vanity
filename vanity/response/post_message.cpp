@@ -21,6 +21,8 @@ PostMessage::PostMessage() : Sendable() {
 	*this << "POST";
 }
 
+PostMessage::PostMessage(PostMessage::as_plain_user_t) { }
+
 PostMessage& PostMessage::operator<<(peer_op_t op) {
 	*this << M_OP_STRINGS[static_cast<uint>(op)];
 	return *this;
