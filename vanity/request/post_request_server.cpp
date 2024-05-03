@@ -24,7 +24,7 @@ void PostRequestServer::handle_post_request(PostRequest &request, Client &client
 }
 
 void PostRequestServer::post_request_ping(Context& ctx) {
-	// TODO: send pong
+	reply(ctx.client, ctx.msg_id, PONG);
 }
 
 } // namespace vanity

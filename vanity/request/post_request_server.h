@@ -7,6 +7,8 @@
 
 #include "client/client.h"
 #include "post_request.h"
+#include "response/reply_message_server.h"
+
 
 namespace vanity {
 
@@ -14,7 +16,7 @@ namespace vanity {
  * A PostRequestServer is a server that handles PostRequests
  * from peers
  */
-class PostRequestServer
+class PostRequestServer : public virtual ReplyMessageServer
 {
 protected:
 	// context passed to handlers
@@ -22,6 +24,9 @@ protected:
 		msg_id_t msg_id;
 		Client &client;
 	};
+
+	// string for a PONG reply
+	static constexpr auto PONG = "PONG";
 
 public:
 	// handle a PostRequest
