@@ -10,8 +10,10 @@
 namespace vanity {
 
 // all the possible operations that a peer can request
-enum class peer_op_t {
+enum class peer_op_t : uint {
 	PING,
+
+	MAX_OP,
 };
 
 const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
