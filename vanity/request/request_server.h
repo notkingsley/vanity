@@ -11,7 +11,7 @@
 #include "abstract_server.h"
 #include "log_server.h"
 #include "request.h"
-#include "response/response_shortcuts.h"
+#include "response/response_server.h"
 #include "wal/wal_write_server.h"
 
 
@@ -23,6 +23,7 @@ namespace vanity {
  */
 class RequestServer :
 	public virtual AbstractServer,
+	public virtual ResponseServer,
 	public virtual LogServer,
 	public virtual WalWriteServer
 {
