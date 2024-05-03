@@ -6,14 +6,14 @@
 #define VANITY_PIPE_SERVER_H
 
 #include "client/write_manager.h"
-#include "request/request_server.h"
+#include "client/exit_server.h"
 
 namespace vanity {
 
 /*
  * A PipeServer is a server that handles PIPE requests
  */
-class PipeServer : public virtual RequestServer, public virtual WriteManager
+class PipeServer : public virtual ExitServer, public virtual WriteManager
 {
 public:
 	// a pipe request was received from a client

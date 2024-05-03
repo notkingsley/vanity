@@ -3,7 +3,6 @@
 //
 
 #include "client/aggregating_client.h"
-#include "client/tcp_client.h"
 #include "pipe_server.h"
 
 namespace vanity {
@@ -32,17 +31,14 @@ void PipeServer::request_exit(Client &client) {
 	if (dynamic_cast<PipedClient*>(&client))
 		return send(client, error("EXIT command not allowed in PIPE request"));
 
-	if (auto tcp_client = dynamic_cast<TcpClient*>(&client))
-		tcp_client->close();
-	else
-		throw std::runtime_error("request_exit: client is not a TcpClient");
+	ExitServer::request_exit(client);
 }
 
 void PipeServer::request_terminate(Client &client) {
 	if (dynamic_cast<PipedClient*>(&client))
 		return send(client, error("TERMINATE command not allowed in PIPE request"));
 
-	terminate();
+	ExitServer::request_terminate(client);
 }
 
 } // namespace vanity
