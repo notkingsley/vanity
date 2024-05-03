@@ -18,13 +18,6 @@ namespace vanity {
  */
 class PostRequestServer : public virtual ReplyMessageServer
 {
-protected:
-	// context passed to handlers
-	struct Context {
-		msg_id_t msg_id;
-		Client &client;
-	};
-
 	// string for a PONG reply
 	static constexpr auto PONG = "PONG";
 

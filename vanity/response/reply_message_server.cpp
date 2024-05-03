@@ -6,8 +6,8 @@
 
 namespace vanity {
 
-void ReplyMessageServer::reply(Client& peer, msg_id_t id, const std::string& data) {
-	send(peer, (ReplyMessage{}.serialize(id) << data).move());
+void ReplyMessageServer::reply(Context ctx, const std::string& data) {
+	send(ctx.client, ReplyMessage{}.serialize(ctx.msg_id).serialize(data).move());
 }
 
 } // namespace vanity

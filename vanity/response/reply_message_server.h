@@ -17,9 +17,16 @@ namespace vanity {
  */
 class ReplyMessageServer : public virtual AbstractServer
 {
+protected:
+	// context passed to handlers
+	struct Context {
+		msg_id_t msg_id;
+		Client &client;
+	};
+
 public:
 	// reply to a message with a string
-	void reply(Client& peer, msg_id_t id, const std::string& data);
+	void reply(Context ctx, const std::string& data);
 };
 
 } // namespace vanity

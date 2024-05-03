@@ -24,7 +24,7 @@ void PostRequestServer::handle_post_request(PostRequest &request, Client &client
 }
 
 void PostRequestServer::post_request_ping(Context& ctx) {
-	reply(ctx.client, ctx.msg_id, PONG);
+	reply(ctx, PONG);
 }
 
 } // namespace vanity
