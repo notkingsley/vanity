@@ -20,6 +20,9 @@ const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
 	{peer_op_t::PING, "PING"},
 };
 
+// the type of the identifier of a message
+using msg_id_t = int64_t;
+
 } // namespace vanity
 
 #endif //VANITY_PEER_OPERATIONS_H

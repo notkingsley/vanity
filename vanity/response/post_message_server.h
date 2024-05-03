@@ -15,9 +15,6 @@
 
 namespace vanity {
 
-// the type of the identifier of a message
-using msg_id_t = int64_t;
-
 /*
  * A PostMessageServer lets us send messages to a peer
  * and track the messages we've sent

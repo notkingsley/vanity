@@ -19,9 +19,6 @@ class PostRequestServer
 protected:
 	// context passed to handlers
 	struct Context {
-		// the type of the identifier of a message
-		using msg_id_t = int64_t;
-
 		msg_id_t msg_id;
 		Client &client;
 	};

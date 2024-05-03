@@ -16,6 +16,10 @@ void PostRequestServer::handle_post_request(PostRequest &request, Client &client
 			post_request_ping(ctx);
 			break;
 		}
+
+		case peer_op_t::MAX_OP: {
+			// TODO: report peer
+		}
 	}
 }
 
