@@ -7,18 +7,17 @@
 
 #include "peer_request.h"
 #include "post_request_server.h"
+#include "reply_request_server.h"
 
 namespace vanity {
 
 /*
  * A PeerRequestServer is a server that handles messages from peers
  */
-class PeerRequestServer : public virtual PostRequestServer
+class PeerRequestServer : public virtual PostRequestServer, public virtual ReplyRequestServer
 {
 public:
-	// handle a PeerRequest
-	void handle_peer_request(PeerRequest& request, Client &client);
-
+	// handle a peer's request
 	void handle_peer(const std::string &msg, Client &client);
 };
 

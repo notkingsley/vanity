@@ -6,7 +6,8 @@
 
 namespace vanity {
 
-void PeerRequestServer::handle_peer_request(PeerRequest &request, Client &client) {
+void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
+	PeerRequest request{msg};
 	auto request_t = request.get_request_t();
 
 	switch (request_t) {
@@ -16,14 +17,11 @@ void PeerRequestServer::handle_peer_request(PeerRequest &request, Client &client
 			break;
 		}
 		case peer_request_t::REPLY: {
-			throw std::runtime_error("REPLY not implemented");
+			ReplyRequest reply_request{request};
+			handle_reply_request(reply_request, client);
+			break;
 		}
 	}
-}
-
-void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
-	PeerRequest request{msg};
-	handle_peer_request(request, client);
 }
 
 } // namespace vanity
