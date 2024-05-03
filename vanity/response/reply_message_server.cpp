@@ -6,7 +6,7 @@
 
 namespace vanity {
 
-void ReplyMessageServer::reply(Context ctx, const std::string& data) {
+void ReplyMessageServer::reply(Context& ctx, const std::string& data) {
 	send(ctx.client, ReplyMessage{}.serialize(ctx.msg_id).serialize(data).move());
 }
 

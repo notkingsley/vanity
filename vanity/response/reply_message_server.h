@@ -26,7 +26,7 @@ protected:
 
 public:
 	// reply to a message with a string
-	void reply(Context ctx, const std::string& data);
+	void reply(Context& ctx, const std::string& data);
 };
 
 } // namespace vanity
