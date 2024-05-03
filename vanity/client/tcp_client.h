@@ -35,6 +35,9 @@ private:
 	// the socket to read from
 	Socket m_socket;
 
+	// whether the client has been closed
+	bool m_closed = false;
+
 public:
 	// create a client
 	explicit TcpClient(Socket&& socket);
@@ -59,21 +62,11 @@ public:
 
 	// get the socket file descriptor
 	int socket_fd() const override;
-};
 
-bool operator==(const TcpClient& lhs, const TcpClient& rhs);
+	// close the client
+	void close();
+};
 
 } // namespace vanity
-
-namespace std {
-
-template<>
-struct hash<vanity::TcpClient> : public hash<const vanity::TcpClient*> {
-	size_t operator()(const vanity::TcpClient &c) const {
-		return hash<const vanity::TcpClient*>::operator()(&c);
-	}
-};
-
-} // namespace std
 
 #endif //VANITY_TCP_CLIENT_H

@@ -10,19 +10,15 @@ namespace vanity {
 
 TcpClient::TcpClient(Socket&& socket) : m_socket(std::move(socket)), m_writer(m_socket) {}
 
+TcpClient::TcpClient(TcpClient &&other) noexcept
+	: m_socket(std::move(other.m_socket)), m_writer(m_socket) {}
+
 void TcpClient::ready(ClientManager& manager) {
-	bool destroy_self = false;
+	auto callback = manager.handle_callback(*this);
+	if (not m_reader.read(m_socket, callback))
+		m_closed = true;
 
-	try {
-		auto callback = manager.handle_callback(*this);
-		if (not m_reader.read(m_socket, callback))
-			destroy_self = true;
-	}
-	catch (DestroyClient& e) {
-		destroy_self = true;
-	}
-
-	if (destroy_self)
+	if (m_closed)
 		manager.remove_client(*this);
 }
 
@@ -42,12 +38,8 @@ int TcpClient::socket_fd() const {
 	return m_socket.fd();
 }
 
-TcpClient::TcpClient(TcpClient &&other) noexcept
-	: m_socket(std::move(other.m_socket)), m_writer(m_socket) {}
-
-
-bool operator==(const TcpClient& lhs, const TcpClient& rhs) {
-	return &lhs == &rhs;
+void TcpClient::close() {
+	m_closed = true;
 }
 
 } // namespace vanity

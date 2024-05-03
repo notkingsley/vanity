@@ -35,11 +35,6 @@ bool RequestServer::do_handle_single(Client &client, Request& request, bool end)
 		send(client, bad_request(e.what()));
 		return false;
 	}
-	catch (const DestroyClient& e)
-	{
-		logger().debug("Client disconnecting");
-		throw;
-	}
 	catch (const Exception& e)
 	{
 		logger().error(e.what());

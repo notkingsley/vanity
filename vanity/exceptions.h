@@ -58,9 +58,6 @@ public:
 	}
 };
 
-// thrown from a ready() to indicate the client should be disconnected
-class DestroyClient : Exception {};
-
 // the message received was invalid
 class InvalidRequest : Exception
 {
