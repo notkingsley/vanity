@@ -41,13 +41,14 @@ private:
 	msg_id_t next_id();
 
 	// create a new PostMessage and register the expected op
-	PostMessage new_message(peer_op_t op);
+	// return the new message and the id
+	std::pair<PostMessage, msg_id_t> new_message(peer_op_t op);
 
 	// create a new PostMessage to be sent as a plain user
 	// this is different from new_message in that the message
 	// created doesn't have the POST message prefix
 	// and the op comes before the id
-	PostMessage new_plain_message(peer_op_t op);
+	std::pair<PostMessage, msg_id_t> new_plain_message(peer_op_t op);
 
 protected:
 	// get the expected ops for a message id
@@ -56,13 +57,14 @@ protected:
 
 public:
 	// compose and send a message to a peer
-	void post(Client& peer, peer_op_t op);
+	msg_id_t post(Client& peer, peer_op_t op);
 
 	// compose and send a message to a peer
 	template<typename ...Args>
-	void post(Client& peer, peer_op_t op, Args&&... args) {
-		auto msg = new_message(op);
+	msg_id_t post(Client& peer, peer_op_t op, Args&&... args) {
+		auto [msg, id] = new_message(op);
 		send(peer, (msg.serialize(args), ...).move());
+		return id;
 	}
 
 	// compose and send a message to a peer as a plain user
@@ -70,9 +72,10 @@ public:
 	// to a peer that does not yet recognize us,
 	// so op is always PEER_AUTH
 	template<typename ...Args>
-	void post_plain(Client& peer, peer_op_t op, Args&&... args) {
-		auto msg = new_plain_message(op);
+	msg_id_t post_plain(Client& peer, peer_op_t op, Args&&... args) {
+		auto [msg, id] = new_plain_message(op);
 		send(peer, (msg.serialize(args), ...).move());
+		return id;
 	}
 };
 

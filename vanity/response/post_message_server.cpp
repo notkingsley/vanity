@@ -11,8 +11,10 @@ msg_id_t PostMessageServer::next_id() {
 	return m_next_id++;
 }
 
-void PostMessageServer::post(Client &peer, peer_op_t op) {
-	send(peer, new_message(op));
+msg_id_t PostMessageServer::post(Client &peer, peer_op_t op) {
+	auto [msg, id] = new_message(op);
+	send(peer, msg.move());
+	return id;
 }
 
 void PostMessageServer::expect_op(msg_id_t id, peer_op_t op) {
@@ -30,16 +32,16 @@ std::optional<peer_op_t> PostMessageServer::expected_op(msg_id_t id) {
 	return op;
 }
 
-PostMessage PostMessageServer::new_message(peer_op_t op) {
+std::pair<PostMessage, msg_id_t> PostMessageServer::new_message(peer_op_t op) {
 	auto id = next_id();
 	expect_op(id, op);
-	return PostMessage{}.serialize(id) << op;
+	return {PostMessage{}.serialize(id) << op, id};
 }
 
-PostMessage PostMessageServer::new_plain_message(peer_op_t op) {
+std::pair<PostMessage, msg_id_t> PostMessageServer::new_plain_message(peer_op_t op) {
 	auto id = next_id();
 	expect_op(id, op);
-	return (PostMessage{PostMessage::as_plain_user} << op).serialize(id);
+	return {(PostMessage{PostMessage::as_plain_user} << op).serialize(id), id};
 }
 
 } // namespace vanity
