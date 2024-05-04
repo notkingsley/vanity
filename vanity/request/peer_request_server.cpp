@@ -3,8 +3,6 @@
 //
 
 #include "peer_request_server.h"
-#include "post_request.h"
-#include "reply_request.h"
 
 
 namespace vanity {
@@ -12,14 +10,16 @@ namespace vanity {
 void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
 	PeerRequest request{msg};
 	auto request_t = request.get_request_t();
+	auto id = request.get<object_t::INT>();
+	Context ctx {id, client};
 
 	switch (request_t) {
 		case peer_request_t::POST: {
-			handle_post_request(request, client);
+			handle_post_request(request, ctx);
 			break;
 		}
 		case peer_request_t::REPLY: {
-			handle_reply_request(request, client);
+			handle_reply_request(request, ctx);
 			break;
 		}
 	}
@@ -31,13 +31,10 @@ void PeerRequestServer::post_request_ping(Context& ctx) {
 
 void PeerRequestServer::reply_request_ping(Context& ctx) { }
 
-void PeerRequestServer::handle_post_request(PeerRequest& peer_request, Client &client) {
+void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) {
 	using enum object_t;
 
-	PostRequest request{peer_request};
-	auto id = request.get<INT>();
 	auto op = request.get_op();
-	Context ctx {id, client};
 	bool end = true;
 
 	switch (op) {
@@ -58,13 +55,10 @@ void PeerRequestServer::handle_post_request(PeerRequest& peer_request, Client &c
 	}
 }
 
-void PeerRequestServer::handle_reply_request(PeerRequest& peer_request, Client &client) {
+void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx) {
 	using enum object_t;
 
-	ReplyRequest request{peer_request};
-	auto id = request.get<INT>();
-	auto op = expected_op(id);
-	Context ctx {id, client};
+	auto op = expected_op(ctx.msg_id);
 	bool end = true;
 
 	if (not op) {

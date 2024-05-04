@@ -21,10 +21,10 @@ private:
 	static constexpr auto PONG = "PONG";
 
 	// handle a POST request
-	void handle_post_request(PeerRequest& peer_request, Client &client);
+	void handle_post_request(PeerRequest& peer_request, Context& ctx);
 
 	// handle a REPLY request
-	void handle_reply_request(PeerRequest& peer_request, Client &client);
+	void handle_reply_request(PeerRequest& peer_request, Context& ctx);
 
 protected:
 	// handle a peer's request

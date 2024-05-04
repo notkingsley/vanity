@@ -6,6 +6,8 @@
 #define VANITY_PEER_REQUEST_H
 
 #include "extractable.h"
+#include "peer_operations.h"
+
 
 namespace vanity {
 
@@ -34,6 +36,9 @@ public:
 
 	// get the type of the request
 	peer_request_t get_request_t();
+
+	// extract a peer operation from the request
+	peer_op_t get_op();
 };
 
 } // namespace vanity

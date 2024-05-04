@@ -8,7 +8,6 @@
 #include "exceptions.h"
 #include "extractable.h"
 #include "peer_request.h"
-#include "post_request.h"
 
 
 namespace vanity {

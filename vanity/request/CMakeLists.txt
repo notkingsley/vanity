@@ -6,8 +6,6 @@ add_library(vanity_request STATIC
 	extractable.cpp
 	peer_request.cpp
 	peer_request_server.cpp
-	post_request.cpp
-	reply_request.cpp
 	request.cpp
 	request_server.cpp
 )
