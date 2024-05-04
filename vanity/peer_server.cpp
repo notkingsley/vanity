@@ -20,12 +20,16 @@ void PeerServer::register_peer(Client &client, const std::string &addr) {
 }
 
 void PeerServer::remove_peer(Client& client) {
-	remove_client(to_tcp(client));
+	auto& tcp_client = to_tcp(client);
+	m_peers.erase(&tcp_client);
+	tcp_client.close();
 }
 
 void PeerServer::clear_peers() {
-	for (auto& [client, _] : m_peers)
-		remove_client(*client);
+	for (auto& [peer, _] : m_peers)
+		peer->close();
+
+	m_peers.clear();
 }
 
 void PeerServer::request_peers(Client &client) {
@@ -36,13 +40,6 @@ void PeerServer::request_peers(Client &client) {
 		peers.push_back(peer_addr);
 
 	send(client, ok(peers));
-}
-
-TcpClient& PeerServer::to_tcp(Client &client) {
-	if (auto tcp = dynamic_cast<TcpClient*>(&client))
-		return *tcp;
-
-	throw std::runtime_error("expected a TcpClient");
 }
 
 } // namespace vanity

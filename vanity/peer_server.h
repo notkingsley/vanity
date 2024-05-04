@@ -6,7 +6,7 @@
 #define VANITY_PEER_SERVER_H
 
 #include "client/client_server.h"
-#include "request/request_server.h"
+#include "client/exit_server.h"
 
 
 namespace vanity {
@@ -14,7 +14,7 @@ namespace vanity {
 /*
  * A PeerServer holds and manages all peers
  */
-class PeerServer : public virtual ClientServer, public virtual RequestServer
+class PeerServer : public virtual ClientServer, public virtual ExitServer
 {
 private:
 	// known peers
@@ -23,9 +23,6 @@ private:
 	// the peer hook pre-deleting a client
 	// this removes the tcp_client from the peers map
 	void pre_client_delete_peer(TcpClient& client) override;
-
-	// cast a client to a TcpClient or throw an exception
-	static TcpClient& to_tcp(Client& client);
 
 public:
 	// register a new peer

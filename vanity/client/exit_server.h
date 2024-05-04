@@ -20,10 +20,15 @@ protected:
 	// close a client
 	// throws if the client is not a TcpClient (like a ProxyClient)
 	static void client_close(Client& client) {
-		if (auto tcp_client = dynamic_cast<TcpClient*>(&client))
-			tcp_client->close();
-		else
-			throw std::runtime_error("request_exit: client is not a TcpClient");
+		to_tcp(client).close();
+	}
+
+	// cast a client to a TcpClient or throw an exception
+	static TcpClient& to_tcp(Client& client) {
+		if (auto tcp = dynamic_cast<TcpClient*>(&client))
+			return *tcp;
+
+		throw std::runtime_error("expected a TcpClient");
 	}
 
 public:
