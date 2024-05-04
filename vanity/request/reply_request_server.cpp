@@ -7,8 +7,12 @@
 namespace vanity {
 
 void ReplyRequestServer::handle_reply_request(ReplyRequest &request, Client &client) {
-	auto id = request.get<object_t::INT>();
+	using enum object_t;
+
+	auto id = request.get<INT>();
 	auto op = expected_op(id);
+	bool end = true;
+
 	if (not op) {
 		// TODO: report peer
 	}
@@ -16,6 +20,12 @@ void ReplyRequestServer::handle_reply_request(ReplyRequest &request, Client &cli
 	switch (*op) {
 		case peer_op_t::PING: {
 			reply_request_ping(client);
+			break;
+		}
+
+		case peer_op_t::PEER_AUTH: {
+			auto data = request.get_exact<STR>(end);
+			reply_request_peer_auth(client, data);
 			break;
 		}
 

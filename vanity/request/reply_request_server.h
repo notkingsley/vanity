@@ -22,6 +22,9 @@ public:
 
 	// a reply to a ping request was received from a peer
 	void reply_request_ping(Client &client);
+
+	// a reply to a peer_auth request was received from a peer
+	virtual void reply_request_peer_auth(Client &client, const std::string& data) = 0;
 };
 
 } // namespace vanity

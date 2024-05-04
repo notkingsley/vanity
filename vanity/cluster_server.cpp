@@ -10,23 +10,9 @@ namespace vanity {
 
 void ClusterServer::handle(const std::string &msg, Client &client) {
 	if (session_is_peer(client))
-		handle_peer_tmp(msg, client);
+		handle_peer(msg, client);
 	else
 		handle_user(msg, client);
-}
-
-void ClusterServer::handle_peer_tmp(const std::string &msg, Client &client) {
-	if (msg == "OK") {
-		return global_log("Connected to peer");
-	}
-	else if (msg == "DENIED") {
-		m_cluster_key.reset();
-		remove_peer(client);
-		return global_log("Peer denied connection");
-	}
-	else {
-		return handle_peer(msg, client);
-	}
 }
 
 bool ClusterServer::validate_cluster_key(const std::string &key) {
@@ -50,7 +36,7 @@ void ClusterServer::request_cluster_join(Client &client, const std::string& key,
 		return send(client, error("already in a cluster"));
 
 	auto& peer = connect(host, port);
-	send(peer, peer_auth(key, get_own_address()));
+	post_plain(peer, peer_op_t::PEER_AUTH, key, get_own_address());
 	register_peer(peer, make_address(host, port));
 
 	m_cluster_key = key;
@@ -85,16 +71,35 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 }
 
 void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
-	if (not validate_cluster_key(key))
-		return send(client, denied());
+	Context ctx {id, client};
+
+	if (not validate_cluster_key(key)) {
+		client_close(client);
+		return reply(ctx, "DENIED");
+	}
 
 	global_log("Peer authenticated: " + addr);
 	register_peer(client, addr);
-	send(client, ok());
+	reply(ctx, "OK");
 }
 
-Response ClusterServer::peer_auth(const std::string &key, const std::string& addr) {
-	return (Response() << "PEER_AUTH").serialize_string_body(key).serialize_string_body(addr);
+void ClusterServer::post_request_peer_auth(Context&, const std::string&, const std::string&) {
+	throw std::runtime_error("a peer_auth request was received from a peer");
+}
+
+void ClusterServer::reply_request_peer_auth(Client &client, const std::string &data) {
+	if (data == "OK") {
+		global_log("Connected to peer");
+		post(client, peer_op_t::PING);
+	}
+	else if (data == "DENIED") {
+		global_log("Peer denied connection");
+		m_cluster_key.reset();
+		remove_peer(client);
+	}
+	else {
+		// TODO: report peer
+	}
 }
 
 std::string ClusterServer::make_address(const std::string &host, uint16_t port) {
