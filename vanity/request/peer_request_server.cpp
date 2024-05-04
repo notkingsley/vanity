@@ -29,7 +29,7 @@ void PeerRequestServer::post_request_ping(Context& ctx) {
 	reply(ctx, PONG);
 }
 
-void PeerRequestServer::reply_request_ping(Client &client) { }
+void PeerRequestServer::reply_request_ping(Context& ctx) { }
 
 void PeerRequestServer::handle_post_request(PeerRequest& peer_request, Client &client) {
 	using enum object_t;
@@ -64,6 +64,7 @@ void PeerRequestServer::handle_reply_request(PeerRequest& peer_request, Client &
 	ReplyRequest request{peer_request};
 	auto id = request.get<INT>();
 	auto op = expected_op(id);
+	Context ctx {id, client};
 	bool end = true;
 
 	if (not op) {
@@ -72,13 +73,13 @@ void PeerRequestServer::handle_reply_request(PeerRequest& peer_request, Client &
 
 	switch (*op) {
 		case peer_op_t::PING: {
-			reply_request_ping(client);
+			reply_request_ping(ctx);
 			break;
 		}
 
 		case peer_op_t::PEER_AUTH: {
 			auto data = request.get_exact<STR>(end);
-			reply_request_peer_auth(client, data);
+			reply_request_peer_auth(ctx, data);
 			break;
 		}
 

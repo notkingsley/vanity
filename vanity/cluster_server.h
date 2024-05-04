@@ -16,13 +16,10 @@ namespace vanity {
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer:
-	public virtual BindServer,
-	public virtual ExitServer,
-	public virtual PeerRequestServer,
-	public virtual PeerServer
+class ClusterServer : public virtual BindServer, public virtual PeerRequestServer, public virtual PeerServer
 {
 private:
+	// the minimum length of a cluster key
 	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
 
 	// the key of the cluster, if any
@@ -64,7 +61,7 @@ public:
 	void post_request_peer_auth(Context& ctx, const std::string& key, const std::string& addr) override;
 
 	// a reply to a peer_auth request was received from a peer
-	void reply_request_peer_auth(Client &client, const std::string& data) override;
+	void reply_request_peer_auth(Context& ctx, const std::string& data) override;
 };
 
 } // namespace vanity

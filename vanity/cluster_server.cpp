@@ -87,15 +87,15 @@ void ClusterServer::post_request_peer_auth(Context&, const std::string&, const s
 	throw std::runtime_error("a peer_auth request was received from a peer");
 }
 
-void ClusterServer::reply_request_peer_auth(Client &client, const std::string &data) {
+void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &data) {
 	if (data == "OK") {
 		global_log("Connected to peer");
-		post(client, peer_op_t::PING);
+		post(ctx.client, peer_op_t::PING);
 	}
 	else if (data == "DENIED") {
 		global_log("Peer denied connection");
 		m_cluster_key.reset();
-		remove_peer(client);
+		remove_peer(ctx.client);
 	}
 	else {
 		// TODO: report peer

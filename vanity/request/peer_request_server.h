@@ -35,13 +35,13 @@ public:
 	virtual void post_request_ping(Context& ctx);
 
 	// a reply to a ping request was received from a peer
-	virtual void reply_request_ping(Client &client);
+	virtual void reply_request_ping(Context& ctx);
 
 	// a peer_auth request was received from a peer
 	virtual void post_request_peer_auth(Context& ctx, const std::string& key, const std::string& addr) = 0;
 
 	// a reply to a peer_auth request was received from a peer
-	virtual void reply_request_peer_auth(Client &client, const std::string& data) = 0;
+	virtual void reply_request_peer_auth(Context& ctx, const std::string& data) = 0;
 };
 
 } // namespace vanity
