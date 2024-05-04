@@ -21,6 +21,9 @@ private:
 	// known peers
 	std::unordered_map<TcpClient*, std::string> m_peers;
 
+	// mutex for the peers map
+	std::mutex m_peers_mutex;
+
 	// make an address by joining a host and a port into a single string
 	static std::string make_address(const std::string& host, uint16_t port);
 
@@ -40,6 +43,9 @@ protected:
 
 	// get this server's peer address as a single string
 	std::string own_peer_addr() const;
+
+	// get a set of all known peers
+	std::unordered_set<std::string> get_peers();
 
 public:
 	// register a new peer

@@ -7,6 +7,7 @@
 namespace vanity {
 
 void PeerServer::pre_client_delete_peer(TcpClient &client) {
+	std::lock_guard lock{m_peers_mutex};
 	m_peers.erase(&client);
 }
 
@@ -30,6 +31,7 @@ std::string PeerServer::own_peer_addr() const {
 }
 
 void PeerServer::register_peer(TcpClient &client, const std::string &addr) {
+	std::lock_guard lock{m_peers_mutex};
 	m_peers[&client] = addr;
 	session_auth(client) = client_auth::PEER;
 }
@@ -39,12 +41,14 @@ void PeerServer::register_peer(Client &client, const std::string &addr) {
 }
 
 void PeerServer::remove_peer(Client& client) {
+	std::lock_guard lock{m_peers_mutex};
 	auto& tcp_client = to_tcp(client);
 	m_peers.erase(&tcp_client);
 	tcp_client.close();
 }
 
 void PeerServer::clear_peers() {
+	std::lock_guard lock{m_peers_mutex};
 	for (auto& [peer, _] : m_peers)
 		peer->close();
 
@@ -52,13 +56,17 @@ void PeerServer::clear_peers() {
 }
 
 void PeerServer::request_peers(Client &client) {
-	std::vector<std::string> peers;
+	send(client, ok(get_peers()));
+}
+
+std::unordered_set<std::string> PeerServer::get_peers() {
+	std::lock_guard lock{m_peers_mutex};
+	std::unordered_set<std::string> peers;
 	peers.reserve(m_peers.size());
-
 	for (auto& [_, peer_addr] : m_peers)
-		peers.push_back(peer_addr);
+		peers.insert(peer_addr);
 
-	send(client, ok(peers));
+	return peers;
 }
 
 } // namespace vanity
