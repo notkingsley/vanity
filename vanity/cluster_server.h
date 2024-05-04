@@ -19,11 +19,29 @@ namespace vanity {
 class ClusterServer : public virtual BindServer, public virtual PeerRequestServer, public virtual PeerServer
 {
 private:
+	// a pending application we've sent as a peer_auth request
+	struct PendingPeerAuth {
+		// the key of the application
+		std::string key;
+
+		// the client that sent the request
+		Client& client;
+	};
+
 	// the minimum length of a cluster key
 	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
 
+	// all pending peer_auth requests
+	std::unordered_map<msg_id_t, PendingPeerAuth> m_pending_peer_auths;
+
+	// the mutex for the pending peer_auth requests
+	std::mutex m_pending_peer_auths_mutex;
+
 	// the key of the cluster, if any
 	std::optional<std::string> m_cluster_key;
+
+	// the mutex for the cluster key
+	std::mutex m_cluster_key_mutex;
 
 	// make an address by joining a host and a port into a string
 	static std::string make_address(const std::string& host, uint16_t port);
@@ -32,11 +50,26 @@ private:
 	// returns true if the key is valid, false otherwise
 	bool validate_cluster_key(const std::string& key);
 
+	// sets the cluster key
+	void set_cluster_key(const std::string& key);
+
+	// connect to, and send a peer_auth request to a remote server
+	void cluster_join(Client& client, const std::string& key, const std::string& host, uint16_t port);
+
 	// get this server's address
 	std::string get_own_address() const;
 
 	// connect to a remote server
 	TcpClient& connect(const std::string &host, uint16_t port);
+
+	// add a peer_auth request to the pending requests
+	void add_auth_application(msg_id_t id, const std::string& key, Client& client);
+
+	// pop a pending peer_auth request
+	std::optional<PendingPeerAuth> pop_auth_application(msg_id_t id);
+
+	// clear all pending peer_auth requests
+	void clear_auth_applications();
 
 public:
 	// a message was received from a client
