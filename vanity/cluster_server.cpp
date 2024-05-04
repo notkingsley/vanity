@@ -29,28 +29,14 @@ void ClusterServer::set_cluster_key(const std::string &key) {
 	m_cluster_key = key;
 }
 
-void ClusterServer::cluster_join(Client& client, const std::string &key, const std::string &host, uint16_t port) {
-	auto& peer = connect(host, port);
-	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, get_own_address());
-	register_peer(peer, make_address(host, port));
-	add_auth_application(id, key, client);
-}
-
-std::string ClusterServer::get_own_address() const {
-	auto [host, port] = cluster_addr();
-	return make_address(host, port);
-}
-
-TcpClient &ClusterServer::connect(const std::string &host, uint16_t port) {
-	return add_client(TcpClient{socket::Socket::connect(host.c_str(), port)});
-}
-
 void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string &host, uint16_t port) {
 	std::lock_guard lock{m_cluster_key_mutex};
 	if (m_cluster_key)
 		return send(client, error("already in a cluster"));
 
-	cluster_join(client, key, host, port);
+	auto& peer = peer_connect(host, port);
+	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr());
+	add_auth_application(id, key, client);
 }
 
 void ClusterServer::request_cluster_leave(Client &client) {
@@ -79,7 +65,8 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	if (key.size() < M_MIN_CLUSTER_KEY_LEN)
 		return send(client, error("key is too short"));
 
-	set_cluster_key(key);
+	clear_auth_applications();
+	m_cluster_key = key;
 	send(client, ok(*m_cluster_key));
 }
 
@@ -119,10 +106,6 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 	else {
 		// TODO: report peer
 	}
-}
-
-std::string ClusterServer::make_address(const std::string &host, uint16_t port) {
-	return host + ":" + std::to_string(port);
 }
 
 void ClusterServer::add_auth_application(msg_id_t id, const std::string &key, Client &client) {

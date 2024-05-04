@@ -13,8 +13,7 @@ namespace vanity {
 /*
  * An ExitServer is a server that handles closing clients
  */
-class ExitServer:
-	public virtual RequestServer
+class ExitServer : public virtual RequestServer
 {
 protected:
 	// close a client

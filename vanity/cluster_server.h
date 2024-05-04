@@ -5,7 +5,6 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
-#include "bind_server.h"
 #include "peer_server.h"
 #include "request/peer_request_server.h"
 #include "utils/hash.h"
@@ -16,7 +15,7 @@ namespace vanity {
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual BindServer, public virtual PeerRequestServer, public virtual PeerServer
+class ClusterServer : public virtual PeerRequestServer, public virtual PeerServer
 {
 private:
 	// a pending application we've sent as a peer_auth request
@@ -43,24 +42,12 @@ private:
 	// the mutex for the cluster key
 	std::mutex m_cluster_key_mutex;
 
-	// make an address by joining a host and a port into a string
-	static std::string make_address(const std::string& host, uint16_t port);
-
 	// validate a cluster key to authenticate a peer
 	// returns true if the key is valid, false otherwise
 	bool validate_cluster_key(const std::string& key);
 
 	// sets the cluster key
 	void set_cluster_key(const std::string& key);
-
-	// connect to, and send a peer_auth request to a remote server
-	void cluster_join(Client& client, const std::string& key, const std::string& host, uint16_t port);
-
-	// get this server's address
-	std::string get_own_address() const;
-
-	// connect to a remote server
-	TcpClient& connect(const std::string &host, uint16_t port);
 
 	// add a peer_auth request to the pending requests
 	void add_auth_application(msg_id_t id, const std::string& key, Client& client);

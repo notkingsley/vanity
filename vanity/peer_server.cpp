@@ -10,6 +10,25 @@ void PeerServer::pre_client_delete_peer(TcpClient &client) {
 	m_peers.erase(&client);
 }
 
+std::string PeerServer::make_address(const std::string &host, uint16_t port) {
+	return host + ":" + std::to_string(port);
+}
+
+TcpClient &PeerServer::connect(const std::string &host, uint16_t port) {
+	return add_client(TcpClient{socket::Socket::connect(host.c_str(), port)});
+}
+
+Client& PeerServer::peer_connect(const std::string &host, uint16_t port) {
+	auto& peer = connect(host, port);
+	register_peer(peer, make_address(host, port));
+	return peer;
+}
+
+std::string PeerServer::own_peer_addr() const {
+	auto [host, port] = cluster_addr();
+	return make_address(host, port);
+}
+
 void PeerServer::register_peer(TcpClient &client, const std::string &addr) {
 	m_peers[&client] = addr;
 	session_auth(client) = client_auth::PEER;
