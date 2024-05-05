@@ -39,4 +39,13 @@ ReplyMessage &ReplyMessage::serialize_length(size_t length) {
 	return *this << '(' << std::to_string(length) << ')';
 }
 
+ReplyMessage &ReplyMessage::serialize(const std::unordered_set<std::string> &data) {
+	serialize_length(data.size());
+
+	*this << '{';
+	for (const auto &s: data)
+		serialize(s);
+	return *this << '}';
+}
+
 } // namespace vanity

@@ -5,7 +5,10 @@
 #ifndef VANITY_REPLY_MESSAGE_H
 #define VANITY_REPLY_MESSAGE_H
 
+#include <unordered_set>
+
 #include "sendable.h"
+
 
 namespace vanity {
 
@@ -30,11 +33,14 @@ public:
 	// serialize a string to the message
 	ReplyMessage& serialize(const std::string& data);
 
-	// serialize an int64_t to a Response
+	// serialize an int64_t to the ReplyMessage
 	ReplyMessage& serialize(int64_t data);
 
-	// serialize a length to the message
+	// serialize a length to the ReplyMessage
 	ReplyMessage& serialize_length(size_t length);
+
+	// serialize a set of strings to the ReplyMessage
+	ReplyMessage& serialize(const std::unordered_set<std::string>& data);
 };
 
 } // namespace vanity
