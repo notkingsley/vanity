@@ -25,7 +25,7 @@ bool ClusterServer::validate_cluster_key(const std::string &key) {
 
 void ClusterServer::set_cluster_key(const std::string &key) {
 	std::lock_guard lock{m_cluster_key_mutex};
-	clear_auth_applications();
+	clear_auth_applications(error("already in a cluster"));
 	m_cluster_key = key;
 }
 
@@ -36,7 +36,7 @@ void ClusterServer::request_cluster_join(Client &client, const std::string& key,
 
 	auto& peer = peer_connect(host, port);
 	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr());
-	add_auth_application(id, key, client);
+	add_auth_application(id, key, &client);
 }
 
 void ClusterServer::request_cluster_leave(Client &client) {
@@ -45,6 +45,7 @@ void ClusterServer::request_cluster_leave(Client &client) {
 		return send(client, error("not in a cluster"));
 
 	clear_peers();
+	clear_auth_applications(error("cluster left"));
 	m_cluster_key.reset();
 	send(client, ok());
 }
@@ -65,7 +66,7 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 	if (key.size() < M_MIN_CLUSTER_KEY_LEN)
 		return send(client, error("key is too short"));
 
-	clear_auth_applications();
+	clear_auth_applications(error("already in a cluster"));
 	m_cluster_key = key;
 	send(client, ok(*m_cluster_key));
 }
@@ -73,14 +74,14 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
 	Context ctx {id, client};
 
-	if (not validate_cluster_key(key)) {
-		client_close(client);
-		return reply(ctx, "DENIED");
+	if (validate_cluster_key(key)) {
+		register_peer(client, addr);
+		reply(ctx, "OK");
 	}
-
-	global_log("Peer authenticated: " + addr);
-	register_peer(client, addr);
-	reply(ctx, "OK");
+	else {
+		client_close(client);
+		reply(ctx, "DENIED");
+	}
 }
 
 void ClusterServer::post_request_peer_auth(Context&, const std::string&, const std::string&) {
@@ -93,44 +94,21 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 		return remove_peer(ctx.client);
 
 	if (data == "OK") {
-		global_log("Connected to peer");
 		set_cluster_key(pending->key);
-		send(pending->client, ok());
+		if (pending->client)
+			send(*pending->client, ok());
+
 		post(ctx.client, peer_op_t::PING);
 	}
 	else if (data == "DENIED") {
-		global_log("Peer denied connection");
-		send(pending->client, error("peer denied connection"));
+		if (pending->client)
+			send(*pending->client, error("peer denied connection"));
+
 		remove_peer(ctx.client);
 	}
 	else {
 		// TODO: report peer
 	}
-}
-
-void ClusterServer::add_auth_application(msg_id_t id, const std::string &key, Client &client) {
-	std::lock_guard lock{m_pending_peer_auths_mutex};
-	m_pending_peer_auths.emplace(id, PendingPeerAuth{key, client});
-}
-
-auto ClusterServer::pop_auth_application(msg_id_t id) -> std::optional<PendingPeerAuth> {
-	std::lock_guard lock{m_pending_peer_auths_mutex};
-	auto it = m_pending_peer_auths.find(id);
-
-	if (not m_pending_peer_auths.contains(id))
-		return std::nullopt;
-
-	auto pending = it->second;
-	m_pending_peer_auths.erase(it);
-	return pending;
-}
-
-void ClusterServer::clear_auth_applications() {
-	std::lock_guard lock{m_pending_peer_auths_mutex};
-	for (auto& [_, pending] : m_pending_peer_auths)
-		send(pending.client, error("already in a cluster"));
-
-	m_pending_peer_auths.clear();
 }
 
 } // namespace vanity

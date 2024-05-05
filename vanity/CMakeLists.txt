@@ -18,6 +18,7 @@ add_library(libvanity STATIC
 	cluster_server.cpp
 	config.cpp
 	event_server.cpp
+	peer_auth_application_server.cpp
 	peer_server.cpp
 	pipe_server.cpp
 	poll_server.cpp

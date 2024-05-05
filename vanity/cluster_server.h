@@ -5,33 +5,20 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
+#include "peer_auth_application_server.h"
 #include "peer_server.h"
+
 
 namespace vanity {
 
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual PeerServer
+class ClusterServer : public virtual PeerServer, public virtual PeerAuthApplicationServer
 {
 private:
-	// a pending application we've sent as a peer_auth request
-	struct PendingPeerAuth {
-		// the key of the application
-		std::string key;
-
-		// the client that sent the request
-		Client& client;
-	};
-
 	// the minimum length of a cluster key
 	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
-
-	// all pending peer_auth requests
-	std::unordered_map<msg_id_t, PendingPeerAuth> m_pending_peer_auths;
-
-	// the mutex for the pending peer_auth requests
-	std::mutex m_pending_peer_auths_mutex;
 
 	// the key of the cluster, if any
 	std::optional<std::string> m_cluster_key;
@@ -45,15 +32,6 @@ private:
 
 	// sets the cluster key
 	void set_cluster_key(const std::string& key);
-
-	// add a peer_auth request to the pending requests
-	void add_auth_application(msg_id_t id, const std::string& key, Client& client);
-
-	// pop a pending peer_auth request
-	std::optional<PendingPeerAuth> pop_auth_application(msg_id_t id);
-
-	// clear all pending peer_auth requests
-	void clear_auth_applications();
 
 public:
 	// a message was received from a client
