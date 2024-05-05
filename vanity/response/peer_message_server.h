@@ -2,8 +2,8 @@
 // Created by kingsli on 5/2/24.
 //
 
-#ifndef VANITY_POST_MESSAGE_SERVER_H
-#define VANITY_POST_MESSAGE_SERVER_H
+#ifndef VANITY_PEER_MESSAGE_SERVER_H
+#define VANITY_PEER_MESSAGE_SERVER_H
 
 #include <mutex>
 #include <optional>
@@ -11,15 +11,16 @@
 
 #include "abstract_server.h"
 #include "post_message.h"
+#include "reply_message.h"
 
 
 namespace vanity {
 
 /*
- * A PostMessageServer lets us send messages to a peer
- * and track the messages we've sent
+ * A PeerMessageServer lets us send messages to a peer
+ * and track the messages we've sent and reply to messages
  */
-class PostMessageServer : public virtual AbstractServer
+class PeerMessageServer : public virtual AbstractServer
 {
 private:
 	// the operations of expected replies
@@ -50,7 +51,17 @@ private:
 	// and the op comes before the id
 	std::pair<PostMessage, msg_id_t> new_plain_message(peer_op_t op);
 
+	// create a new ReplyMessage with the given id
+	// return the new message
+	static ReplyMessage new_reply(msg_id_t id);
+
 protected:
+	// context passed to handlers
+	struct Context {
+		msg_id_t msg_id;
+		Client &client;
+	};
+
 	// get the expected ops for a message id
 	// also removes the expected op
 	std::optional<peer_op_t> expected_op(msg_id_t id);
@@ -77,8 +88,14 @@ public:
 		send(peer, (msg.serialize(args), ...).move());
 		return id;
 	}
+
+	// reply to a message with a string
+	template<typename T>
+	void reply(Context& ctx, const T& data) {
+		send(ctx.client, new_reply(ctx.msg_id).serialize(data).move());
+	}
 };
 
 } // namespace vanity
 
-#endif //VANITY_POST_MESSAGE_SERVER_H
+#endif //VANITY_PEER_MESSAGE_SERVER_H

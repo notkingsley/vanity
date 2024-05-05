@@ -3,10 +3,9 @@ project(vanity_response)
 include_directories(.)
 
 add_library(vanity_response STATIC
+	peer_message_server.cpp
 	post_message.cpp
-	post_message_server.cpp
 	reply_message.cpp
-	reply_message_server.cpp
 	response.cpp
 	sendable.cpp
 )

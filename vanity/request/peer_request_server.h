@@ -6,15 +6,14 @@
 #define VANITY_PEER_REQUEST_SERVER_H
 
 #include "peer_request.h"
-#include "response/post_message_server.h"
-#include "response/reply_message_server.h"
+#include "response/peer_message_server.h"
 
 namespace vanity {
 
 /*
  * A PeerRequestServer is a server that handles messages from peers
  */
-class PeerRequestServer : public virtual PostMessageServer, public virtual ReplyMessageServer
+class PeerRequestServer : public virtual PeerMessageServer
 {
 private:
 	// string for a PONG reply
