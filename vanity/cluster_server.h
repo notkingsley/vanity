@@ -5,16 +5,14 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
-#include "peer_auth_application_server.h"
 #include "peer_server.h"
-
 
 namespace vanity {
 
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual PeerServer, public virtual PeerAuthApplicationServer
+class ClusterServer : public virtual PeerServer
 {
 private:
 	// the minimum length of a cluster key

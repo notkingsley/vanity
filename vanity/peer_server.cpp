@@ -19,7 +19,7 @@ TcpClient &PeerServer::connect(const std::string &host, uint16_t port) {
 	return add_client(TcpClient{socket::Socket::connect(host.c_str(), port)});
 }
 
-Client& PeerServer::peer_connect(const std::string &host, uint16_t port) {
+Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto& peer = connect(host, port);
 	register_peer(peer, make_address(host, port));
 	return peer;
@@ -55,10 +55,6 @@ void PeerServer::clear_peers() {
 	m_peers.clear();
 }
 
-void PeerServer::request_peers(Client &client) {
-	send(client, ok(get_peers()));
-}
-
 std::unordered_set<std::string> PeerServer::get_peers() {
 	std::unordered_set<std::string> peers;
 	std::lock_guard lock{m_peers_mutex};
@@ -68,6 +64,16 @@ std::unordered_set<std::string> PeerServer::get_peers() {
 		peers.insert(peer_addr);
 
 	return peers;
+}
+
+void PeerServer::peer_connect(const std::string &host, uint16_t port, const std::string &key, Client *client) {
+	auto& peer = new_peer(host, port);
+	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr());
+	add_auth_application(id, key, client);
+}
+
+void PeerServer::request_peers(Client &client) {
+	send(client, ok(get_peers()));
 }
 
 void PeerServer::post_request_peers(Context &ctx) {

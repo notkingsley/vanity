@@ -8,6 +8,7 @@
 #include "bind_server.h"
 #include "client/client_server.h"
 #include "client/exit_server.h"
+#include "peer_auth_application_server.h"
 #include "request/peer_request_server.h"
 
 
@@ -20,6 +21,7 @@ class PeerServer:
 	public virtual BindServer,
 	public virtual ClientServer,
 	public virtual ExitServer,
+	public virtual PeerAuthApplicationServer,
 	public virtual PeerRequestServer
 {
 private:
@@ -42,15 +44,18 @@ private:
 	// register a new peer
 	void register_peer(TcpClient& client, const std::string& addr);
 
-protected:
 	// connect to and register a new peer
-	Client& peer_connect(const std::string& host, uint16_t port);
+	Client& new_peer(const std::string& host, uint16_t port);
 
 	// get this server's peer address as a single string
 	std::string own_peer_addr() const;
 
+protected:
 	// get a set of all known peers
 	std::unordered_set<std::string> get_peers();
+
+	// connect to and authenticate with a peer
+	void peer_connect(const std::string& host, uint16_t port, const std::string& key, Client* client = nullptr);
 
 public:
 	// register a new peer

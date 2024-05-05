@@ -34,9 +34,7 @@ void ClusterServer::request_cluster_join(Client &client, const std::string& key,
 	if (m_cluster_key)
 		return send(client, error("already in a cluster"));
 
-	auto& peer = peer_connect(host, port);
-	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr());
-	add_auth_application(id, key, &client);
+	peer_connect(host, port, key, &client);
 }
 
 void ClusterServer::request_cluster_leave(Client &client) {
