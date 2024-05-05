@@ -41,6 +41,12 @@ public:
 
 	// a reply to a peer_auth request was received from a peer
 	virtual void reply_request_peer_auth(Context& ctx, const std::string& data) = 0;
+
+	// a peers request was received from a peer
+	virtual void post_request_peers(Context& ctx) = 0;
+
+	// a reply to a peers request was received from a peer
+	virtual void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) = 0;
 };
 
 } // namespace vanity

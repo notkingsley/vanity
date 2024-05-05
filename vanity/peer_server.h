@@ -8,6 +8,7 @@
 #include "bind_server.h"
 #include "client/client_server.h"
 #include "client/exit_server.h"
+#include "request/peer_request_server.h"
 
 
 namespace vanity {
@@ -15,7 +16,11 @@ namespace vanity {
 /*
  * A PeerServer holds and manages all peers
  */
-class PeerServer : public virtual BindServer, public virtual ClientServer, public virtual ExitServer
+class PeerServer:
+	public virtual BindServer,
+	public virtual ClientServer,
+	public virtual ExitServer,
+	public virtual PeerRequestServer
 {
 private:
 	// known peers
@@ -59,6 +64,12 @@ public:
 
 	// a peers request was received from a client
 	void request_peers(Client& client) override;
+
+	// a peers request was received from a peer
+	void post_request_peers(Context& ctx) override;
+
+	// a reply to a peers request was received from a peer
+	void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) override;
 };
 
 } // namespace vanity

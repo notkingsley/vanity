@@ -13,6 +13,7 @@ namespace vanity {
 enum class peer_op_t : uint {
 	PING,
 	PEER_AUTH,
+	PEERS,
 
 	MAX_OP,
 };
@@ -20,6 +21,7 @@ enum class peer_op_t : uint {
 const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
 	{peer_op_t::PING,               "PING"},
 	{peer_op_t::PEER_AUTH,		    "PEER_AUTH"},
+	{peer_op_t::PEERS,              "PEERS"},
 };
 
 // the type of the identifier of a message

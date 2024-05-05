@@ -48,6 +48,10 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 			post_request_peer_auth(ctx, key, addr);
 			break;
 		}
+		case peer_op_t::PEERS: {
+			post_request_peers(ctx);
+			break;
+		}
 
 		case peer_op_t::MAX_OP: {
 			// TODO: report peer
@@ -74,6 +78,11 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 		case peer_op_t::PEER_AUTH: {
 			auto data = request.get_exact<STR>(end);
 			reply_request_peer_auth(ctx, data);
+			break;
+		}
+		case peer_op_t::PEERS: {
+			auto peers = request.get_exact<SET>(end);
+			reply_request_peers(ctx, peers);
 			break;
 		}
 

@@ -60,13 +60,21 @@ void PeerServer::request_peers(Client &client) {
 }
 
 std::unordered_set<std::string> PeerServer::get_peers() {
-	std::lock_guard lock{m_peers_mutex};
 	std::unordered_set<std::string> peers;
+	std::lock_guard lock{m_peers_mutex};
+
 	peers.reserve(m_peers.size());
 	for (auto& [_, peer_addr] : m_peers)
 		peers.insert(peer_addr);
 
 	return peers;
+}
+
+void PeerServer::post_request_peers(Context &ctx) {
+	reply(ctx, get_peers());
+}
+
+void PeerServer::reply_request_peers(Context &ctx, const std::unordered_set<std::string> &peers) {
 }
 
 } // namespace vanity

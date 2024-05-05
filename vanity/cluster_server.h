@@ -6,16 +6,13 @@
 #define VANITY_CLUSTER_SERVER_H
 
 #include "peer_server.h"
-#include "request/peer_request_server.h"
-#include "utils/hash.h"
-
 
 namespace vanity {
 
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual PeerRequestServer, public virtual PeerServer
+class ClusterServer : public virtual PeerServer
 {
 private:
 	// a pending application we've sent as a peer_auth request
