@@ -58,13 +58,13 @@ protected:
 	// the server is being exited. this deletes the socket listeners
 	void stop();
 
+	// validate that a port is in the valid range
+	static bool validate_port(int64_t port);
+
 private:
 	// bind to a host and port
 	// requires that the host and port are not already bound
 	void bind(const std::string& host, uint16_t port);
-
-	// validate that a port is in the valid range
-	static bool validate_port(int64_t port) ;
 };
 
 } // namespace vanity
