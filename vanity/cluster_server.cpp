@@ -32,7 +32,7 @@ void ClusterServer::request_cluster_leave(Client &client) {
 }
 
 void ClusterServer::request_cluster_key(Client &client) {
-	if (auto& key = get_cluster_key_opt())
+	if (auto& key = get_cluster_key())
 		send(client, ok(*key));
 	else
 		send(client, null());
@@ -75,7 +75,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 		if (pending->client)
 			send(*pending->client, ok());
 
-		post(ctx.client, peer_op_t::PING);
+		peer_sync(ctx.client);
 	}
 	else if (data == "DENIED") {
 		if (pending->client)

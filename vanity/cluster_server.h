@@ -5,7 +5,6 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
-#include "cluster_auth_server.h"
 #include "peer_server.h"
 
 namespace vanity {
@@ -13,7 +12,7 @@ namespace vanity {
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual ClusterAuthServer, public virtual PeerServer
+class ClusterServer : public virtual PeerServer
 {
 public:
 	// a message was received from a client
