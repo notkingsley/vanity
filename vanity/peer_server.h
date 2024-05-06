@@ -40,9 +40,6 @@ private:
 	// unmake an address by splitting a host and a port from a single string
 	static std::pair<std::string, uint16_t> unmake_address(const std::string& addr);
 
-	// connect to a remote server
-	TcpClient& connect(const std::string &host, uint16_t port);
-
 	// register a new peer
 	void register_peer(TcpClient& client, const std::string& addr);
 

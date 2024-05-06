@@ -23,13 +23,11 @@ std::pair<std::string, uint16_t> PeerServer::unmake_address(const std::string &a
 	return {host, static_cast<uint16_t>(port)};
 }
 
-TcpClient &PeerServer::connect(const std::string &host, uint16_t port) {
-	return add_client(TcpClient{socket::Socket::connect(host.c_str(), port)});
-}
-
 Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
-	auto& peer = connect(host, port);
-	register_peer(peer, make_address(host, port));
+	auto sock = socket::Socket::connect(host.c_str(), port);
+	auto [remote_host, remote_port] = sock.get_remote_addr();
+	auto& peer = add_client(TcpClient{std::move(sock)});
+	register_peer(peer, make_address(remote_host, remote_port));
 	return peer;
 }
 
