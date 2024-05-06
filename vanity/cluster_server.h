@@ -5,6 +5,7 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
+#include "cluster_auth_server.h"
 #include "peer_server.h"
 
 namespace vanity {
@@ -12,25 +13,8 @@ namespace vanity {
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual PeerServer
+class ClusterServer : public virtual ClusterAuthServer, public virtual PeerServer
 {
-private:
-	// the minimum length of a cluster key
-	static constexpr auto M_MIN_CLUSTER_KEY_LEN = 12;
-
-	// the key of the cluster, if any
-	std::optional<std::string> m_cluster_key;
-
-	// the mutex for the cluster key
-	std::mutex m_cluster_key_mutex;
-
-	// validate a cluster key to authenticate a peer
-	// returns true if the key is valid, false otherwise
-	bool validate_cluster_key(const std::string& key);
-
-	// sets the cluster key
-	void set_cluster_key(const std::string& key);
-
 public:
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;

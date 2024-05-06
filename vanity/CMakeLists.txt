@@ -15,6 +15,7 @@ add_subdirectory(wal)
 
 add_library(libvanity STATIC
 	bind_server.cpp
+	cluster_auth_server.cpp
 	cluster_server.cpp
 	config.cpp
 	event_server.cpp
