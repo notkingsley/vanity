@@ -52,6 +52,9 @@ public:
 	// write from a buffer to the socket
 	size_t write(const char* buffer, size_t buffer_size) const;
 
+	// get the host and port of the remote socket
+	std::pair<std::string, uint16_t> get_remote_addr() const;
+
 	static Socket connect(const char* host, uint16_t port);
 };
 

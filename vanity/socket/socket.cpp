@@ -85,6 +85,18 @@ Socket Socket::connect(const char *host, uint16_t port) {
 	return Socket{fd};
 }
 
+std::pair<std::string, uint16_t> Socket::get_remote_addr() const {
+	sockaddr_in addr{};
+	socklen_t addr_size = sizeof(addr);
+
+	if (getpeername(m_fd, (sockaddr*)&addr, &addr_size) < 0)
+		throw SocketError("Could not get the remote socket name");
+
+	char host[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &addr.sin_addr, host, sizeof(host));
+	return {host, ntohs(addr.sin_port)};
+}
+
 
 ServerSocket::ServerSocket() {
 	m_fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
