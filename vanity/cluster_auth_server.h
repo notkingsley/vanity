@@ -44,11 +44,8 @@ protected:
 	// leave the cluster, if in one
 	void leave_cluster();
 
-	// get the cluster key, throws if not in a cluster
-	const std::string& get_cluster_key();
-
-	// get the cluster key, return std::nullopt if not in a cluster
-	const std::optional<std::string>& get_cluster_key_opt();
+	// get the cluster key
+	const std::optional<std::string>& get_cluster_key();
 };
 
 } // namespace vanity

@@ -36,15 +36,7 @@ void ClusterAuthServer::leave_cluster() {
 	m_cluster_key.reset();
 }
 
-const std::string &ClusterAuthServer::get_cluster_key() {
-	std::lock_guard lock{m_cluster_key_mutex};
-	if (not m_cluster_key)
-		throw std::runtime_error("not in a cluster");
-
-	return *m_cluster_key;
-}
-
-const std::optional<std::string> &ClusterAuthServer::get_cluster_key_opt() {
+const std::optional<std::string> &ClusterAuthServer::get_cluster_key() {
 	std::lock_guard lock{m_cluster_key_mutex};
 	return m_cluster_key;
 }
