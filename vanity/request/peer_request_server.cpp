@@ -8,6 +8,27 @@
 namespace vanity {
 
 void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
+	try	{
+		handle_peer_inner(msg, client);
+	}
+	catch (const InvalidRequest& e) {
+		// TODO: report peer
+	}
+	catch (const Exception& e) {
+		logger().error(e.what());
+		// TODO: reply with error
+	}
+	catch (const std::exception& e) {
+		logger().error(e.what());
+		// TODO: reply with error
+	}
+	catch (...) {
+		logger().error("unknown error in request: " + msg);
+		// TODO: reply with error
+	}
+}
+
+void PeerRequestServer::handle_peer_inner(const std::string &msg, Client &client) {
 	PeerRequest request{msg};
 	auto request_t = request.get_request_t();
 	auto id = request.get<object_t::INT>();

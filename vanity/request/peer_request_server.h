@@ -6,6 +6,7 @@
 #define VANITY_PEER_REQUEST_SERVER_H
 
 #include "peer_request.h"
+#include "log_server.h"
 #include "response/peer_message_server.h"
 
 namespace vanity {
@@ -13,7 +14,7 @@ namespace vanity {
 /*
  * A PeerRequestServer is a server that handles messages from peers
  */
-class PeerRequestServer : public virtual PeerMessageServer
+class PeerRequestServer : public virtual LogServer, public virtual PeerMessageServer
 {
 private:
 	// string for a PONG reply
@@ -28,6 +29,9 @@ private:
 protected:
 	// handle a peer's request
 	void handle_peer(const std::string &msg, Client &client);
+
+	// same as handle_peer, but doesn't handle exceptions
+	void handle_peer_inner(const std::string &msg, Client &client);
 
 public:
 	// a ping request was received from a peer
