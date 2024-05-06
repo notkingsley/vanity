@@ -5,8 +5,8 @@
 #ifndef VANITY_PEER_REQUEST_H
 #define VANITY_PEER_REQUEST_H
 
+#include "cluster/peer_operations.h"
 #include "extractable.h"
-#include "peer_operations.h"
 
 
 namespace vanity {

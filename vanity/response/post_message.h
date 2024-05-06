@@ -7,7 +7,7 @@
 
 #include <array>
 
-#include "peer_operations.h"
+#include "cluster/peer_operations.h"
 #include "sendable.h"
 
 namespace vanity {

@@ -7,6 +7,7 @@ include_directories(.)
 
 add_subdirectory(auth)
 add_subdirectory(client)
+add_subdirectory(cluster)
 add_subdirectory(db)
 add_subdirectory(request)
 add_subdirectory(response)
@@ -15,12 +16,8 @@ add_subdirectory(wal)
 
 add_library(libvanity STATIC
 	bind_server.cpp
-	cluster_auth_server.cpp
-	cluster_server.cpp
 	config.cpp
 	event_server.cpp
-	peer_auth_application_server.cpp
-	peer_server.cpp
 	pipe_server.cpp
 	poll_server.cpp
 	pubsub_server.cpp
@@ -33,6 +30,7 @@ add_library(libvanity STATIC
 target_link_libraries(libvanity
 	vanity_auth
 	vanity_client
+	vanity_cluster
     vanity_db
 	vanity_request
 	vanity_response

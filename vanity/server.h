@@ -6,8 +6,7 @@
 #define VANITY_SERVER_H
 
 #include "auth/locked_auth_server.h"
-#include "bind_server.h"
-#include "cluster_server.h"
+#include "cluster/cluster_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
 #include "pipe_server.h"
