@@ -22,12 +22,12 @@ class ClusterKeyTest(unittest.TestCase):
         Test cluster_new.
         """
         with make_client(port=self.port) as client:
-            response = client.cluster_new("bad_cluster_key")
+            response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
-            self.assertEqual(response.value, "bad_cluster_key")
+            self.assertEqual(response.value, "test_cluster_key")
             response = client.cluster_key()
             self.assertTrue(response.is_ok())
-            self.assertEqual(response.value, "bad_cluster_key")
+            self.assertEqual(response.value, "test_cluster_key")
 
     def test_cluster_new_no_key(self):
         """
@@ -43,9 +43,9 @@ class ClusterKeyTest(unittest.TestCase):
         Test cluster_new when already in a cluster.
         """
         with make_client(port=self.port) as client:
-            response = client.cluster_new("bad_cluster_key")
+            response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
-            response = client.cluster_new("bad_cluster_key_2")
+            response = client.cluster_new("test_cluster_key_2")
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "already in a cluster")
 
@@ -62,18 +62,18 @@ class ClusterKeyTest(unittest.TestCase):
         Test cluster_key.
         """
         with make_client(port=self.port) as client:
-            response = client.cluster_new("bad_cluster_key")
+            response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             response = client.cluster_key()
             self.assertTrue(response.is_ok())
-            self.assertEqual(response.value, "bad_cluster_key")
+            self.assertEqual(response.value, "test_cluster_key")
 
     def test_cluster_leave(self):
         """
         Test cluster_leave.
         """
         with make_client(port=self.port) as client:
-            response = client.cluster_new("bad_cluster_key")
+            response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             response = client.cluster_leave()
             self.assertTrue(response.is_ok())
@@ -114,7 +114,7 @@ class ClusterCommandsNoAdmin(unittest.TestCase):
         """
         Test cluster_new.
         """
-        response = self.client.cluster_new("bad_cluster_key")
+        response = self.client.cluster_new("test_cluster_key")
         self.assertTrue(response.is_denied())
 
     def test_cluster_key(self):
@@ -130,3 +130,255 @@ class ClusterCommandsNoAdmin(unittest.TestCase):
         """
         response = self.client.cluster_leave()
         self.assertTrue(response.is_denied())
+
+    def test_cluster_join(self):
+        """
+        Test cluster_join.
+        """
+        response = self.client.cluster_join("test_cluster_key", "badhost", 1234)
+        self.assertTrue(response.is_denied())
+
+
+class ClusterJoinTest(unittest.TestCase):
+    """
+    Test the cluster_join command.
+    """
+
+    PEER_SYNC_DELAY = 0.1
+
+    def setUp(self) -> None:
+        self.host = "127.0.0.1"
+        self.port1 = get_free_port()
+        self.port2 = get_free_port()
+        self.port3 = get_free_port()
+        self.port4 = get_free_port()
+        self.cluster_port1 = get_free_port()
+        self.cluster_port2 = get_free_port()
+        self.cluster_port3 = get_free_port()
+        self.cluster_port4 = get_free_port()
+        self.server1 = ServerHandle(
+            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+        )
+        self.server2 = ServerHandle(
+            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+        )
+        self.server3 = ServerHandle(
+            port=self.port3, host=self.host, cluster_port=self.cluster_port3
+        )
+        self.server4 = ServerHandle(
+            port=self.port4, host=self.host, cluster_port=self.cluster_port4
+        )
+        self.server1.start()
+        self.server2.start()
+        self.server3.start()
+        self.server4.start()
+        self.client1 = make_client(port=self.port1)
+        self.client2 = make_client(port=self.port2)
+        self.client3 = make_client(port=self.port3)
+        self.client4 = make_client(port=self.port4)
+        response = self.client1.cluster_new("test_cluster_key")
+        self.assertTrue(response.is_ok())
+
+    def tearDown(self) -> None:
+        self.client4.close()
+        self.client3.close()
+        self.client2.close()
+        self.client1.close()
+        self.server4.stop()
+        self.server3.stop()
+        self.server2.stop()
+        self.server1.stop()
+
+    def wait_for_peers_sync(self):
+        import time
+
+        time.sleep(self.PEER_SYNC_DELAY)
+
+    def test_cluster_join(self):
+        """
+        Test cluster_join, peers, and cluster_leave.
+        """
+        response = self.client2.cluster_join(
+            "test_cluster_key", self.host, self.cluster_port1
+        )
+        self.assertTrue(response.is_ok())
+        response = self.client3.cluster_join(
+            "test_cluster_key", self.host, self.cluster_port2
+        )
+        self.assertTrue(response.is_ok())
+        response = self.client4.cluster_join(
+            "test_cluster_key", self.host, self.cluster_port3
+        )
+        self.assertTrue(response.is_ok())
+
+        self.wait_for_peers_sync()
+
+        response = self.client1.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port2}",
+                f"{self.host}:{self.cluster_port3}",
+                f"{self.host}:{self.cluster_port4}",
+            },
+        )
+
+        response = self.client2.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port1}",
+                f"{self.host}:{self.cluster_port3}",
+                f"{self.host}:{self.cluster_port4}",
+            },
+        )
+
+        response = self.client3.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port1}",
+                f"{self.host}:{self.cluster_port2}",
+                f"{self.host}:{self.cluster_port4}",
+            },
+        )
+
+        response = self.client4.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port1}",
+                f"{self.host}:{self.cluster_port2}",
+                f"{self.host}:{self.cluster_port3}",
+            },
+        )
+
+        response = self.client1.cluster_leave()
+        self.assertTrue(response.is_ok())
+        response = self.client1.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, set())
+
+        self.wait_for_peers_sync()
+
+        response = self.client2.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port3}",
+                f"{self.host}:{self.cluster_port4}",
+            },
+        )
+
+        response = self.client3.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port2}",
+                f"{self.host}:{self.cluster_port4}",
+            },
+        )
+
+        response = self.client4.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(
+            response.value,
+            {
+                f"{self.host}:{self.cluster_port2}",
+                f"{self.host}:{self.cluster_port3}",
+            },
+        )
+
+        response = self.client3.cluster_leave()
+        self.assertTrue(response.is_ok())
+        response = self.client3.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, set())
+
+        response = self.client2.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port4}"})
+
+        response = self.client4.peers()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port2}"})
+
+
+class ClusterJoinFailTest(unittest.TestCase):
+    """
+    Test the cluster_join command when it should fail.
+    """
+
+    def setUp(self) -> None:
+        self.host = "127.0.0.1"
+        self.port1 = get_free_port()
+        self.port2 = get_free_port()
+        self.cluster_port1 = get_free_port()
+        self.cluster_port2 = get_free_port()
+        self.server1 = ServerHandle(
+            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+        )
+        self.server2 = ServerHandle(
+            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+        )
+        self.server1.start()
+        self.server2.start()
+        self.client1 = make_client(port=self.port1)
+        self.client2 = make_client(port=self.port2)
+
+    def test_cluster_join_bad_key(self):
+        """
+        Test cluster_join with a bad key.
+        """
+        response = self.client1.cluster_new("test_cluster_key")
+        self.assertTrue(response.is_ok())
+        response = self.client2.cluster_join(
+            "bad_cluster_key", self.host, self.cluster_port1
+        )
+        self.assertTrue(response.is_error())
+        self.assertEqual(response.body, "peer denied connection")
+
+    def test_cluster_join_no_cluster(self):
+        """
+        Test cluster_join when not in a cluster.
+        """
+        response = self.client2.cluster_join(
+            "test_cluster_key", self.host, self.cluster_port1
+        )
+        self.assertTrue(response.is_error())
+        self.assertEqual(response.body, "peer denied connection")
+
+    def test_cluster_join_already_in_cluster(self):
+        """
+        Test cluster_join when already in a cluster.
+        """
+        response = self.client1.cluster_new("test_cluster_key")
+        self.assertTrue(response.is_ok())
+        response = self.client2.cluster_join(
+            "test_cluster_key", self.host, self.cluster_port1
+        )
+        self.assertTrue(response.is_ok())
+
+        port3 = get_free_port()
+        cluster_port3 = get_free_port()
+        server3 = ServerHandle(port=port3, host=self.host, cluster_port=cluster_port3)
+        with server3, make_client(port=port3) as client3:
+            response = client3.cluster_new("test_cluster_key_2")
+            self.assertTrue(response.is_ok())
+            response = client3.cluster_join(
+                "test_cluster_key", self.host, self.cluster_port1
+            )
+            self.assertTrue(response.is_error())
+            self.assertEqual(response.body, "already in a cluster")
+
+            response = self.client2.cluster_join(
+                "test_cluster_key", self.host, self.cluster_port1
+            )
+            self.assertTrue(response.is_error())
+            self.assertEqual(response.body, "already in a cluster")
