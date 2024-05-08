@@ -15,8 +15,9 @@ TcpClient::TcpClient(TcpClient &&other) noexcept
 
 void TcpClient::ready(ClientManager& manager) {
 	auto callback = manager.handle_callback(*this);
-	if (not m_reader.read(m_socket, callback))
-		m_closed = true;
+	if (not m_closed)
+		if (not m_reader.read(m_socket, callback))
+			m_closed = true;
 
 	if (m_closed)
 		manager.remove_client(*this);
