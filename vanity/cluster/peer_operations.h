@@ -12,6 +12,8 @@ namespace vanity {
 // all the possible operations that a peer can request
 enum class peer_op_t : uint {
 	PING,
+	EXIT,
+
 	PEER_AUTH,
 	PEERS,
 
@@ -20,6 +22,8 @@ enum class peer_op_t : uint {
 
 const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
 	{peer_op_t::PING,               "PING"},
+	{peer_op_t::EXIT,               "EXIT"},
+
 	{peer_op_t::PEER_AUTH,		    "PEER_AUTH"},
 	{peer_op_t::PEERS,              "PEERS"},
 };

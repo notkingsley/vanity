@@ -46,12 +46,6 @@ void PeerRequestServer::handle_peer_inner(const std::string &msg, Client &client
 	}
 }
 
-void PeerRequestServer::post_request_ping(Context& ctx) {
-	reply(ctx, PONG);
-}
-
-void PeerRequestServer::reply_request_ping(Context& ctx) { }
-
 void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) {
 	using enum object_t;
 
@@ -61,6 +55,10 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 	switch (op) {
 		case peer_op_t::PING: {
 			post_request_ping(ctx);
+			break;
+		}
+		case peer_op_t::EXIT: {
+			post_request_exit(ctx);
 			break;
 		}
 
@@ -93,6 +91,10 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 	switch (*op) {
 		case peer_op_t::PING: {
 			reply_request_ping(ctx);
+			break;
+		}
+		case peer_op_t::EXIT: {
+			reply_request_exit(ctx);
 			break;
 		}
 

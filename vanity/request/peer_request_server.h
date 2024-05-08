@@ -17,9 +17,6 @@ namespace vanity {
 class PeerRequestServer : public virtual LogServer, public virtual PeerMessageServer
 {
 private:
-	// string for a PONG reply
-	static constexpr auto PONG = "PONG";
-
 	// handle a POST request
 	void handle_post_request(PeerRequest& peer_request, Context& ctx);
 
@@ -35,10 +32,16 @@ protected:
 
 public:
 	// a ping request was received from a peer
-	virtual void post_request_ping(Context& ctx);
+	virtual void post_request_ping(Context& ctx) { reply(ctx, "PONG"); }
 
 	// a reply to a ping request was received from a peer
-	virtual void reply_request_ping(Context& ctx);
+	virtual void reply_request_ping(Context& ctx) { }
+
+	// an exit request was received from a peer
+	virtual void post_request_exit(Context& ctx) = 0;
+
+	// a reply to an exit request was received from a peer
+	virtual void reply_request_exit(Context& ctx) = 0;
 
 	// a peer_auth request was received from a peer
 	virtual void post_request_peer_auth(Context& ctx, const std::string& key, const std::string& addr) = 0;

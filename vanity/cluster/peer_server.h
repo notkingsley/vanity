@@ -86,6 +86,12 @@ public:
 
 	// a reply to a peers request was received from a peer
 	void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) override;
+
+	// an exit request was received from a peer
+	void post_request_exit(Context& ctx) override;
+
+	// a reply to an exit request was received from a peer
+	void reply_request_exit(Context& ctx) override;
 };
 
 } // namespace vanity

@@ -80,8 +80,10 @@ void PeerServer::remove_peer(Client& client) {
 
 void PeerServer::clear_peers() {
 	std::lock_guard lock{m_peers_mutex};
-	for (auto& [peer, _] : m_connected_peers)
+	for (auto& [peer, _] : m_connected_peers) {
+		post(*peer, peer_op_t::EXIT);
 		peer->close();
+	}
 
 	m_connected_peers.clear();
 	m_peers.clear();
@@ -124,6 +126,14 @@ void PeerServer::reply_request_peers(Context&, const std::unordered_set<std::str
 
 	std::lock_guard lock{m_peers_mutex};
 	m_peers.merge(unknown_peers);
+}
+
+void PeerServer::post_request_exit(Context &ctx) {
+	client_close(ctx.client);
+}
+
+void PeerServer::reply_request_exit(Context &ctx) {
+	throw std::runtime_error("received unexpected reply to exit request");
 }
 
 } // namespace vanity
