@@ -18,6 +18,7 @@ add_library(libvanity STATIC
 	bind_server.cpp
 	config.cpp
 	event_server.cpp
+	persistent_server.cpp
 	pipe_server.cpp
 	poll_server.cpp
 	pubsub_server.cpp

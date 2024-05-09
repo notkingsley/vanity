@@ -9,6 +9,7 @@
 #include "cluster/cluster_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
+#include "persistent_server.h"
 #include "pipe_server.h"
 #include "poll_server.h"
 #include "pubsub_server.h"
@@ -25,6 +26,7 @@ class Server:
 	public virtual ClusterServer,
 	public virtual DatabaseServer,
 	public virtual LockedAuthServer,
+	public virtual PersistentServer,
 	public virtual PipeServer,
 	public virtual PollServer,
 	public virtual PubSubServer,

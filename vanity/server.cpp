@@ -20,14 +20,13 @@ Server::Server(const Config &config):
 void Server::start() {
 	BindServer::start();
 	PollServer::start();
-	DatabaseServer::start();
 	RepeatEventServer::start();
 	logger().info("Started server");
 }
 
 void Server::stop() {
 	RepeatEventServer::stop();
-	DatabaseServer::stop();
+	PersistentServer::stop();
 	ClientServer::stop();
 	PollServer::stop();
 	BindServer::stop();

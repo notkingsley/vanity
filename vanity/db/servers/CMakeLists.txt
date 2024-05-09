@@ -7,7 +7,6 @@ add_library(vanity_db_servers STATIC
 	expiry_database_server.cpp
 	hash_database_server.cpp
 	list_database_server.cpp
-	persistent_server.cpp
 	primitive_database_server.cpp
 	set_database_server.cpp
 )
