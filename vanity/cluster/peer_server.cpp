@@ -23,6 +23,14 @@ std::pair<std::string, uint16_t> PeerServer::unmake_address(const std::string &a
 	return {host, static_cast<uint16_t>(port)};
 }
 
+std::optional<std::pair<std::string, uint16_t>> PeerServer::try_unmake_address(const std::string &addr) {
+	try {
+		return unmake_address(addr);
+	} catch (const std::exception&) {
+		return std::nullopt;
+	}
+}
+
 Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto sock = socket::Socket::connect(host.c_str(), port);
 	auto [remote_host, remote_port] = sock.get_remote_addr();

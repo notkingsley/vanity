@@ -46,9 +46,6 @@ private:
 	// connect to and register a new peer
 	Client& new_peer(const std::string& host, uint16_t port);
 
-	// get this server's peer address as a single string
-	std::string own_peer_addr() const;
-
 	// the peer hook pre-deleting a client
 	// this removes the tcp_client from the peers map
 	void pre_client_delete_peer(TcpClient& client) override;
@@ -61,6 +58,12 @@ private:
 	std::unordered_set<std::string> unknown_peers_in(const std::unordered_set<std::string>& peers);
 
 protected:
+	// get this server's peer address as a single string
+	std::string own_peer_addr() const;
+
+	// try to unmake an address from a string, returning nullopt if the address is invalid
+	static std::optional<std::pair<std::string, uint16_t>> try_unmake_address(const std::string& addr);
+
 	// connect to and authenticate with a peer
 	void peer_connect(const std::string& host, uint16_t port, const std::string& key, Client* client = nullptr);
 
