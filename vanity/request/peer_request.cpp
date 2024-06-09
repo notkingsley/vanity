@@ -16,4 +16,8 @@ peer_op_t PeerRequest::get_op() {
 	return get_from_list(PEER_OP_STRINGS, "invalid peer operation");
 }
 
+async_op_t PeerRequest::get_async_op() {
+	return get_from_list(ASYNC_OP_STRINGS, "invalid async operation");
+}
+
 } // namespace vanity

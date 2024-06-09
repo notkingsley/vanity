@@ -15,11 +15,13 @@ namespace vanity {
 enum class peer_request_t {
 	POST,
 	REPLY,
+	ASYNC,
 };
 
 const std::initializer_list<std::pair<peer_request_t, std::string>> REQUEST_STRINGS {
 	{peer_request_t::POST,  "POST"},
 	{peer_request_t::REPLY, "REPLY"},
+	{peer_request_t::ASYNC, "ASYNC"},
 };
 
 /*
@@ -39,6 +41,9 @@ public:
 
 	// extract a peer operation from the request
 	peer_op_t get_op();
+
+	// extract an async operation from the request
+	async_op_t get_async_op();
 };
 
 } // namespace vanity

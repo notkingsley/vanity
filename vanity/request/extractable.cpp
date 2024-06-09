@@ -272,6 +272,8 @@ template peer_request_t Extractable::get_from_list(const list_of_pairs<peer_requ
 
 template peer_op_t Extractable::get_from_list(const list_of_pairs<peer_op_t>&, const char*);
 
+template async_op_t Extractable::get_from_list(const list_of_pairs<async_op_t>&, const char*);
+
 template operation_t Extractable::peek_from_list(const list_of_pairs<operation_t>&, const char*);
 
 } // namespace vanity
