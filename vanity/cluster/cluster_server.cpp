@@ -6,6 +6,10 @@
 
 namespace vanity {
 
+bool ClusterServer::is_on_cluster_port(Client &client) const {
+	return cluster_addr().second == to_tcp(client).local_addr().second;
+}
+
 void ClusterServer::handle(const std::string &msg, Client &client) {
 	if (session_is_peer(client))
 		handle_peer(msg, client);
@@ -49,14 +53,18 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key) 
 void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
 	Context ctx {id, client};
 
-	if (authenticate_cluster_key(key)) {
-		register_peer(client, addr);
-		reply(ctx, "OK");
-	}
-	else {
+	if (not is_on_cluster_port(client)) {
 		client_close(client);
-		reply(ctx, "DENIED");
+		return reply(ctx, own_peer_addr());
 	}
+
+	if (not authenticate_cluster_key(key)) {
+		client_close(client);
+		return reply(ctx, "DENIED");
+	}
+
+	register_peer(client, addr);
+	reply(ctx, "OK");
 }
 
 void ClusterServer::post_request_peer_auth(Context&, const std::string&, const std::string&) {
@@ -80,6 +88,10 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 			send(*pending->client, error("peer denied connection"));
 
 		remove_peer(ctx.client);
+	}
+	else if (auto addr = try_unmake_address(data)) {
+		remove_peer(ctx.client);
+		peer_connect(addr->first, addr->second, pending->key, pending->client);
 	}
 	else {
 		report_peer(ctx.client, report_t::BAD_REPLY);

@@ -14,6 +14,10 @@ namespace vanity {
  */
 class ClusterServer : public virtual PeerServer
 {
+private:
+	// check is a client is connected via the cluster port
+	bool is_on_cluster_port(Client& client) const;
+
 public:
 	// a message was received from a client
 	void handle(const std::string& msg, Client& client) override;
