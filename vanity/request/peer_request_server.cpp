@@ -12,7 +12,7 @@ void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
 		handle_peer_inner(msg, client);
 	}
 	catch (const InvalidRequest& e) {
-		// TODO: report peer
+		report_peer(client, report_t::BAD_MESSAGE);
 	}
 	catch (const Exception& e) {
 		logger().error(e.what());
@@ -73,7 +73,7 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 		}
 
 		case peer_op_t::MAX_OP: {
-			// TODO: report peer
+			report_peer(ctx.client, report_t::BAD_REQUEST);
 		}
 	}
 }
@@ -84,9 +84,8 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 	auto op = expected_op(ctx.msg_id);
 	bool end = true;
 
-	if (not op) {
-		// TODO: report peer
-	}
+	if (not op)
+		report_peer(ctx.client, report_t::BAD_REPLY);
 
 	switch (*op) {
 		case peer_op_t::PING: {
@@ -110,7 +109,7 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 		}
 
 		case peer_op_t::MAX_OP: {
-			// TODO: report peer
+			report_peer(ctx.client, report_t::BAD_REQUEST);
 		}
 	}
 }

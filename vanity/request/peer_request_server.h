@@ -5,16 +5,21 @@
 #ifndef VANITY_PEER_REQUEST_SERVER_H
 #define VANITY_PEER_REQUEST_SERVER_H
 
+#include "cluster/peer_behaviour_server.h"
 #include "peer_request.h"
 #include "log_server.h"
 #include "response/peer_message_server.h"
+
 
 namespace vanity {
 
 /*
  * A PeerRequestServer is a server that handles messages from peers
  */
-class PeerRequestServer : public virtual LogServer, public virtual PeerMessageServer
+class PeerRequestServer:
+	public virtual LogServer,
+	public virtual PeerBehaviourServer,
+	public virtual PeerMessageServer
 {
 private:
 	// handle a POST request

@@ -3,8 +3,6 @@
 //
 
 #include "cluster_server.h"
-#include "utils/global_log.h"
-
 
 namespace vanity {
 
@@ -84,7 +82,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 		remove_peer(ctx.client);
 	}
 	else {
-		// TODO: report peer
+		report_peer(ctx.client, report_t::BAD_REPLY);
 	}
 }
 
