@@ -9,6 +9,7 @@
 
 #include "client/client.h"
 
+
 namespace vanity {
 
 /*
@@ -43,8 +44,10 @@ protected:
 	{
 		// the peer sent a malformed message
 		BAD_MESSAGE,
+
 		// the peer sent an invalid request
 		BAD_REQUEST,
+
 		// the peer sent an invalid reply
 		BAD_REPLY,
 	};

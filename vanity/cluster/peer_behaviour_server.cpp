@@ -19,6 +19,9 @@ auto PeerBehaviourServer::report_score(report_t report) -> behaviour_score_t {
 		case report_t::BAD_REQUEST:
 		case report_t::BAD_REPLY:
 			return 10;
+
+		default:
+			throw std::runtime_error("invalid report_t");
 	}
 }
 
