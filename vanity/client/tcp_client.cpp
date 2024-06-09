@@ -43,4 +43,8 @@ void TcpClient::close() {
 	m_closed = true;
 }
 
+std::pair<std::string, uint16_t> TcpClient::local_addr() const {
+	return m_socket.get_local_addr();
+}
+
 } // namespace vanity

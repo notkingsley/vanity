@@ -55,6 +55,10 @@ public:
 	// get the host and port of the remote socket
 	std::pair<std::string, uint16_t> get_remote_addr() const;
 
+	// get the host and port of the local socket
+	std::pair<std::string, uint16_t> get_local_addr() const;
+
+	// connect to a host and port and return the socket
 	static Socket connect(const char* host, uint16_t port);
 };
 

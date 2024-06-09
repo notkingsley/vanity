@@ -65,6 +65,9 @@ public:
 
 	// close the client
 	void close();
+
+	// return this client's local socket address
+	std::pair<std::string, uint16_t> local_addr() const;
 };
 
 } // namespace vanity
