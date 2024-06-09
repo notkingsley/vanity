@@ -382,3 +382,43 @@ class ClusterJoinFailTest(unittest.TestCase):
             )
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "already in a cluster")
+
+
+class ClusterJoinNonClusterPort(unittest.TestCase):
+    """
+    Test that trying to connect a peer to a non cluster port
+    will redirect to use the correct (cluster) port
+    """
+
+    def setUp(self) -> None:
+        self.host = "127.0.0.1"
+        self.port1 = get_free_port()
+        self.port2 = get_free_port()
+        self.cluster_port1 = get_free_port()
+        self.cluster_port2 = get_free_port()
+        self.server1 = ServerHandle(
+            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+        )
+        self.server2 = ServerHandle(
+            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+        )
+        self.server1.start()
+        self.server2.start()
+        self.client1 = make_client(port=self.port1)
+        self.client2 = make_client(port=self.port2)
+
+    def test_cluster_join_non_cluster_port(self):
+        """
+        Test that trying to connect a peer to a non cluster port
+        will redirect to use the correct (cluster) port
+        """
+        response = self.client1.cluster_new("test_cluster_key")
+        self.assertTrue(response.is_ok())
+        response = self.client2.cluster_join("test_cluster_key", self.host, self.port1)
+        self.assertTrue(response.is_ok())
+
+        response = self.client1.peers()
+        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port2}"})
+
+        response = self.client2.peers()
+        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port1}"})
