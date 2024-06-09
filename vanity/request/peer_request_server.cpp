@@ -54,11 +54,13 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 
 	switch (op) {
 		case peer_op_t::PING: {
+			request.get_exact<>(end);
 			post_request_ping(ctx);
 			break;
 		}
 		case peer_op_t::EXIT: {
 			post_request_exit(ctx);
+			request.get_exact<>(end);
 			break;
 		}
 
@@ -68,12 +70,15 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 			break;
 		}
 		case peer_op_t::PEERS: {
+			request.get_exact<>(end);
 			post_request_peers(ctx);
 			break;
 		}
 
 		case peer_op_t::MAX_OP: {
+			request.get_exact<>(end);
 			report_peer(ctx.client, report_t::BAD_REQUEST);
+			break;
 		}
 	}
 }
@@ -89,10 +94,12 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 
 	switch (*op) {
 		case peer_op_t::PING: {
+			request.get_exact<>(end);
 			reply_request_ping(ctx);
 			break;
 		}
 		case peer_op_t::EXIT: {
+			request.get_exact<>(end);
 			reply_request_exit(ctx);
 			break;
 		}
@@ -109,7 +116,9 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 		}
 
 		case peer_op_t::MAX_OP: {
+			request.get_exact<>(end);
 			report_peer(ctx.client, report_t::BAD_REQUEST);
+			break;
 		}
 	}
 }
