@@ -20,12 +20,25 @@ enum class peer_op_t : uint {
 	MAX_OP,
 };
 
+// the strings that represent the operations
 const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
 	{peer_op_t::PING,               "PING"},
 	{peer_op_t::EXIT,               "EXIT"},
 
 	{peer_op_t::PEER_AUTH,		    "PEER_AUTH"},
 	{peer_op_t::PEERS,              "PEERS"},
+};
+
+// all the possible async operations that a peer can send
+enum class async_op_t : uint {
+	PULSE,
+
+	MAX_OP,
+};
+
+// the strings that represent the async operations
+const std::initializer_list<std::pair<async_op_t, std::string>> ASYNC_OP_STRINGS {
+	{async_op_t::PULSE,             "PULSE"},
 };
 
 // the type of the identifier of a message
