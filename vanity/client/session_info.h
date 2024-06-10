@@ -62,6 +62,15 @@ struct conn_data<conn_state::TRANSACTION> {
 template<conn_state state>
 using conn_data_t = typename conn_data<state>::type;
 
+// a peer's data
+struct peer_data_t
+{
+	using peer_behaviour_score_t = uint;
+
+	// the peer's behaviour score
+	peer_behaviour_score_t behaviour_score = 0;
+};
+
 /*
  * A SessionInfo is a struct that contains information about a client's session
  */
@@ -79,14 +88,17 @@ struct session_info
 	// we'll use a variant when we have more than one state
 	std::unique_ptr<transaction_data> conn_data;
 
-	// client auth
-	client_auth auth = client_auth::UNKNOWN;
-
 	// the client's current connection state
 	conn_state state = conn_state::NORMAL;
 
 	// index of the database in use
 	uint database = 0;
+
+	// client auth
+	client_auth auth = client_auth::UNKNOWN;
+
+	// the peer's data
+	std::unique_ptr<peer_data_t> peer_data;
 };
 
 } // namespace vanity
