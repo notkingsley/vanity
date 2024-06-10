@@ -1,8 +1,8 @@
 from client.client_ import Client
-from client.command_interface import CommandInterface
+from client.request_interface import RequestInterface
 
 
-class Pipe(CommandInterface):
+class Pipe(RequestInterface[None]):
     """
     A Pipe allows sending multiple messages at once to a server.
     """

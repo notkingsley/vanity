@@ -1,19 +1,23 @@
 from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
 
 from client.auth_level import AuthLevel
 from client.response import Response
 
 
-class CommandInterface(ABC):
+RT = TypeVar("RT", bound=Response | None)
+
+
+class RequestInterface(ABC, Generic[RT]):
     """
-    A CommandInterface defines the interface for handling commands.
+    A RequestInterface defines the interface for making requests.
     """
 
     @abstractmethod
-    def request(self, command: str, *args) -> Response | None:
+    def request(self, request: str, *args) -> RT:
         """
         Handle a request.
-        :param command: The command to handle.
+        :param request: The request to handle.
         :param args: The arguments to handle.
         :return: The response to the request.
         """

@@ -5,7 +5,7 @@ from client.async_response import AsyncResponse, make_response
 from client.auth_level import AuthLevel
 from client.response import Response
 from client.socket_client import SocketClient
-from client.command_interface import CommandInterface
+from client.request_interface import RequestInterface
 
 
 def format(msg: str | int | float | list | set | dict | AuthLevel) -> str:
@@ -32,7 +32,7 @@ def format(msg: str | int | float | list | set | dict | AuthLevel) -> str:
         raise TypeError(f"Cannot format {msg}.")
 
 
-class Client(CommandInterface):
+class Client(RequestInterface[Response]):
     """
     A Client provides a programmatic interface for interacting with a Vanity Server.
     """

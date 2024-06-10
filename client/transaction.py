@@ -1,5 +1,4 @@
-from client.response import Response
-from client.command_interface import CommandInterface
+from client.request_interface import RequestInterface, RT
 
 
 class TransactionFinishedError(Exception):
@@ -10,16 +9,16 @@ class TransactionFinishedError(Exception):
     pass
 
 
-class Transaction(CommandInterface):
+class Transaction(RequestInterface[RT]):
     """
     A Transaction makes executing transactions easier, by automatically
     starting and committing the transaction, or discarding it if an error occurs.
     """
 
-    def __init__(self, client: CommandInterface):
+    def __init__(self, client: RequestInterface[RT]):
         self.client = client
-        self.result = None
         self._finished = False
+        self.result: RT | None = None
 
     def __enter__(self):
         self.client.transact_begin()
@@ -34,7 +33,7 @@ class Transaction(CommandInterface):
         else:
             self.discard()
 
-    def request(self, command: str, *args) -> Response | None:
+    def request(self, command: str, *args) -> RT:
         """
         Send a request to the server.
         :param command: The command to send.

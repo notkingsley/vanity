@@ -52,7 +52,7 @@ def extract_async_type(msg: str) -> tuple[AsyncType, str]:
     """
     if msg.startswith(":PUBLISH"):
         return AsyncType.PUBLISH, msg[8:].lstrip()
-    
+
     raise InvalidResponse(f"Invalid async type: {msg}.")
 
 
