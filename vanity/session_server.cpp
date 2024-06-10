@@ -46,4 +46,11 @@ bool SessionServer::session_is_peer(Client &client) {
 	return session_auth(client) == client_auth::PEER;
 }
 
+peer_data_t &SessionServer::session_peer_data(Client &client) {
+	if (not client.session_info().peer_data)
+		throw std::runtime_error("client is not a peer");
+
+	return *client.session_info().peer_data;
+}
+
 } // namespace vanity

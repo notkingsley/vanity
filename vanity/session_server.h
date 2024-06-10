@@ -50,6 +50,9 @@ public:
 
 	// check if a client is a peer
 	static bool session_is_peer(Client& client);
+
+	// get a client's current peer data
+	static peer_data_t& session_peer_data(Client& client);
 };
 
 } // namespace vanity
