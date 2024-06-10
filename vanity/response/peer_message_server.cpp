@@ -12,9 +12,13 @@ msg_id_t PeerMessageServer::next_id() {
 }
 
 msg_id_t PeerMessageServer::post(Client &peer, peer_op_t op) {
-	auto [msg, id] = new_message(op);
+	auto [msg, id] = new_post(op);
 	send(peer, msg.move());
 	return id;
+}
+
+void PeerMessageServer::send_async(Client &peer, async_op_t op) {
+	send(peer, new_async(op));
 }
 
 void PeerMessageServer::expect_op(msg_id_t id, peer_op_t op) {
@@ -32,13 +36,13 @@ std::optional<peer_op_t> PeerMessageServer::expected_op(msg_id_t id) {
 	return op;
 }
 
-std::pair<PostMessage, msg_id_t> PeerMessageServer::new_message(peer_op_t op) {
+std::pair<PostMessage, msg_id_t> PeerMessageServer::new_post(peer_op_t op) {
 	auto id = next_id();
 	expect_op(id, op);
 	return {PostMessage{}.serialize(id) << op, id};
 }
 
-std::pair<PostMessage, msg_id_t> PeerMessageServer::new_plain_message(peer_op_t op) {
+std::pair<PostMessage, msg_id_t> PeerMessageServer::new_plain_post(peer_op_t op) {
 	auto id = next_id();
 	expect_op(id, op);
 	return {(PostMessage{PostMessage::as_plain_user} << op).serialize(id), id};
@@ -46,6 +50,10 @@ std::pair<PostMessage, msg_id_t> PeerMessageServer::new_plain_message(peer_op_t 
 
 ReplyMessage PeerMessageServer::new_reply(msg_id_t id) {
 	return ReplyMessage{}.serialize(id);
+}
+
+AsyncMessage PeerMessageServer::new_async(async_op_t op) {
+	return AsyncMessage{} << op;
 }
 
 } // namespace vanity

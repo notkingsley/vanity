@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "abstract_server.h"
+#include "async_message.h"
 #include "post_message.h"
 #include "reply_message.h"
 
@@ -43,17 +44,20 @@ private:
 
 	// create a new PostMessage and register the expected op
 	// return the new message and the id
-	std::pair<PostMessage, msg_id_t> new_message(peer_op_t op);
+	std::pair<PostMessage, msg_id_t> new_post(peer_op_t op);
 
 	// create a new PostMessage to be sent as a plain user
-	// this is different from new_message in that the message
+	// this is different from new_post in that the message
 	// created doesn't have the POST message prefix
 	// and the op comes before the id
-	std::pair<PostMessage, msg_id_t> new_plain_message(peer_op_t op);
+	std::pair<PostMessage, msg_id_t> new_plain_post(peer_op_t op);
 
 	// create a new ReplyMessage with the given id
 	// return the new message
 	static ReplyMessage new_reply(msg_id_t id);
+
+	// create a new AsyncMessage and return it
+	static AsyncMessage new_async(async_op_t op);
 
 protected:
 	// context passed to handlers
@@ -73,7 +77,7 @@ public:
 	// compose and send a message to a peer
 	template<typename ...Args>
 	msg_id_t post(Client& peer, peer_op_t op, Args&&... args) {
-		auto [msg, id] = new_message(op);
+		auto [msg, id] = new_post(op);
 		send(peer, (msg.serialize(args), ...).move());
 		return id;
 	}
@@ -84,16 +88,19 @@ public:
 	// so op is always PEER_AUTH
 	template<typename ...Args>
 	msg_id_t post_plain(Client& peer, peer_op_t op, Args&&... args) {
-		auto [msg, id] = new_plain_message(op);
+		auto [msg, id] = new_plain_post(op);
 		send(peer, (msg.serialize(args), ...).move());
 		return id;
 	}
 
-	// reply to a message with a string
+	// reply to a message with some data
 	template<typename T>
 	void reply(Context& ctx, const T& data) {
 		send(ctx.client, new_reply(ctx.msg_id).serialize(data).move());
 	}
+
+	// compose and send an async message to a peer
+	void send_async(Client& peer, async_op_t op);
 };
 
 } // namespace vanity
