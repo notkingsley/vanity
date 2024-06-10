@@ -109,6 +109,17 @@ void PeerServer::peer_sync(Client &peer) {
 	post(peer, peer_op_t::PEERS);
 }
 
+std::vector<Client*> PeerServer::get_peers() {
+	std::lock_guard lock{m_peers_mutex};
+
+	std::vector<Client*> peers;
+	peers.reserve(m_connected_peers.size());
+	for (auto& [client, _] : m_connected_peers)
+		peers.push_back(client);
+
+	return peers;
+}
+
 void PeerServer::request_peers(Client &client) {
 	std::lock_guard lock{m_peers_mutex};
 	send(client, ok(m_peers));

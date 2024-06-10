@@ -71,6 +71,9 @@ protected:
 	// currently, we simply request the peer's peers
 	void peer_sync(Client& peer);
 
+	// get all active peers
+	std::vector<Client*> get_peers();
+
 public:
 	// register a new peer
 	void register_peer(Client& client, const std::string& addr);
