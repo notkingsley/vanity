@@ -24,6 +24,7 @@ protected:
 		terminate,
 		expire,
 		publish,
+		pulse,
 	};
 
 private:
@@ -57,6 +58,9 @@ public:
 
 	// a publish event was received
 	virtual void event_publish() = 0;
+
+	// a pulse event was received
+	virtual void event_pulse() = 0;
 };
 
 } // namespace vanity
