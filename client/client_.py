@@ -46,8 +46,8 @@ class Client(CommandInterface):
         port: int,
         *,
         no_login: bool = False,
-        username: str | None = DEFAULT_ADMIN_USERNAME,
-        password: str | None = DEFAULT_ADMIN_PASSWORD,
+        username: str | None = None,
+        password: str | None = None,
         db_index: int | None = None,
     ):
         """
@@ -64,6 +64,8 @@ class Client(CommandInterface):
         self.async_responses: deque[AsyncResponse] = deque()
 
         if not no_login:
+            username = username or self.DEFAULT_ADMIN_USERNAME
+            password = password or self.DEFAULT_ADMIN_PASSWORD
             self.auth(username, password)
 
         if db_index is not None:
@@ -123,6 +125,7 @@ class Client(CommandInterface):
         """
         while not self.sync_responses:
             self._read_next_response()
+
         return self.sync_responses.popleft()
 
     def request(self, command: str, *args) -> Response:
@@ -145,7 +148,9 @@ class Client(CommandInterface):
         while not self.async_responses:
             if not block:
                 return None
+
             self._read_next_response()
+
         return self.async_responses.popleft()
 
     def exit(self):
