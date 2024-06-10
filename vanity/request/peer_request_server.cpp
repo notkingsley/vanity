@@ -29,18 +29,23 @@ void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
 }
 
 void PeerRequestServer::handle_peer_inner(const std::string &msg, Client &client) {
-	PeerRequest request{msg};
-	auto request_t = request.get_request_t();
-	auto id = request.get<object_t::INT>();
-	Context ctx {id, client};
+	PeerRequest request {msg};
 
-	switch (request_t) {
+	switch (request.get_request_t()) {
 		case peer_request_t::POST: {
+			Context ctx {request.get<object_t::INT>(), client};
 			handle_post_request(request, ctx);
 			break;
 		}
+
 		case peer_request_t::REPLY: {
+			Context ctx {request.get<object_t::INT>(), client};
 			handle_reply_request(request, ctx);
+			break;
+		}
+
+		case peer_request_t::ASYNC: {
+			handle_async_request(request, client);
 			break;
 		}
 	}
@@ -118,6 +123,27 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 		case peer_op_t::MAX_OP: {
 			request.get_exact<>(end);
 			report_peer(ctx.client, report_t::BAD_REQUEST);
+			break;
+		}
+	}
+}
+
+void PeerRequestServer::handle_async_request(PeerRequest& request, Client& client) {
+	using enum object_t;
+
+	auto op = request.get_async_op();
+	bool end = true;
+
+	switch (op) {
+		case async_op_t::PULSE: {
+			request.get_exact<>(end);
+			async_request_pulse(client);
+			break;
+		}
+
+		case async_op_t::MAX_OP: {
+			request.get_exact<>(end);
+			report_peer(client, report_t::BAD_REQUEST);
 			break;
 		}
 	}

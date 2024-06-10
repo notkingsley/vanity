@@ -7,6 +7,7 @@
 
 #include "auth/locked_auth_server.h"
 #include "cluster/cluster_server.h"
+#include "cluster/peer_pulse_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
 #include "persistent_server.h"
@@ -26,6 +27,7 @@ class Server:
 	public virtual ClusterServer,
 	public virtual DatabaseServer,
 	public virtual LockedAuthServer,
+	public virtual PeerPulseServer,
 	public virtual PersistentServer,
 	public virtual PipeServer,
 	public virtual PollServer,

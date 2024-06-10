@@ -28,12 +28,15 @@ private:
 	// handle a REPLY request
 	void handle_reply_request(PeerRequest& peer_request, Context& ctx);
 
-protected:
-	// handle a peer's request
-	void handle_peer(const std::string &msg, Client &client);
+	// handle an ASYNC request
+	void handle_async_request(PeerRequest& peer_request, Client& client);
 
 	// same as handle_peer, but doesn't handle exceptions
 	void handle_peer_inner(const std::string &msg, Client &client);
+
+protected:
+	// handle a peer's request
+	void handle_peer(const std::string &msg, Client &client);
 
 public:
 	// a ping request was received from a peer
@@ -59,6 +62,9 @@ public:
 
 	// a reply to a peers request was received from a peer
 	virtual void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) = 0;
+
+	// a pulse async request was received from a peer
+	virtual void async_request_pulse(Client& client) = 0;
 };
 
 } // namespace vanity
