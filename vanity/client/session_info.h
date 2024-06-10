@@ -5,9 +5,11 @@
 #ifndef VANITY_SESSION_INFO_H
 #define VANITY_SESSION_INFO_H
 
+#include <chrono>
 #include <memory>
 #include <set>
 #include <string>
+
 
 namespace vanity {
 
@@ -69,6 +71,12 @@ struct peer_data_t
 
 	// the peer's behaviour score
 	peer_behaviour_score_t behaviour_score = 0;
+
+	// last time the peer pulsed
+	std::chrono::steady_clock::time_point last_pulse;
+
+	// default constructor
+	peer_data_t() : last_pulse(std::chrono::steady_clock::now()) {}
 };
 
 /*
