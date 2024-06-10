@@ -7,8 +7,7 @@
 
 #include <unordered_map>
 
-#include "client/client.h"
-
+#include "session_server.h"
 
 namespace vanity {
 
@@ -17,23 +16,11 @@ namespace vanity {
  *
  * This tracks the correct behaviour of all peers, to evict any misbehaving peers
  */
-class PeerBehaviourServer
+class PeerBehaviourServer: public virtual SessionServer
 {
 private:
-	using behaviour_score_t = uint;
-
 	// the maximum score a peer can have before being evicted
 	static constexpr auto M_MAX_SCORE = 100;
-
-	// all misbehaving peers
-	std::unordered_map<Client*, behaviour_score_t> m_reported_peers;
-
-	// the mutex for the reported peers
-	std::mutex m_reported_peers_mutex;
-
-	// check if a peer should be evicted
-	// assumes the reported peers mutex is locked
-	void check_peer_eviction(Client& peer);
 
 	// evict a peer
 	void evict_peer(Client& peer);
@@ -54,7 +41,7 @@ protected:
 
 private:
 	// get the score for a report
-	static behaviour_score_t report_score(report_t report);
+	static peer_data_t::peer_behaviour_score_t report_score(report_t report);
 
 protected:
 	// report a peer for misbehaviour
