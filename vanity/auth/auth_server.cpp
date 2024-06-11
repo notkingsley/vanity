@@ -142,8 +142,8 @@ void AuthServer::request_auth(Client &client, const std::string &username, const
 	if (not check_hash(password, m_logins[username].hash))
 		return send(client, error("incorrect password"));
 
+	session_set_auth(client, m_logins[username].auth);
 	session_username(client) = username;
-	session_auth(client) = m_logins[username].auth;
 
 	logger().info("authenticated user: " + username);
 	send(client, ok());

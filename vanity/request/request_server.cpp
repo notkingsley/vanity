@@ -86,11 +86,11 @@ bool RequestServer::dispatch_not_permitted_behavior(Client& client, Request& req
 
 bool RequestServer::dispatch_contextual_behavior(Client& client, Request& request, bool end) {
 	switch (session_state(client)) {
-		case conn_state::NORMAL:
+		case user_data_t::	conn_state::NORMAL:
 		{
 			return dispatch_normal_context(client, request, end);
 		}
-		case conn_state::TRANSACTION:
+		case user_data_t::conn_state::TRANSACTION:
 		{
 			return dispatch_transaction_context(client, request, end);
 		}

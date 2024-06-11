@@ -35,7 +35,7 @@ public:
 
 private:
 	// get a reference to a client's current transaction data
-	static transaction_data& data(Client& client);
+	static user_data_t::transaction_data_t& data(Client& client);
 
 	// begin_transaction transaction for a client
 	static void begin_transaction(Client& client);

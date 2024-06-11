@@ -68,16 +68,16 @@ void TransactionServer::wal_redo_transaction(Client &client, const std::string &
 	request_transact_commit(client);
 }
 
-transaction_data& TransactionServer::data(Client &client) {
-	return session_data<conn_state::TRANSACTION>(client);
+user_data_t::transaction_data_t& TransactionServer::data(Client &client) {
+	return session_transaction_data(client);
 }
 
 void TransactionServer::begin_transaction(Client &client) {
-	session_set_state(client, conn_state::TRANSACTION);
+	session_set_state(client, user_data_t::conn_state::TRANSACTION);
 }
 
 void TransactionServer::exit_transaction(Client &client) {
-	session_set_state(client, conn_state::NORMAL);
+	session_set_state(client, user_data_t::conn_state::NORMAL);
 }
 
 } // namespace vanity

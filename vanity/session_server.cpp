@@ -6,51 +6,105 @@
 
 namespace vanity {
 
-uint& SessionServer::session_db(Client &client) {
-	return client.session_info().database;
-}
-
-client_auth &SessionServer::session_auth(Client &client) {
+client_auth SessionServer::session_auth(Client &client) {
 	return client.session_info().auth;
 }
 
-std::string &SessionServer::session_username(Client &client) {
-	return client.session_info().username;
-}
-
-conn_state SessionServer::session_state(Client &client) {
-	return client.session_info().state;
-}
-
-void SessionServer::session_set_state(Client &client, conn_state state) {
+void SessionServer::session_set_auth(Client &client, client_auth auth) {
 	auto &session_info = client.session_info();
-	session_info.state = state;
-
-	switch (state) {
-		case conn_state::NORMAL: {
-			session_info.conn_data.reset();
+	switch (auth) {
+		case client_auth::USER:
+		case client_auth::ADMIN: {
+			session_info.auth = auth;
+			session_info.user_data = std::make_unique<user_data_t>();
 			break;
 		}
-		case conn_state::TRANSACTION: {
-			session_info.conn_data = std::make_unique<transaction_data>();
+		case client_auth::PEER: {
+			session_info.auth = auth;
+			session_info.peer_data = std::make_unique<peer_data_t>();
 			break;
+		}
+		case client_auth::UNKNOWN: {
+			throw std::runtime_error("cannot set auth to UNKNOWN");
 		}
 	}
-}
-
-session_info::channels_t &SessionServer::session_channels(Client &client) {
-	return client.session_info().channels;
 }
 
 bool SessionServer::session_is_peer(Client &client) {
 	return session_auth(client) == client_auth::PEER;
 }
 
-peer_data_t &SessionServer::session_peer_data(Client &client) {
-	if (not client.session_info().peer_data)
-		throw std::runtime_error("client is not a peer");
+bool SessionServer::session_is_user(Client &client) {
+	auto auth = session_auth(client);
+	return auth == client_auth::USER or auth == client_auth::ADMIN;
+}
 
-	return *client.session_info().peer_data;
+uint& SessionServer::session_db(Client &client) {
+	if (auto &user_data = client.session_info().user_data)
+		return user_data->database;
+
+	throw std::runtime_error("client is not a user1");
+}
+
+std::string &SessionServer::session_username(Client &client) {
+	if (auto &user_data = client.session_info().user_data)
+		return user_data->username;
+
+	throw std::runtime_error("client is not a user2");
+}
+
+user_data_t::conn_state SessionServer::session_state(Client &client) {
+	auto &session_info = client.session_info();
+	if (not session_info.user_data and not session_info.peer_data)
+		return user_data_t::conn_state::NORMAL;
+
+	if (session_info.user_data)
+		return session_info.user_data->state;
+
+	throw std::runtime_error("client is not a user6");
+}
+
+void SessionServer::session_set_state(Client &client, user_data_t::conn_state state) {
+	auto &user_data = client.session_info().user_data;
+	if (not user_data)
+		throw std::runtime_error("client is not a user3");
+
+	user_data->state = state;
+	switch (state) {
+		case user_data_t::conn_state::NORMAL: {
+			user_data->trn_data.reset();
+			break;
+		}
+		case user_data_t::conn_state::TRANSACTION: {
+			user_data->trn_data = std::make_unique<user_data_t::transaction_data_t>();
+			break;
+		}
+	}
+}
+
+user_data_t::channels_t &SessionServer::session_channels(Client &client) {
+	if (auto &user_data = client.session_info().user_data)
+		return user_data->channels;
+
+	throw std::runtime_error("client is not a user4");
+}
+
+user_data_t::transaction_data_t &SessionServer::session_transaction_data(Client &client) {
+	auto &user_data = client.session_info().user_data;
+	if (not user_data)
+		throw std::runtime_error("client is not a user5");
+
+	if (auto &conn_data = user_data->trn_data)
+		return *conn_data;
+
+	throw std::runtime_error("client is not in a transaction");
+}
+
+peer_data_t &SessionServer::session_peer_data(Client &client) {
+	if (auto &peer_data = client.session_info().peer_data)
+		return *peer_data;
+
+	throw std::runtime_error("client is not a peer");
 }
 
 } // namespace vanity

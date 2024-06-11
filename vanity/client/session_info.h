@@ -18,7 +18,7 @@ enum class client_auth
 {
 	UNKNOWN,
 	USER,
-	PEER, // and CLUSTER_MASTER and so on
+	PEER, // and CLUSTER_MASTER maybe
 	ADMIN,
 };
 
@@ -29,40 +29,51 @@ const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STR
 	{client_auth::PEER,    "PEER"},
 };
 
-// a client's current connection state
-enum class conn_state
+// a user's data
+struct user_data_t
 {
-	NORMAL,
-	TRANSACTION,
+	using channels_t = std::set<std::string>;
+
+	// a user's current connection state
+	enum class conn_state
+	{
+		NORMAL,
+		TRANSACTION,
+	};
+
+	// data on a currently running transaction
+	struct transaction_data_t
+	{
+		// the commands in the transaction, in order
+		std::string commands;
+
+		// the number of commands in the transaction
+		size_t size = 0;
+
+		// push a command to the transaction and increment the number of commands
+		template<class T>
+		void push(const T& command) {
+			commands += command;
+			++size;
+		}
+	};
+
+	// the pubsub channels the client is subscribed to
+	channels_t channels;
+
+	// the client's username
+	std::string username;
+
+	// data on the current transaction
+	// we'll use a variant when we have more than one state
+	std::unique_ptr<transaction_data_t> trn_data;
+
+	// the client's current connection state
+	conn_state state = conn_state::NORMAL;
+
+	// index of the database in use
+	uint database = 0;
 };
-
-// data on a currently running transaction
-struct transaction_data
-{
-	// the commands in the transaction, in order
-	std::string commands;
-
-	// the number of commands in the transaction
-	size_t size = 0;
-
-	// push a command to the transaction and increment the number of commands
-	template<class T>
-	void push(const T& command) {
-		commands += command;
-		++size;
-	}
-};
-
-template<conn_state state>
-struct conn_data {};
-
-template<>
-struct conn_data<conn_state::TRANSACTION> {
-	using type = transaction_data;
-};
-
-template<conn_state state>
-using conn_data_t = typename conn_data<state>::type;
 
 // a peer's data
 struct peer_data_t
@@ -80,33 +91,18 @@ struct peer_data_t
 };
 
 /*
- * A SessionInfo is a struct that contains information about a client's session
+ * A session_info is a struct that contains information about a client's session
  */
 struct session_info
 {
-	using channels_t = std::set<std::string>;
+	// the peer's data, if the client is a peer
+	std::unique_ptr<peer_data_t> peer_data;
 
-	// the pubsub channels the client is subscribed to
-	channels_t channels;
-
-	// the client's username
-	std::string username;
-
-	// data on the current connection state
-	// we'll use a variant when we have more than one state
-	std::unique_ptr<transaction_data> conn_data;
-
-	// the client's current connection state
-	conn_state state = conn_state::NORMAL;
-
-	// index of the database in use
-	uint database = 0;
+	// the user's data, if the client is a user
+	std::unique_ptr<user_data_t> user_data;
 
 	// client auth
 	client_auth auth = client_auth::UNKNOWN;
-
-	// the peer's data
-	std::unique_ptr<peer_data_t> peer_data;
 };
 
 } // namespace vanity

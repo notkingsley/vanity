@@ -17,39 +17,35 @@ namespace vanity {
 class SessionServer
 {
 public:
+	// get a client's current auth level
+	static client_auth session_auth(Client& client);
+
+	// set a client's auth level
+	static void session_set_auth(Client& client, client_auth auth);
+
+	// check if a client is a peer
+	static bool session_is_peer(Client& client);
+
+	// check if a client is a user
+	static bool session_is_user(Client& client);
+
 	// get a reference to a client's current db
 	static uint& session_db(Client& client);
-
-	// get a reference to a client's current auth level
-	static client_auth& session_auth(Client& client);
 
 	// get a reference to a client's username
 	static std::string& session_username(Client& client);
 
 	// get a client's current connection state
-	static conn_state session_state(Client& client);
+	static user_data_t::conn_state session_state(Client& client);
 
 	// set a client's current connection state
-	static void session_set_state(Client& client, conn_state state);
+	static void session_set_state(Client& client, user_data_t::conn_state state);
 
 	// get a client's current channels
-	static session_info::channels_t &session_channels(Client &client);
+	static user_data_t::channels_t &session_channels(Client &client);
 
-	// get a reference to a client's current connection's state data
-	template<conn_state state>
-	static conn_data_t<state>& session_data(Client& client) {
-		auto &session_info = client.session_info();
-		if (session_info.state != state)
-			throw std::runtime_error("client is not in the correct state");
-
-		if (not session_info.conn_data)
-			throw std::runtime_error("state does not hold any data");
-
-		return *session_info.conn_data;
-	}
-
-	// check if a client is a peer
-	static bool session_is_peer(Client& client);
+	// get a reference to a client's current transaction data
+	static user_data_t::transaction_data_t& session_transaction_data(Client& client);
 
 	// get a client's current peer data
 	static peer_data_t& session_peer_data(Client& client);

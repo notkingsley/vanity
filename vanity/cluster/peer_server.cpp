@@ -74,8 +74,7 @@ void PeerServer::register_peer(TcpClient &client, const std::string &addr) {
 	m_connected_peers[&client] = addr;
 	m_peers.insert(addr);
 
-	session_auth(client) = client_auth::PEER;
-	client.session_info().peer_data = std::make_unique<peer_data_t>();
+	session_set_auth(client, client_auth::PEER);
 }
 
 void PeerServer::register_peer(Client &client, const std::string &addr) {

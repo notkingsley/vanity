@@ -12,8 +12,10 @@ namespace vanity::wal {
 void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 {
 	std::array<WalRecoveryClient, M_NUM_DATABASES> clients;
-	for (uint i = 0; i < M_NUM_DATABASES; ++i)
+	for (uint i = 0; i < M_NUM_DATABASES; ++i) {
+		session_set_auth(clients[i], client_auth::USER);
 		session_db(clients[i]) = i;
+	}
 
 	auto eof = std::ifstream::traits_type::eof;
 	std::ifstream wal{wal_file};

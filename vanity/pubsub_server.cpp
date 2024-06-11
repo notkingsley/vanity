@@ -101,6 +101,9 @@ void PubSubServer::publish(const PublishData &data) {
 }
 
 void PubSubServer::pre_client_delete_pubsub(TcpClient &client) {
+	if (not session_is_user(client))
+		return;
+
 	std::lock_guard lock {m_subscriptions_mutex};
 	for (auto& channel : session_channels(client))
 		erase_subscription(client, channel);

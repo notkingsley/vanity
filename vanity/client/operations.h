@@ -934,13 +934,13 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 }
 
 // get the behaviour of an operation in some context
-inline behaviour_t behaviour(operation_t operation, conn_state state)
+inline behaviour_t behaviour(operation_t operation, user_data_t::conn_state state)
 {
 	switch (state)
 	{
-		case conn_state::NORMAL:
+		case user_data_t::conn_state::NORMAL:
 			return normal_behaviour(operation);
-		case conn_state::TRANSACTION:
+		case user_data_t::conn_state::TRANSACTION:
 			return transaction_behaviour(operation);
 		default:
 			throw std::runtime_error("invalid conn_state");
