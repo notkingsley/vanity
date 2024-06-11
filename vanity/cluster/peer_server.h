@@ -26,10 +26,7 @@ class PeerServer:
 {
 private:
 	// known peers
-	std::unordered_set<std::string> m_peers;
-
-	// connected peers
-	std::unordered_map<TcpClient*, std::string> m_connected_peers;
+	std::unordered_set<TcpClient*> m_peers;
 
 	// mutex for the peers map
 	std::mutex m_peers_mutex;
@@ -39,6 +36,9 @@ private:
 
 	// unmake an address by splitting a host and a port from a single string
 	static std::pair<std::string, uint16_t> unmake_address(const std::string& addr);
+
+	// return a set of all peers' addresses
+	std::unordered_set<std::string> peer_addresses();
 
 	// register a new peer
 	void register_peer(TcpClient& client, const std::string& addr);

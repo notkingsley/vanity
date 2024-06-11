@@ -31,6 +31,16 @@ std::optional<std::pair<std::string, uint16_t>> PeerServer::try_unmake_address(c
 	}
 }
 
+std::unordered_set<std::string> PeerServer::peer_addresses() {
+	std::lock_guard lock{m_peers_mutex};
+
+	std::unordered_set<std::string> addresses;
+	for (auto& peer: m_peers)
+		addresses.insert(session_addr(*peer));
+
+	return addresses;
+}
+
 Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto sock = socket::Socket::connect(host.c_str(), port);
 	auto [remote_host, remote_port] = sock.get_remote_addr();
@@ -49,20 +59,19 @@ void PeerServer::pre_client_delete_peer(TcpClient &client) {
 }
 
 void PeerServer::forget_peer(TcpClient &client) {
-	std::lock_guard lock{m_peers_mutex};
-	auto it = m_connected_peers.find(&client);
-	if (it == m_connected_peers.end())
+	if (not session_is_peer(client))
 		return;
 
-	m_peers.erase(it->second);
-	m_connected_peers.erase(it);
+	std::lock_guard lock{m_peers_mutex};
+	m_peers.erase(&client);
 }
 
 std::unordered_set<std::string> PeerServer::unknown_peers_in(const std::unordered_set<std::string>& peers) {
 	std::unordered_set<std::string> unknown_peers;
-	std::lock_guard lock{m_peers_mutex};
+	auto known_peers = peer_addresses();
+
 	for (const auto& value : peers)
-		if (not m_peers.contains(value))
+		if (not known_peers.contains(value))
 			unknown_peers.insert(value);
 
 	unknown_peers.erase(own_peer_addr());
@@ -71,10 +80,8 @@ std::unordered_set<std::string> PeerServer::unknown_peers_in(const std::unordere
 
 void PeerServer::register_peer(TcpClient &client, const std::string &addr) {
 	std::lock_guard lock{m_peers_mutex};
-	m_connected_peers[&client] = addr;
-	m_peers.insert(addr);
-
-	session_set_auth(client, client_auth::PEER);
+	m_peers.insert(&client);
+	session_set_auth(client, client_auth::PEER, addr);
 }
 
 void PeerServer::register_peer(Client &client, const std::string &addr) {
@@ -89,12 +96,11 @@ void PeerServer::remove_peer(Client& client) {
 
 void PeerServer::clear_peers() {
 	std::lock_guard lock{m_peers_mutex};
-	for (auto& [peer, _] : m_connected_peers) {
+	for (auto& peer: m_peers) {
 		post(*peer, peer_op_t::EXIT);
 		peer->close();
 	}
 
-	m_connected_peers.clear();
 	m_peers.clear();
 }
 
@@ -112,26 +118,24 @@ std::vector<Client*> PeerServer::get_peers() {
 	std::lock_guard lock{m_peers_mutex};
 
 	std::vector<Client*> peers;
-	peers.reserve(m_connected_peers.size());
-	for (auto& [client, _] : m_connected_peers)
+	peers.reserve(m_peers.size());
+	for (auto& client : m_peers)
 		peers.push_back(client);
 
 	return peers;
 }
 
 void PeerServer::request_peers(Client &client) {
-	std::lock_guard lock{m_peers_mutex};
-	send(client, ok(m_peers));
+	send(client, ok(peer_addresses()));
 }
 
 void PeerServer::post_request_peers(Context &ctx) {
-	std::lock_guard lock{m_peers_mutex};
-	reply(ctx, m_peers);
+	reply(ctx, peer_addresses());
 }
 
 void PeerServer::reply_request_peers(Context&, const std::unordered_set<std::string> &peers) {
-	auto& key = get_cluster_key();
-	if (not key)
+	auto& opt_key = get_cluster_key();
+	if (not opt_key)
 		return;
 
 	std::vector<std::pair<std::string, uint16_t>> unmade_peers;
@@ -141,11 +145,9 @@ void PeerServer::reply_request_peers(Context&, const std::unordered_set<std::str
 	for (const auto& value : unknown_peers)
 		unmade_peers.emplace_back(unmake_address(value));
 
+	auto& key = *opt_key;
 	for (const auto& [host, port] : unmade_peers)
-		peer_connect(host, port, *key);
-
-	std::lock_guard lock{m_peers_mutex};
-	m_peers.merge(unknown_peers);
+		peer_connect(host, port, key);
 }
 
 void PeerServer::post_request_exit(Context &ctx) {
