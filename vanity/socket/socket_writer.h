@@ -22,10 +22,10 @@ private:
 	// the socket to write to
 	const Socket& m_socket;
 
-	// the messages to write
-	std::queue<std::string> m_messages;
+	// the message to write
+	std::string m_message;
 
-	// the mutex to protect the messages queue
+	// the mutex to protect the message string
 	std::mutex m_mutex;
 
 	// the index of the next character to write in the current message
@@ -36,13 +36,13 @@ public:
 	explicit SocketWriter(const Socket& socket);
 
 	// move constructor
-	SocketWriter(SocketWriter&& other) noexcept;
+	SocketWriter(SocketWriter&& other) noexcept = delete;
 
 	// move assignment
 	SocketWriter& operator=(SocketWriter&& other) noexcept = delete;
 
 	// copy constructor
-	SocketWriter(const SocketWriter& other);
+	SocketWriter(const SocketWriter& other) = delete;
 
 	// copy assignment
 	SocketWriter& operator=(const SocketWriter& other) = delete;
