@@ -19,12 +19,12 @@ private:
 	// make a response with a value
 	template<typename T>
 	static Response value_response(Response::Status status, const T& data) {
-		return (Response() << status).serialize(data);
+		return empty_response(status).serialize(data);
 	}
 
-	// make a response with a body
-	static Response body_response(Response::Status status, const char* body) {
-		return (Response() << status).serialize_string_body(body);
+	// make an error response
+	static Response error_response(Response::Status status, const char* body) {
+		return empty_response(status).serialize(error_t{body});
 	}
 
 	// make an empty response
@@ -69,24 +69,24 @@ protected:
 		return empty_response(Response::bad_state);
 	}
 
-	// an ERROR response with a message body
+	// an ERROR response
 	static Response error(const char* body) {
-		return body_response(Response::error, body);
+		return error_response(Response::error, body);
 	}
 
-	// a BAD_TYPE response with a message body
+	// a BAD_TYPE response
 	static Response bad_type(const char* body) {
-		return body_response(Response::bad_type, body);
+		return error_response(Response::bad_type, body);
 	}
 
-	// a BAD_REQUEST response with a message body
+	// a BAD_REQUEST response
 	static Response bad_request(const char* body) {
-		return body_response(Response::bad_request, body);
+		return error_response(Response::bad_request, body);
 	}
 
-	// an INTERNAL_ERROR response with a message body
+	// an INTERNAL_ERROR response
 	static Response internal_error(const char* body) {
-		return body_response(Response::internal_error, body);
+		return error_response(Response::internal_error, body);
 	}
 
 	// make an ASYNC response

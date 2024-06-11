@@ -62,7 +62,7 @@ Response &Response::serialize(bool data) {
 }
 
 Response &Response::serialize_string_body(const std::string &data) {
-	reserve(data.size() + 10);
+	reserve(data.size() + 6);
 	serialize_length(data.size());
 	return *this << data;
 }
@@ -161,6 +161,10 @@ Response &Response::serialize(client_auth data) {
 		default:
 			throw std::runtime_error("invalid type");
 	}
+}
+
+Response &Response::serialize(error_t data) {
+	return serialize_type<error_t>().serialize_string_body(data.err);
 }
 
 Response &Response::serialize() {

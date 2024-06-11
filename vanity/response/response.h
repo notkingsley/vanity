@@ -16,63 +16,74 @@ namespace vanity {
 
 using primary_serialize_type = db::db_data_type;
 
+// an error_t is basically a wrapper for
+// const char*s to be transmitted as error messages
+struct error_t {
+	const char* err;
+};
+
 // convert a type to a string
 template <typename T>
 struct type_to_string;
 
 template <>
 struct type_to_string<bool> {
-	static constexpr const char* value = ":BOOL ";
+	static constexpr const char* value = ":BOOL";
 };
 
 template <>
 struct type_to_string<int64_t> {
-	static constexpr const char* value = ":INT ";
+	static constexpr const char* value = ":INT";
 };
 
 template <>
 struct type_to_string<double> {
-	static constexpr const char* value = ":FLOAT ";
+	static constexpr const char* value = ":FLOAT";
 };
 
 template <>
 struct type_to_string<std::string> {
-	static constexpr const char* value = ":STR ";
+	static constexpr const char* value = ":STR";
 };
 
 template <>
 struct type_to_string<std::monostate> {
-	static constexpr const char* value = ":NULL ";
+	static constexpr const char* value = ":NULL";
 };
 
 template <>
 struct type_to_string<std::vector<std::string>> {
-	static constexpr const char* value = ":ARR ";
+	static constexpr const char* value = ":ARR";
 };
 
 template <typename T>
 struct type_to_string<std::vector<T>> {
-	static constexpr const char* value = ":TUPLE ";
+	static constexpr const char* value = ":TUPLE";
 };
 
 template <>
 struct type_to_string<db::list_t> {
-	static constexpr const char* value = ":LIST ";
+	static constexpr const char* value = ":LIST";
 };
 
 template <>
 struct type_to_string<db::set_t> {
-	static constexpr const char* value = ":SET ";
+	static constexpr const char* value = ":SET";
 };
 
 template <>
 struct type_to_string<db::hash_t> {
-	static constexpr const char* value = ":HASH ";
+	static constexpr const char* value = ":HASH";
 };
 
 template <>
 struct type_to_string<client_auth> {
-	static constexpr const char* value = ":AUTH_LEVEL ";
+	static constexpr const char* value = ":AUTH_LEVEL";
+};
+
+template<>
+struct type_to_string<error_t> {
+	static constexpr const char* value = ":ERR";
 };
 
 /*
@@ -83,15 +94,15 @@ class Response : public Sendable
 private:
 	struct status_value {
 		static constexpr char const* const ok = "OK";
-		static constexpr char const* const error = "ERROR";
 		static constexpr char const* const null = "NULL";
 		static constexpr char const* const pong = "PONG";
 		static constexpr char const* const denied = "DENIED";
-		static constexpr char const* const internal_error = "INTERNAL_ERROR";
+		static constexpr char const* const queued = "QUEUED";
+		static constexpr char const* const bad_state = "BAD_STATE";
+		static constexpr char const* const error = "ERROR";
 		static constexpr char const* const bad_type = "BAD_TYPE";
 		static constexpr char const* const bad_request = "BAD_REQUEST";
-		static constexpr char const* const bad_state = "BAD_STATE";
-		static constexpr char const* const queued = "QUEUED";
+		static constexpr char const* const internal_error = "INTERNAL_ERROR";
 		static constexpr char const* const async = "ASYNC";
 	};
 
@@ -102,15 +113,15 @@ private:
 public:
 	enum Status {
 		ok,
-		error,
 		null,
 		pong,
 		denied,
-		internal_error,
+		queued,
+		bad_state,
+		error,
 		bad_type,
 		bad_request,
-		bad_state,
-		queued,
+		internal_error,
 		async,
 	};
 
@@ -159,12 +170,16 @@ public:
 	// serialize a client_auth to a Response
 	Response& serialize(client_auth data);
 
+	// serialize an error_t to a Response
+	Response& serialize(error_t data);
+
 	// serialize nothing to a Response (does nothing)
 	Response& serialize();
 
 	// do not serialize const char* directly
 	// call serialize_string_body to add a string,
-	// or operator<< for raw data
+	// operator<< for raw data,
+	// or with an error_t for errors
 	Response& serialize(const char*) = delete;
 
 	// serialize something to a Response
