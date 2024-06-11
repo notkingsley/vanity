@@ -27,7 +27,7 @@ void PrimitiveDatabaseServer::request_incr_int(Client &client, const std::string
 	if (result.has_value())
 		send(client, ok(result.value()));
 	else
-		send(client, bad_type());
+		send(client, bad_type("not an int"));
 }
 
 void PrimitiveDatabaseServer::request_incr_float(Client &client, const std::string &key, db::float_t value) {
@@ -36,7 +36,7 @@ void PrimitiveDatabaseServer::request_incr_float(Client &client, const std::stri
 	if (result.has_value())
 		send(client, ok(result.value()));
 	else
-		send(client, bad_type());
+		send(client, bad_type("not a list"));
 }
 
 void PrimitiveDatabaseServer::request_str_len(Client &client, const std::string &key) {
@@ -45,7 +45,7 @@ void PrimitiveDatabaseServer::request_str_len(Client &client, const std::string 
 	if (result.has_value())
 		send(client, ok(result.value()));
 	else
-		send(client, bad_type());
+		send(client, bad_type("not a string"));
 }
 
 void PrimitiveDatabaseServer::request_many_get(Client &client, const std::vector<std::string> &keys) {
