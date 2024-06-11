@@ -46,7 +46,7 @@ void BaseDatabaseServer::request_del(Client &client, const std::string &key) {
 	if (database(client).del(key))
 		send(client, ok());
 	else
-		send(client, error());
+		send(client, null());
 }
 
 void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
