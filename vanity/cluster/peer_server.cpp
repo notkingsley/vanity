@@ -6,31 +6,6 @@
 
 namespace vanity {
 
-std::string PeerServer::make_address(const std::string &host, uint16_t port) {
-	return host + ":" + std::to_string(port);
-}
-
-std::pair<std::string, uint16_t> PeerServer::unmake_address(const std::string &addr) {
-	auto pos = addr.rfind(':');
-	if (pos == std::string::npos)
-		throw std::runtime_error("invalid address");
-
-	auto host = addr.substr(0, pos);
-	auto port = std::stoi(addr.substr(pos + 1));
-	if (not validate_port(port))
-		throw std::runtime_error("invalid port");
-
-	return {host, static_cast<uint16_t>(port)};
-}
-
-std::optional<std::pair<std::string, uint16_t>> PeerServer::try_unmake_address(const std::string &addr) {
-	try {
-		return unmake_address(addr);
-	} catch (const std::exception&) {
-		return std::nullopt;
-	}
-}
-
 std::unordered_set<std::string> PeerServer::peer_addresses() {
 	std::lock_guard lock{m_peers_mutex};
 
@@ -47,11 +22,6 @@ Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto& peer = add_client(TcpClient{std::move(sock)});
 	register_peer(peer, make_address(remote_host, remote_port));
 	return peer;
-}
-
-std::string PeerServer::own_peer_addr() const {
-	auto [host, port] = cluster_addr();
-	return make_address(host, port);
 }
 
 void PeerServer::pre_client_delete_peer(TcpClient &client) {
