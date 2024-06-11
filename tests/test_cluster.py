@@ -11,17 +11,23 @@ class ClusterKeyTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.port = get_free_port()
-        self.server_handle = ServerHandle(port=self.port)
+        self.server_handle = ServerHandle(ports=[self.port])
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
 
+    def make_client(self):
+        """
+        Make a client conected to self.port
+        """
+        return make_client(self.port)
+
     def test_cluster_new(self):
         """
         Test cluster_new.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             self.assertEqual(response.value, "test_cluster_key")
@@ -33,7 +39,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_new with no key.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_new("")
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "key is too short")
@@ -42,7 +48,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_new when already in a cluster.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             response = client.cluster_new("test_cluster_key_2")
@@ -53,7 +59,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_key when not in a cluster.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_key()
             self.assertTrue(response.is_null())
 
@@ -61,7 +67,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_key.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             response = client.cluster_key()
@@ -72,7 +78,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_leave.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_new("test_cluster_key")
             self.assertTrue(response.is_ok())
             response = client.cluster_leave()
@@ -84,7 +90,7 @@ class ClusterKeyTest(unittest.TestCase):
         """
         Test cluster_leave when not in a cluster.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.cluster_leave()
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "not in a cluster")
@@ -97,7 +103,7 @@ class ClusterCommandsNoAdmin(unittest.TestCase):
 
     def setUp(self) -> None:
         self.port = get_free_port()
-        self.server_handle = ServerHandle(port=self.port)
+        self.server_handle = ServerHandle(ports=[self.port])
         self.server_handle.start()
         self.admin_client = make_client(self.port)
         self.admin_client.add_user("test_user", "test_user_password")
@@ -144,7 +150,7 @@ class ClusterJoinTest(unittest.TestCase):
     Test the cluster_join command.
     """
 
-    PEER_SYNC_DELAY = 0.1
+    PEER_SYNC_DELAY = 0.5
 
     def setUp(self) -> None:
         self.host = "127.0.0.1"
@@ -157,16 +163,16 @@ class ClusterJoinTest(unittest.TestCase):
         self.cluster_port3 = get_free_port()
         self.cluster_port4 = get_free_port()
         self.server1 = ServerHandle(
-            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+            ports=[self.port1], host=self.host, cluster_port=self.cluster_port1
         )
         self.server2 = ServerHandle(
-            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+            ports=[self.port2], host=self.host, cluster_port=self.cluster_port2
         )
         self.server3 = ServerHandle(
-            port=self.port3, host=self.host, cluster_port=self.cluster_port3
+            ports=[self.port3], host=self.host, cluster_port=self.cluster_port3
         )
         self.server4 = ServerHandle(
-            port=self.port4, host=self.host, cluster_port=self.cluster_port4
+            ports=[self.port4], host=self.host, cluster_port=self.cluster_port4
         )
         self.server1.start()
         self.server2.start()
@@ -322,10 +328,10 @@ class ClusterJoinFailTest(unittest.TestCase):
         self.cluster_port1 = get_free_port()
         self.cluster_port2 = get_free_port()
         self.server1 = ServerHandle(
-            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+            ports=[self.port1], host=self.host, cluster_port=self.cluster_port1
         )
         self.server2 = ServerHandle(
-            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+            ports=[self.port2], host=self.host, cluster_port=self.cluster_port2
         )
         self.server1.start()
         self.server2.start()
@@ -367,7 +373,10 @@ class ClusterJoinFailTest(unittest.TestCase):
 
         port3 = get_free_port()
         cluster_port3 = get_free_port()
-        server3 = ServerHandle(port=port3, host=self.host, cluster_port=cluster_port3)
+        server3 = ServerHandle(
+            ports=[port3], host=self.host, cluster_port=cluster_port3
+        )
+
         with server3, make_client(port=port3) as client3:
             response = client3.cluster_new("test_cluster_key_2")
             self.assertTrue(response.is_ok())
@@ -397,10 +406,10 @@ class ClusterJoinNonClusterPort(unittest.TestCase):
         self.cluster_port1 = get_free_port()
         self.cluster_port2 = get_free_port()
         self.server1 = ServerHandle(
-            port=self.port1, host=self.host, cluster_port=self.cluster_port1
+            ports=[self.port1], host=self.host, cluster_port=self.cluster_port1
         )
         self.server2 = ServerHandle(
-            port=self.port2, host=self.host, cluster_port=self.cluster_port2
+            ports=[self.port2], host=self.host, cluster_port=self.cluster_port2
         )
         self.server1.start()
         self.server2.start()

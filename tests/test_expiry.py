@@ -64,7 +64,7 @@ class WalExpiryTest(unittest.TestCase):
         self.temp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
-            port=self.port, no_wal=False, working_dir=self.temp_dir.name
+            ports=[self.port], no_wal=False, working_dir=self.temp_dir.name
         )
         self.server_handle.start()
 

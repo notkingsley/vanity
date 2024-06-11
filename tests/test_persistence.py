@@ -12,7 +12,7 @@ class NoPersistenceTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.port = get_free_port()
-        self.server_handle = ServerHandle(port=self.port, no_db_persist=True)
+        self.server_handle = ServerHandle(ports=[self.port], no_db_persist=True)
         self.server_handle.start()
 
     def tearDown(self) -> None:
@@ -43,7 +43,7 @@ class PersistenceTest(unittest.TestCase):
         self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
-            port=self.port,
+            ports=[self.port],
             no_db_persist=False,
             working_dir=self.tmp_dir.name,
         )
@@ -161,7 +161,7 @@ class WALPersistenceDisabledTest(unittest.TestCase):
         self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
-            port=self.port,
+            ports=[self.port],
             no_db_persist=True,
             no_wal=False,
             working_dir=self.tmp_dir.name,
@@ -275,7 +275,7 @@ class WALPersistenceTest(unittest.TestCase):
         self.temp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
-            port=self.port,
+            ports=[self.port],
             no_db_persist=False,
             no_wal=False,
             working_dir=self.temp_dir.name,

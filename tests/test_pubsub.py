@@ -12,7 +12,7 @@ class TestPubSub(unittest.TestCase):
 
     def setUp(self) -> None:
         self.port = get_free_port()
-        self.server_handle = ServerHandle(port=self.port)
+        self.server_handle = ServerHandle(ports=[self.port])
         self.server_handle.start()
         self.client = make_client(self.port)
 

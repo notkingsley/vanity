@@ -13,7 +13,7 @@ class UnknownUserTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.server_handle = ServerHandle(port=cls.port)
+        cls.server_handle = ServerHandle(ports=[cls.port])
         cls.server_handle.start()
 
     @classmethod
@@ -151,7 +151,7 @@ class UserAuthTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.server_handle = ServerHandle(port=cls.port)
+        cls.server_handle = ServerHandle(ports=[cls.port])
         cls.server_handle.start()
         cls.admin_client = make_client(cls.port)
         cls.admin_client.add_user("test_user_auth", "test_user_auth_password")
@@ -287,7 +287,7 @@ class DefaultAuthTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.server_handle = ServerHandle(port=cls.port)
+        cls.server_handle = ServerHandle(ports=[cls.port])
         cls.server_handle.start()
 
     @classmethod
@@ -335,7 +335,7 @@ class AccountsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.server_handle = ServerHandle(port=cls.port)
+        cls.server_handle = ServerHandle(ports=[cls.port])
         cls.server_handle.start()
         cls.client = make_client(cls.port)
 
@@ -551,7 +551,7 @@ class AuthPersistenceTests(unittest.TestCase):
         self.tmp_dir = TemporaryDirectory()
         self.port = get_free_port()
         self.server_handle = ServerHandle(
-            port=self.port,
+            ports=[self.port],
             no_auth_persist=False,
             working_dir=self.tmp_dir.name,
         )
@@ -684,7 +684,7 @@ class EnviromentVariablePasswordTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
         cls.server_handle = ServerHandle(
-            port=cls.port, env={"VANITY_DEFAULT_PASSWORD": "test_env_password"}
+            ports=[cls.port], env={"VANITY_DEFAULT_PASSWORD": "test_env_password"}
         )
         cls.server_handle.start()
 

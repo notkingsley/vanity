@@ -8,7 +8,7 @@ class TestTransaction(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.port = get_free_port()
-        cls.server_handle = ServerHandle(port=cls.port)
+        cls.server_handle = ServerHandle(ports=[cls.port])
         cls.server_handle.start()
 
     @classmethod

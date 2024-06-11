@@ -15,7 +15,6 @@ class ServerHandle:
         self,
         *,
         host: str | None = None,
-        port: int | None = None,
         ports: list[int] | None = None,
         cluster_port: int | None = None,
         executable_path: str = EXECUTABLE_PATH,
@@ -29,8 +28,7 @@ class ServerHandle:
     ):
         """
         Create a new ServerHandle.
-        :param port: The port to run the server on (any or both of port and ports can be specified)
-        :param ports: Extra ports to run the server on (any or both of port and ports can be specified)
+        :param ports: Ports to run the server on
         :param executable_path: The path to the server executable.
         :param env: The environment variables to run the server with.
         :param working_dir: The working directory to run the server in (None for no working directory).
@@ -43,17 +41,9 @@ class ServerHandle:
         self.args = [executable_path]
         self.env = env
 
-        _ports = set()
-        if port is not None:
-            _ports.add(port)
-
-        if ports is not None:
-            _ports.update(ports)
-
-        self.ports = list(_ports)
-        if _ports:
-            for port in _ports:
-                self.args.append(f"--port={port}")
+        self.ports = ports or []
+        for port in self.ports:
+            self.args.append(f"--port={port}")
 
         if host:
             self.args.append(f"--host={host}")

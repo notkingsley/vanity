@@ -13,27 +13,33 @@ class BindTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.port = get_free_port()
-        self.server_handle = ServerHandle(port=self.port)
+        self.server_handle = ServerHandle(ports=[self.port])
         self.server_handle.start()
 
     def tearDown(self) -> None:
         self.server_handle.stop()
 
+    def make_client(self):
+        """
+        Make a client conected to self.port
+        """
+        return make_client(self.port)
+
     def test_bind_invalid_port(self):
         """
         Test binding to an invalid port.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, 0)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
 
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, 65536)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
 
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, -1)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
@@ -42,7 +48,7 @@ class BindTest(unittest.TestCase):
         """
         Test binding to an already bound port.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, self.port)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "already bound to port")
@@ -52,7 +58,7 @@ class BindTest(unittest.TestCase):
         Test binding to a new port.
         """
         new_port = get_free_port()
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, new_port)
             self.assertTrue(response.is_ok())
 
@@ -64,17 +70,17 @@ class BindTest(unittest.TestCase):
         """
         Test unbinding an invalid port.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.unbind(self.HOST, 0)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
 
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.unbind(self.HOST, 65536)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
 
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.unbind(self.HOST, -1)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "invalid port")
@@ -83,7 +89,7 @@ class BindTest(unittest.TestCase):
         """
         Test unbinding a port that is not bound.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             client.bind(self.HOST, get_free_port())
             response = client.unbind(self.HOST, get_free_port())
             self.assertTrue(response.is_error())
@@ -93,7 +99,7 @@ class BindTest(unittest.TestCase):
         """
         Test unbinding the last port.
         """
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.unbind(self.HOST, self.port)
             self.assertTrue(response.is_error())
             self.assertEqual(response.body, "cannot unbind last port")
@@ -104,7 +110,7 @@ class BindTest(unittest.TestCase):
         """
         server_port = get_free_port()
         cluster_port = get_free_port()
-        with ServerHandle(port=server_port, cluster_port=cluster_port):
+        with ServerHandle(ports=[server_port], cluster_port=cluster_port):
             with make_client(port=server_port) as client:
                 response = client.unbind(self.HOST, cluster_port)
                 self.assertTrue(response.is_error())
@@ -115,11 +121,11 @@ class BindTest(unittest.TestCase):
         Test unbinding a bound port.
         """
         new_port = get_free_port()
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.bind(self.HOST, new_port)
             self.assertTrue(response.is_ok())
 
-        with make_client(port=self.port) as client:
+        with self.make_client() as client:
             response = client.unbind(self.HOST, new_port)
             self.assertTrue(response.is_ok())
 
