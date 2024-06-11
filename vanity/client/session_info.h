@@ -80,14 +80,18 @@ struct peer_data_t
 {
 	using peer_behaviour_score_t = uint;
 
+	// the peer's address
+	std::string addr;
+
 	// the peer's behaviour score
 	peer_behaviour_score_t behaviour_score = 0;
 
 	// last time the peer pulsed
 	std::chrono::steady_clock::time_point last_pulse;
 
-	// default constructor
-	peer_data_t() : last_pulse(std::chrono::steady_clock::now()) {}
+	// constructor
+	explicit peer_data_t(std::string addr)
+		: last_pulse(std::chrono::steady_clock::now()), addr(std::move(addr)) {}
 };
 
 /*

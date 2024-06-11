@@ -23,6 +23,9 @@ public:
 	// set a client's auth level
 	static void session_set_auth(Client& client, client_auth auth);
 
+	// set a client's auth level for a peer
+	static void session_set_auth(Client& client, client_auth auth, const std::string& addr);
+
 	// check if a client is a peer
 	static bool session_is_peer(Client& client);
 
@@ -49,6 +52,9 @@ public:
 
 	// get a client's current peer data
 	static peer_data_t& session_peer_data(Client& client);
+
+	// get a peer's address
+	static std::string& session_addr(Client& client);
 };
 
 } // namespace vanity
