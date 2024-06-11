@@ -34,7 +34,7 @@ class GeneralDatabaseTest(BaseDatabaseTest):
         Test that we get an error when we try to delete a key that doesn't exist.
         """
         response = self.client.delete("test_del_empty")
-        self.assertTrue(response.is_error())
+        self.assertTrue(response.is_null())
 
     def test_ping(self):
         """

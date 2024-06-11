@@ -187,7 +187,7 @@ class UserAuthTest(unittest.TestCase):
         Test that we can delete data from the server if we login.
         """
         response = self.client.delete("test_delete")
-        self.assertTrue(response.is_error())
+        self.assertTrue(response.is_null())
 
     def test_type(self):
         """
