@@ -31,7 +31,7 @@ This includes commands for database management, sorted alphabetically.
 
 - `DEL<key>`  
     Deletes the key-value pair with the given key from the current database.  
-    Returns `OK` if successful, or `ERROR` if the key does not exist.  
+    Returns `OK` if successful, or `NULL` if the key does not exist.  
     Only authenticated clients can delete keys.  
 
     `<key>` is the key to delete from the database, a `<string>`.
