@@ -5,8 +5,9 @@
 #ifndef VANITY_PEER_PULSE_SERVER_H
 #define VANITY_PEER_PULSE_SERVER_H
 
-#include "repeat_event_server.h"
 #include "peer_server.h"
+#include "repeat_event_server.h"
+#include "request/peer_request_server.h"
 
 
 namespace vanity {
@@ -15,7 +16,10 @@ namespace vanity {
  * A PeerPulseServer sends periodic pulses to peers
  * and tracks the pulses of peers
  */
-class PeerPulseServer : public virtual RepeatEventServer, public virtual PeerServer
+class PeerPulseServer:
+	public virtual PeerRequestServer,
+	public virtual PeerServer,
+	public virtual RepeatEventServer
 {
 private:
 	// the time between pulses

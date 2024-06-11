@@ -5,14 +5,14 @@
 #ifndef VANITY_CLUSTER_SERVER_H
 #define VANITY_CLUSTER_SERVER_H
 
-#include "peer_server.h"
+#include "high_peer_server.h"
 
 namespace vanity {
 
 /*
  * A ClusterServer connects to other servers in a cluster
  */
-class ClusterServer : public virtual PeerServer
+class ClusterServer : public virtual HighPeerServer
 {
 private:
 	// check is a client is connected via the cluster port

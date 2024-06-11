@@ -7,9 +7,8 @@
 
 #include "address_server.h"
 #include "client/client_server.h"
-#include "client/exit_server.h"
 #include "cluster_auth_server.h"
-#include "request/peer_request_server.h"
+#include "response/peer_message_server.h"
 
 
 namespace vanity {
@@ -21,8 +20,7 @@ class PeerServer:
 	public virtual AddressServer,
 	public virtual ClientServer,
 	public virtual ClusterAuthServer,
-	public virtual ExitServer,
-	public virtual PeerRequestServer
+	public virtual PeerMessageServer
 {
 private:
 	// known peers
@@ -31,6 +29,11 @@ private:
 	// mutex for the peers map
 	std::mutex m_peers_mutex;
 
+	// the peer hook pre-deleting a client
+	// this removes the tcp_client from the peers map
+	void pre_client_delete_peer(TcpClient& client) override;
+
+protected:
 	// return a set of all peers' addresses
 	std::unordered_set<std::string> peer_addresses();
 
@@ -40,52 +43,14 @@ private:
 	// connect to and register a new peer
 	Client& new_peer(const std::string& host, uint16_t port);
 
-	// the peer hook pre-deleting a client
-	// this removes the tcp_client from the peers map
-	void pre_client_delete_peer(TcpClient& client) override;
-
 	// remove a peer from the peers set and the connected peers map
 	void forget_peer(TcpClient &client);
-
-	// given a set of (potentially unknown) peers, return the set of unknown peers
-	// calculates the set difference of m_peers and the peers set
-	std::unordered_set<std::string> unknown_peers_in(const std::unordered_set<std::string>& peers);
-
-protected:
-	// connect to and authenticate with a peer
-	void peer_connect(const std::string& host, uint16_t port, const std::string& key, Client* client = nullptr);
-
-	// sync information with a newly authenticated peer
-	// currently, we simply request the peer's peers
-	void peer_sync(Client& peer);
 
 	// get all active peers
 	std::vector<Client*> get_peers();
 
-public:
-	// register a new peer
-	void register_peer(Client& client, const std::string& addr);
-
-	// remove a known peer
-	void remove_peer(Client& peer);
-
 	// clear all peers
 	void clear_peers();
-
-	// a peers request was received from a client
-	void request_peers(Client& client) override;
-
-	// a peers request was received from a peer
-	void post_request_peers(Context& ctx) override;
-
-	// a reply to a peers request was received from a peer
-	void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) override;
-
-	// an exit request was received from a peer
-	void post_request_exit(Context& ctx) override;
-
-	// a reply to an exit request was received from a peer
-	void reply_request_exit(Context& ctx) override;
 };
 
 } // namespace vanity
