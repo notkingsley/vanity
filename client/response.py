@@ -40,6 +40,7 @@ class ServerType(Enum):
     HASH = "HASH"
     AGG = "AGG"
     AUTH_LEVEL = "AUTH_LEVEL"
+    ERR = "ERR"
 
 
 class InvalidResponse(Exception):
@@ -83,7 +84,7 @@ def extract_str(msg: str) -> tuple[str, str]:
     """
     Extract a string from a response.
     :param msg: The response to extract from.
-    :return: The extracted string, or None if no int could be deciphered.
+    :return: The extracted string, or None if no string could be deciphered.
     """
     num, msg = extract_len(msg)
     if num is None:
@@ -318,6 +319,15 @@ def extract_auth_level(msg: str):
     return None, msg
 
 
+def extract_err(msg: str):
+    """
+    Extract an ERR from a response
+    :param msg: The response to extract from.
+    :return: The extracted auth level, or None if no error string could be extracted
+    """
+    return extract_str(msg)
+
+
 def extract_as(msg: str, _type: ServerType):
     """
     Extract a value from a response as a given type.
@@ -350,6 +360,8 @@ def extract_as(msg: str, _type: ServerType):
             return extract_agg(msg)
         case ServerType.AUTH_LEVEL:
             return extract_auth_level(msg)
+        case ServerType.ERR:
+            return extract_err(msg)
         case _:
             raise ValueError(f"Invalid type: {_type}.")
 
@@ -395,6 +407,9 @@ def extract_type(msg: str) -> tuple[ServerType | None, str]:
     elif msg.startswith(":AUTH_LEVEL"):
         return ServerType.AUTH_LEVEL, msg[11:].lstrip()
 
+    elif msg.startswith(":ERR"):
+        return ServerType.ERR, msg[4:].lstrip()
+
     return None, msg
 
 
@@ -408,17 +423,10 @@ def extract_response(raw: str):
     type, raw = extract_type(raw)
 
     value = None
-    body = None
-
     if type is not None:
         value, raw = extract_as(raw, type)
 
-    else:
-        len, raw = extract_len(raw)
-        if len is not None:
-            body, raw = raw[:len], raw[len:]
-
-    return RawResponse(status, type, value, body), raw
+    return RawResponse(status, type, value), raw
 
 
 @dataclass
@@ -443,7 +451,6 @@ class RawResponse:
     status: ServerConstant | None
     type: ServerType | None
     value: ValueType
-    body: str | None
 
 
 class Response:
@@ -456,7 +463,7 @@ class Response:
         self.status = raw.status
         self.type = raw.type
         self.value = raw.value
-        self.body = raw.body
+        self.body = raw.value if self.type_is_err() else None
 
     def __str__(self) -> str:
         status = self.status.name if self.status else self.status
@@ -623,3 +630,9 @@ class Response:
         :return: True if the response is of type AUTH_LEVEL, False otherwise.
         """
         return self.type == ServerType.AUTH_LEVEL
+
+    def type_is_err(self) -> bool:
+        """
+        :return: True if the response is of type ERR, False otherwise.
+        """
+        return self.type == ServerType.ERR
