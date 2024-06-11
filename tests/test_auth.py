@@ -713,4 +713,4 @@ class EnviromentVariablePasswordTest(unittest.TestCase):
                 client.DEFAULT_ADMIN_PASSWORD,
             )
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "incorrect password")
+            self.assertEqual(response.value, "incorrect password")

@@ -42,7 +42,7 @@ class ClusterKeyTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.cluster_new("")
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "key is too short")
+            self.assertEqual(response.value, "key is too short")
 
     def test_cluster_new_already_in_cluster(self):
         """
@@ -53,7 +53,7 @@ class ClusterKeyTest(unittest.TestCase):
             self.assertTrue(response.is_ok())
             response = client.cluster_new("test_cluster_key_2")
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "already in a cluster")
+            self.assertEqual(response.value, "already in a cluster")
 
     def test_cluster_key_no_cluster(self):
         """
@@ -93,7 +93,7 @@ class ClusterKeyTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.cluster_leave()
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "not in a cluster")
+            self.assertEqual(response.value, "not in a cluster")
 
 
 class ClusterCommandsNoAdmin(unittest.TestCase):
@@ -348,7 +348,7 @@ class ClusterJoinFailTest(unittest.TestCase):
             "bad_cluster_key", self.host, self.cluster_port1
         )
         self.assertTrue(response.is_error())
-        self.assertEqual(response.body, "peer denied connection")
+        self.assertEqual(response.value, "peer denied connection")
 
     def test_cluster_join_no_cluster(self):
         """
@@ -358,7 +358,7 @@ class ClusterJoinFailTest(unittest.TestCase):
             "test_cluster_key", self.host, self.cluster_port1
         )
         self.assertTrue(response.is_error())
-        self.assertEqual(response.body, "peer denied connection")
+        self.assertEqual(response.value, "peer denied connection")
 
     def test_cluster_join_already_in_cluster(self):
         """
@@ -384,13 +384,13 @@ class ClusterJoinFailTest(unittest.TestCase):
                 "test_cluster_key", self.host, self.cluster_port1
             )
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "already in a cluster")
+            self.assertEqual(response.value, "already in a cluster")
 
             response = self.client2.cluster_join(
                 "test_cluster_key", self.host, self.cluster_port1
             )
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "already in a cluster")
+            self.assertEqual(response.value, "already in a cluster")
 
 
 class ClusterJoinNonClusterPort(unittest.TestCase):

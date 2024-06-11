@@ -420,11 +420,14 @@ def extract_response(raw: str):
     :return: The RawResponse and the remaining message.
     """
     status, raw = extract_status(raw)
-    type, raw = extract_type(raw)
+    if status is None:
+        raise InvalidResponse("No status could be extracted.")
 
-    value = None
+    type, raw = extract_type(raw)
     if type is not None:
         value, raw = extract_as(raw, type)
+    else:
+        value = None
 
     return RawResponse(status, type, value), raw
 
@@ -448,7 +451,7 @@ class RawResponse:
         | None
     )
 
-    status: ServerConstant | None
+    status: ServerConstant
     type: ServerType | None
     value: ValueType
 
@@ -463,7 +466,6 @@ class Response:
         self.status = raw.status
         self.type = raw.type
         self.value = raw.value
-        self.body = raw.value if self.type_is_err() else None
 
     def __str__(self) -> str:
         status = self.status.name if self.status else self.status
@@ -472,17 +474,16 @@ class Response:
         type = self.type.name if self.type else self.type
         type = f"type={type}" if type else ""
 
-        if self.body:
-            body = self.body
-            if len(body) > 30:
-                body = body[:30] + "..."
-        else:
-            body = ""
-        body = f"body={body}" if body else ""
+        err = ""
+        if self.type_is_err():
+            err = self.value
+            if len(err) > 30:
+                err = err[:30] + "..."
+        err = f"err={err}" if err else ""
 
         ret = f"<{self.__class__.__name__}"
-        if any((status, type, body)):
-            ret += f": {', '.join(filter(None, (status, type, body)))}"
+        if any((status, type, err)):
+            ret += f": {', '.join(filter(None, (status, type, err)))}"
         ret += ">"
         return ret
 

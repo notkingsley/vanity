@@ -99,7 +99,6 @@ class AsyncResponse(Response):
         self.status = ServerConstant.ASYNC
         self.type = None
         self.value = None
-        self.body = None
 
 
 def make_response(message: str) -> AsyncResponse | Response:

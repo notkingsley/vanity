@@ -32,17 +32,17 @@ class BindTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.bind(self.HOST, 0)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
         with self.make_client() as client:
             response = client.bind(self.HOST, 65536)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
         with self.make_client() as client:
             response = client.bind(self.HOST, -1)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
     def test_bind_already_bound(self):
         """
@@ -51,7 +51,7 @@ class BindTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.bind(self.HOST, self.port)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "already bound to port")
+            self.assertEqual(response.value, "already bound to port")
 
     def test_bind(self):
         """
@@ -73,17 +73,17 @@ class BindTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.unbind(self.HOST, 0)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
         with self.make_client() as client:
             response = client.unbind(self.HOST, 65536)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
         with self.make_client() as client:
             response = client.unbind(self.HOST, -1)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "invalid port")
+            self.assertEqual(response.value, "invalid port")
 
     def test_unbind_not_bound(self):
         """
@@ -93,7 +93,7 @@ class BindTest(unittest.TestCase):
             client.bind(self.HOST, get_free_port())
             response = client.unbind(self.HOST, get_free_port())
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "was not bound to port")
+            self.assertEqual(response.value, "was not bound to port")
 
     def test_unbind_last_port(self):
         """
@@ -102,7 +102,7 @@ class BindTest(unittest.TestCase):
         with self.make_client() as client:
             response = client.unbind(self.HOST, self.port)
             self.assertTrue(response.is_error())
-            self.assertEqual(response.body, "cannot unbind last port")
+            self.assertEqual(response.value, "cannot unbind last port")
 
     def test_unbind_cluster_port(self):
         """
@@ -114,7 +114,7 @@ class BindTest(unittest.TestCase):
             with make_client(port=server_port) as client:
                 response = client.unbind(self.HOST, cluster_port)
                 self.assertTrue(response.is_error())
-                self.assertEqual(response.body, "cannot unbind cluster port")
+                self.assertEqual(response.value, "cannot unbind cluster port")
 
     def test_unbind(self):
         """
