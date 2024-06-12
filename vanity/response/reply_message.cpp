@@ -48,4 +48,8 @@ ReplyMessage &ReplyMessage::serialize(const std::unordered_set<std::string> &dat
 	return *this << '}';
 }
 
+ReplyMessage &ReplyMessage::serialize(bool data) {
+	return *this << (data ? "true" : "false");
+}
+
 } // namespace vanity

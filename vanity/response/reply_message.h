@@ -41,6 +41,9 @@ public:
 
 	// serialize a set of strings to the ReplyMessage
 	ReplyMessage& serialize(const std::unordered_set<std::string>& data);
+
+	// serialize a bool to the ReplyMessage
+	ReplyMessage& serialize(bool data);
 };
 
 } // namespace vanity
