@@ -83,6 +83,9 @@ protected:
 	// extract a hash from the extractable
 	std::unordered_map<std::string, std::string> get_hash();
 
+	// extract a bool from the extractable
+	bool get_bool();
+
 	// extract a client auth from the extractable
 	client_auth get_client_auth();
 
@@ -163,6 +166,11 @@ inline std::unordered_set<std::string> Extractable::get<object_t::SET>() {
 template<>
 inline std::unordered_map<std::string, std::string> Extractable::get<object_t::HASH>() {
 	return get_hash();
+}
+
+template<>
+inline bool Extractable::get<object_t::BOOL>() {
+	return get_bool();
 }
 
 template<>

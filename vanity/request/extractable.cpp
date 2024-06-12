@@ -241,6 +241,20 @@ std::unordered_map<std::string, std::string> Extractable::get_hash() {
 	return hash;
 }
 
+bool Extractable::get_bool() {
+	ensure_not_end();
+	if (compare("true")) {
+		*this += 4;
+		return true;
+	}
+	else if (compare("false")) {
+		*this += 5;
+		return false;
+	}
+
+	throw InvalidRequest("invalid boolean");
+}
+
 template<class T>
 T Extractable::peek_from_list(const Extractable::list_of_pairs<T> &list, const char *err) {
 	skip_whitespace();

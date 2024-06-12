@@ -26,6 +26,7 @@ enum class object_t{
 	LIST,
 	SET,
 	HASH,
+	BOOL,
 	CLIENT_AUTH,
 };
 
@@ -37,6 +38,7 @@ const std::initializer_list<std::pair<object_t, std::string>> OBJECT_T_STRINGS {
 	{object_t::LIST,  "LIST"},
 	{object_t::SET,   "SET"},
 	{object_t::HASH,  "HASH"},
+	{object_t::BOOL,  "BOOL"},
 	{object_t::CLIENT_AUTH, "CLIENT_AUTH"},
 };
 
@@ -76,6 +78,11 @@ struct concrete_traits<object_t::SET> {
 template<>
 struct concrete_traits<object_t::HASH> {
 	using type = std::unordered_map<std::string, std::string>;
+};
+
+template<>
+struct concrete_traits<object_t::BOOL> {
+	using type = bool;
 };
 
 template<>
