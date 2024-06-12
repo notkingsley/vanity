@@ -63,6 +63,12 @@ public:
 	// a reply to a peers request was received from a peer
 	virtual void reply_request_peers(Context& ctx, const std::unordered_set<std::string>& peers) = 0;
 
+	// an ask_evict request was received from a peer
+	virtual void post_request_ask_evict(Context& ctx, const std::string& issue_id, const std::string& peer_addr, const std::string& reason) = 0;
+
+	// a reply to an ask_evict request was received from a peer
+	virtual void reply_request_ask_evict(Context& ctx, bool opinion) = 0;
+
 	// a pulse async request was received from a peer
 	virtual void async_request_pulse(Client& client) = 0;
 };

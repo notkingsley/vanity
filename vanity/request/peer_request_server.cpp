@@ -80,6 +80,12 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 			break;
 		}
 
+		case peer_op_t::ASK_EVICT: {
+			auto [issue_id, peer_addr, reason] = request.get_exact<STR, STR, STR>(end);
+			post_request_ask_evict(ctx, issue_id, peer_addr, reason);
+			break;
+		}
+
 		case peer_op_t::MAX_OP: {
 			request.get_exact<>(end);
 			report_peer(ctx.client, report_t::BAD_REQUEST);
@@ -117,6 +123,12 @@ void PeerRequestServer::handle_reply_request(PeerRequest& request, Context& ctx)
 		case peer_op_t::PEERS: {
 			auto peers = request.get_exact<SET>(end);
 			reply_request_peers(ctx, peers);
+			break;
+		}
+
+		case peer_op_t::ASK_EVICT: {
+			auto opinion = request.get_exact<BOOL>(end);
+			reply_request_ask_evict(ctx, opinion);
 			break;
 		}
 

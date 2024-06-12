@@ -17,6 +17,8 @@ enum class peer_op_t : uint {
 	PEER_AUTH,
 	PEERS,
 
+	ASK_EVICT,
+
 	MAX_OP,
 };
 
@@ -27,6 +29,8 @@ const std::initializer_list<std::pair<peer_op_t, std::string>> PEER_OP_STRINGS {
 
 	{peer_op_t::PEER_AUTH,		    "PEER_AUTH"},
 	{peer_op_t::PEERS,              "PEERS"},
+
+	{peer_op_t::ASK_EVICT,          "ASK_EVICT"},
 };
 
 // all the possible async operations that a peer can send
