@@ -10,7 +10,7 @@
 
 namespace vanity {
 
-std::string random_string(size_t length, const char *prefix = "") {
+inline std::string random_string(size_t length, const char *prefix = "") {
 	static auto& chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	thread_local static std::mt19937 rg{std::random_device{}()};
