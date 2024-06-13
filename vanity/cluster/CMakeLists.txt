@@ -11,4 +11,6 @@ add_library(vanity_cluster STATIC
 	peer_behaviour_server.cpp
 	peer_pulse_server.cpp
 	peer_server.cpp
+	peer_eviction_server.cpp
+	peer_eviction_server.h
 )
