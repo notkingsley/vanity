@@ -12,17 +12,18 @@ void PeerPulseServer::send_pulses() {
 }
 
 void PeerPulseServer::check_pulses() {
-	auto now = std::chrono::steady_clock::now();
-	for (auto& client : get_peers()) {
-		auto& peer_data = session_peer_data(*client);
-
-		if (now - peer_data.last_pulse > M_MAX_PULSE_DELAY)
-			kick_peer(*client);
-	}
+	auto now = steady_clock::now();
+	for (auto& client : get_peers())
+		if (now - session_peer_data(*client).last_pulse > M_MAX_PULSE_DELAY)
+			evict_dead_peer(*client);
 }
 
-void PeerPulseServer::kick_peer(Client& peer) {
-	// TODO: implement
+bool PeerPulseServer::evict_opinion_dead(Client& peer) {
+	return steady_clock::now() - session_peer_data(peer).last_pulse > M_MAX_PULSE_DELAY * 0.75;
+}
+
+std::chrono::seconds PeerPulseServer::forget_evict_issue_after() {
+	return M_MAX_PULSE_DELAY * 2;
 }
 
 PeerPulseServer::PeerPulseServer() {
@@ -30,7 +31,7 @@ PeerPulseServer::PeerPulseServer() {
 }
 
 void PeerPulseServer::async_request_pulse(Client& client) {
-	session_peer_data(client).last_pulse = std::chrono::steady_clock::now();
+	session_peer_data(client).last_pulse = steady_clock::now();
 }
 
 void PeerPulseServer::event_pulse() {
