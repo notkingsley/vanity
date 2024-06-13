@@ -22,9 +22,6 @@ private:
 	// the maximum score a peer can have before being evicted
 	static constexpr auto M_MAX_SCORE = 100;
 
-	// evict a peer
-	void evict_peer(Client& peer);
-
 protected:
 	// all the bad things a peer can do
 	enum class report_t
@@ -46,6 +43,17 @@ private:
 protected:
 	// report a peer for misbehaviour
 	void report_peer(Client& peer, report_t report);
+
+	/*
+	 * The virtuality of these functions are flipped
+	 * because PeerBehaviourServer cannot inherit
+	 * from PeerEvictionServer
+	 */
+	// evict a peer for misbehaving
+	virtual void evict_misbehaving_peer(Client &peer) = 0;
+
+	// check if we think a peer is misbehaving
+	static bool evict_opinion_misbehaving(Client& peer);
 };
 
 } // namespace vanity

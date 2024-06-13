@@ -6,10 +6,6 @@
 
 namespace vanity {
 
-void PeerBehaviourServer::evict_peer(Client &peer) {
-	// TODO: implement
-}
-
 peer_data_t::peer_behaviour_score_t PeerBehaviourServer::report_score(report_t report) {
 	switch (report) {
 		case report_t::BAD_MESSAGE:
@@ -27,7 +23,11 @@ void PeerBehaviourServer::report_peer(Client &peer, report_t report) {
 	score += report_score(report);
 
 	if (score >= M_MAX_SCORE)
-		evict_peer(peer);
+		evict_misbehaving_peer(peer);
+}
+
+bool PeerBehaviourServer::evict_opinion_misbehaving(Client &peer) {
+	return session_peer_data(peer).behaviour_score >= M_MAX_SCORE * 0.75;
 }
 
 } // namespace vanity
