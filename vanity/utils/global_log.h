@@ -19,15 +19,14 @@ namespace vanity {
 
 constexpr bool GLOBAL_LOGGING = true;
 
-// the global logger
-
 // log something to the global logger
-void global_log(const std::string& msg) {
+inline void global_log(const std::string& msg) {
 	if constexpr (not GLOBAL_LOGGING)
 		return;
 
+	static const auto PID = getpid();
 	static Logger global_logger("global.log", LogLevel::DEBUG);
-	global_logger.debug(msg);
+	global_logger.debug("[" + std::to_string(PID) + "] " + msg);
 }
 
 } // namespace vanity
