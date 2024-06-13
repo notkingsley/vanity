@@ -44,6 +44,9 @@ public:
 
 	// serialize a bool to the ReplyMessage
 	ReplyMessage& serialize(bool data);
+
+	// serialize a C-string to the ReplyMessage
+	ReplyMessage& serialize(const char* data);
 };
 
 } // namespace vanity

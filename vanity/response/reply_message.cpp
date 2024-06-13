@@ -52,4 +52,8 @@ ReplyMessage &ReplyMessage::serialize(bool data) {
 	return *this << (data ? "true" : "false");
 }
 
+ReplyMessage &ReplyMessage::serialize(const char *data) {
+	return serialize(std::string(data));
+}
+
 } // namespace vanity
