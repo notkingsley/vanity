@@ -47,7 +47,10 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key, 
 	if (not check_cluster_key_length(key))
 		return send(client, error("key is too short"));
 
-	send(client, ok(set_cluster_key(key)));
+	if (not check_cluster_id_length(id))
+		return send(client, error("id is too short"));
+
+	send(client, ok(set_cluster_info(key, id)));
 }
 
 void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
@@ -77,7 +80,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 		return remove_peer(ctx.client);
 
 	if (data == "OK") {
-		set_cluster_key(pending->key);
+		set_cluster_info(pending->key, "");// pending->id
 		if (pending->client)
 			send(*pending->client, ok());
 
