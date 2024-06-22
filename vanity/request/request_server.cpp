@@ -719,9 +719,9 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::CLUSTER_NEW:
 		{
-			auto key = request.get_exact<STR>(end);
+			auto [key,  id] = request.get_exact<STR, STR>(end);
 			wal_request(client, op, tracker.view());
-			request_cluster_new(client, key);
+			request_cluster_new(client, key, id);
 			break;
 		}
 

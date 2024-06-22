@@ -40,7 +40,7 @@ void ClusterServer::request_cluster_key(Client &client) {
 		send(client, null());
 }
 
-void ClusterServer::request_cluster_new(Client &client, const std::string &key) {
+void ClusterServer::request_cluster_new(Client &client, const std::string &key, const std::string& id) {
 	if (in_cluster())
 		return send(client, error("already in a cluster"));
 

@@ -269,7 +269,7 @@ public:
 	virtual void request_cluster_key(Client& client) = 0;
 
 	// a cluster_new request was received from a client
-	virtual void request_cluster_new(Client& client, const std::string& key) = 0;
+	virtual void request_cluster_new(Client& client, const std::string& key, const std::string& id) = 0;
 
 	// a peers request was received from a client
 	virtual void request_peers(Client& client) = 0;
