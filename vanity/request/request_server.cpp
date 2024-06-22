@@ -698,9 +698,9 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 
 		case operation_t::CLUSTER_JOIN:
 		{
-			auto [key, host, port] = request.get_exact<STR, STR, INT>(end);
+			auto [key, id, host, port] = request.get_exact<STR, STR, STR, INT>(end);
 			wal_request(client, op, tracker.view());
-			request_cluster_join(client, key, host, port);
+			request_cluster_join(client, key, id, host, port);
 			break;
 		}
 		case operation_t::CLUSTER_KEY:

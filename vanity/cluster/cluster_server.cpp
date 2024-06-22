@@ -17,7 +17,7 @@ void ClusterServer::handle(const std::string &msg, Client &client) {
 		handle_user(msg, client);
 }
 
-void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string &host, uint16_t port) {
+void ClusterServer::request_cluster_join(Client &client, const std::string& key, const std::string& id, const std::string &host, uint16_t port) {
 	if (in_cluster())
 		return send(client, error("already in a cluster"));
 

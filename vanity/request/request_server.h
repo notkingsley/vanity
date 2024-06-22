@@ -260,7 +260,7 @@ public:
 	virtual void request_publish(Client& client, const std::string& channel, const std::string& message) = 0;
 
 	// a cluster_join request was received from a client
-	virtual void request_cluster_join(Client& client, const std::string& key, const std::string& host, uint16_t port) = 0;
+	virtual void request_cluster_join(Client& client, const std::string& key, const std::string& id, const std::string& host, uint16_t port) = 0;
 
 	// a cluster_leave request was received from a client
 	virtual void request_cluster_leave(Client& client) = 0;
