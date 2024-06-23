@@ -14,40 +14,42 @@ auto PeerEvictionServer::insert_eviction_issue(eviction_issue_t &&issue) -> evic
 	return m_eviction_issues.insert({issue_id, std::move(issue)}).first->second;
 }
 
-auto PeerEvictionServer::new_eviction_issue(const std::string& peer_addr, std::string reason) -> eviction_issue_t& {
-	return insert_eviction_issue({random_string(15), peer_addr, std::move(reason), {}, true});
+auto PeerEvictionServer::new_eviction_issue(const std::string& peer_id, std::string reason) -> eviction_issue_t& {
+	return insert_eviction_issue({random_string(15), peer_id, std::move(reason), {}, true});
 }
 
-auto PeerEvictionServer::get_eviction_issue(const std::string& issue_id, const std::string& peer_addr, const std::string& reason) -> std::pair<eviction_issue_t&, bool> {
+auto PeerEvictionServer::get_eviction_issue(const std::string& issue_id, const std::string& peer_id, const std::string& reason) -> std::pair<eviction_issue_t&, bool> {
 	{
 		std::lock_guard lock{m_eviction_issues_mutex};
 		if (m_eviction_issues.contains(issue_id))
 			return {m_eviction_issues.at(issue_id), false};
 	}
 
-	auto self_opinion = self_opinion_on(peer_addr, reason);
-	return {insert_eviction_issue({issue_id, peer_addr, reason, {}, self_opinion}), true};
+	auto self_opinion = self_opinion_on(peer_id, reason);
+	return {insert_eviction_issue({issue_id, peer_id, reason, {}, self_opinion}), true};
 }
 
-bool PeerEvictionServer::similar_issue_exists(const std::string &peer_addr, const std::string &reason) {
+bool PeerEvictionServer::similar_issue_exists(const std::string &peer_id, const std::string &reason) {
 	std::lock_guard lock{m_eviction_issues_mutex};
 	for (auto& [_, issue] : m_eviction_issues)
-		if (issue.peer_addr == peer_addr && issue.reason == reason)
+		if (issue.peer_id == peer_id && issue.reason == reason)
 			return true;
 
 	return false;
 }
 
-Client& PeerEvictionServer::peer_from_addr(const std::string &addr) {
-	for (auto p : get_peers())
-		if (session_addr(*p) == addr)
-			return *p;
+Client& PeerEvictionServer::peer_from_id(const std::string &id) {
+	for (auto peer : get_peers()) {
+		auto peer_id = session_id(*peer);
+		if (peer_id and *peer_id == id)
+			return *peer;
+	}
 
-	throw std::runtime_error("no peer with address " + addr + " found");
+	throw std::runtime_error("no peer with ID " + id + " found");
 }
 
-bool PeerEvictionServer::self_opinion_on(const std::string &peer_addr, const std::string &reason) {
-	auto& peer = peer_from_addr(peer_addr);
+bool PeerEvictionServer::self_opinion_on(const std::string &peer_id, const std::string &reason) {
+	auto& peer = peer_from_id(peer_id);
 	if (reason == "misbehaving")
 		return evict_opinion_misbehaving(peer);
 	else if (reason == "dead")
@@ -57,7 +59,7 @@ bool PeerEvictionServer::self_opinion_on(const std::string &peer_addr, const std
 }
 
 msg_id_t PeerEvictionServer::post_ask_evict(eviction_issue_t &issue, Client &peer) {
-	return post(peer, peer_op_t::ASK_EVICT, issue.issue_id, issue.peer_addr, issue.reason);
+	return post(peer, peer_op_t::ASK_EVICT, issue.issue_id, issue.peer_id, issue.reason);
 }
 
 void PeerEvictionServer::post_ask_evict_all(eviction_issue_t &issue, const std::function<bool(Client&)>& pred) {
@@ -82,11 +84,11 @@ auto PeerEvictionServer::pop_ask_evict(msg_id_t id) -> eviction_issue_t& {
 }
 
 void PeerEvictionServer::begin_evict_process(Client &peer, std::string reason) {
-	auto& peer_addr = session_addr(peer);
-	if (similar_issue_exists(peer_addr, reason))
+	auto& peer_id = session_id(peer);
+	if (not peer_id or similar_issue_exists(*peer_id, reason))
 		return;
 
-	auto &issue = new_eviction_issue(peer_addr, std::move(reason));
+	auto &issue = new_eviction_issue(*peer_id, std::move(reason));
 	post_ask_evict_all(issue, [&peer](Client &p) { return &p != &peer; });
 }
 
@@ -95,7 +97,7 @@ void PeerEvictionServer::resolve_issue(eviction_issue_t &issue, bool verdict) {
 	issue.resolved = true;
 
 	if (verdict)
-		do_evict_peer(peer_from_addr(issue.peer_addr), issue.reason);
+		do_evict_peer(peer_from_id(issue.peer_id), issue.reason);
 }
 
 void PeerEvictionServer::try_resolve_issue(eviction_issue_t &issue) {
@@ -112,7 +114,7 @@ void PeerEvictionServer::try_resolve_issue(eviction_issue_t &issue) {
 }
 
 void PeerEvictionServer::do_evict_peer(Client &peer, const std::string &reason) {
-	logger().info("evicting peer " + session_addr(peer) + " for " + reason);
+	logger().info("evicting peer " + *session_id(peer) + " for " + reason);
 	auto& tcp_peer = to_tcp(peer);
 	forget_peer(tcp_peer);
 	tcp_peer.close();
@@ -126,12 +128,12 @@ void PeerEvictionServer::evict_dead_peer(Client &peer) {
 	begin_evict_process(peer, "dead");
 }
 
-void PeerEvictionServer::post_request_ask_evict(Context& ctx, const std::string& issue_id, const std::string& peer_addr, const std::string& reason) {
-	auto [issue, created] = get_eviction_issue(issue_id, peer_addr, reason);
+void PeerEvictionServer::post_request_ask_evict(Context& ctx, const std::string& issue_id, const std::string& peer_id, const std::string& reason) {
+	auto [issue, created] = get_eviction_issue(issue_id, peer_id, reason);
 	reply(ctx, issue.self_opinion);
 
 	if (created)
-		post_ask_evict_all(issue, [&peer_addr](Client &p) { return session_addr(p) != peer_addr; });
+		post_ask_evict_all(issue, [&peer_id](Client &p) { auto id = session_id(p); return id.has_value() and id != peer_id; });
 }
 
 void PeerEvictionServer::reply_request_ask_evict(Context& ctx, bool opinion) {

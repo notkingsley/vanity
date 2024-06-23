@@ -28,7 +28,7 @@ private:
 	// represents an active issue being resolved
 	struct eviction_issue_t {
 		std::string issue_id;
-		std::string peer_addr;
+		std::string peer_id;
 		std::string reason;
 		std::vector<bool> opinions;
 		bool self_opinion;
@@ -53,20 +53,20 @@ private:
 	eviction_issue_t& insert_eviction_issue(eviction_issue_t&& issue);
 
 	// create and add an eviction issue
-	eviction_issue_t& new_eviction_issue(const std::string& peer_addr, std::string reason);
+	eviction_issue_t& new_eviction_issue(const std::string& peer_id, std::string reason);
 
 	// get (or create) an eviction issue we've been asked about
 	// returns the issue and whether it was created
-	std::pair<eviction_issue_t&, bool> get_eviction_issue(const std::string& issue_id, const std::string& peer_addr, const std::string& reason);
+	std::pair<eviction_issue_t&, bool> get_eviction_issue(const std::string& issue_id, const std::string& peer_id, const std::string& reason);
 
 	// check if we have a similar issue
-	bool similar_issue_exists(const std::string& peer_addr, const std::string& reason);
+	bool similar_issue_exists(const std::string& peer_id, const std::string& reason);
 
-	// get a peer given an address (inefficient, but rarely used)
-	Client& peer_from_addr(const std::string& addr);
+	// get a peer given an id (inefficient, but rarely used)
+	Client& peer_from_id(const std::string& id);
 
 	// get this peer's opinion on an issue
-	bool self_opinion_on(const std::string& peer_addr, const std::string& reason);
+	bool self_opinion_on(const std::string& peer_id, const std::string& reason);
 
 	// post an ask_evict request to a peer
 	msg_id_t post_ask_evict(eviction_issue_t& issue, Client &peer);
@@ -104,7 +104,7 @@ public:
 	void evict_dead_peer(Client &peer);
 
 	// an ask_evict request was received from a peer
-	void post_request_ask_evict(Context& ctx, const std::string& issue_id, const std::string& peer_addr, const std::string& reason) override;
+	void post_request_ask_evict(Context& ctx, const std::string& issue_id, const std::string& peer_id, const std::string& reason) override;
 
 	// a reply to an ask_evict request was received from a peer
 	void reply_request_ask_evict(Context& ctx, bool opinion) override;
