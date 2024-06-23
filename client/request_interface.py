@@ -638,18 +638,21 @@ class RequestInterface(ABC, Generic[RT]):
         """
         Create a new cluster
         :param key: the key of the cluster
+        :param id: the id to use, random if not provided
         """
         id = id or ""
         return self.request("CLUSTER_NEW", key, id)
 
-    def cluster_join(self, key: str, host: str, port: int):
+    def cluster_join(self, key: str, host: str, port: int, id: str | None = None):
         """
         Join a cluster
         :param key: the key of the cluster
         :param host: the host of the peer
         :param port: the port of the peer
+        :param id: the id to use, random if not provided
         """
-        return self.request("CLUSTER_JOIN", key, host, port)
+        id = id or ""
+        return self.request("CLUSTER_JOIN", key, id, host, port)
 
     def peers(self):
         """
