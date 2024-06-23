@@ -28,9 +28,21 @@ class ClusterKeyTest(unittest.TestCase):
         Test cluster_new.
         """
         with self.make_client() as client:
-            response = client.cluster_new("test_cluster_key")
+            response = client.cluster_new("test_cluster_key", "test_cluster_id")
+            self.assertTrue(response.is_ok())
+            self.assertEqual(response.value, "test_cluster_id")
+            response = client.cluster_key()
             self.assertTrue(response.is_ok())
             self.assertEqual(response.value, "test_cluster_key")
+
+    def test_cluster_new_no_id(self):
+        """
+        Test that cluster_new with an empty id generates a random id.
+        """
+        with self.make_client() as client:
+            response = client.cluster_new("test_cluster_key")
+            self.assertTrue(response.is_ok())
+            self.assertFalse(len(response.value) == 0)
             response = client.cluster_key()
             self.assertTrue(response.is_ok())
             self.assertEqual(response.value, "test_cluster_key")
