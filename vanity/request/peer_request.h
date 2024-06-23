@@ -6,6 +6,7 @@
 #define VANITY_PEER_REQUEST_H
 
 #include "cluster/peer_operations.h"
+#include "cluster/reply_status.h"
 #include "extractable.h"
 
 
@@ -38,6 +39,9 @@ public:
 
 	// get the type of the request
 	peer_request_t get_request_t();
+
+	// extract a ReplyStatus from the request
+	ReplyStatus get_reply_status();
 
 	// extract a peer operation from the request
 	peer_op_t get_op();

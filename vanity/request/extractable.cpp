@@ -2,9 +2,8 @@
 // Created by kingsli on 4/28/24.
 //
 
-#include <limits>
-
 #include "client/operations.h"
+#include "cluster/reply_status.h"
 #include "exceptions.h"
 #include "extractable.h"
 #include "peer_request.h"
@@ -283,6 +282,8 @@ template object_t Extractable::get_from_list(const list_of_pairs<object_t>&, con
 template operation_t Extractable::get_from_list(const list_of_pairs<operation_t>&, const char*);
 
 template peer_request_t Extractable::get_from_list(const list_of_pairs<peer_request_t>&, const char*);
+
+template ReplyStatus Extractable::get_from_list(const list_of_pairs<ReplyStatus>&, const char*);
 
 template peer_op_t Extractable::get_from_list(const list_of_pairs<peer_op_t>&, const char*);
 
