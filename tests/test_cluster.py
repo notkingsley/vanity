@@ -1,6 +1,6 @@
 import unittest
 
-from client import AuthLevel, ServerHandle
+from client import AuthLevel, Client, ServerHandle
 from tests.utils import get_free_port, make_client
 
 
@@ -281,37 +281,15 @@ class ClusterJoinTest(unittest.TestCase):
 
         self.wait_for_peers_sync()
 
-        response = self.client1.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr1})
+        self.perform_peers_test(self.client1, self.addr1)
+        self.perform_peers_test(self.client2, self.addr2)
+        self.perform_peers_test(self.client3, self.addr3)
+        self.perform_peers_test(self.client4, self.addr4)
 
-        response = self.client2.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr2})
-
-        response = self.client3.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr3})
-
-        response = self.client4.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr4})
-
-        response = self.client1.peer_ids()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.ids - {self.id1})
-
-        response = self.client2.peer_ids()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.ids - {self.id2})
-
-        response = self.client3.peer_ids()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.ids - {self.id3})
-
-        response = self.client4.peer_ids()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.ids - {self.id4})
+        self.perform_peer_ids_test(self.client1, self.id1)
+        self.perform_peer_ids_test(self.client2, self.id2)
+        self.perform_peer_ids_test(self.client3, self.id3)
+        self.perform_peer_ids_test(self.client4, self.id4)
 
         response = self.client1.cluster_leave()
         self.assertTrue(response.is_ok())
@@ -321,18 +299,15 @@ class ClusterJoinTest(unittest.TestCase):
 
         self.wait_for_peers_sync()
         self.addrs.remove(self.addr1)
+        self.ids.remove(self.id1)
 
-        response = self.client2.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr2})
+        self.perform_peers_test(self.client2, self.addr2)
+        self.perform_peers_test(self.client3, self.addr3)
+        self.perform_peers_test(self.client4, self.addr4)
 
-        response = self.client3.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr3})
-
-        response = self.client4.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr4})
+        self.perform_peer_ids_test(self.client2, self.id2)
+        self.perform_peer_ids_test(self.client3, self.id3)
+        self.perform_peer_ids_test(self.client4, self.id4)
 
         response = self.client3.cluster_leave()
         self.assertTrue(response.is_ok())
@@ -341,14 +316,23 @@ class ClusterJoinTest(unittest.TestCase):
         self.assertEqual(response.value, set())
 
         self.addrs.remove(self.addr3)
+        self.ids.remove(self.id3)
 
-        response = self.client2.peers()
-        self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr2})
+        self.perform_peers_test(self.client2, self.addr2)
+        self.perform_peers_test(self.client4, self.addr4)
 
-        response = self.client4.peers()
+        self.perform_peer_ids_test(self.client2, self.id2)
+        self.perform_peer_ids_test(self.client4, self.id4)
+
+    def perform_peers_test(self, client: Client, client_addr: str):
+        response = client.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, self.addrs - {self.addr4})
+        self.assertEqual(response.value, self.addrs - {client_addr})
+
+    def perform_peer_ids_test(self, client: Client, client_id: str):
+        response = client.peer_ids()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.ids - {client_id})
 
 
 class ClusterJoinFailTest(unittest.TestCase):
