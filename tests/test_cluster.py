@@ -226,6 +226,18 @@ class ClusterJoinTest(unittest.TestCase):
         self.client3 = make_client(port=self.port3)
         self.client4 = make_client(port=self.port4)
 
+        self.addr1 = f"{self.host}:{self.cluster_port1}"
+        self.addr2 = f"{self.host}:{self.cluster_port2}"
+        self.addr3 = f"{self.host}:{self.cluster_port3}"
+        self.addr4 = f"{self.host}:{self.cluster_port4}"
+        self.addrs = {self.addr1, self.addr2, self.addr3, self.addr4}
+
+        self.id1 = "test_cluster_id1"
+        self.id2 = "test_cluster_id2"
+        self.id3 = "test_cluster_id3"
+        self.id4 = "test_cluster_id4"
+        self.ids = {self.id1, self.id2, self.id3, self.id4}
+
     def tearDown(self) -> None:
         self.client4.close()
         self.client3.close()
@@ -245,66 +257,61 @@ class ClusterJoinTest(unittest.TestCase):
         """
         Test cluster_join, peers, and cluster_leave.
         """
-        response = self.client1.cluster_new("test_cluster_key")
+        response = self.client1.cluster_new("test_cluster_key", self.id1)
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.id1)
+
         response = self.client2.cluster_join(
-            "test_cluster_key", self.host, self.cluster_port1
+            "test_cluster_key", self.host, self.cluster_port1, self.id2
         )
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.id2)
+
         response = self.client3.cluster_join(
-            "test_cluster_key", self.host, self.cluster_port2
+            "test_cluster_key", self.host, self.cluster_port2, self.id3
         )
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.id3)
+
         response = self.client4.cluster_join(
-            "test_cluster_key", self.host, self.cluster_port3
+            "test_cluster_key", self.host, self.cluster_port3, self.id4
         )
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.id4)
 
         self.wait_for_peers_sync()
 
         response = self.client1.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port2}",
-                f"{self.host}:{self.cluster_port3}",
-                f"{self.host}:{self.cluster_port4}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr1})
 
         response = self.client2.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port1}",
-                f"{self.host}:{self.cluster_port3}",
-                f"{self.host}:{self.cluster_port4}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr2})
 
         response = self.client3.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port1}",
-                f"{self.host}:{self.cluster_port2}",
-                f"{self.host}:{self.cluster_port4}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr3})
 
         response = self.client4.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port1}",
-                f"{self.host}:{self.cluster_port2}",
-                f"{self.host}:{self.cluster_port3}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr4})
+
+        response = self.client1.peer_ids()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.ids - {self.id1})
+
+        response = self.client2.peer_ids()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.ids - {self.id2})
+
+        response = self.client3.peer_ids()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.ids - {self.id3})
+
+        response = self.client4.peer_ids()
+        self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, self.ids - {self.id4})
 
         response = self.client1.cluster_leave()
         self.assertTrue(response.is_ok())
@@ -313,36 +320,19 @@ class ClusterJoinTest(unittest.TestCase):
         self.assertEqual(response.value, set())
 
         self.wait_for_peers_sync()
+        self.addrs.remove(self.addr1)
 
         response = self.client2.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port3}",
-                f"{self.host}:{self.cluster_port4}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr2})
 
         response = self.client3.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port2}",
-                f"{self.host}:{self.cluster_port4}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr3})
 
         response = self.client4.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(
-            response.value,
-            {
-                f"{self.host}:{self.cluster_port2}",
-                f"{self.host}:{self.cluster_port3}",
-            },
-        )
+        self.assertEqual(response.value, self.addrs - {self.addr4})
 
         response = self.client3.cluster_leave()
         self.assertTrue(response.is_ok())
@@ -350,13 +340,15 @@ class ClusterJoinTest(unittest.TestCase):
         self.assertTrue(response.is_ok())
         self.assertEqual(response.value, set())
 
+        self.addrs.remove(self.addr3)
+
         response = self.client2.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port4}"})
+        self.assertEqual(response.value, self.addrs - {self.addr2})
 
         response = self.client4.peers()
         self.assertTrue(response.is_ok())
-        self.assertEqual(response.value, {f"{self.host}:{self.cluster_port2}"})
+        self.assertEqual(response.value, self.addrs - {self.addr4})
 
 
 class ClusterJoinFailTest(unittest.TestCase):
