@@ -6,9 +6,9 @@
 
 namespace vanity {
 
-void PeerAuthApplicationServer::add_auth_application(msg_id_t id, const std::string &key, Client* client) {
+void PeerAuthApplicationServer::add_auth_application(msg_id_t id, const std::string &key, const std::string &own_id, Client* client) {
 	std::lock_guard lock{m_pending_peer_auths_mutex};
-	m_pending_peer_auths.emplace(id, PendingPeerAuth{key, client});
+	m_pending_peer_auths.emplace(id, PendingPeerAuth{key, own_id, client});
 }
 
 auto PeerAuthApplicationServer::pop_auth_application(msg_id_t id) -> std::optional<PendingPeerAuth> {

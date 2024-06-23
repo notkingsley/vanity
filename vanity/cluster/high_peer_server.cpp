@@ -31,7 +31,7 @@ void HighPeerServer::remove_peer(Client& client) {
 void HighPeerServer::peer_connect(const std::string &host, uint16_t port, const std::string &key, const std::string& peer_id, Client *client) {
 	auto& peer = new_peer(host, port);
 	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr(), peer_id);
-	add_auth_application(id, key, client);
+	add_auth_application(id, key, peer_id, client);
 }
 
 void HighPeerServer::peer_sync(Client &peer) {

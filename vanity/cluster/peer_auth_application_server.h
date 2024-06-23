@@ -26,6 +26,9 @@ protected:
 		// the key of the application
 		std::string key;
 
+		// the id we'll have in the cluster
+		std::string own_id;
+
 		// the client that sent the request to join the cluster, if any
 		Client* client;
 	};
@@ -37,7 +40,7 @@ protected:
 	std::mutex m_pending_peer_auths_mutex;
 
 	// add a peer_auth request to the pending requests
-	void add_auth_application(msg_id_t id, const std::string& key, Client* client);
+	void add_auth_application(msg_id_t id, const std::string& key, const std::string &own_id, Client* client);
 
 	// pop a pending peer_auth request
 	std::optional<PendingPeerAuth> pop_auth_application(msg_id_t id);
