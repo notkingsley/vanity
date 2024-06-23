@@ -29,7 +29,7 @@ private:
 
 protected:
 	// connect to and authenticate with a peer
-	void peer_connect(const std::string& host, uint16_t port, const std::string& key, Client* client = nullptr);
+	void peer_connect(const std::string& host, uint16_t port, const std::string& key, const std::string& peer_id, Client* client = nullptr);
 
 	// sync information with a newly authenticated peer
 	// currently, we simply request the peer's peers

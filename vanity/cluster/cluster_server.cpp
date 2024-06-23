@@ -21,7 +21,7 @@ void ClusterServer::request_cluster_join(Client &client, const std::string& key,
 	if (in_cluster())
 		return send(client, error("already in a cluster"));
 
-	peer_connect(host, port, key, &client);
+	peer_connect(host, port, key, id, &client);
 }
 
 void ClusterServer::request_cluster_leave(Client &client) {
@@ -94,7 +94,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 	}
 	else if (auto addr = try_unmake_address(data)) {
 		remove_peer(ctx.client);
-		peer_connect(addr->first, addr->second, pending->key, pending->client);
+		peer_connect(addr->first, addr->second, pending->key, "", pending->client);// pending->id
 	}
 	else {
 		report_peer(ctx.client, report_t::BAD_REPLY);

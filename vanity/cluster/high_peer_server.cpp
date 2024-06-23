@@ -28,7 +28,7 @@ void HighPeerServer::remove_peer(Client& client) {
 	tcp_client.close();
 }
 
-void HighPeerServer::peer_connect(const std::string &host, uint16_t port, const std::string &key, Client *client) {
+void HighPeerServer::peer_connect(const std::string &host, uint16_t port, const std::string &key, const std::string& peer_id, Client *client) {
 	auto& peer = new_peer(host, port);
 	auto id = post_plain(peer, peer_op_t::PEER_AUTH, key, own_peer_addr());
 	add_auth_application(id, key, client);
@@ -51,6 +51,10 @@ void HighPeerServer::reply_request_peers(Context&, const std::unordered_set<std:
 	if (not opt_key)
 		return;
 
+	auto& opt_id = get_cluster_id();
+	if (not opt_id)
+		return;
+
 	std::vector<std::pair<std::string, uint16_t>> unmade_peers;
 	auto unknown_peers = unknown_peers_in(peers);
 	unmade_peers.reserve(unknown_peers.size());
@@ -58,9 +62,10 @@ void HighPeerServer::reply_request_peers(Context&, const std::unordered_set<std:
 	for (const auto& value : unknown_peers)
 		unmade_peers.emplace_back(unmake_address(value));
 
+	auto& id = *opt_id;
 	auto& key = *opt_key;
 	for (const auto& [host, port] : unmade_peers)
-		peer_connect(host, port, key);
+		peer_connect(host, port, key, id);
 }
 
 void HighPeerServer::post_request_exit(Context &ctx) {
