@@ -95,7 +95,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 		session_id(ctx.client) = data.substr(2);
 		set_cluster_info(pending->key, pending->own_id);
 		if (pending->client)
-			send(*pending->client, ok());
+			send(*pending->client, ok(pending->own_id));
 
 		peer_sync(ctx.client);
 	}
