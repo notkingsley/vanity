@@ -22,14 +22,38 @@ class PeerRequestServer:
 	public virtual PeerMessageServer
 {
 private:
+	// handle an ASYNC request
+	void handle_async_request(PeerRequest& peer_request, Client& client);
+
 	// handle a POST request
 	void handle_post_request(PeerRequest& peer_request, Context& ctx);
 
 	// handle a REPLY request
 	void handle_reply_request(PeerRequest& peer_request, Context& ctx);
 
-	// handle an ASYNC request
-	void handle_async_request(PeerRequest& peer_request, Client& client);
+	// handle an OK REPLY request
+	void handle_ok_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// handle an ERR REPLY request
+	void handle_err_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// handle a DENIED REPLY request
+	void handle_denied_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// handle a REDIRECT REPLY request
+	void handle_redirect_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// get a peer's string for error logging
+	static std::string get_peer_str(Client& client);
+
+	// default handler for ERR REPLY requests
+	void handle_default_err_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// default handler for DENIED REPLY requests
+	void handle_default_denied_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
+
+	// default handler for REDIRECT REPLY requests
+	void handle_default_redirect_reply_request(PeerRequest& peer_request, Context& ctx, peer_op_t op);
 
 	// same as handle_peer, but doesn't handle exceptions
 	void handle_peer_inner(const std::string &msg, Client &client);
@@ -56,6 +80,12 @@ public:
 
 	// a reply to a peer_auth request was received from a peer
 	virtual void reply_request_peer_auth(Context& ctx, const std::string& data) = 0;
+
+	// a DENIED reply to a peer_auth request was received from a peer
+	virtual void reply_denied_request_peer_auth(Context& ctx) = 0;
+
+	// a REDIRECT reply to a peer_auth request was received from a peer
+	virtual void reply_redirect_request_peer_auth(Context& ctx, const std::string& addr) = 0;
 
 	// a peers request was received from a peer
 	virtual void post_request_peers(Context& ctx) = 0;
