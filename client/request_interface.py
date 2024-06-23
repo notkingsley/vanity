@@ -666,6 +666,12 @@ class RequestInterface(ABC, Generic[RT]):
         """
         return self.request("PEERS")
 
+    def peer_ids(self):
+        """
+        Get the ids of the peers in a cluster
+        """
+        return self.request("PEER_IDS")
+
     def bind(self, host: str, port: int):
         """
         Bind the server to a host and port
