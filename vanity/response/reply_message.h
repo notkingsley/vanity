@@ -7,6 +7,7 @@
 
 #include <unordered_set>
 
+#include "cluster/reply_status.h"
 #include "sendable.h"
 
 
@@ -17,6 +18,16 @@ namespace vanity {
  */
 class ReplyMessage : public Sendable
 {
+private:
+	// the number of ReplyStatus values
+	static constexpr auto M_STATUS_COUNT = static_cast<uint>(ReplyStatus::MAX_STATUS);
+
+	// make an array indexable by ReplyStatus to get the string representation
+	static std::array<const char*, M_STATUS_COUNT> init_status_strings();
+
+	// the string representations of the ReplyStatus values
+	static const std::array<const char*, M_STATUS_COUNT> M_STATUS_STRINGS;
+
 public:
 	// create a new ReplyMessage
 	ReplyMessage();
@@ -29,6 +40,9 @@ public:
 
 	// add a char to the message
 	ReplyMessage& operator<<(char data);
+
+	// add a Status to the message
+	ReplyMessage& operator<<(ReplyStatus status);
 
 	// serialize a string to the message
 	ReplyMessage& serialize(const std::string& data);

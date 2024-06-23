@@ -2,9 +2,23 @@
 // Created by kingsli on 5/3/24.
 //
 
+#include <stdexcept>
+
 #include "reply_message.h"
 
+
 namespace vanity {
+
+const std::array<const char*, ReplyMessage::M_STATUS_COUNT> ReplyMessage::M_STATUS_STRINGS = ReplyMessage::init_status_strings();
+
+auto ReplyMessage::init_status_strings() -> std::array<const char*, M_STATUS_COUNT> {
+	std::array<const char*, M_STATUS_COUNT> strings {};
+
+	for (auto& [op, str] : REPLY_STATUS_STRINGS)
+		strings[static_cast<uint>(op)] = str.c_str();
+
+	return strings;
+}
 
 ReplyMessage::ReplyMessage() : Sendable() {
 	*this << "REPLY";
@@ -23,6 +37,13 @@ ReplyMessage &ReplyMessage::operator<<(const char *data) {
 ReplyMessage &ReplyMessage::operator<<(const char data) {
 	this->Sendable::operator<<(data);
 	return *this;
+}
+
+ReplyMessage &ReplyMessage::operator<<(ReplyStatus status) {
+	if (static_cast<uint>(status) >= M_STATUS_COUNT)
+		throw std::invalid_argument("invalid status");
+
+	return *this << M_STATUS_STRINGS[static_cast<uint>(status)];
 }
 
 ReplyMessage &ReplyMessage::serialize(const std::string &data) {
