@@ -124,4 +124,11 @@ std::string &SessionServer::session_addr(Client &client) {
 	throw std::runtime_error("client is not a peer");
 }
 
+std::optional<std::string> &SessionServer::session_id(Client &client) {
+	if (auto &peer_data = client.session_info().peer_data)
+		return peer_data->id;
+
+	throw std::runtime_error("client is not a peer");
+}
+
 } // namespace vanity

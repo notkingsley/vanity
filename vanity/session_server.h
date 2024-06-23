@@ -55,6 +55,9 @@ public:
 
 	// get a peer's address
 	static std::string& session_addr(Client& client);
+
+	// get a reference to a peer's id
+	static std::optional<std::string>& session_id(Client& client);
 };
 
 } // namespace vanity
