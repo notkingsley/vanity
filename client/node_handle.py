@@ -53,7 +53,7 @@ class NodeHandle:
         """
         return {"username": None, "password": None}
 
-    def own_client(self):
+    def client(self):
         """
         Create a client for the node.
         """
@@ -64,7 +64,7 @@ class NodeHandle:
         Create a new cluster on the node.
         """
         id = id or self.cluster_id
-        with self.own_client() as client:
+        with self.client() as client:
             response = client.cluster_new(cluster_key, id)
             if not response.is_ok():
                 raise RuntimeError(f"Failed to create new cluster: {response.value}")
@@ -78,7 +78,7 @@ class NodeHandle:
         Join a cluster on the node.
         """
         id = id or self.cluster_id
-        with self.own_client() as client:
+        with self.client() as client:
             response = client.cluster_join(cluster_key, host, port, id)
             if not response.is_ok():
                 raise RuntimeError(f"Failed to join cluster: {response.value}")
@@ -89,7 +89,7 @@ class NodeHandle:
         """
         Leave a cluster on the node.
         """
-        with self.own_client() as client:
+        with self.client() as client:
             response = client.cluster_leave()
             if not response.is_ok():
                 raise RuntimeError(f"Failed to leave cluster: {response.value}")
