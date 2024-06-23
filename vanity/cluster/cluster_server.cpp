@@ -66,8 +66,14 @@ void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::str
 		return reply(ctx, "DENIED");
 	}
 
+	auto& own_id = get_cluster_id();
+	if (not own_id) {
+		client_close(client);
+		return reply(ctx, "DENIED");
+	}
+
 	register_peer(client, addr, peer_id);
-	reply(ctx, "OK");
+	reply(ctx, "OK" + *own_id);
 }
 
 void ClusterServer::post_request_peer_auth(Context&, const std::string&, const std::string&) {
@@ -79,8 +85,9 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 	if (not pending)
 		return remove_peer(ctx.client);
 
-	if (data == "OK") {
-		set_cluster_info(pending->key, "");// pending->id
+	if (data.starts_with("OK")) {
+		session_id(ctx.client) = data.substr(2);
+		set_cluster_info(pending->key, pending->own_id);
 		if (pending->client)
 			send(*pending->client, ok());
 
@@ -94,7 +101,7 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 	}
 	else if (auto addr = try_unmake_address(data)) {
 		remove_peer(ctx.client);
-		peer_connect(addr->first, addr->second, pending->key, "", pending->client);// pending->id
+		peer_connect(addr->first, addr->second, pending->key, pending->own_id, pending->client);
 	}
 	else {
 		report_peer(ctx.client, report_t::BAD_REPLY);
