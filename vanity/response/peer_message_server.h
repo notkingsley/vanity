@@ -54,7 +54,7 @@ private:
 
 	// create a new ReplyMessage with the given id
 	// return the new message
-	static ReplyMessage new_reply(msg_id_t id);
+	static ReplyMessage new_reply(msg_id_t id, ReplyStatus status);
 
 	// create a new AsyncMessage and return it
 	static AsyncMessage new_async(async_op_t op);
@@ -70,7 +70,22 @@ protected:
 	// also removes the expected op
 	std::optional<peer_op_t> expected_op(msg_id_t id);
 
+private:
+	// reply to a message with some data and a status
+	template<typename T>
+	void reply_with(Context& ctx, ReplyStatus status, const T& data) {
+		send(ctx.client, new_reply(ctx.msg_id, status).serialize(data).move());
+	}
+
+	// reply to a message with a status
+	void reply_with(Context& ctx, ReplyStatus status) {
+		send(ctx.client, new_reply(ctx.msg_id, status).move());
+	}
+
 public:
+	// compose and send an async message to a peer
+	void send_async(Client& peer, async_op_t op);
+
 	// compose and send a message to a peer
 	msg_id_t post(Client& peer, peer_op_t op);
 
@@ -93,14 +108,35 @@ public:
 		return id;
 	}
 
-	// reply to a message with some data
+	// reply to a message with an OK status
 	template<typename T>
-	void reply(Context& ctx, const T& data) {
-		send(ctx.client, new_reply(ctx.msg_id).serialize(data).move());
+	void reply_ok(Context& ctx, const T& data) {
+		reply_with(ctx, ReplyStatus::OK, data);
 	}
 
-	// compose and send an async message to a peer
-	void send_async(Client& peer, async_op_t op);
+	// reply to a message with an ERR status
+	template<typename T>
+	void reply_err(Context& ctx, const T& data) {
+		reply_with(ctx, ReplyStatus::ERR, data);
+	}
+
+	// reply to a message with a DENIED status
+	void reply_denied(Context& ctx) {
+		reply_with(ctx, ReplyStatus::DENIED);
+	}
+
+	// reply to a message with a REDIRECT status
+	template<typename T>
+	void reply_redirect(Context& ctx, const T& data) {
+		reply_with(ctx, ReplyStatus::REDIRECT, data);
+	}
+
+	// reply to a message with some data and an OK status
+	// this is just shorthand for reply_ok
+	template<typename T>
+	void reply(Context& ctx, const T& data) {
+		reply_ok(ctx, data);
+	}
 };
 
 } // namespace vanity

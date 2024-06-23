@@ -48,8 +48,8 @@ std::pair<PostMessage, msg_id_t> PeerMessageServer::new_plain_post(peer_op_t op)
 	return {(PostMessage{PostMessage::as_plain_user} << op).serialize(id), id};
 }
 
-ReplyMessage PeerMessageServer::new_reply(msg_id_t id) {
-	return ReplyMessage{}.serialize(id);
+ReplyMessage PeerMessageServer::new_reply(msg_id_t id, ReplyStatus status) {
+	return ReplyMessage{}.serialize(id) << status;
 }
 
 AsyncMessage PeerMessageServer::new_async(async_op_t op) {
