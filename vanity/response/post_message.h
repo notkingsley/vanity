@@ -41,6 +41,9 @@ public:
 	// create a new PostMessage to be sent as a plain user
 	explicit PostMessage(as_plain_user_t);
 
+	// get the string representation of a peer_op_t
+	static const char* op_to_string(peer_op_t op);
+
 	// add a peer_op_t to the message
 	PostMessage& operator<<(peer_op_t op);
 

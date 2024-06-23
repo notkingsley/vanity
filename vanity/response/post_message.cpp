@@ -23,8 +23,12 @@ PostMessage::PostMessage() : Sendable() {
 
 PostMessage::PostMessage(PostMessage::as_plain_user_t) { }
 
+const char *PostMessage::op_to_string(peer_op_t op) {
+	return M_OP_STRINGS[static_cast<uint>(op)];
+}
+
 PostMessage& PostMessage::operator<<(peer_op_t op) {
-	*this << M_OP_STRINGS[static_cast<uint>(op)];
+	*this << op_to_string(op);
 	return *this;
 }
 
