@@ -66,7 +66,7 @@ void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::str
 		return reply(ctx, "DENIED");
 	}
 
-	register_peer(client, addr);
+	register_peer(client, addr, peer_id);
 	reply(ctx, "OK");
 }
 

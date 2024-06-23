@@ -36,7 +36,7 @@ protected:
 	void peer_sync(Client& peer);
 
 	// register a new peer
-	void register_peer(Client& client, const std::string& addr);
+	void register_peer(Client& client, const std::string& addr, const std::string& peer_id);
 
 	// remove a known peer
 	void remove_peer(Client& peer);

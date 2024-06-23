@@ -38,7 +38,7 @@ protected:
 	std::unordered_set<std::string> peer_addresses();
 
 	// register a new peer
-	void register_peer(TcpClient& client, const std::string& addr);
+	void register_peer(TcpClient& client, const std::string& addr, std::optional<std::string> peer_id);
 
 	// connect to and register a new peer
 	Client& new_peer(const std::string& host, uint16_t port);

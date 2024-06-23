@@ -18,8 +18,8 @@ std::unordered_set<std::string> HighPeerServer::unknown_peers_in(const std::unor
 	return unknown_peers;
 }
 
-void HighPeerServer::register_peer(Client &client, const std::string &addr) {
-	PeerServer::register_peer(to_tcp(client), addr);
+void HighPeerServer::register_peer(Client &client, const std::string &addr, const std::string& peer_id) {
+	PeerServer::register_peer(to_tcp(client), addr, peer_id);
 }
 
 void HighPeerServer::remove_peer(Client& client) {

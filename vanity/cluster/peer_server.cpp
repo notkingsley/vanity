@@ -20,7 +20,7 @@ Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto sock = socket::Socket::connect(host.c_str(), port);
 	auto [remote_host, remote_port] = sock.get_remote_addr();
 	auto& peer = add_client(TcpClient{std::move(sock)});
-	register_peer(peer, make_address(remote_host, remote_port));
+	register_peer(peer, make_address(remote_host, remote_port), std::nullopt);
 	return peer;
 }
 
@@ -36,10 +36,10 @@ void PeerServer::forget_peer(TcpClient &client) {
 	m_peers.erase(&client);
 }
 
-void PeerServer::register_peer(TcpClient &client, const std::string &addr) {
+void PeerServer::register_peer(TcpClient &client, const std::string &addr, std::optional<std::string> peer_id) {
 	std::lock_guard lock{m_peers_mutex};
 	m_peers.insert(&client);
-	session_set_auth(client, client_auth::PEER, addr);
+	session_set_auth(client, client_auth::PEER, addr, std::move(peer_id));
 }
 
 void PeerServer::clear_peers() {
