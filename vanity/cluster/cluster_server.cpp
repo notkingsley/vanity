@@ -71,12 +71,12 @@ void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::str
 
 	if (not is_on_cluster_port(client)) {
 		client_close(client);
-		return reply(ctx, own_peer_addr());
+		return reply_redirect(ctx, own_peer_addr());
 	}
 
 	if (not authenticate_cluster_key(key)) {
 		client_close(client);
-		return reply(ctx, "DENIED");
+		return reply_denied(ctx);
 	}
 
 	auto& own_id = get_cluster_id();
@@ -86,7 +86,7 @@ void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::str
 	}
 
 	register_peer(client, addr, peer_id);
-	reply(ctx, "OK" + *own_id);
+	reply(ctx, *own_id);
 }
 
 void ClusterServer::post_request_peer_auth(Context&) {
@@ -98,27 +98,35 @@ void ClusterServer::reply_request_peer_auth(Context& ctx, const std::string &dat
 	if (not pending)
 		return remove_peer(ctx.client);
 
-	if (data.starts_with("OK")) {
-		session_id(ctx.client) = data.substr(2);
+	session_id(ctx.client) = data;
+	if (not in_cluster())
 		set_cluster_info(pending->key, pending->own_id);
-		if (pending->client)
-			send(*pending->client, ok(pending->own_id));
 
-		peer_sync(ctx.client);
-	}
-	else if (data == "DENIED") {
-		if (pending->client)
-			send(*pending->client, error("peer denied connection"));
+	if (pending->client)
+		send(*pending->client, ok(pending->own_id));
 
-		remove_peer(ctx.client);
-	}
-	else if (auto addr = try_unmake_address(data)) {
-		remove_peer(ctx.client);
-		peer_connect(addr->first, addr->second, pending->key, pending->own_id, pending->client);
-	}
-	else {
+	peer_sync(ctx.client);
+}
+
+void ClusterServer::reply_denied_request_peer_auth(Context& ctx) {
+	remove_peer(ctx.client);
+
+	auto pending = pop_auth_application(ctx.msg_id);
+	if (pending and pending->client)
+		send(*pending->client, error("peer denied connection"));
+}
+
+void ClusterServer::reply_redirect_request_peer_auth(Context& ctx, const std::string &addr) {
+	remove_peer(ctx.client);
+
+	auto pending = pop_auth_application(ctx.msg_id);
+	if (not pending)
+		return;
+
+	if (auto opt_addr = try_unmake_address(addr))
+		peer_connect(opt_addr->first, opt_addr->second, pending->key, pending->own_id, pending->client);
+	else
 		report_peer(ctx.client, report_t::BAD_REPLY);
-	}
 }
 
 } // namespace vanity

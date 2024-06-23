@@ -45,6 +45,12 @@ public:
 
 	// a reply to a peer_auth request was received from a peer
 	void reply_request_peer_auth(Context& ctx, const std::string& data) override;
+
+	// a DENIED reply to a peer_auth request was received from a peer
+	void reply_denied_request_peer_auth(Context& ctx) override;
+
+	// a REDIRECT reply to a peer_auth request was received from a peer
+	void reply_redirect_request_peer_auth(Context& ctx, const std::string& addr) override;
 };
 
 } // namespace vanity
