@@ -16,6 +16,17 @@ std::unordered_set<std::string> PeerServer::peer_addresses() {
 	return addresses;
 }
 
+std::unordered_set<std::string> PeerServer::peer_ids() {
+	std::lock_guard lock{m_peers_mutex};
+
+	std::unordered_set<std::string> ids;
+	for (auto& peer: m_peers)
+		if (auto id = session_id(*peer))
+			ids.insert(*id);
+
+	return ids;
+}
+
 Client& PeerServer::new_peer(const std::string &host, uint16_t port) {
 	auto sock = socket::Socket::connect(host.c_str(), port);
 	auto [remote_host, remote_port] = sock.get_remote_addr();

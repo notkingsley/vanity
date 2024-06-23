@@ -37,6 +37,9 @@ protected:
 	// return a set of all peers' addresses
 	std::unordered_set<std::string> peer_addresses();
 
+	// return a set of all peers' ids
+	std::unordered_set<std::string> peer_ids();
+
 	// register a new peer
 	void register_peer(TcpClient& client, const std::string& addr, std::optional<std::string> peer_id);
 
