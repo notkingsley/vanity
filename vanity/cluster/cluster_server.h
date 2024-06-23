@@ -31,6 +31,9 @@ public:
 	// a cluster_key request was received from a client
 	void request_cluster_key(Client& client) override;
 
+	// a cluster_id request was received from a client
+	void request_cluster_id(Client& client) override;
+
 	// a cluster_new request was received from a client
 	void request_cluster_new(Client& client, const std::string& key, const std::string& id) override;
 

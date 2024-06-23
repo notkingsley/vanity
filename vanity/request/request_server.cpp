@@ -710,6 +710,13 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			request_cluster_key(client);
 			break;
 		}
+		case operation_t::CLUSTER_ID:
+		{
+			request.get_exact<>(end);
+			wal_request(client, op, tracker.view());
+			request_cluster_id(client);
+			break;
+		}
 		case operation_t::CLUSTER_LEAVE:
 		{
 			request.get_exact<>(end);
@@ -1164,6 +1171,11 @@ void RequestServer::dry_dispatch(Request& request, bool end) {
 			break;
 		}
 		case operation_t::CLUSTER_KEY:
+		{
+			request.get_exact<>(end);
+			break;
+		}
+		case operation_t::CLUSTER_ID:
 		{
 			request.get_exact<>(end);
 			break;

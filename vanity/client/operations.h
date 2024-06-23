@@ -105,6 +105,7 @@ enum class operation_t{
 
 	CLUSTER_JOIN,
 	CLUSTER_KEY,
+	CLUSTER_ID,
 	CLUSTER_LEAVE,
 	CLUSTER_NEW,
 
@@ -207,6 +208,7 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 
 	{operation_t::CLUSTER_JOIN,       "CLUSTER_JOIN"},
 	{operation_t::CLUSTER_KEY,        "CLUSTER_KEY"},
+	{operation_t::CLUSTER_ID,         "CLUSTER_ID"},
 	{operation_t::CLUSTER_LEAVE,      "CLUSTER_LEAVE"},
 	{operation_t::CLUSTER_NEW,        "CLUSTER_NEW"},
 
@@ -319,6 +321,7 @@ inline bool unknown_is_permitted(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -434,6 +437,7 @@ inline bool user_is_permitted(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -549,6 +553,7 @@ inline bool peer_is_permitted(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -658,6 +663,7 @@ inline bool admin_is_permitted(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -797,6 +803,7 @@ inline behaviour_t normal_behaviour(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -837,6 +844,7 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
@@ -1018,6 +1026,7 @@ inline bool should_wal(operation_t operation)
 
 		case operation_t::CLUSTER_JOIN:
 		case operation_t::CLUSTER_KEY:
+		case operation_t::CLUSTER_ID:
 		case operation_t::CLUSTER_LEAVE:
 		case operation_t::CLUSTER_NEW:
 
