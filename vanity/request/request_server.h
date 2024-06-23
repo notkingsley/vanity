@@ -275,7 +275,7 @@ public:
 	virtual void request_peers(Client& client) = 0;
 
 	// a peer_auth request was received from a client
-	virtual void request_peer_auth(Client& client, int64_t id, const std::string& key, const std::string& addr) = 0;
+	virtual void request_peer_auth(Client& client, int64_t id, const std::string& key, const std::string& addr, const std::string& peer_id) = 0;
 
 	// an exit request was received from a client
 	virtual void request_exit(Client& client) = 0;

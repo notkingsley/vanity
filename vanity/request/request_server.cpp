@@ -734,9 +734,9 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 		}
 		case operation_t::PEER_AUTH:
 		{
-			auto [id, key, addr] = request.get_exact<INT, STR, STR>(end);
+			auto [id, key, addr, peer_id] = request.get_exact<INT, STR, STR, STR>(end);
 			wal_request(client, op, tracker.view());
-			request_peer_auth(client, id, key, addr);
+			request_peer_auth(client, id, key, addr, peer_id);
 			break;
 		}
 	}

@@ -53,7 +53,7 @@ void ClusterServer::request_cluster_new(Client &client, const std::string &key, 
 	send(client, ok(set_cluster_info(key, id)));
 }
 
-void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr) {
+void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::string &key, const std::string& addr, const std::string& peer_id) {
 	Context ctx {id, client};
 
 	if (not is_on_cluster_port(client)) {
