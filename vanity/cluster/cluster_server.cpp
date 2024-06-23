@@ -21,7 +21,13 @@ void ClusterServer::request_cluster_join(Client &client, const std::string& key,
 	if (in_cluster())
 		return send(client, error("already in a cluster"));
 
-	peer_connect(host, port, key, id, &client);
+	auto own_id = id;
+	if (own_id.empty())
+		own_id = random_cluster_id();
+	else if (not check_cluster_id_length(own_id))
+		return send(client, error("id is too short"));
+
+	peer_connect(host, port, key, own_id, &client);
 }
 
 void ClusterServer::request_cluster_leave(Client &client) {

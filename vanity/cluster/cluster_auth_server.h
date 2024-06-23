@@ -32,10 +32,10 @@ private:
 	// the mutex for the cluster key
 	std::mutex m_cluster_key_mutex;
 
+protected:
 	// make a random cluster id
 	static std::string random_cluster_id();
 
-protected:
 	// check if a cluster key is long enough
 	// returns true if the key is long enough, false otherwise
 	static bool check_cluster_key_length(const std::string& key);
