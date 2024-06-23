@@ -52,7 +52,7 @@ public:
 	virtual void reply_request_exit(Context& ctx) = 0;
 
 	// a peer_auth request was received from a peer
-	virtual void post_request_peer_auth(Context& ctx, const std::string& key, const std::string& addr) = 0;
+	virtual void post_request_peer_auth(Context& ctx) = 0;
 
 	// a reply to a peer_auth request was received from a peer
 	virtual void reply_request_peer_auth(Context& ctx, const std::string& data) = 0;

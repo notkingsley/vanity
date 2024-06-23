@@ -70,8 +70,8 @@ void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) 
 		}
 
 		case peer_op_t::PEER_AUTH: {
-			auto [key, addr] = request.get_exact<STR, STR>(end);
-			post_request_peer_auth(ctx, key, addr);
+			request.get_exact<>(end);
+			post_request_peer_auth(ctx);
 			break;
 		}
 		case peer_op_t::PEERS: {

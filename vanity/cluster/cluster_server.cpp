@@ -82,7 +82,7 @@ void ClusterServer::request_peer_auth(Client &client, int64_t id, const std::str
 	reply(ctx, "OK" + *own_id);
 }
 
-void ClusterServer::post_request_peer_auth(Context&, const std::string&, const std::string&) {
+void ClusterServer::post_request_peer_auth(Context&) {
 	throw std::runtime_error("a peer_auth request was received from a peer");
 }
 
