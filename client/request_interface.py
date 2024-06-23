@@ -628,6 +628,12 @@ class RequestInterface(ABC, Generic[RT]):
         """
         return self.request("CLUSTER_KEY")
 
+    def cluster_id(self):
+        """
+        Get the id of a node in a cluster
+        """
+        return self.request("CLUSTER_ID")
+
     def cluster_leave(self):
         """
         Leave a cluster
