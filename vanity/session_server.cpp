@@ -15,8 +15,6 @@ void SessionServer::session_set_auth(Client &client, client_auth auth) {
 	switch (auth) {
 		case client_auth::USER:
 		case client_auth::ADMIN: {
-			session_info.auth = auth;
-			session_info.user_data = std::make_unique<user_data_t>();
 			break;
 		}
 		case client_auth::PEER: {
@@ -26,15 +24,18 @@ void SessionServer::session_set_auth(Client &client, client_auth auth) {
 			throw std::runtime_error("cannot set auth to UNKNOWN");
 		}
 	}
+
+	session_info.auth = auth;
+	session_info.user_data = std::make_unique<user_data_t>();
 }
 
-void SessionServer::session_set_auth(Client &client, client_auth auth, const std::string& addr) {
+void SessionServer::session_set_auth(Client &client, client_auth auth, const std::string& addr, std::optional<std::string> id) {
 	if (auth != client_auth::PEER)
 		throw std::runtime_error("can only set to PEER with an address");
 
 	auto &session_info = client.session_info();
 	session_info.auth = auth;
-	session_info.peer_data = std::make_unique<peer_data_t>(addr);
+	session_info.peer_data = std::make_unique<peer_data_t>(addr, std::move(id));
 
 }
 

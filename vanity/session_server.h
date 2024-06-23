@@ -24,7 +24,7 @@ public:
 	static void session_set_auth(Client& client, client_auth auth);
 
 	// set a client's auth level for a peer
-	static void session_set_auth(Client& client, client_auth auth, const std::string& addr);
+	static void session_set_auth(Client& client, client_auth auth, const std::string& addr, std::optional<std::string> id);
 
 	// check if a client is a peer
 	static bool session_is_peer(Client& client);

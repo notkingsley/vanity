@@ -7,6 +7,7 @@
 
 #include <chrono>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,15 +15,14 @@
 namespace vanity {
 
 // a client's authentication level
-enum class client_auth
-{
+enum class client_auth {
 	UNKNOWN,
 	USER,
 	PEER, // and CLUSTER_MASTER maybe
 	ADMIN,
 };
 
-const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STRINGS {
+const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STRINGS{
 	{client_auth::UNKNOWN, "UNKNOWN"},
 	{client_auth::USER,    "USER"},
 	{client_auth::ADMIN,   "ADMIN"},
@@ -30,20 +30,17 @@ const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STR
 };
 
 // a user's data
-struct user_data_t
-{
+struct user_data_t {
 	using channels_t = std::set<std::string>;
 
 	// a user's current connection state
-	enum class conn_state
-	{
+	enum class conn_state {
 		NORMAL,
 		TRANSACTION,
 	};
 
 	// data on a currently running transaction
-	struct transaction_data_t
-	{
+	struct transaction_data_t {
 		// the commands in the transaction, in order
 		std::string commands;
 
@@ -52,7 +49,7 @@ struct user_data_t
 
 		// push a command to the transaction and increment the number of commands
 		template<class T>
-		void push(const T& command) {
+		void push(const T &command) {
 			commands += command;
 			++size;
 		}
@@ -76,12 +73,14 @@ struct user_data_t
 };
 
 // a peer's data
-struct peer_data_t
-{
+struct peer_data_t {
 	using peer_behaviour_score_t = uint;
 
 	// the peer's address
 	std::string addr;
+
+	// the peer's id, if it has given one
+	std::optional<std::string> id;
 
 	// the peer's behaviour score
 	peer_behaviour_score_t behaviour_score = 0;
@@ -90,15 +89,14 @@ struct peer_data_t
 	std::chrono::steady_clock::time_point last_pulse;
 
 	// constructor
-	explicit peer_data_t(std::string addr)
-		: last_pulse(std::chrono::steady_clock::now()), addr(std::move(addr)) {}
+	explicit peer_data_t(std::string addr, std::optional<std::string> id)
+		: last_pulse(std::chrono::steady_clock::now()), addr(std::move(addr)), id(std::move(id)) {}
 };
 
 /*
  * A session_info is a struct that contains information about a client's session
  */
-struct session_info
-{
+struct session_info {
 	// the peer's data, if the client is a peer
 	std::unique_ptr<peer_data_t> peer_data;
 
