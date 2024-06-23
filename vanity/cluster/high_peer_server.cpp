@@ -42,6 +42,10 @@ void HighPeerServer::request_peers(Client &client) {
 	send(client, ok(peer_addresses()));
 }
 
+void HighPeerServer::request_peer_ids(Client &client) {
+	send(client, ok(peer_ids()));
+}
+
 void HighPeerServer::post_request_peers(Context &ctx) {
 	reply(ctx, peer_addresses());
 }

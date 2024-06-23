@@ -45,6 +45,9 @@ public:
 	// a peers request was received from a client
 	void request_peers(Client& client) override;
 
+	// a peer_ids request was received from a client
+	void request_peer_ids(Client& client) override;
+
 	// a peers request was received from a peer
 	void post_request_peers(Context& ctx) override;
 

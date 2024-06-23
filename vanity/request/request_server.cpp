@@ -739,6 +739,13 @@ void RequestServer::dispatch(Client &client, Request& request, bool end) {
 			request_peers(client);
 			break;
 		}
+		case operation_t::PEER_IDS:
+		{
+			request.get_exact<>(end);
+			wal_request(client, op, tracker.view());
+			request_peer_ids(client);
+			break;
+		}
 		case operation_t::PEER_AUTH:
 		{
 			auto [id, key, addr, peer_id] = request.get_exact<INT, STR, STR, STR>(end);
@@ -1192,6 +1199,11 @@ void RequestServer::dry_dispatch(Request& request, bool end) {
 		}
 
 		case operation_t::PEERS:
+		{
+			request.get_exact<>(end);
+			break;
+		}
+		case operation_t::PEER_IDS:
 		{
 			request.get_exact<>(end);
 			break;

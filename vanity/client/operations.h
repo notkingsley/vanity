@@ -110,6 +110,7 @@ enum class operation_t{
 	CLUSTER_NEW,
 
 	PEERS,
+	PEER_IDS,
 	PEER_AUTH,
 };
 
@@ -213,6 +214,7 @@ const std::initializer_list<std::pair<operation_t, std::string>> OPERATION_T_STR
 	{operation_t::CLUSTER_NEW,        "CLUSTER_NEW"},
 
 	{operation_t::PEERS,              "PEERS"},
+	{operation_t::PEER_IDS,           "PEER_IDS"},
 	{operation_t::PEER_AUTH,          "PEER_AUTH"},
 };
 
@@ -326,6 +328,7 @@ inline bool unknown_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 			return false;
 
 		default:
@@ -442,6 +445,7 @@ inline bool user_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 		case operation_t::PEER_AUTH:
 			return false;
 
@@ -527,6 +531,7 @@ inline bool peer_is_permitted(operation_t operation)
 		case operation_t::HASH_MANY_GET:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 			return true;
 
 
@@ -668,6 +673,7 @@ inline bool admin_is_permitted(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 			return true;
 
 
@@ -808,6 +814,7 @@ inline behaviour_t normal_behaviour(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 		case operation_t::PEER_AUTH:
 			return behaviour_t::DEFAULT;
 
@@ -849,6 +856,7 @@ inline behaviour_t transaction_behaviour(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 		case operation_t::PEER_AUTH:
 			return behaviour_t::DEFAULT;
 
@@ -1031,6 +1039,7 @@ inline bool should_wal(operation_t operation)
 		case operation_t::CLUSTER_NEW:
 
 		case operation_t::PEERS:
+		case operation_t::PEER_IDS:
 		case operation_t::PEER_AUTH:
 			return false;
 
