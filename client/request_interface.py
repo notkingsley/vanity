@@ -634,12 +634,13 @@ class RequestInterface(ABC, Generic[RT]):
         """
         return self.request("CLUSTER_LEAVE")
 
-    def cluster_new(self, key: str):
+    def cluster_new(self, key: str, id: str | None = None):
         """
         Create a new cluster
         :param key: the key of the cluster
         """
-        return self.request("CLUSTER_NEW", key)
+        id = id or ""
+        return self.request("CLUSTER_NEW", key, id)
 
     def cluster_join(self, key: str, host: str, port: int):
         """
