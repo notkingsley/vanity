@@ -34,6 +34,9 @@ class ClusterKeyTest(unittest.TestCase):
             response = client.cluster_key()
             self.assertTrue(response.is_ok())
             self.assertEqual(response.value, "test_cluster_key")
+            response = client.cluster_id()
+            self.assertTrue(response.is_ok())
+            self.assertEqual(response.value, "test_cluster_id")
 
     def test_cluster_new_no_id(self):
         """
@@ -86,6 +89,25 @@ class ClusterKeyTest(unittest.TestCase):
             self.assertTrue(response.is_ok())
             self.assertEqual(response.value, "test_cluster_key")
 
+    def test_cluster_id_no_cluster(self):
+        """
+        Test cluster_id when not in a cluster.
+        """
+        with self.make_client() as client:
+            response = client.cluster_id()
+            self.assertTrue(response.is_null())
+
+    def test_cluster_id(self):
+        """
+        Test cluster_id.
+        """
+        with self.make_client() as client:
+            response = client.cluster_new("test_cluster_key", "test_cluster_id")
+            self.assertTrue(response.is_ok())
+            response = client.cluster_id()
+            self.assertTrue(response.is_ok())
+            self.assertEqual(response.value, "test_cluster_id")
+
     def test_cluster_leave(self):
         """
         Test cluster_leave.
@@ -96,6 +118,8 @@ class ClusterKeyTest(unittest.TestCase):
             response = client.cluster_leave()
             self.assertTrue(response.is_ok())
             response = client.cluster_key()
+            self.assertTrue(response.is_null())
+            response = client.cluster_id()
             self.assertTrue(response.is_null())
 
     def test_cluster_leave_no_cluster(self):
@@ -140,6 +164,13 @@ class ClusterCommandsNoAdmin(unittest.TestCase):
         Test cluster_key.
         """
         response = self.client.cluster_key()
+        self.assertTrue(response.is_denied())
+
+    def test_cluster_id(self):
+        """
+        Test cluster_id.
+        """
+        response = self.client.cluster_id()
         self.assertTrue(response.is_denied())
 
     def test_cluster_leave(self):
@@ -194,8 +225,6 @@ class ClusterJoinTest(unittest.TestCase):
         self.client2 = make_client(port=self.port2)
         self.client3 = make_client(port=self.port3)
         self.client4 = make_client(port=self.port4)
-        response = self.client1.cluster_new("test_cluster_key")
-        self.assertTrue(response.is_ok())
 
     def tearDown(self) -> None:
         self.client4.close()
@@ -216,6 +245,8 @@ class ClusterJoinTest(unittest.TestCase):
         """
         Test cluster_join, peers, and cluster_leave.
         """
+        response = self.client1.cluster_new("test_cluster_key")
+        self.assertTrue(response.is_ok())
         response = self.client2.cluster_join(
             "test_cluster_key", self.host, self.cluster_port1
         )
