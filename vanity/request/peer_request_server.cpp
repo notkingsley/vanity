@@ -13,18 +13,16 @@ void PeerRequestServer::handle_peer(const std::string &msg, Client &client) {
 	}
 	catch (const InvalidRequest& e) {
 		report_peer(client, report_t::BAD_MESSAGE);
+		logger().error(e.what());
 	}
 	catch (const Exception& e) {
 		logger().error(e.what());
-		// TODO: reply with error
 	}
 	catch (const std::exception& e) {
 		logger().error(e.what());
-		// TODO: reply with error
 	}
 	catch (...) {
 		logger().error("unknown error in request: " + msg);
-		// TODO: reply with error
 	}
 }
 
@@ -72,7 +70,21 @@ void PeerRequestServer::handle_async_request(PeerRequest& request, Client& clien
 	}
 }
 
-void PeerRequestServer::handle_post_request(PeerRequest& request, Context& ctx) {
+void PeerRequestServer::handle_post_request(PeerRequest &peer_request, Context &ctx) {
+	try {
+		handle_post_request_inner(peer_request, ctx);
+	}
+	catch (const std::exception& e) {
+		reply_err(ctx, e.what());
+		throw;
+	}
+	catch (...) {
+		reply_err(ctx, "unknown error");
+		throw;
+	}
+}
+
+void PeerRequestServer::handle_post_request_inner(PeerRequest& request, Context& ctx) {
 	using enum object_t;
 
 	auto op = request.get_op();

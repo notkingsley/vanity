@@ -28,6 +28,9 @@ private:
 	// handle a POST request
 	void handle_post_request(PeerRequest& peer_request, Context& ctx);
 
+	// same as handle_post_request, but doesn't reply_err on exceptions
+	void handle_post_request_inner(PeerRequest& peer_request, Context& ctx);
+
 	// handle a REPLY request
 	void handle_reply_request(PeerRequest& peer_request, Context& ctx);
 
