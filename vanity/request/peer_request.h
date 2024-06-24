@@ -48,6 +48,9 @@ public:
 
 	// extract an async operation from the request
 	async_op_t get_async_op();
+
+	// formats the request string and position for logging
+	std::string format() const;
 };
 
 } // namespace vanity

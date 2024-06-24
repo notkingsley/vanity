@@ -24,4 +24,8 @@ async_op_t PeerRequest::get_async_op() {
 	return get_from_list(ASYNC_OP_STRINGS, "invalid async operation");
 }
 
+std::string PeerRequest::format() const {
+	return m_msg + " at " + std::to_string(m_pos);
+}
+
 } // namespace vanity
