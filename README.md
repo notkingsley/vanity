@@ -73,4 +73,4 @@ OK:STR (3)bar
 **Vanity** is *NOT* production ready, (and is indeed not intended for such purposes), see [Redis](https://redis.io) instead.  
 
 The similarities with Redis are, in fact, coincidental.  
-I came up with something entirely different, then after a few million years of evolution, it ended up looking like Redis, so I figured I'd just damce along.
+I came up with something entirely different, then after a few million years of evolution, it ended up looking like Redis, so I figured I'd just dance along.
