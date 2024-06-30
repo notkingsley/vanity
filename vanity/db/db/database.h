@@ -22,9 +22,15 @@ class Database:
 	public ListDatabase,
 	public SetDatabase
 {
+protected:
+	using m_index_type = uint;
+
+	// the index of this database
+	m_index_type m_index = 0;
+
 public:
 	// create a new database
-	Database() = default;
+	explicit Database(m_index_type index);
 
 	// no copy
 	Database(const Database&) = delete;

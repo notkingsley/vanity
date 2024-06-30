@@ -6,6 +6,8 @@
 
 namespace vanity {
 
+BaseDatabaseServer::BaseDatabaseServer() : m_databases(create_databases()) {}
+
 auto BaseDatabaseServer::database(Client &client) -> db_type& {
 	return m_databases[session_db(client)];
 }

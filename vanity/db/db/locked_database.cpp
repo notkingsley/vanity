@@ -9,9 +9,11 @@
 
 namespace vanity::db {
 
-LockedDatabase::LockedDatabase() = default;
+LockedDatabase::LockedDatabase(m_index_type index)
+	:Database{index} {}
 
-LockedDatabase::LockedDatabase(Database &&other) noexcept: Database{std::move(other)} {}
+LockedDatabase::LockedDatabase(Database &&other) noexcept
+	:Database{std::move(other)} {}
 
 LockedDatabase &LockedDatabase::operator=(Database &&other) noexcept {
 	Database::operator=(std::move(other));

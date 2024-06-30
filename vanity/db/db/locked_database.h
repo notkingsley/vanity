@@ -27,10 +27,11 @@ private:
 
 public:
 	// create a locked database
-	LockedDatabase();
+	explicit LockedDatabase(m_index_type index);
 
 	// no copy
 	LockedDatabase(const LockedDatabase&) = delete;
+
 	LockedDatabase& operator=(const LockedDatabase&) = delete;
 
 	// move construct a locked database from a database

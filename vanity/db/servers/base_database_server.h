@@ -30,6 +30,9 @@ protected:
 	std::array<db_type, M_NUM_DATABASES> m_databases;
 
 public:
+	// create a new BaseDatabaseServer
+	BaseDatabaseServer();
+
 	// get the client's current selected database
 	db_type& database(Client& client);
 
@@ -70,6 +73,17 @@ private:
 	// validate a db index or send an error to the client
 	// return true if the index was valid, false otherwise
 	bool validate_db_index(Client& client, int64_t index);
+
+	// create and return an array of databases
+	template <std::size_t... I>
+	static constexpr std::array<db_type, sizeof...(I)> create_databases_helper(std::index_sequence<I...>) {
+		return { db_type(I)... };
+	}
+
+	// create and return an array of databases
+	static std::array<db_type, M_NUM_DATABASES> create_databases() {
+		return create_databases_helper(std::make_index_sequence<M_NUM_DATABASES>{});
+	}
 };
 
 } // namespace vanity
