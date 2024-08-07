@@ -5,13 +5,9 @@
 #ifndef VANITY_WAL_WRITE_SERVER_H
 #define VANITY_WAL_WRITE_SERVER_H
 
-#include <filesystem>
-#include <fstream>
-#include <utility>
-
-#include "utils/serializer.h"
+#include "db/db/types.h"
 #include "session_server.h"
-#include "wal_entry_t.h"
+#include "write_ahead_logger.h"
 
 
 namespace vanity {
@@ -24,15 +20,8 @@ namespace wal {
 class WalWriteServer : public virtual SessionServer
 {
 private:
-	// the WAL file
-	std::ofstream m_wal_file;
-
-	// mutex for the WAL
-	std::mutex m_wal_mutex;
-
-	// write an entry to the wal
-	template<typename ...Args>
-	void wal(const Args&... args);
+	// the logger
+	WriteAheadLogger m_logger;
 
 public:
 	// use file for the WAL
