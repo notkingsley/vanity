@@ -21,10 +21,6 @@ void WalWriteServer::wal_to(const std::filesystem::path &wal_file) {
 	m_logger.wal_to(wal_file);
 }
 
-void WalWriteServer::close_wal() {
-	m_logger.close_wal();
-}
-
 void WalWriteServer::wal_request(Client &client, operation_t op, const std::string_view &request) {
 	if (not should_wal(op))
 		return;
@@ -49,15 +45,6 @@ void WalWriteServer::wal_transaction(Client &client, const std::string &commands
 
 std::mutex &WalWriteServer::wal_mutex() {
 	return m_logger.wal_mutex();
-}
-
-ClosedWal::ClosedWal(WalWriteServer &wal, std::filesystem::path wal_file)
-	: m_wal{wal}, m_wal_file{std::move(wal_file)} {
-	m_wal.close_wal();
-}
-
-ClosedWal::~ClosedWal() {
-	m_wal.wal_to(m_wal_file);
 }
 
 } // namespace wal

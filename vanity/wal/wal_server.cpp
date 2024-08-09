@@ -21,7 +21,7 @@ void WalServer::recover() {
 
 	pre_recovery();
 	{
-		ClosedWal closed {*this, file};
+		WriteAheadLogger::Closed closed {wal_logger(), file};
 		recover_from(file);
 	}
 	post_recovery();

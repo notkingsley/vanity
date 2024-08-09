@@ -27,9 +27,6 @@ public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
 
-	// close the WAL
-	void close_wal();
-
 	// log a request that's about to happen
 	// requires op to be the operation extracted from the request
 	void wal_request(Client &client, operation_t op, const std::string_view &request);
@@ -50,26 +47,10 @@ public:
 
 	// obtain a reference to the mutex
 	std::mutex &wal_mutex();
-};
 
-/*
- * RAII mechanism to close and reopen a WalWriteServer
- */
-class ClosedWal
-{
-private:
-	// the WalWriteServer
-	WalWriteServer &m_wal;
-
-	// the WAL file to reopen
-	std::filesystem::path m_wal_file;
-
-public:
-	// close the WAL
-	explicit ClosedWal(WalWriteServer &wal, std::filesystem::path wal_file);
-
-	// reopen the WAL
-	~ClosedWal();
+	// get the logger
+	// TODO: remove
+	WriteAheadLogger &wal_logger() { return m_logger; }
 };
 
 } // namespace wal

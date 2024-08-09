@@ -31,12 +31,12 @@ private:
 	template<typename ...Args>
 	void wal(const Args &... args);
 
+	// close the WAL
+	void close_wal();
+
 public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
-
-	// close the WAL
-	void close_wal();
 
 	// log a request that's about to happen
 	// requires op to be the operation extracted from the request
@@ -51,13 +51,38 @@ public:
 	// violating the invariance on the principle of
 	// WAL: we must arrive at exactly the same state after
 	// redoing each entry in the WAL
-	void wal_set_expiry(const std::string& key, uint db, db::time_t expiry_time);
+	void wal_set_expiry(const std::string &key, uint db, db::time_t expiry_time);
 
 	// log a transaction that's about to happen
-	void wal_transaction(uint db, const std::string& commands, size_t size);
+	void wal_transaction(uint db, const std::string &commands, size_t size);
 
 	// obtain a reference to the mutex
 	std::mutex &wal_mutex();
+
+
+	/*
+	 * RAII mechanism to close and reopen a WriteAheadLogger
+	 */
+	class Closed {
+	private:
+		// the WriteAheadLogger
+		WriteAheadLogger &m_wal;
+
+		// the WAL file to reopen with
+		std::filesystem::path m_wal_file;
+
+	public:
+		// close the Logger
+		Closed(WriteAheadLogger &wal, std::filesystem::path wal_file)
+			: m_wal{wal}, m_wal_file{std::move(wal_file)} {
+			m_wal.close_wal();
+		}
+
+		// reopen the Logger
+		~Closed() {
+			m_wal.wal_to(m_wal_file);
+		}
+	};
 };
 
 }

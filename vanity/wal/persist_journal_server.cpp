@@ -124,7 +124,7 @@ auto PersistJournalServer::lock_all() {
 }
 
 void PersistJournalServer::persist_with_wal() {
-	ClosedWal closed_wal {*this, *m_wal_file};
+	WriteAheadLogger::Closed closed {wal_logger(), *m_wal_file};
 	auto lock {lock_all()};
 	Journalist journalist {*m_journal_file, *m_db_file, *m_wal_file};
 	do_persist(journalist.tmp_db_file());
