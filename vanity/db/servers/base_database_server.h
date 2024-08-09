@@ -22,6 +22,9 @@ private:
 	// the type of database
 	using db_type = db::LockedDatabase;
 
+	// the type of logger
+	using logger_type = db_type::logger_type;
+
 protected:
 	// number of databases
 	static constexpr size_t M_NUM_DATABASES = 16;
@@ -31,7 +34,7 @@ protected:
 
 public:
 	// create a new BaseDatabaseServer
-	BaseDatabaseServer();
+	explicit BaseDatabaseServer(logger_type& logger);
 
 	// get the client's current selected database
 	db_type& database(Client& client);
@@ -76,13 +79,13 @@ private:
 
 	// create and return an array of databases
 	template <std::size_t... I>
-	static constexpr std::array<db_type, sizeof...(I)> create_databases_helper(std::index_sequence<I...>) {
-		return { db_type(I)... };
+	static constexpr std::array<db_type, sizeof...(I)> create_databases_helper(std::index_sequence<I...>, logger_type& logger) {
+		return { db_type(I, logger)... };
 	}
 
 	// create and return an array of databases
-	static std::array<db_type, M_NUM_DATABASES> create_databases() {
-		return create_databases_helper(std::make_index_sequence<M_NUM_DATABASES>{});
+	static std::array<db_type, M_NUM_DATABASES> create_databases(logger_type& logger) {
+		return create_databases_helper(std::make_index_sequence<M_NUM_DATABASES>{}, logger);
 	}
 };
 

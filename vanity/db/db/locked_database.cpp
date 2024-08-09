@@ -9,19 +9,19 @@
 
 namespace vanity::db {
 
-LockedDatabase::LockedDatabase(m_index_type index)
-	:Database{index} {}
+LockedDatabase::LockedDatabase(m_index_type index, logger_type &wal_logger)
+	: Database{index}, m_wal_logger{wal_logger} {}
 
-LockedDatabase::LockedDatabase(Database &&other) noexcept
-	:Database{std::move(other)} {}
+LockedDatabase::LockedDatabase(Database &&other, logger_type &wal_logger) noexcept
+	: Database{std::move(other)}, m_wal_logger{wal_logger} {}
 
 LockedDatabase &LockedDatabase::operator=(Database &&other) noexcept {
 	Database::operator=(std::move(other));
 	return *this;
 }
 
-LockedDatabase LockedDatabase::from(std::ifstream &in) {
-	return LockedDatabase{Database::from(in)};
+LockedDatabase LockedDatabase::from(std::ifstream &in, logger_type &wal_logger) {
+	return LockedDatabase{Database::from(in), wal_logger};
 }
 
 
@@ -29,7 +29,7 @@ std::lock_guard<LockedDatabase::lock_type> LockedDatabase::lock() {
 	return std::lock_guard{m_mutex};
 }
 
-auto LockedDatabase::mutex() -> lock_type& {
+auto LockedDatabase::mutex() -> lock_type & {
 	return m_mutex;
 }
 
@@ -281,8 +281,7 @@ std::optional<bool> LockedDatabase::set_contains(const key_type &key, const std:
 std::optional<bool> LockedDatabase::set_move(
 	const key_type &source,
 	const key_type &dest,
-	const std::string &value)
-{
+	const std::string &value) {
 	std::lock_guard lock{m_mutex};
 	return Database::set_move(source, dest, value);
 }
@@ -328,8 +327,7 @@ LockedDatabase::set_difference(const key_type &key1, const key_type &key2) {
 std::optional<size_t> LockedDatabase::set_difference_into(
 	const key_type &dest,
 	const key_type &key1,
-	const key_type &key2)
-{
+	const key_type &key2) {
 	std::lock_guard lock{m_mutex};
 	return Database::set_difference_into(dest, key1, key2);
 }

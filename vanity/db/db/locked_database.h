@@ -11,6 +11,8 @@
 #include <mutex>
 
 #include "database.h"
+#include "wal/write_ahead_logger.h"
+
 
 namespace vanity::db {
 
@@ -26,8 +28,16 @@ private:
 	lock_type m_mutex;
 
 public:
+	// the logger type
+	using logger_type = wal::WriteAheadLogger;
+
+private:
+	// the Write Ahead Logger
+	logger_type& m_wal_logger;
+
+public:
 	// create a locked database
-	explicit LockedDatabase(m_index_type index);
+	LockedDatabase(m_index_type index, wal::WriteAheadLogger& wal_logger);
 
 	// no copy
 	LockedDatabase(const LockedDatabase&) = delete;
@@ -35,13 +45,13 @@ public:
 	LockedDatabase& operator=(const LockedDatabase&) = delete;
 
 	// move construct a locked database from a database
-	explicit LockedDatabase(Database&& other) noexcept;
+	explicit LockedDatabase(Database&& other, logger_type& wal_logger) noexcept;
 
 	// move assign a locked database from a database
 	LockedDatabase& operator=(Database&& other) noexcept;
 
 	// load the database from a file stream
-	static LockedDatabase from(std::ifstream &in);
+	static LockedDatabase from(std::ifstream &in, logger_type& wal_logger);
 
 
 	// acquire the lock

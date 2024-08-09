@@ -9,6 +9,7 @@ namespace vanity {
 
 Server::Server(const Config &config):
 	AuthServer(config.auth_file),
+	BaseDatabaseServer(wal_logger()),
 	BindServer(config.host, config.ports, config.cluster_port),
 	LogServer(config.log_file, config.log_level),
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file),
