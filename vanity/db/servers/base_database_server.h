@@ -39,6 +39,9 @@ public:
 	// get the client's current selected database
 	db_type& database(Client& client);
 
+	// get the database at the given index
+	db_type& database(size_t index);
+
 	// a switch_db request was received from a client
 	void request_switch_db(Client& client, int64_t db) override;
 

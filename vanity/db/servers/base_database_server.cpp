@@ -12,6 +12,10 @@ auto BaseDatabaseServer::database(Client &client) -> db_type& {
 	return m_databases[session_db(client)];
 }
 
+auto BaseDatabaseServer::database(size_t index) -> db_type& {
+	return m_databases[index];
+}
+
 void BaseDatabaseServer::request_switch_db(Client &client, int64_t db) {
 	if (not validate_db_index(client, db))
 		return;
@@ -116,7 +120,7 @@ void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &f
 	if (dest == session_db(client))
 		return send(client, ok());
 
-	if (database(client).copy_to_db(from, m_databases[dest]))
+	if (database(client).copy_to_db(from, database(dest)))
 		send(client, ok());
 	else
 		send(client, null());
@@ -129,7 +133,7 @@ void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &f
 	if (dest == session_db(client))
 		return send(client, ok());
 
-	if (database(client).move_to_db(from, m_databases[dest]))
+	if (database(client).move_to_db(from, database(dest)))
 		send(client, ok());
 	else
 		send(client, null());

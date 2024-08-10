@@ -119,7 +119,7 @@ void PersistJournalServer::do_persist(const path &file) {
 
 auto PersistJournalServer::lock_all() {
 	return [this]<size_t... I>(std::index_sequence<I...>) {
-		return std::scoped_lock { wal_mutex(), m_databases[I].mutex()... };
+		return std::scoped_lock { wal_mutex(), database(I).mutex()... };
 	}(std::make_index_sequence<M_NUM_DATABASES>{});
 }
 

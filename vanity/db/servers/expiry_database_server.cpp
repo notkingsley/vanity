@@ -45,7 +45,7 @@ double ExpiryDatabaseServer::time_point_to_seconds(time_point tp) {
 }
 
 void ExpiryDatabaseServer::wal_redo_set_expiry(const std::string &key, uint db, db::time_t expiry_time) {
-	m_databases[db].set_expiry(key, expiry_time);
+	database(db).set_expiry(key, expiry_time);
 }
 
 } // namespace vanity
