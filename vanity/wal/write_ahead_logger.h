@@ -59,10 +59,6 @@ public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
 
-	// log a request that's about to happen
-	// requires op to be the operation extracted from the request
-	void wal_request(uint db, const std::string_view &request);
-
 	// log a db operation that's about to happen
 	template<typename ...Args>
 	void wal_db_op(uint db, db::db_op_t op, const Args &... args) {

@@ -19,11 +19,6 @@ void WriteAheadLogger::close_wal() {
 		m_wal_file.close();
 }
 
-void WriteAheadLogger::wal_request(uint db, const std::string_view &request) {
-	// TODO: remove wal_request
-	// wal(wal_entry_t::request, db, request);
-}
-
 void WriteAheadLogger::wal_expiry(const std::string &key, uint db) {
 	wal(wal_entry_t::expire, db, key);
 }

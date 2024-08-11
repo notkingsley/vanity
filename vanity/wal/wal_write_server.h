@@ -10,9 +10,7 @@
 #include "write_ahead_logger.h"
 
 
-namespace vanity {
-
-namespace wal {
+namespace vanity::wal {
 
 /*
  * A WalWriteServer writes to a Write Ahead Log
@@ -26,10 +24,6 @@ private:
 public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
-
-	// log a request that's about to happen
-	// requires op to be the operation extracted from the request
-	void wal_request(Client &client, operation_t op, const std::string_view &request);
 
 	// log an expiry that's about to happen
 	void wal_expiry(const std::string &key, uint db);
@@ -53,10 +47,6 @@ public:
 	WriteAheadLogger &wal_logger() { return m_logger; }
 };
 
-} // namespace wal
-
-using wal::WalWriteServer;
-
-} // namespace vanity
+} // namespace vanity::wal
 
 #endif //VANITY_WAL_WRITE_SERVER_H

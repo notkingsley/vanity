@@ -4,31 +4,10 @@
 
 #include "wal_write_server.h"
 
-namespace vanity {
-
-// return true if the client is currently
-// executing a transaction
-// defined in transaction_server.cpp
-extern bool is_executing_transaction(Client& client);
-
-namespace wal {
-
-// true if the nth type in Args is
-template<int n, typename T, typename... Args>
-constexpr bool is_of_type = std::is_same_v<T, std::tuple_element_t<n, std::tuple<Args...>>>;
+namespace vanity::wal {
 
 void WalWriteServer::wal_to(const std::filesystem::path &wal_file) {
 	m_logger.wal_to(wal_file);
-}
-
-void WalWriteServer::wal_request(Client &client, operation_t op, const std::string_view &request) {
-	if (not should_wal(op))
-		return;
-
-	if (is_executing_transaction(client))
-		return;
-
-	m_logger.wal_request(session_db(client), request);
 }
 
 void WalWriteServer::wal_expiry(const std::string &key, uint db) {
@@ -47,6 +26,4 @@ std::mutex &WalWriteServer::wal_mutex() {
 	return m_logger.wal_mutex();
 }
 
-} // namespace wal
-
-} // namespace vanity
+} // namespace vanity::wal

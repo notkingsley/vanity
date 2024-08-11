@@ -8,6 +8,7 @@
 #include "base_database_server.h"
 #include "repeat_event_server.h"
 #include "utils/event.h"
+#include "wal/wal_write_server.h"
 
 
 namespace vanity {
@@ -17,7 +18,8 @@ namespace vanity {
  */
 class ExpiryDatabaseServer:
 	public virtual BaseDatabaseServer,
-	public virtual RepeatEventServer
+	public virtual RepeatEventServer,
+	public virtual wal::WalWriteServer
 {
 private:
 	using time_point = std::chrono::time_point<std::chrono::system_clock>;
@@ -32,7 +34,7 @@ private:
 	static double time_point_to_seconds(time_point tp);
 
 public:
-	// create an AutoExpiryDatabaseServer
+	// create an ExpiryDatabaseServer
 	ExpiryDatabaseServer();
 
 	// an expire event was received

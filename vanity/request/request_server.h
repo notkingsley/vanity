@@ -12,7 +12,7 @@
 #include "log_server.h"
 #include "request.h"
 #include "response/response_server.h"
-#include "wal/wal_write_server.h"
+#include "session_server.h"
 
 
 namespace vanity {
@@ -25,7 +25,7 @@ class RequestServer :
 	public virtual AbstractServer,
 	public virtual ResponseServer,
 	public virtual LogServer,
-	public virtual WalWriteServer
+	public virtual SessionServer
 {
 public:
 	// a pipe request was received from a client
@@ -295,9 +295,6 @@ public:
 	};
 
 protected:
-	// redo a previously WALed request
-	void wal_redo_request(const std::string& request, Client &client);
-
 	// a message was received from a user client
 	void handle_user(const std::string& msg, Client& client);
 

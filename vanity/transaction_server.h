@@ -7,6 +7,7 @@
 
 #include "db/servers/base_database_server.h"
 #include "client/write_manager.h"
+#include "wal/wal_write_server.h"
 
 namespace vanity {
 
@@ -15,7 +16,8 @@ namespace vanity {
  */
 class TransactionServer:
 	public virtual BaseDatabaseServer,
-	public virtual WriteManager
+	public virtual WriteManager,
+	public virtual wal::WalWriteServer
 {
 public:
 	// a transact_begin request was received from a client
