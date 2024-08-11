@@ -15,10 +15,6 @@ namespace vanity::wal {
  */
 class WalExpiryServer : public virtual BaseDatabaseServer
 {
-private:
-	// convenience function to deep_purge() all databases
-	void deep_purge_all();
-
 public:
 	// prepare the database for a pending persist operation
 	// this is like a best-effort to purge expired keys before

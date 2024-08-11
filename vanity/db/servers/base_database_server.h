@@ -32,15 +32,21 @@ protected:
 	// the databases
 	std::array<db_type, M_NUM_DATABASES> m_databases;
 
-public:
-	// create a new BaseDatabaseServer
-	explicit BaseDatabaseServer(logger_type& logger);
-
 	// get the client's current selected database
 	db_type& database(Client& client);
 
 	// get the database at the given index
 	db_type& database(size_t index);
+
+	// convenience function to deep_purge() all databases
+	void deep_purge_databases();
+
+	// enable (or disable) expiry for all databases
+	void enable_databases_expiry(bool enable);
+
+public:
+	// create a new BaseDatabaseServer
+	explicit BaseDatabaseServer(logger_type& logger);
 
 	// a switch_db request was received from a client
 	void request_switch_db(Client& client, int64_t db) override;
