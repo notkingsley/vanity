@@ -71,6 +71,9 @@ public:
 	// redo a database operation
 	void wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t get_db);
 
+	// redo a key expiry operation
+	void wal_redo_expiry(const key_type &key);
+
 
 	// persist the database to a file stream
 	void persist(std::ofstream &out);

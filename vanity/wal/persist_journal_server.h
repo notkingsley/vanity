@@ -9,6 +9,7 @@
 
 #include "db/servers/base_database_server.h"
 #include "wal_expiry_server.h"
+#include "wal_write_server.h"
 
 
 namespace vanity {
@@ -20,7 +21,8 @@ namespace wal {
  */
 class PersistJournalServer :
 	public virtual BaseDatabaseServer,
-	public virtual WalExpiryServer
+	public virtual WalExpiryServer,
+	public virtual WalWriteServer
 {
 private:
 	using path = std::filesystem::path;

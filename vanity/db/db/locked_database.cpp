@@ -255,6 +255,10 @@ void LockedDatabase::wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t
 	}
 }
 
+void LockedDatabase::wal_redo_expiry(const key_type &key) {
+	Database::force_expire(key);
+}
+
 
 void LockedDatabase::persist(std::ofstream &out) {
 	std::lock_guard lock{m_mutex};

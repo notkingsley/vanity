@@ -6,8 +6,6 @@
 #define VANITY_WAL_EXPIRY_SERVER_H
 
 #include "db/servers/base_database_server.h"
-#include "wal_write_server.h"
-
 
 namespace vanity::wal {
 
@@ -15,7 +13,7 @@ namespace vanity::wal {
  * A WalExpiryServer ensures correctness of wal records
  * about keys that are being expired and vice versa during recovery
  */
-class WalExpiryServer : public virtual BaseDatabaseServer, public virtual WalWriteServer
+class WalExpiryServer : public virtual BaseDatabaseServer
 {
 private:
 	// convenience function to deep_purge() all databases
@@ -38,11 +36,7 @@ public:
 	// also deep purges all databases, so WAL
 	// should be open when called
 	void post_recovery();
-
-	// redo a previously WALed expire operation
-	void wal_redo_expire(const std::string &key, uint db);
 };
-
 
 } // namespace vanity::wal
 
