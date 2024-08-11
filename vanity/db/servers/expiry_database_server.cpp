@@ -11,8 +11,7 @@ ExpiryDatabaseServer::ExpiryDatabaseServer() {
 }
 
 void ExpiryDatabaseServer::event_expire() {
-	for (auto& db : m_databases)
-		db.deep_purge();
+	deep_purge_databases();
 }
 
 void ExpiryDatabaseServer::request_set_expiry(Client &client, const std::string &key, double seconds) {
