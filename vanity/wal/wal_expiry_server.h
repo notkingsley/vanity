@@ -18,9 +18,6 @@ namespace vanity::wal {
 class WalExpiryServer : public virtual BaseDatabaseServer, public virtual WalWriteServer
 {
 private:
-	// registered for each database's pre-expire callback
-	void on_expire(const std::string& key, uint db);
-
 	// convenience function to deep_purge() all databases
 	void deep_purge_all();
 
@@ -41,13 +38,6 @@ public:
 	// also deep purges all databases, so WAL
 	// should be open when called
 	void post_recovery();
-
-	// install on_expire hooks to all databases after
-	// a possible load from file
-	// this isn't done on construction because databases loaded
-	// from a file are move constructed, replacing the ones that
-	// were existing at construction
-	void post_database_load();
 
 	// redo a previously WALed expire operation
 	void wal_redo_expire(const std::string &key, uint db);

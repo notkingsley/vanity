@@ -10,10 +10,6 @@ void WalWriteServer::wal_to(const std::filesystem::path &wal_file) {
 	m_logger.wal_to(wal_file);
 }
 
-void WalWriteServer::wal_expiry(const std::string &key, uint db) {
-	m_logger.wal_expiry(key, db);
-}
-
 void WalWriteServer::wal_transaction(Client &client, const std::string &commands, size_t size) {
 	m_logger.wal_transaction(session_db(client), commands, size);
 }

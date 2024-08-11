@@ -155,13 +155,6 @@ public:
 	// should not be called often
 	void deep_purge();
 
-	// register a callback to be called pre-expiry of a key
-	// clears the existing callback, if any
-	void on_expire(callback_t callback);
-
-	// disable the callback for pre-expiry, if any
-	void disable_on_expire();
-
 	// enable or disable global expiry for this database
 	// when enabled, expiry works as normal and keys are expired
 	// when their expiry time is met
@@ -176,6 +169,9 @@ public:
 	// expiry has been otherwise disabled
 	// will not trigger the on_expire callback
 	void force_expire(const key_type& key);
+
+	// function called before a key is expired
+	void pre_expire(const key_type& key) override;
 
 
 	// set a string value for a key

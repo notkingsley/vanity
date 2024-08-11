@@ -18,15 +18,10 @@ namespace vanity::db {
 class ExpiryDatabase: public BaseMap
 {
 protected:
-	using callback_t = std::function<void(const key_type&)>;
-
 	// the expiry times for the keys
 	std::unordered_map<key_type, time_t> m_expiry_times;
 
 private:
-	// callback triggered before a key is expired
-	callback_t m_on_expire;
-
 	// whether key expiring should actually happen
 	// this is useful for - and should be turned off when
 	// - recovery by WAL redo is in progress
@@ -101,13 +96,6 @@ public:
 	// should not be called often
 	void deep_purge();
 
-	// register a callback to be called pre-expiry of a key
-	// clears the existing callback, if any
-	void on_expire(callback_t callback);
-
-	// disable the callback for pre-expiry, if any
-	void disable_on_expire();
-
 	// enable or disable global expiry for this database
 	// when enabled, expiry works as normal and keys are expired
 	// when their expiry time is met
@@ -122,6 +110,9 @@ public:
 	// expiry has been otherwise disabled
 	// will not trigger the on_expire callback
 	void force_expire(const key_type& key);
+
+	// function called before a key is expired
+	virtual void pre_expire(const key_type& key) { }
 };
 
 } // namespace vanity::db

@@ -25,9 +25,6 @@ public:
 	// use file for the WAL
 	void wal_to(const std::filesystem::path &wal_file);
 
-	// log an expiry that's about to happen
-	void wal_expiry(const std::string &key, uint db);
-
 	// log a transaction that's about to happen
 	void wal_transaction(Client& client, const std::string& commands, size_t size);
 

@@ -14,9 +14,7 @@ namespace vanity::db {
 ExpiryDatabase::ExpiryDatabase() = default;
 
 void ExpiryDatabase::expire(const key_type& key) {
-	if (m_on_expire)
-		m_on_expire(key);
-
+	pre_expire(key);
 	_do_expire(key);
 }
 
@@ -100,14 +98,6 @@ void ExpiryDatabase::deep_purge() {
 
 	for (auto& key: expired_keys)
 		expire(key);
-}
-
-void ExpiryDatabase::on_expire(callback_t callback) {
-	m_on_expire = std::move(callback);
-}
-
-void ExpiryDatabase::disable_on_expire() {
-	on_expire({});
 }
 
 void ExpiryDatabase::expiry_enabled(bool enable) {

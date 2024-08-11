@@ -205,7 +205,6 @@ PersistJournalServer::PersistJournalServer(optional_path wal_file, optional_path
 
 	pre_database_load();
 	load_databases();
-	post_database_load();
 }
 
 void PersistJournalServer::persist_no_check() {
