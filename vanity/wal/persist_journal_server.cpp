@@ -110,7 +110,7 @@ PersistJournalServer::PersistJournalServer(optional_path wal_file, optional_path
 }
 
 void PersistJournalServer::persist_no_check() {
-	pre_persist();
+	deep_purge_databases();
 
 	if (m_wal_file and m_db_file)
 		persist_with_wal();

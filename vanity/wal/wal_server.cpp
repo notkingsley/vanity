@@ -19,12 +19,14 @@ void WalServer::recover() {
 	if (not exists(file))
 		return;
 
-	pre_recovery();
+	enable_databases_expiry(false);
 	{
 		WriteAheadLogger::Closed closed {wal_logger(), file};
 		recover_from(file);
 	}
-	post_recovery();
+
+	enable_databases_expiry(true);
+	deep_purge_databases();
 }
 
 } // namespace vanity::wal
