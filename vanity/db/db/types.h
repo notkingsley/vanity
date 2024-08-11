@@ -33,12 +33,6 @@ using db_key_type = string_t;
 
 using db_data_type = std::variant<string_t, int_t, float_t, list_t, set_t, hash_t>;
 
-using db_pair_type = std::pair<db_key_type , db_data_type>;
-
-using db_map_type = std::unordered_map<db_key_type, db_data_type>;
-
-using expiry_db_pair_type = std::pair<db_key_type, time_t>;
-
 template<size_t I>
 using db_index_t = typename std::variant_alternative_t<I, db_data_type>;
 

@@ -29,11 +29,11 @@ Database Database::from(std::ifstream &in) {
 
 	auto size = serializer::read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
-		db.m_data.insert(serializer::read<db_pair_type>(in));
+		db.m_data.insert(serializer::read<db_key_type, db_data_type>(in));
 
 	size = serializer::read<size_t>(in);
 	for (size_t i = 0; i < size; ++i)
-		db.m_expiry_times.insert(serializer::read<expiry_db_pair_type>(in));
+		db.m_expiry_times.insert(serializer::read<db_key_type, time_t>(in));
 
 	return db;
 }

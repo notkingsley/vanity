@@ -185,23 +185,6 @@ db::db_data_type read<db::db_data_type>(std::ifstream &in)
 	}
 }
 
-// write a value to the output stream
-template<>
-void write<db::db_pair_type>(std::ofstream &out, const db::db_pair_type& value)
-{
-	write(out, value.first);
-	write(out, value.second);
-}
-
-// read a pair from the input stream
-template<>
-db::db_pair_type read<db::db_pair_type>(std::ifstream &in)
-{
-	db::db_key_type first = read<db::db_key_type>(in);
-	db::db_data_type second = read<db::db_data_type>(in);
-	return std::make_pair(first, second);
-}
-
 // write a db::time_t to the output stream
 template<>
 void write<db::time_t>(std::ofstream &out, const db::time_t& value)
@@ -218,30 +201,25 @@ db::time_t read<db::time_t>(std::ifstream &in)
 	return value;
 }
 
-// write a db::expiry_db_pair_type to the output stream
+// write a vector of strings to the output stream
 template<>
-void write<db::expiry_db_pair_type>(std::ofstream &out, const db::expiry_db_pair_type& value)
-{
-	write(out, value.first);
-	write(out, value.second);
-}
-
-// read a db::expiry_db_pair_type from the input stream
-template<>
-db::expiry_db_pair_type read<db::expiry_db_pair_type>(std::ifstream &in)
-{
-	db::db_key_type first = read<db::db_key_type>(in);
-	db::time_t second = read<db::time_t>(in);
-	return std::make_pair(first, second);
-}
-
-// write an unordered_map to the output stream
-template<typename K, typename V>
-void write(std::ofstream &out, const std::unordered_map<K, V>& value)
+void write<std::vector<db::string_t>>(std::ofstream &out, const std::vector<db::string_t>& value)
 {
 	write(out, value.size());
-	for (const auto& pair : value)
-		write<std::pair<K, V>>(out, pair);
+	for (const auto& v : value)
+		write(out, v);
+}
+
+// read a vector of strings from the input stream
+template<>
+std::vector<db::string_t> read<std::vector<db::string_t>>(std::ifstream &in)
+{
+	std::vector<db::string_t> vec{};
+	auto size = read<size_t>(in);
+	vec.reserve(size);
+	for (size_t i = 0; i < size; ++i)
+		vec.push_back(read<db::string_t>(in));
+	return vec;
 }
 
 // write a string_view to the output stream
@@ -251,6 +229,85 @@ void write(std::ofstream &out, const std::string_view& value)
 	write(out, value.size());
 	out.write(value.data(), value.size());
 }
+
+// write a pair to the output stream
+template<typename K, typename V>
+void write(std::ofstream &out, const std::pair<K, V>& value)
+{
+	write(out, value.first);
+	write(out, value.second);
+}
+
+// read a pair from the input stream
+template<typename K, typename V>
+std::pair<K, V> read(std::ifstream &in)
+{
+	K first = read<K>(in);
+	V second = read<V>(in);
+	return std::make_pair(first, second);
+}
+
+// write an unordered_map to the output stream
+template<typename K, typename V>
+void write(std::ofstream &out, const std::unordered_map<K, V>& value)
+{
+	write(out, value.size());
+	for (const auto& pair : value)
+		write(out, pair);
+}
+
+
+/*
+ * Handle for reading with the serializer::read function
+ */
+class ReadHandle
+{
+private:
+	// the input stream
+	std::ifstream& m_in;
+
+public:
+	// create a new ReadHandle
+	explicit ReadHandle(std::ifstream& in): m_in(in) {}
+
+	// read a value from the input stream
+	template<typename T>
+	T read() {
+		return serializer::read<T>(m_in);
+	}
+
+	// read several values from the input stream in order
+	template<typename ...Args, typename = std::enable_if_t<sizeof...(Args) != 1>>
+	std::tuple<Args...> read() {
+		return {read<Args>()...};
+	}
+};
+
+/*
+ * Handle for writing with the serializer::write function
+ */
+class WriteHandle
+{
+private:
+	// the output stream
+	std::ofstream& m_out;
+
+public:
+	// create a new WriteHandle
+	explicit WriteHandle(std::ofstream& out): m_out(out) {}
+
+	// write a value to the output stream
+	template<typename T>
+	void write(const T& value) {
+		serializer::write(m_out, value);
+	}
+
+	// write several values to the output stream in order
+	template<typename ...Args, typename = std::enable_if_t<sizeof...(Args) != 1>>
+	void write(Args... values) {
+		write(values...);
+	}
+};
 
 } // namespace vanity::serializer
 
