@@ -14,10 +14,6 @@ void WalWriteServer::wal_expiry(const std::string &key, uint db) {
 	m_logger.wal_expiry(key, db);
 }
 
-void WalWriteServer::wal_set_expiry(const std::string &key, uint db, db::time_t expiry_time) {
-	m_logger.wal_set_expiry(key, db, expiry_time);
-}
-
 void WalWriteServer::wal_transaction(Client &client, const std::string &commands, size_t size) {
 	m_logger.wal_transaction(session_db(client), commands, size);
 }

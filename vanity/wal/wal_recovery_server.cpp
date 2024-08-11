@@ -39,13 +39,6 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 				wal_redo_expire(body, db);
 				break;
 			}
-			case wal_entry_t::set_expiry:
-			{
-				auto body = serializer::read<std::string>(wal);
-				auto expiry_time = serializer::read<db::time_t>(wal);
-				wal_redo_set_expiry(body, db, expiry_time);
-				break;
-			}
 			case wal_entry_t::transaction:
 			{
 				auto body = serializer::read<std::string>(wal);

@@ -16,9 +16,7 @@ void ExpiryDatabaseServer::event_expire() {
 }
 
 void ExpiryDatabaseServer::request_set_expiry(Client &client, const std::string &key, double seconds) {
-	auto expiry_time = seconds_to_time_point(seconds);
-	wal_set_expiry(key, session_db(client), expiry_time);
-	database(client).set_expiry(key, expiry_time);
+	database(client).set_expiry(key, seconds_to_time_point(seconds));
 	send(client, ok());
 }
 
@@ -42,10 +40,6 @@ auto ExpiryDatabaseServer::seconds_to_time_point(double seconds) -> time_point {
 double ExpiryDatabaseServer::time_point_to_seconds(time_point tp) {
 	using namespace std::chrono;
 	return duration_cast<duration<double>>(tp - system_clock::now()).count();
-}
-
-void ExpiryDatabaseServer::wal_redo_set_expiry(const std::string &key, uint db, db::time_t expiry_time) {
-	database(db).set_expiry(key, expiry_time);
 }
 
 } // namespace vanity

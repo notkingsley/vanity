@@ -23,10 +23,6 @@ void WriteAheadLogger::wal_expiry(const std::string &key, uint db) {
 	wal(wal_entry_t::expire, db, key);
 }
 
-void WriteAheadLogger::wal_set_expiry(const std::string &key, uint db, db::time_t expiry_time) {
-	wal(wal_entry_t::set_expiry, db, key, expiry_time);
-}
-
 void WriteAheadLogger::wal_transaction(uint db, const std::string &commands, size_t size) {
 	wal(wal_entry_t::transaction, db, commands, size);
 }
