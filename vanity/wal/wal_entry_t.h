@@ -8,7 +8,7 @@
 namespace vanity::wal {
 
 enum class wal_entry_t : char {
-	request,
+	db_op,
 	expire,
 	set_expiry,
 	transaction,

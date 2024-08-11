@@ -17,33 +17,40 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 		session_db(clients[i]) = i;
 	}
 
-	auto eof = std::ifstream::traits_type::eof;
+	auto get_db = [this](uint db) -> auto& { return database(db); };
+	auto eof = std::ifstream::traits_type::eof();
 	std::ifstream wal{wal_file};
-	while (wal.peek() != eof())
+
+	while (wal.peek() != eof)
 	{
 		auto entry_t = serializer::read<wal_entry_t>(wal);
 		auto db = serializer::read<uint>(wal);
-		auto body = serializer::read<std::string>(wal);
 
 		switch (entry_t) {
-			case wal_entry_t::request:
+			case wal_entry_t::db_op:
 			{
-				wal_redo_request(body, clients[db]);
+				auto op = serializer::read<db::db_op_t>(wal);
+				database(db).wal_redo_db_op(op, wal, get_db);
 				break;
 			}
+			// TODO: remove wal_redo_request
+			// wal_redo_request(body, clients[db]);
 			case wal_entry_t::expire:
 			{
+				auto body = serializer::read<std::string>(wal);
 				wal_redo_expire(body, db);
 				break;
 			}
 			case wal_entry_t::set_expiry:
 			{
+				auto body = serializer::read<std::string>(wal);
 				auto expiry_time = serializer::read<db::time_t>(wal);
 				wal_redo_set_expiry(body, db, expiry_time);
 				break;
 			}
 			case wal_entry_t::transaction:
 			{
+				auto body = serializer::read<std::string>(wal);
 				auto size = serializer::read<size_t>(wal);
 				wal_redo_transaction(clients[db], body, size);
 				break;

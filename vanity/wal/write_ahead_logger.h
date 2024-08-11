@@ -10,6 +10,8 @@
 #include <mutex>
 
 #include "client/client.h"
+#include "db/db/db_operations.h"
+#include "utils/serializer.h"
 #include "wal_entry_t.h"
 
 
@@ -27,9 +29,28 @@ private:
 	// mutex for the WAL
 	std::mutex m_wal_mutex;
 
+	// true if the nth type in Args is
+	template<int n, typename T, typename... Args>
+	constexpr static bool is_of_type = std::is_same_v<T, std::tuple_element_t<n, std::tuple<Args...>>>;
+
 	// write an entry to the wal
 	template<typename ...Args>
-	void wal(const Args &... args);
+	void wal(const Args &... args) {
+		static_assert(is_of_type<0, wal_entry_t, Args...>, "First argument must be of type wal_entry_t");
+		static_assert(is_of_type<1, uint, Args...>, "Second argument must be of type uint");
+		static_assert(
+			is_of_type<2, std::string, Args...> or is_of_type<2, db::db_op_t, Args...>,
+		"Third argument must be of type std::string or db::db_op_t"
+		);
+
+		std::lock_guard lock(m_wal_mutex);
+		if (not m_wal_file.is_open())
+			return;
+
+		serializer::WriteHandle writer{m_wal_file};
+		(writer.write(args), ...);
+		m_wal_file << std::endl;
+	}
 
 	// close the WAL
 	void close_wal();
@@ -41,6 +62,12 @@ public:
 	// log a request that's about to happen
 	// requires op to be the operation extracted from the request
 	void wal_request(uint db, const std::string_view &request);
+
+	// log a db operation that's about to happen
+	template<typename ...Args>
+	void wal_db_op(uint db, db::db_op_t op, const Args &... args) {
+		wal(wal_entry_t::db_op, db, op, args...);
+	}
 
 	// log an expiry that's about to happen
 	void wal_expiry(const std::string &key, uint db);

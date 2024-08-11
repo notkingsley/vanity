@@ -35,6 +35,13 @@ private:
 	// the Write Ahead Logger
 	logger_type& m_wal_logger;
 
+	using get_db_func_t = const std::function<LockedDatabase & (m_index_type)>&;
+
+	// log an operation to the WAL
+	// assumes the lock is already acquired
+	template<typename ...Args>
+	inline void wal_log(db_op_t op, const Args &... args);
+
 public:
 	// create a locked database
 	LockedDatabase(m_index_type index, wal::WriteAheadLogger& wal_logger);
@@ -59,6 +66,10 @@ public:
 
 	// return a reference to the mutex
 	lock_type& mutex();
+
+
+	// redo a database operation
+	void wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t get_db);
 
 
 	// persist the database to a file stream
