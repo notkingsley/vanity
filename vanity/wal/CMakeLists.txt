@@ -4,6 +4,7 @@ include_directories(.)
 
 add_library(vanity_wal STATIC
 	journal.cpp
+	journalist.cpp
 	persist_journal_server.cpp
 	wal_expiry_server.cpp
 	wal_recovery_client.cpp

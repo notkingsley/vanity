@@ -2,113 +2,15 @@
 // Created by kingsli on 2/18/24.
 //
 
-#include "journal.h"
+#include "journalist.h"
 #include "persist_journal_server.h"
 
 
 namespace vanity::wal {
 
 // return a path with the same parent as file, but with the given prefix
-static auto with_name_prefix(const std::filesystem::path& file, const char* prefix) {
-	return file.parent_path() / (prefix + file.filename().string());
-}
-
-/*
- * An uncreative name, to tell the truth.
- * A Journalist handles the logic for journaling a persist operation
- * This is one-use only: one Journalist for one persist operation
- *
- * You create a Journalist, perform the persist operation, and then call switch_and_journal()
- */
-class Journalist
-{
-private:
-	using path = std::filesystem::path;
-
-	using empty_journal_t = std::invoke_result_t<decltype(journal::new_journal_maker), path>;
-
-	// the database file
-	const path &m_db_file;
-
-	// the temporary database file
-	path m_tmp_db_file;
-
-	// the WAL file
-	const path &m_wal_file;
-
-	// the empty journal
-	empty_journal_t m_empty_journal;
-
-	// return the path to a temporary database file
-	// the path returned must be distinct from db_file
-	static path make_temp_db_file(const path &db_file);
-
-	// return the path to the old database file
-	// the path returned must be distinct from db_file
-	static path make_old_db_file(const path &db_file);
-
-	// journal when the database file does not exist
-	void journal_db_file_no_exist();
-
-	// journal when the database file already exists
-	void journal_db_file_exist();
-
-public:
-	// create a journalist
-	Journalist(const path &journal_file, const path &db_file, const path &wal_file);
-
-	// journal the persist operation
-	void switch_and_journal();
-
-	// get the temporary database file
-	const path &tmp_db_file() const;
-};
-
-Journalist::path Journalist::make_temp_db_file(const path &db_file) {
-	return with_name_prefix(db_file, "tmp.");
-}
-
-Journalist::path Journalist::make_old_db_file(const path &db_file) {
-	return with_name_prefix(db_file, "old.");
-}
-
-void Journalist::journal_db_file_no_exist() {
-	auto no_exist = m_empty_journal.db_file_no_exist();
-	rename(m_tmp_db_file, m_db_file);
-	remove(m_wal_file);
-	no_exist.delete_();
-}
-
-void Journalist::journal_db_file_exist() {
-	auto old_db_file = make_old_db_file(m_db_file);
-	auto exist = m_empty_journal.db_file_exist();
-	auto moving = exist.moving_existing_db_file(old_db_file);
-	rename(m_db_file, old_db_file);
-	auto moved = moving.moved_existing_db_file();
-	rename(m_tmp_db_file, m_db_file);
-	auto moved_new = moved.moved_new_db_file();
-	remove(m_wal_file);
-	moved_new.delete_();
-	remove(old_db_file);
-}
-
-Journalist::Journalist(const path &journal_file, const path &db_file, const path &wal_file):
-	m_db_file{db_file},
-	m_tmp_db_file{make_temp_db_file(db_file)},
-	m_wal_file{wal_file},
-	m_empty_journal{journal::new_journal_maker(journal_file)}
-{}
-
-void Journalist::switch_and_journal() {
-	if (exists(m_db_file))
-		journal_db_file_exist();
-	else
-		journal_db_file_no_exist();
-}
-
-const Journalist::path &Journalist::tmp_db_file() const {
-	return m_tmp_db_file;
-}
+// defined in journalist.cpp
+std::filesystem::path with_name_prefix(const std::filesystem::path& file, const char* prefix);
 
 
 void PersistJournalServer::do_persist(const path &file) {
