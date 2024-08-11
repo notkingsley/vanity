@@ -202,9 +202,6 @@ public:
 	// get the value for many keys
 	std::vector<std::optional<data_type>> many_get(const std::vector<key_type>& keys);
 
-	// set the value for many keys
-	void many_set(std::vector<std::pair<db_key_type, db_data_type>> keys);
-
 
 	// get the length of a list key
 	// returns the length, 0 if value does not exist or is empty,

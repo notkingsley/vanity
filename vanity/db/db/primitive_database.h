@@ -54,9 +54,6 @@ public:
 
 	// get the value for many keys
 	std::vector<std::optional<data_type>> many_get(const std::vector<key_type>& keys);
-
-	// set the value for many keys
-	void many_set(std::vector<std::pair<key_type, data_type>> pairs);
 };
 
 } // namespace vanity::db

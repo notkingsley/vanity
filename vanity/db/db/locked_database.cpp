@@ -156,11 +156,6 @@ void LockedDatabase::wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t
 			Database::incr_float(key, value);
 			break;
 		}
-		case db_op_t::many_set: {
-			// TODO: retire many_set
-			// Database::many_set(reader.read<std::vector<std::pair<key_type, data_type>>>());
-			break;
-		}
 
 		case db_op_t::list_set: {
 			auto [key, index, value] = reader.read<key_type, int64_t, std::string>();
@@ -432,13 +427,6 @@ std::vector<std::optional<Database::data_type>> LockedDatabase::many_get(const s
 	std::lock_guard lock{m_mutex};
 	wal_log(db_op_t::many_get, keys);
 	return Database::many_get(keys);
-}
-
-void LockedDatabase::many_set(std::vector<std::pair<db_key_type, db_data_type>> keys) {
-	std::lock_guard lock{m_mutex};
-	// TODO: retire many_set
-	// wal_log(db_op_t::many_set, keys);
-	Database::many_set(std::move(keys));
 }
 
 

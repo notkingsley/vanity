@@ -85,11 +85,4 @@ std::vector<std::optional<PrimitiveDatabase::data_type>> PrimitiveDatabase::many
 	return values;
 }
 
-void PrimitiveDatabase::many_set(std::vector<std::pair<key_type, data_type>> pairs) {
-	for (auto& pair: pairs){
-		clear_expiry(pair.first);
-		m_data.emplace(std::move(pair));
-	}
-}
-
 } // namespace vanity::db
