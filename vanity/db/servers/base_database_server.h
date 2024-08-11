@@ -19,11 +19,14 @@ namespace vanity {
 class BaseDatabaseServer : public virtual RequestServer
 {
 private:
+	// the type of logger
+	using wal_logger_t = wal::WriteAheadLogger;
+
+	// the logger
+	wal_logger_t m_wal_logger;
+
 	// the type of database
 	using db_type = db::LockedDatabase;
-
-	// the type of logger
-	using logger_type = db_type::logger_type;
 
 protected:
 	// number of databases
@@ -31,6 +34,9 @@ protected:
 
 	// the databases
 	std::array<db_type, M_NUM_DATABASES> m_databases;
+
+	// get a reference to the wal logger
+	wal_logger_t& wal_logger();
 
 	// get the client's current selected database
 	db_type& database(Client& client);
@@ -46,7 +52,7 @@ protected:
 
 public:
 	// create a new BaseDatabaseServer
-	explicit BaseDatabaseServer(logger_type& logger);
+	BaseDatabaseServer();
 
 	// a switch_db request was received from a client
 	void request_switch_db(Client& client, int64_t db) override;
@@ -88,13 +94,13 @@ private:
 
 	// create and return an array of databases
 	template <std::size_t... I>
-	static constexpr std::array<db_type, sizeof...(I)> create_databases_helper(std::index_sequence<I...>, logger_type& logger) {
+	static constexpr std::array<db_type, sizeof...(I)> create_databases_helper(std::index_sequence<I...>, wal_logger_t& logger) {
 		return { db_type(I, logger)... };
 	}
 
 	// create and return an array of databases
-	static std::array<db_type, M_NUM_DATABASES> create_databases(logger_type& logger) {
-		return create_databases_helper(std::make_index_sequence<M_NUM_DATABASES>{}, logger);
+	std::array<db_type, M_NUM_DATABASES> create_databases() {
+		return create_databases_helper(std::make_index_sequence<M_NUM_DATABASES>{}, m_wal_logger);
 	}
 };
 

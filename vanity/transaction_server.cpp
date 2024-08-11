@@ -38,7 +38,7 @@ void TransactionServer::request_transact_commit(Client &client) {
 
 	{
 		auto trn_lock {database(client).lock()};
-		wal_transaction(client, trn_data.commands, trn_data.size);
+		wal_logger().wal_transaction(session_db(client), trn_data.commands, trn_data.size);
 		do_handle(trn_client, trn_request, trn_data.size);
 	}
 

@@ -6,7 +6,11 @@
 
 namespace vanity {
 
-BaseDatabaseServer::BaseDatabaseServer(logger_type& logger) : m_databases(create_databases(logger)) {}
+BaseDatabaseServer::BaseDatabaseServer() : m_databases(create_databases()) {}
+
+auto BaseDatabaseServer::wal_logger() -> wal_logger_t& {
+	return m_wal_logger;
+}
 
 auto BaseDatabaseServer::database(Client &client) -> db_type& {
 	return m_databases[session_db(client)];

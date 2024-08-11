@@ -59,7 +59,7 @@ void WalRecoveryServer::do_recover()
 
 WalRecoveryServer::WalRecoveryServer() {
 	if (m_wal_file)
-		wal_to(*m_wal_file);
+		wal_logger().wal_to(*m_wal_file);
 }
 
 void WalRecoveryServer::recover() {

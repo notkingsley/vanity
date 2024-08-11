@@ -5,11 +5,7 @@
 #ifndef VANITY_PERSIST_JOURNAL_SERVER_H
 #define VANITY_PERSIST_JOURNAL_SERVER_H
 
-#include <utility>
-
 #include "db/servers/base_database_server.h"
-#include "wal_write_server.h"
-
 
 namespace vanity {
 
@@ -18,9 +14,7 @@ namespace wal {
 /*
  * A PersistJournalServer journals a persist operation to provide crash recovery
  */
-class PersistJournalServer :
-	public virtual BaseDatabaseServer,
-	public virtual WalWriteServer
+class PersistJournalServer : public virtual BaseDatabaseServer
 {
 private:
 	using path = std::filesystem::path;

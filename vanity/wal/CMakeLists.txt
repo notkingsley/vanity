@@ -8,6 +8,5 @@ add_library(vanity_wal STATIC
 	persist_journal_server.cpp
 	wal_recovery_client.cpp
 	wal_recovery_server.cpp
-	wal_write_server.cpp
 	write_ahead_logger.cpp
 )
