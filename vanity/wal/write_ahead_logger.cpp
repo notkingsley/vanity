@@ -27,8 +27,4 @@ void WriteAheadLogger::wal_transaction(uint db, const std::string &commands, siz
 	wal(wal_entry_t::transaction, db, commands, size);
 }
 
-std::mutex &WriteAheadLogger::wal_mutex() {
-	return m_wal_mutex;
-}
-
 } // namespace vanity::wal

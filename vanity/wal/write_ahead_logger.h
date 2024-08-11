@@ -71,9 +71,6 @@ public:
 	// log a transaction that's about to happen
 	void wal_transaction(uint db, const std::string &commands, size_t size);
 
-	// obtain a reference to the mutex
-	std::mutex &wal_mutex();
-
 
 	/*
 	 * RAII mechanism to close and reopen a WriteAheadLogger

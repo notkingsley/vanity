@@ -14,8 +14,4 @@ void WalWriteServer::wal_transaction(Client &client, const std::string &commands
 	m_logger.wal_transaction(session_db(client), commands, size);
 }
 
-std::mutex &WalWriteServer::wal_mutex() {
-	return m_logger.wal_mutex();
-}
-
 } // namespace vanity::wal

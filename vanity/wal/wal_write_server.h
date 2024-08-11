@@ -28,9 +28,6 @@ public:
 	// log a transaction that's about to happen
 	void wal_transaction(Client& client, const std::string& commands, size_t size);
 
-	// obtain a reference to the mutex
-	std::mutex &wal_mutex();
-
 	// get the logger
 	// TODO: remove
 	WriteAheadLogger &wal_logger() { return m_logger; }
