@@ -9,7 +9,7 @@
 
 namespace vanity::wal {
 
-void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
+void WalRecoveryServer::do_recover()
 {
 	std::array<WalRecoveryClient, M_NUM_DATABASES> clients;
 	for (uint i = 0; i < M_NUM_DATABASES; ++i) {
@@ -19,7 +19,7 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 
 	auto get_db = [this](uint db) -> auto& { return database(db); };
 	auto eof = std::ifstream::traits_type::eof();
-	std::ifstream wal{wal_file};
+	std::ifstream wal{*m_wal_file};
 
 	while (wal.peek() != eof)
 	{
@@ -55,6 +55,29 @@ void WalRecoveryServer::recover_from(const std::filesystem::path &wal_file)
 		if (wal.get() != '\n')
 			throw WALError("WAL file is corrupted: no newline after entry");
 	}
+}
+
+WalRecoveryServer::WalRecoveryServer() {
+	if (m_wal_file)
+		wal_to(*m_wal_file);
+}
+
+void WalRecoveryServer::recover() {
+	if (not m_wal_file)
+		return;
+
+	auto &file = *m_wal_file;
+	if (not exists(file))
+		return;
+
+	enable_databases_expiry(false);
+	{
+		WriteAheadLogger::Closed closed {wal_logger(), file};
+		do_recover();
+	}
+
+	enable_databases_expiry(true);
+	deep_purge_databases();
 }
 
 } // namespace vanity::wal
