@@ -54,15 +54,6 @@ public:
 	// move assignment
 	ExpiryDatabase &operator=(ExpiryDatabase &&other) noexcept = default;
 
-	// check if the key is is_expired
-	bool is_expired(const key_type &key);
-
-	// delete key if it is expired
-	// this should be called before every operation
-	// on a key
-	// returns true if the key was deleted, false otherwise
-	bool erase_if_expired(const key_type &key);
-
 	// reset/clear the expiry time for a key
 	// this should be called after every operation
 	// that sets or resets the value for a key
@@ -77,18 +68,18 @@ public:
 
 	// clear all expiry times
 	void clear_all_expiry();
-	
+
 	// shallow purge expired keys
 	// this samples 100 of the keys, and deletes
 	// all expired keys in the sample, then repeats
 	// till < 25% of sampled keys are expired
-	// this is a shallow purge, and is not guaranteed 
-	// to delete all expired keys in the database 
+	// this is a shallow purge, and is not guaranteed
+	// to delete all expired keys in the database
 	// this is intended to be called periodically, but
 	// may not be particularly useful since the
 	// sampling process is linear in the number of keys anyway
 	void shallow_purge();
-	
+
 	// deep purge expired keys
 	// this deletes all expired keys in the database
 	// this is a deep purge, and is guaranteed to delete
@@ -103,6 +94,16 @@ public:
 	// the expiry times say - unless it is re-enabled or force_expire()
 	// is used
 	void expiry_enabled(bool enable);
+
+protected:
+	// check if the key is is_expired
+	bool is_expired(const key_type &key);
+
+	// delete key if it is expired
+	// this should be called before every operation
+	// on a key
+	// returns true if the key was deleted, false otherwise
+	bool erase_if_expired(const key_type &key);
 
 	// manually trigger a key to be expired
 	// this bypasses all checks and will remove the key

@@ -117,14 +117,6 @@ public:
 	bool move_to_db(const key_type& from, LockedDatabase& to);
 
 
-	// check if the key is is_expired
-	bool is_expired(const key_type &key);
-
-	// delete key if it is expired
-	// this should be called before every operation
-	// on a key
-	void erase_if_expired(const key_type &key);
-
 	// reset/clear the expiry time for a key
 	// this should be called after every operation
 	// that sets or resets the value for a key
@@ -165,13 +157,6 @@ public:
 	// the expiry times say - unless it is re-enabled or force_expire()
 	// is used
 	void expiry_enabled(bool enable);
-
-	// manually trigger a key to be expired
-	// this bypasses all checks and will remove the key
-	// even if the expiry time isn't passed or if
-	// expiry has been otherwise disabled
-	// will not trigger the on_expire callback
-	void force_expire(const key_type& key);
 
 	// function called before a key is expired
 	void pre_expire(const key_type& key) override;

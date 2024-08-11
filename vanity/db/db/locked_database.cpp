@@ -50,15 +50,9 @@ void LockedDatabase::wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t
 		case db_op_t::type:
 		case db_op_t::keys:
 
-		case db_op_t::is_expired:
-		case db_op_t::erase_if_expired:
 		case db_op_t::get_expiry:
 		case db_op_t::shallow_purge:
 		case db_op_t::deep_purge:
-		case db_op_t::on_expire:
-		case db_op_t::disable_on_expire:
-		case db_op_t::expiry_enabled:
-		case db_op_t::force_expire:
 
 		case db_op_t::str_len:
 		case db_op_t::many_get:
@@ -322,18 +316,6 @@ bool LockedDatabase::move_to_db(const key_type &from, LockedDatabase &to) {
 }
 
 
-bool LockedDatabase::is_expired(const vanity::db::BaseMap::key_type &key) {
-	std::lock_guard lock{m_mutex};
-	wal_log(db_op_t::is_expired, key);
-	return Database::is_expired(key);
-}
-
-void LockedDatabase::erase_if_expired(const vanity::db::BaseMap::key_type &key) {
-	std::lock_guard lock{m_mutex};
-	wal_log(db_op_t::erase_if_expired, key);
-	Database::erase_if_expired(key);
-}
-
 void LockedDatabase::set_expiry(const key_type &key, time_t expiry_time) {
 	std::lock_guard lock{m_mutex};
 	wal_log(db_op_t::set_expiry, key, expiry_time);
@@ -372,14 +354,7 @@ void LockedDatabase::deep_purge() {
 
 void LockedDatabase::expiry_enabled(bool enable) {
 	std::lock_guard lock{m_mutex};
-	wal_log(db_op_t::expiry_enabled, enable);
 	Database::expiry_enabled(enable);
-}
-
-void LockedDatabase::force_expire(const key_type &key) {
-	std::lock_guard lock{m_mutex};
-	wal_log(db_op_t::force_expire, key);
-	Database::force_expire(key);
 }
 
 void LockedDatabase::pre_expire(const key_type &key) {

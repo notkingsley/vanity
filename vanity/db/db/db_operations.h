@@ -27,18 +27,12 @@ enum class db_op_t : uint {
 	copy_to_db,
 	move_to_db,
 
-	is_expired,
-	erase_if_expired,
 	clear_expiry,
 	set_expiry,
 	get_expiry,
 	clear_all_expiry,
 	shallow_purge,
 	deep_purge,
-	on_expire,
-	disable_on_expire,
-	expiry_enabled,
-	force_expire,
 
 	str_set,
 	int_set,
@@ -100,15 +94,9 @@ inline bool should_wal(db_op_t op)
 		case db_op_t::type:
 		case db_op_t::keys:
 
-		case db_op_t::is_expired:
-		case db_op_t::erase_if_expired:
 		case db_op_t::get_expiry:
 		case db_op_t::shallow_purge:
 		case db_op_t::deep_purge:
-		case db_op_t::on_expire:
-		case db_op_t::disable_on_expire:
-		case db_op_t::expiry_enabled:
-		case db_op_t::force_expire:
 
 		case db_op_t::str_len:
 		case db_op_t::many_get:
