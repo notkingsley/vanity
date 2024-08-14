@@ -5,15 +5,20 @@
 #ifndef VANITY_TRANSACTION_SERVER_H
 #define VANITY_TRANSACTION_SERVER_H
 
-#include "db/servers/base_database_server.h"
 #include "client/write_manager.h"
+#include "db/servers/database_object_server.h"
+#include "request/request_server.h"
+
 
 namespace vanity {
 
 /*
  * A TransactionServer handles transaction requests
  */
-class TransactionServer : public virtual BaseDatabaseServer, public virtual WriteManager
+class TransactionServer :
+	public virtual DatabaseObjectServer,
+	public virtual RequestServer,
+	public virtual WriteManager
 {
 public:
 	// a transact_begin request was received from a client

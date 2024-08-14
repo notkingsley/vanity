@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "repeat_event_server.h"
+#include "request/request_server.h"
 #include "wal/persist_journal_server.h"
 
 
@@ -19,6 +20,7 @@ namespace vanity {
  */
 class PersistentServer:
 	public virtual RepeatEventServer,
+	public virtual RequestServer,
 	public virtual PersistJournalServer
 {
 private:

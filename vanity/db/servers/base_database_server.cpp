@@ -6,30 +6,6 @@
 
 namespace vanity {
 
-BaseDatabaseServer::BaseDatabaseServer() : m_databases(create_databases()) {}
-
-auto BaseDatabaseServer::wal_logger() -> wal_logger_t& {
-	return m_wal_logger;
-}
-
-auto BaseDatabaseServer::database(Client &client) -> db_type& {
-	return m_databases[session_db(client)];
-}
-
-auto BaseDatabaseServer::database(size_t index) -> db_type& {
-	return m_databases[index];
-}
-
-void BaseDatabaseServer::deep_purge_databases() {
-	for (auto& db: m_databases)
-		db.deep_purge();
-}
-
-void BaseDatabaseServer::enable_databases_expiry(bool enable) {
-	for (auto& db: m_databases)
-		db.expiry_enabled(enable);
-}
-
 void BaseDatabaseServer::request_switch_db(Client &client, int64_t db) {
 	if (not validate_db_index(client, db))
 		return;
