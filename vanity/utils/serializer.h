@@ -304,7 +304,7 @@ public:
 
 	// write several values to the output stream in order
 	template<typename ...Args, typename = std::enable_if_t<sizeof...(Args) != 1>>
-	void write(Args... values) {
+	void write(const Args&... values) {
 		write(values...);
 	}
 };
