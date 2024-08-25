@@ -38,8 +38,10 @@ std::optional<int> BaseDatabase::type(const key_type &key) {
 std::vector<BaseDatabase::key_type> BaseDatabase::keys() {
 	deep_purge();
 	std::vector<key_type> keys;
+	keys.reserve(m_data.size());
 	for (auto& [key, _] : m_data)
 		keys.push_back(key);
+
 	return keys;
 }
 
