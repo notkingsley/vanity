@@ -9,6 +9,7 @@
 #include "client/client_server.h"
 #include "cluster_auth_server.h"
 #include "response/peer_message_server.h"
+#include "session_server.h"
 
 
 namespace vanity {
@@ -20,7 +21,8 @@ class PeerServer:
 	public virtual AddressServer,
 	public virtual ClientServer,
 	public virtual ClusterAuthServer,
-	public virtual PeerMessageServer
+	public virtual PeerMessageServer,
+	public virtual SessionServer
 {
 private:
 	// known peers

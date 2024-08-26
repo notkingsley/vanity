@@ -5,7 +5,9 @@
 #ifndef VANITY_BIND_SERVER_H
 #define VANITY_BIND_SERVER_H
 
-#include "request/request_server.h"
+#include "abstract_server.h"
+#include "request/request_handler.h"
+#include "response/response_server.h"
 #include "socket/epoll_server.h"
 #include "socket/socket_listener.h"
 #include "utils/hash.h"
@@ -16,7 +18,11 @@ namespace vanity {
 /*
  * A BindServer is a server that binds to a port and listens for incoming connections
  */
-class BindServer : public virtual RequestServer, public virtual socket::EpollServer
+class BindServer:
+	public virtual AbstractServer,
+	public virtual RequestHandler,
+	public virtual ResponseServer,
+	public virtual socket::EpollServer
 {
 private:
 	using SocketListener = socket::SocketListener;

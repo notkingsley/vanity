@@ -5,10 +5,16 @@
 #ifndef VANITY_AUTH_SERVER_H
 #define VANITY_AUTH_SERVER_H
 
+#include <filesystem>
 #include <unordered_map>
 
+#include "abstract_server.h"
 #include "hasher.h"
-#include "request/request_server.h"
+#include "log_server.h"
+#include "request/request_handler.h"
+#include "response/response_server.h"
+#include "session_server.h"
+
 
 namespace vanity {
 
@@ -20,7 +26,13 @@ struct auth_info {
 /*
  * An AuthServer allows authentication of clients/peers and related operations
  */
-class AuthServer : public virtual RequestServer, private Hasher
+class AuthServer:
+	public virtual AbstractServer,
+	public virtual RequestHandler,
+	public virtual ResponseServer,
+	public virtual LogServer,
+	public virtual SessionServer,
+	private Hasher
 {
 private:
 	// the default username

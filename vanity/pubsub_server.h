@@ -11,7 +11,9 @@
 
 #include "client/client_server.h"
 #include "event_server.h"
-#include "request/request_server.h"
+#include "request/request_handler.h"
+#include "response/response_server.h"
+#include "session_server.h"
 
 
 namespace vanity {
@@ -22,7 +24,9 @@ namespace vanity {
 class PubSubServer:
 	public virtual ClientServer,
 	public virtual EventServer,
-	public virtual RequestServer
+	public virtual RequestHandler,
+	public virtual ResponseServer,
+	public virtual SessionServer
 {
 public:
 	// data about to be published

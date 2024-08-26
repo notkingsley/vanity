@@ -8,8 +8,10 @@
 #include <filesystem>
 #include <optional>
 
+#include "log_server.h"
 #include "repeat_event_server.h"
-#include "request/request_server.h"
+#include "request/request_handler.h"
+#include "response/response_server.h"
 #include "wal/persist_journal_server.h"
 
 
@@ -19,9 +21,11 @@ namespace vanity {
  * A database that handles persistence to disk
  */
 class PersistentServer:
+	public virtual LogServer,
+	public virtual PersistJournalServer,
 	public virtual RepeatEventServer,
-	public virtual RequestServer,
-	public virtual PersistJournalServer
+	public virtual RequestHandler,
+	public virtual ResponseServer
 {
 private:
 	// time between automatic persistence calls in microseconds

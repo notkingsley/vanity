@@ -5,15 +5,17 @@
 #ifndef VANITY_EXIT_SERVER_H
 #define VANITY_EXIT_SERVER_H
 
-#include "request/request_server.h"
+#include "abstract_server.h"
+#include "request/request_handler.h"
 #include "tcp_client.h"
+
 
 namespace vanity {
 
 /*
  * An ExitServer is a server that handles closing clients
  */
-class ExitServer : public virtual RequestServer
+class ExitServer : public virtual AbstractServer, public virtual RequestHandler
 {
 protected:
 	// close a client
