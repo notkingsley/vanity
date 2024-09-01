@@ -29,9 +29,6 @@ public:
 	// create a new DatabaseWrapper with a database
 	DatabaseWrapper(LockedDatabase& database, trn_id_t trn_id);
 
-	// persist the database to a file stream
-	void persist(std::ofstream &out);
-
 	// reset the database
 	void reset();
 
