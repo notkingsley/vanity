@@ -14,8 +14,7 @@ namespace vanity::db {
 /*
  * All the operations that can be performed on a database
  */
-enum class db_op_t : uint {
-	persist,
+enum class db_op_t : uint8_t {
 	reset,
 	has,
 	del,
@@ -31,8 +30,6 @@ enum class db_op_t : uint {
 	set_expiry,
 	get_expiry,
 	clear_all_expiry,
-	shallow_purge,
-	deep_purge,
 
 	str_set,
 	int_set,
@@ -88,15 +85,12 @@ enum class db_op_t : uint {
 inline bool should_wal(db_op_t op)
 {
 	switch (op) {
-		case db_op_t::persist:
 		case db_op_t::has:
 		case db_op_t::get:
 		case db_op_t::type:
 		case db_op_t::keys:
 
 		case db_op_t::get_expiry:
-		case db_op_t::shallow_purge:
-		case db_op_t::deep_purge:
 
 		case db_op_t::str_len:
 		case db_op_t::many_get:

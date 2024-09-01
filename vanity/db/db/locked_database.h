@@ -40,7 +40,7 @@ private:
 	// log an operation to the WAL
 	// assumes the lock is already acquired
 	template<typename ...Args>
-	inline void wal_log(db_op_t op, const Args &... args);
+	inline void wal_log(trn_id_t trn_id, db_op_t op, const Args &... args);
 
 public:
 	// create a locked database

@@ -81,8 +81,8 @@ public:
 
 	// log a db operation that's about to happen
 	template<typename ...Args>
-	void wal_db_op(uint db, db::db_op_t op, const Args &... args) {
-		wal(wal_entry_t::db_op, db, op, args...);
+	void wal_db_op(uint db, db::trn_id_t trn_id, db::db_op_t op, const Args &... args) {
+		wal(wal_entry_t::db_op, db, trn_id, op, args...);
 	}
 
 	// log an expiry that's about to happen
