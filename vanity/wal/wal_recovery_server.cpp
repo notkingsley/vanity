@@ -29,6 +29,7 @@ void WalRecoveryServer::do_recover()
 		switch (entry_t) {
 			case wal_entry_t::db_op:
 			{
+				auto trn_id = serializer::read<db::trn_id_t>(wal);
 				auto op = serializer::read<db::db_op_t>(wal);
 				database(db).wal_redo_db_op(op, wal, get_db);
 				break;
