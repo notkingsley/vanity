@@ -110,7 +110,7 @@ void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &f
 	if (dest == session_db(client))
 		return send(client, ok());
 
-	if (database(client).copy_to_db(from, database(dest)))
+	if (database(client).copy_to_db(from, database_obj(dest)))
 		send(client, ok());
 	else
 		send(client, null());
@@ -123,7 +123,7 @@ void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &f
 	if (dest == session_db(client))
 		return send(client, ok());
 
-	if (database(client).move_to_db(from, database(dest)))
+	if (database(client).move_to_db(from, database_obj(dest)))
 		send(client, ok());
 	else
 		send(client, null());

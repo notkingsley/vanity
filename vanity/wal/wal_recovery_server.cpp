@@ -17,7 +17,7 @@ void WalRecoveryServer::do_recover()
 		session_db(clients[i]) = i;
 	}
 
-	auto get_db = [this](uint db) -> auto& { return database(db); };
+	auto get_db = [this](uint db) -> auto& { return database_obj(db); };
 	auto eof = std::ifstream::traits_type::eof();
 	std::ifstream wal{*m_wal_file};
 
@@ -31,13 +31,13 @@ void WalRecoveryServer::do_recover()
 			{
 				auto trn_id = serializer::read<db::trn_id_t>(wal);
 				auto op = serializer::read<db::db_op_t>(wal);
-				database(db).wal_redo_db_op(op, wal, get_db);
+				database_obj(db).wal_redo_db_op(op, wal, get_db);
 				break;
 			}
 			case wal_entry_t::expire:
 			{
 				auto body = serializer::read<std::string>(wal);
-				database(db).wal_redo_expiry(body);
+				database_obj(db).wal_redo_expiry(body);
 				break;
 			}
 			case wal_entry_t::transaction:

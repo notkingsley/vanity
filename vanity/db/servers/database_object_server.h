@@ -45,8 +45,11 @@ protected:
 	// get a wrapper around the client's current selected database
 	db_wrapper_type database(Client& client);
 
+	// get the client's current selected database
+	db_type& database_obj(Client& client);
+
 	// get the database at the given index
-	db_type& database(size_t index);
+	db_type& database_obj(size_t index);
 
 	// convenience function to deep_purge() all databases
 	void deep_purge_databases();
