@@ -29,18 +29,38 @@ private:
 	// mutex for the WAL
 	std::mutex m_wal_mutex;
 
-	// true if the nth type in Args is
-	template<int n, typename T, typename... Args>
-	constexpr static bool is_of_type = std::is_same_v<T, std::tuple_element_t<n, std::tuple<Args...>>>;
+	template<std::size_t n, typename T, typename... Tp>
+	struct is_nth_type;
+
+	template<size_t n, typename T, typename Head, typename... Tail>
+	struct is_nth_type<n, T, Head, Tail...>
+		: is_nth_type<n - 1, T, Tail...> { };
+
+	template<typename T, typename Head, typename... Tail>
+	struct is_nth_type<0, T, Head, Tail...>
+		: std::conditional<std::is_same_v<T, Head>, std::true_type, std::false_type>::type { };
+
+	template<size_t n, typename T>
+	struct is_nth_type<n, T> : std::false_type { };
+
+	// true if the nth type in Args is T
+	template<size_t n, typename T, typename... Args>
+	static constexpr bool is_nth_type_v = is_nth_type<n, T, Args...>::value;
+
 
 	// write an entry to the wal
 	template<typename ...Args>
 	void wal(const Args &... args) {
-		static_assert(is_of_type<0, wal_entry_t, Args...>, "First argument must be of type wal_entry_t");
-		static_assert(is_of_type<1, uint, Args...>, "Second argument must be of type uint");
-		static_assert(
-			is_of_type<2, std::string, Args...> or is_of_type<2, db::db_op_t, Args...>,
-		"Third argument must be of type std::string or db::db_op_t"
+		static constexpr bool is_wal_entry_0 = is_nth_type_v<0, wal_entry_t, Args...>;
+		static constexpr bool is_uint_1 = is_nth_type_v<1, uint, Args...>;
+		static constexpr bool is_string_2 = is_nth_type_v<2, std::string, Args...>;
+		static constexpr bool is_trn_id_2 = is_nth_type_v<2, db::trn_id_t, Args...>;
+		static constexpr bool is_db_op_3 = is_nth_type_v<3, db::db_op_t, Args...>;
+
+		static_assert(is_wal_entry_0, "First argument must be of type wal_entry_t");
+		static_assert(is_uint_1, "Second argument must be of type uint");
+		static_assert((is_string_2) or (is_trn_id_2 and is_db_op_3),
+			"Third argument must be of type std::string or db::trn_id_t and fourth argument must be of type db::db_op_t"
 		);
 
 		std::lock_guard lock(m_wal_mutex);
