@@ -12,8 +12,8 @@ auto DatabaseObjectServer::wal_logger() -> wal_logger_t& {
 	return m_wal_logger;
 }
 
-auto DatabaseObjectServer::database(Client &client) -> db_type& {
-	return m_databases[session_db(client)];
+auto DatabaseObjectServer::database(Client &client) -> db_wrapper_type {
+	return db_wrapper_type {database(session_db(client)), session_trn_id(client)};
 }
 
 auto DatabaseObjectServer::database(size_t index) -> db_type& {

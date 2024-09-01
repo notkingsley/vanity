@@ -7,7 +7,7 @@
 
 #include <array>
 
-#include "db/db/locked_database.h"
+#include "database_wrapper.h"
 #include "session_server.h"
 
 
@@ -29,6 +29,9 @@ private:
 	// the type of database
 	using db_type = db::LockedDatabase;
 
+	// the wrapper type
+	using db_wrapper_type = db::DatabaseWrapper;
+
 protected:
 	// number of databases
 	static constexpr size_t M_NUM_DATABASES = 16;
@@ -39,8 +42,8 @@ protected:
 	// get a reference to the wal logger
 	wal_logger_t& wal_logger();
 
-	// get the client's current selected database
-	db_type& database(Client& client);
+	// get a wrapper around the client's current selected database
+	db_wrapper_type database(Client& client);
 
 	// get the database at the given index
 	db_type& database(size_t index);
