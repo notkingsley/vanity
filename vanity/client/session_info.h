@@ -70,6 +70,9 @@ struct user_data_t {
 
 	// index of the database in use
 	uint database = 0;
+
+	// id of the current transaction
+	uint64_t trn_id = 0;
 };
 
 // a peer's data

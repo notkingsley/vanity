@@ -32,6 +32,9 @@ public:
 	// check if a client is a user
 	static bool session_is_user(Client& client);
 
+	// get a client's user data	or throw if the client is not a user
+	static user_data_t& session_user_data(Client& client);
+
 	// get a reference to a client's current db
 	static uint& session_db(Client& client);
 
@@ -49,6 +52,9 @@ public:
 
 	// get a reference to a client's current transaction data
 	static user_data_t::transaction_data_t& session_transaction_data(Client& client);
+
+	// get a reference to a client's current trn_id
+	static uint64_t& session_trn_id(Client& client);
 
 	// get a client's current peer data
 	static peer_data_t& session_peer_data(Client& client);

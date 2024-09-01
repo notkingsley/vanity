@@ -49,18 +49,20 @@ bool SessionServer::session_is_user(Client &client) {
 	return auth == client_auth::USER or auth == client_auth::ADMIN;
 }
 
-uint& SessionServer::session_db(Client &client) {
+user_data_t& SessionServer::session_user_data(Client& client) {
 	if (auto &user_data = client.session_info().user_data)
-		return user_data->database;
+		return *user_data;
 
 	throw std::runtime_error("client is not a user");
 }
 
-std::string &SessionServer::session_username(Client &client) {
-	if (auto &user_data = client.session_info().user_data)
-		return user_data->username;
 
-	throw std::runtime_error("client is not a user");
+uint& SessionServer::session_db(Client &client) {
+	return session_user_data(client).database;
+}
+
+std::string &SessionServer::session_username(Client &client) {
+	return session_user_data(client).username;
 }
 
 user_data_t::conn_state SessionServer::session_state(Client &client) {
@@ -75,39 +77,35 @@ user_data_t::conn_state SessionServer::session_state(Client &client) {
 }
 
 void SessionServer::session_set_state(Client &client, user_data_t::conn_state state) {
-	auto &user_data = client.session_info().user_data;
-	if (not user_data)
-		throw std::runtime_error("client is not a user");
+	auto &user_data = session_user_data(client);
+	user_data.state = state;
 
-	user_data->state = state;
 	switch (state) {
 		case user_data_t::conn_state::NORMAL: {
-			user_data->trn_data.reset();
+			user_data.trn_data.reset();
 			break;
 		}
 		case user_data_t::conn_state::TRANSACTION: {
-			user_data->trn_data = std::make_unique<user_data_t::transaction_data_t>();
+			user_data.trn_data = std::make_unique<user_data_t::transaction_data_t>();
 			break;
 		}
 	}
 }
 
 user_data_t::channels_t &SessionServer::session_channels(Client &client) {
-	if (auto &user_data = client.session_info().user_data)
-		return user_data->channels;
-
-	throw std::runtime_error("client is not a user");
+	return session_user_data(client).channels;
 }
 
 user_data_t::transaction_data_t &SessionServer::session_transaction_data(Client &client) {
-	auto &user_data = client.session_info().user_data;
-	if (not user_data)
-		throw std::runtime_error("client is not a user");
-
-	if (auto &conn_data = user_data->trn_data)
+	auto &user_data = session_user_data(client);
+	if (auto &conn_data = user_data.trn_data)
 		return *conn_data;
 
 	throw std::runtime_error("client is not in a transaction");
+}
+
+uint64_t &SessionServer::session_trn_id(Client &client) {
+	return session_user_data(client).trn_id;
 }
 
 peer_data_t &SessionServer::session_peer_data(Client &client) {
@@ -118,17 +116,11 @@ peer_data_t &SessionServer::session_peer_data(Client &client) {
 }
 
 std::string &SessionServer::session_addr(Client &client) {
-	if (auto &peer_data = client.session_info().peer_data)
-		return peer_data->addr;
-
-	throw std::runtime_error("client is not a peer");
+	return session_peer_data(client).addr;
 }
 
 std::optional<std::string> &SessionServer::session_id(Client &client) {
-	if (auto &peer_data = client.session_info().peer_data)
-		return peer_data->id;
-
-	throw std::runtime_error("client is not a peer");
+	return session_peer_data(client).id;
 }
 
 } // namespace vanity
