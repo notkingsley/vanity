@@ -25,6 +25,9 @@ class TransactionServer:
 	public virtual ResponseServer
 {
 private:
+	// default transaction id
+	static constexpr uint64_t DEFAULT_TRN_ID = 0;
+
 	// the transaction id counter
 	AtomicCounter m_counter;
 
