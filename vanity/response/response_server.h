@@ -59,16 +59,6 @@ protected:
 		return empty_response(Response::denied);
 	}
 
-	// make an empty QUEUED response
-	static Response queued() {
-		return empty_response(Response::queued);
-	}
-
-	// make an empty BAD_STATE response
-	static Response bad_state() {
-		return empty_response(Response::bad_state);
-	}
-
 	// an ERROR response
 	static Response error(const char* body) {
 		return error_response(Response::error, body);

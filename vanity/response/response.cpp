@@ -31,10 +31,6 @@ Response &Response::operator<<(Response::Status status) {
 			return *this << status_value::bad_type;
 		case bad_request:
 			return *this << status_value::bad_request;
-		case bad_state:
-			return *this << status_value::bad_state;
-		case queued:
-			return *this << status_value::queued;
 		case async:
 			return *this << status_value::async;
 		default:

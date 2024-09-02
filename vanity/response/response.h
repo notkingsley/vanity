@@ -97,8 +97,6 @@ private:
 		static constexpr char const* const null = "NULL";
 		static constexpr char const* const pong = "PONG";
 		static constexpr char const* const denied = "DENIED";
-		static constexpr char const* const queued = "QUEUED";
-		static constexpr char const* const bad_state = "BAD_STATE";
 		static constexpr char const* const error = "ERROR";
 		static constexpr char const* const bad_type = "BAD_TYPE";
 		static constexpr char const* const bad_request = "BAD_REQUEST";
@@ -116,8 +114,6 @@ public:
 		null,
 		pong,
 		denied,
-		queued,
-		bad_state,
 		error,
 		bad_type,
 		bad_request,
