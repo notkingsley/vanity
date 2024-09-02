@@ -107,6 +107,9 @@ PersistJournalServer::PersistJournalServer(optional_path wal_file, optional_path
 
 	pre_database_load();
 	load_databases();
+
+	if (m_wal_file)
+		wal_logger().wal_to(*m_wal_file);
 }
 
 void PersistJournalServer::persist_no_check() {

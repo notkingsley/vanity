@@ -88,9 +88,6 @@ public:
 	// log an expiry that's about to happen
 	void wal_expiry(const std::string &key, uint db);
 
-	// log a transaction that's about to happen
-	void wal_transaction(uint db, const std::string &commands, size_t size);
-
 
 	/*
 	 * RAII mechanism to close and reopen a WriteAheadLogger

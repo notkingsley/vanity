@@ -9,7 +9,6 @@
 #include <fstream>
 
 #include "persist_journal_server.h"
-#include "transaction_server.h"
 #include "utils/serializer.h"
 
 
@@ -18,16 +17,13 @@ namespace vanity::wal {
 /*
  * A WalRecoveryServer recovers from a Write Ahead Log
  */
-class WalRecoveryServer : public virtual PersistJournalServer, public virtual TransactionServer
+class WalRecoveryServer : public virtual PersistJournalServer
 {
 private:
 	// perform recovery from the wal_file
 	void do_recover();
 
 public:
-	// create a WAL recovery server
-	WalRecoveryServer();
-
 	// recover previous state from the WAL file
 	void recover();
 };

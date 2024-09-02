@@ -2,6 +2,7 @@
 // Created by kingsli on 2/12/24.
 //
 
+#include "exceptions.h"
 #include "wal_entry_t.h"
 #include "wal_recovery_client.h"
 #include "wal_recovery_server.h"
@@ -30,6 +31,7 @@ void WalRecoveryServer::do_recover()
 			case wal_entry_t::db_op:
 			{
 				auto trn_id = serializer::read<db::trn_id_t>(wal);
+				// TODO pass trn_id to redo_db_op
 				auto op = serializer::read<db::db_op_t>(wal);
 				database_obj(db).wal_redo_db_op(op, wal, get_db);
 				break;
@@ -38,13 +40,6 @@ void WalRecoveryServer::do_recover()
 			{
 				auto body = serializer::read<std::string>(wal);
 				database_obj(db).wal_redo_expiry(body);
-				break;
-			}
-			case wal_entry_t::transaction:
-			{
-				auto body = serializer::read<std::string>(wal);
-				auto size = serializer::read<size_t>(wal);
-				wal_redo_transaction(clients[db], body, size);
 				break;
 			}
 			default:
@@ -56,11 +51,6 @@ void WalRecoveryServer::do_recover()
 		if (wal.get() != '\n')
 			throw WALError("WAL file is corrupted: no newline after entry");
 	}
-}
-
-WalRecoveryServer::WalRecoveryServer() {
-	if (m_wal_file)
-		wal_logger().wal_to(*m_wal_file);
 }
 
 void WalRecoveryServer::recover() {

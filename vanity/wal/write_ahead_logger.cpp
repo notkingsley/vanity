@@ -23,8 +23,4 @@ void WriteAheadLogger::wal_expiry(const std::string &key, uint db) {
 	wal(wal_entry_t::expire, db, key);
 }
 
-void WriteAheadLogger::wal_transaction(uint db, const std::string &commands, size_t size) {
-	wal(wal_entry_t::transaction, db, commands, size);
-}
-
 } // namespace vanity::wal
