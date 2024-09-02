@@ -44,6 +44,7 @@ protected:
 	// behavior is undefined if one of the requests couldn't be dispatched
 	void do_handle(Client& client, Request& request, size_t len);
 
+private:
 	// extract the data from a request and dispatch it to the appropriate handler
 	// client: the client that sent the message
 	// request: the request to extract data from
@@ -51,33 +52,8 @@ protected:
 	// return true if the request was extracted and dispatched successfully, false otherwise
 	bool do_handle_single(Client& client, Request& request, bool end);
 
-	// dispatch a request based on the client's behavior
-	// this selects the correct handler based on the client's current state
-	// effectively same as do_handle, but doesn't catch errors or guarantee a response will be sent
-	bool dispatch_by_behavior(Client& client, Request& request, bool end);
-
-	// dispatch a request in the default behavior
-	// this is the default behavior for a client, and is used when the client is not in any special state
-	// or when the request is not affected by the client's state/behavior
-	// returns true if the request was dispatched successfully, false otherwise
-	bool dispatch_default_behavior(Client& client, Request& request, bool end);
-
-	// dispatch a request not permitted in the current state
-	// this is called when a request is not permitted in the current state
-	// and is distinct from the request not being permitted due to the client's auth level
-	// returns true if the request was dispatched successfully, false otherwise
-	bool dispatch_not_permitted_behavior(Client& client, Request& request, bool end);
-
-	// dispatch a request in a contextual behavior
-	// this is called when a request is permitted in the current state, but is affected by the client's state/behavior
-	// returns true if the request was dispatched successfully, false otherwise
-	bool dispatch_contextual_behavior(Client& client, Request& request, bool end);
-
-	// dispatch a request in a normal context
-	bool dispatch_normal_context(Client& client, Request& request, bool end);
-
-	// dispatch a request in a transaction context
-	virtual bool dispatch_transaction_context(Client& client, Request& request, bool end) = 0;
+	// check for permissions and dispatch a request or refuse it
+	bool dispatch_or_refuse(Client& client, Request& request, bool end);
 
 	// send a response to the client, calling dry_dispatch if necessary
 	// always returns false
