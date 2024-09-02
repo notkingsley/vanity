@@ -33,40 +33,11 @@ const std::initializer_list<std::pair<client_auth, std::string>> CLIENT_AUTH_STR
 struct user_data_t {
 	using channels_t = std::set<std::string>;
 
-	// a user's current connection state
-	enum class conn_state {
-		NORMAL,
-		TRANSACTION,
-	};
-
-	// data on a currently running transaction
-	struct transaction_data_t {
-		// the commands in the transaction, in order
-		std::string commands;
-
-		// the number of commands in the transaction
-		size_t size = 0;
-
-		// push a command to the transaction and increment the number of commands
-		template<class T>
-		void push(const T &command) {
-			commands += command;
-			++size;
-		}
-	};
-
 	// the pubsub channels the client is subscribed to
 	channels_t channels;
 
 	// the client's username
 	std::string username;
-
-	// data on the current transaction
-	// we'll use a variant when we have more than one state
-	std::unique_ptr<transaction_data_t> trn_data;
-
-	// the client's current connection state
-	conn_state state = conn_state::NORMAL;
 
 	// index of the database in use
 	uint database = 0;

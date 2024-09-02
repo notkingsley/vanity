@@ -41,17 +41,8 @@ public:
 	// get a reference to a client's username
 	static std::string& session_username(Client& client);
 
-	// get a client's current connection state
-	static user_data_t::conn_state session_state(Client& client);
-
-	// set a client's current connection state
-	static void session_set_state(Client& client, user_data_t::conn_state state);
-
 	// get a client's current channels
 	static user_data_t::channels_t &session_channels(Client &client);
-
-	// get a reference to a client's current transaction data
-	static user_data_t::transaction_data_t& session_transaction_data(Client& client);
 
 	// get a reference to a client's current trn_id
 	static uint64_t& session_trn_id(Client& client);

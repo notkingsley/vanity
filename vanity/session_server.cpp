@@ -65,43 +65,8 @@ std::string &SessionServer::session_username(Client &client) {
 	return session_user_data(client).username;
 }
 
-user_data_t::conn_state SessionServer::session_state(Client &client) {
-	auto &session_info = client.session_info();
-	if (not session_info.user_data and not session_info.peer_data)
-		return user_data_t::conn_state::NORMAL;
-
-	if (session_info.user_data)
-		return session_info.user_data->state;
-
-	throw std::runtime_error("client is not a user");
-}
-
-void SessionServer::session_set_state(Client &client, user_data_t::conn_state state) {
-	auto &user_data = session_user_data(client);
-	user_data.state = state;
-
-	switch (state) {
-		case user_data_t::conn_state::NORMAL: {
-			user_data.trn_data.reset();
-			break;
-		}
-		case user_data_t::conn_state::TRANSACTION: {
-			user_data.trn_data = std::make_unique<user_data_t::transaction_data_t>();
-			break;
-		}
-	}
-}
-
 user_data_t::channels_t &SessionServer::session_channels(Client &client) {
 	return session_user_data(client).channels;
-}
-
-user_data_t::transaction_data_t &SessionServer::session_transaction_data(Client &client) {
-	auto &user_data = session_user_data(client);
-	if (auto &conn_data = user_data.trn_data)
-		return *conn_data;
-
-	throw std::runtime_error("client is not in a transaction");
 }
 
 uint64_t &SessionServer::session_trn_id(Client &client) {
