@@ -97,6 +97,42 @@ void PersistJournalServer::pre_database_load() {
 	}
 }
 
+void PersistJournalServer::do_recover()
+{
+	auto get_db = [this](uint db) -> auto& { return database_obj(db); };
+	auto eof = std::ifstream::traits_type::eof();
+	std::ifstream wal{*m_wal_file};
+
+	while (wal.peek() != eof)
+	{
+		auto entry_t = serializer::read<wal_entry_t>(wal);
+		auto db = serializer::read<uint>(wal);
+
+		switch (entry_t) {
+			case wal_entry_t::db_op:
+			{
+				auto trn_id = serializer::read<db::trn_id_t>(wal);
+				auto op = serializer::read<db::db_op_t>(wal);
+				database_obj(db).wal_redo_db_op(trn_id, op, wal, get_db);
+				break;
+			}
+			case wal_entry_t::expire:
+			{
+				auto body = serializer::read<std::string>(wal);
+				database_obj(db).wal_redo_expiry(body);
+				break;
+			}
+			default:
+			{
+				throw WALError("Bad wal_entry_t");
+			}
+		}
+
+		if (wal.get() != '\n')
+			throw WALError("WAL file is corrupted: no newline after entry");
+	}
+}
+
 PersistJournalServer::PersistJournalServer(optional_path wal_file, optional_path db_file, optional_path journal_file):
 	m_wal_file{std::move(wal_file)},
 	m_db_file{std::move(db_file)},
@@ -119,6 +155,24 @@ void PersistJournalServer::persist_no_check() {
 		persist_with_wal();
 	else
 		persist_without_wal();
+}
+
+void PersistJournalServer::recover() {
+	if (not m_wal_file)
+		return;
+
+	auto &file = *m_wal_file;
+	if (not exists(file))
+		return;
+
+	enable_databases_expiry(false);
+	{
+		WriteAheadLogger::Closed closed {wal_logger(), file};
+		do_recover();
+	}
+
+	enable_databases_expiry(true);
+	deep_purge_databases();
 }
 
 } // namespace vanity::wal

@@ -15,7 +15,6 @@
 #include "pipe_server.h"
 #include "poll_server.h"
 #include "pubsub_server.h"
-#include "wal/wal_recovery_server.h"
 
 
 namespace vanity {
@@ -32,8 +31,7 @@ class Server:
 	public virtual PipeServer,
 	public virtual PollServer,
 	public virtual PubSubServer,
-	public virtual TransactionServer,
-	public virtual wal::WalRecoveryServer
+	public virtual TransactionServer
 {
 private:
 	// lock file

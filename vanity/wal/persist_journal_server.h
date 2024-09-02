@@ -53,6 +53,9 @@ private:
 	// return a lock on the wal mutex and all databases
 	auto lock_all();
 
+	// perform recovery from the wal_file
+	void do_recover();
+
 public:
 	// create a PersistJournalServer
 	PersistJournalServer(optional_path wal_file, optional_path db_file, optional_path journal_file);
@@ -60,6 +63,9 @@ public:
 	// persist the databases
 	// assumes the database file is present
 	void persist_no_check();
+
+	// recover previous state from the WAL file
+	void recover();
 };
 
 } // namespace wal

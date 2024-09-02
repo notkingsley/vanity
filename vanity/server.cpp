@@ -14,7 +14,7 @@ Server::Server(const Config &config):
 	PersistJournalServer(config.wal_file, config.db_file, config.journal_file),
 	m_lock_file{config.lock_file}
 {
-	wal::WalRecoveryServer::recover();
+	PersistJournalServer::recover();
 }
 
 void Server::start() {
