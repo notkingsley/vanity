@@ -15,6 +15,10 @@ namespace vanity::db {
  * All the operations that can be performed on a database
  */
 enum class db_op_t : uint8_t {
+	begin,
+	commit,
+	discard,
+
 	reset,
 	has,
 	del,
@@ -119,6 +123,10 @@ inline bool should_wal(db_op_t op)
 		case db_op_t::hash_many_get:
 			return false;
 
+
+		case db_op_t::begin:
+		case db_op_t::commit:
+		case db_op_t::discard:
 
 		case db_op_t::reset:
 		case db_op_t::del:

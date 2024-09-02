@@ -24,6 +24,11 @@ LockedDatabase LockedDatabase::from(std::ifstream &in, logger_type &wal_logger) 
 	return LockedDatabase{Database::from(in), wal_logger};
 }
 
+void LockedDatabase::persist(std::ofstream &out) {
+	std::lock_guard lock{m_mutex};
+	Database::persist(out);
+}
+
 
 std::lock_guard<LockedDatabase::lock_type> LockedDatabase::lock() {
 	return std::lock_guard{m_mutex};
@@ -78,6 +83,20 @@ void LockedDatabase::wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t
 		case db_op_t::hash_many_get:
 			throw std::runtime_error("unexpected db_op_t");
 
+
+		case db_op_t::begin: {
+			// TODO: begin
+			break;
+		}
+		case db_op_t::commit: {
+			// TODO: commit
+			break;
+		}
+
+		case db_op_t::discard: {
+			// TODO: discard
+			break;
+		}
 
 		case db_op_t::reset: {
 			Database::reset();
@@ -245,11 +264,25 @@ void LockedDatabase::wal_redo_expiry(const key_type &key) {
 	Database::force_expire(key);
 }
 
-
-void LockedDatabase::persist(std::ofstream &out) {
+trn_id_t LockedDatabase::begin(trn_id_t trn) {
 	std::lock_guard lock{m_mutex};
-	Database::persist(out);
+	wal_log(trn, db_op_t::begin);
+	// TODO: begin
+	return trn;
 }
+
+void LockedDatabase::commit(trn_id_t trn_id) {
+	std::lock_guard lock{m_mutex};
+	wal_log(trn_id, db_op_t::commit);
+	// TODO: commit
+}
+
+void LockedDatabase::discard(trn_id_t trn_id) {
+	std::lock_guard lock{m_mutex};
+	wal_log(trn_id, db_op_t::discard);
+	// TODO: discard
+}
+
 
 void LockedDatabase::reset(trn_id_t trn_id) {
 	std::lock_guard lock{m_mutex};

@@ -60,6 +60,9 @@ public:
 	// load the database from a file stream
 	static LockedDatabase from(std::ifstream &in, logger_type& wal_logger);
 
+	// persist the database to a file stream
+	void persist(std::ofstream &out);
+
 
 	// acquire the lock
 	std::lock_guard<lock_type> lock();
@@ -74,9 +77,15 @@ public:
 	// redo a key expiry operation
 	void wal_redo_expiry(const key_type &key);
 
+	// begin a transaction
+	trn_id_t begin(trn_id_t trn);
 
-	// persist the database to a file stream
-	void persist(std::ofstream &out);
+	// commit a transaction
+	void commit(trn_id_t trn);
+
+	// discard a transaction
+	void discard(trn_id_t trn);
+
 
 	// reset the database
 	void reset(trn_id_t trn_id);
