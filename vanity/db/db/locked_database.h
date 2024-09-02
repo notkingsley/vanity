@@ -72,7 +72,7 @@ public:
 
 
 	// redo a database operation
-	void wal_redo_db_op(db_op_t op, std::ifstream &in, get_db_func_t get_db);
+	void wal_redo_db_op(trn_id_t trn_id, db_op_t op, std::ifstream &in, get_db_func_t get_db);
 
 	// redo a key expiry operation
 	void wal_redo_expiry(const key_type &key);

@@ -31,9 +31,8 @@ void WalRecoveryServer::do_recover()
 			case wal_entry_t::db_op:
 			{
 				auto trn_id = serializer::read<db::trn_id_t>(wal);
-				// TODO pass trn_id to redo_db_op
 				auto op = serializer::read<db::db_op_t>(wal);
-				database_obj(db).wal_redo_db_op(op, wal, get_db);
+				database_obj(db).wal_redo_db_op(trn_id, op, wal, get_db);
 				break;
 			}
 			case wal_entry_t::expire:
