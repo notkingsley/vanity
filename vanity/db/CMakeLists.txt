@@ -6,7 +6,7 @@ add_subdirectory(./db)
 add_subdirectory(./servers)
 
 add_library(vanity_db STATIC
-	./servers/database_server.h
+	transaction_server.cpp
 )
 
 target_link_libraries(
