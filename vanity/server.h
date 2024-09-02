@@ -10,6 +10,7 @@
 #include "cluster/peer_pulse_server.h"
 #include "config.h"
 #include "db/servers/database_server.h"
+#include "db/transaction_server.h"
 #include "persistent_server.h"
 #include "pipe_server.h"
 #include "poll_server.h"
@@ -31,6 +32,7 @@ class Server:
 	public virtual PipeServer,
 	public virtual PollServer,
 	public virtual PubSubServer,
+	public virtual TransactionServer,
 	public virtual wal::WalRecoveryServer
 {
 private:

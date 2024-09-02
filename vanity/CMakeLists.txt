@@ -25,7 +25,6 @@ add_library(libvanity STATIC
 	repeat_event_server.cpp
 	server.cpp
 	session_server.cpp
-	transaction_server.cpp
 )
 
 target_link_libraries(libvanity
