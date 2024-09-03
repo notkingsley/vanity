@@ -46,8 +46,7 @@ inline void LockedDatabase::wal_log(trn_id_t trn_id, db_op_t op, const Args &...
 }
 
 
-void LockedDatabase::wal_redo_db_op(trn_id_t trn_id, db_op_t op, std::ifstream &in, get_db_func_t& get_db) {
-	serializer::ReadHandle reader{in};
+void LockedDatabase::wal_redo_db_op(trn_id_t trn_id, db_op_t op, serializer::ReadHandle& reader, get_db_func_t& get_db) {
 	switch (op) {
 		case db_op_t::has:
 		case db_op_t::get:

@@ -103,23 +103,21 @@ void PersistJournalServer::do_recover()
 	auto eof = std::ifstream::traits_type::eof();
 	std::ifstream wal{*m_wal_file};
 
+	serializer::ReadHandle reader {wal};
 	while (wal.peek() != eof)
 	{
-		auto entry_t = serializer::read<wal_entry_t>(wal);
-		auto db = serializer::read<uint>(wal);
-
+		auto [entry_t, db] = reader.read<wal_entry_t, uint>();
 		switch (entry_t) {
 			case wal_entry_t::db_op:
 			{
-				auto trn_id = serializer::read<trn_id_t>(wal);
-				auto op = serializer::read<db::db_op_t>(wal);
-				database_obj(db).wal_redo_db_op(trn_id, op, wal, get_db);
+				auto [trn_id, op] = reader.read<trn_id_t, db::db_op_t>();
+				database_obj(db).wal_redo_db_op(trn_id, op, reader, get_db);
 				break;
 			}
 			case wal_entry_t::expire:
 			{
-				auto body = serializer::read<std::string>(wal);
-				database_obj(db).wal_redo_expiry(body);
+				auto key = reader.read<std::string>();
+				database_obj(db).wal_redo_expiry(key);
 				break;
 			}
 			default:
