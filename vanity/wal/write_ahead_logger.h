@@ -24,12 +24,6 @@ namespace vanity::wal {
 class WriteAheadLogger
 {
 private:
-	// the WAL file
-	std::ofstream m_wal_file;
-
-	// mutex for the WAL
-	std::mutex m_wal_mutex;
-
 	template<std::size_t n, typename T, typename... Tp>
 	struct is_nth_type;
 
@@ -48,29 +42,41 @@ private:
 	template<size_t n, typename T, typename... Args>
 	static constexpr bool is_nth_type_v = is_nth_type<n, T, Args...>::value;
 
-
-	// write an entry to the wal
+	// validate parameter types on Args
 	template<typename ...Args>
-	void wal(const Args &... args) {
-		static constexpr bool is_wal_entry_0 = is_nth_type_v<0, wal_entry_t, Args...>;
-		static constexpr bool is_uint_1 = is_nth_type_v<1, uint, Args...>;
-		static constexpr bool is_string_2 = is_nth_type_v<2, std::string, Args...>;
-		static constexpr bool is_trn_id_2 = is_nth_type_v<2, trn_id_t, Args...>;
-		static constexpr bool is_db_op_3 = is_nth_type_v<3, db::db_op_t, Args...>;
+	static constexpr void validate_types(const Args &...) {
+		constexpr bool is_wal_entry_0 = is_nth_type_v<0, wal_entry_t, Args...>;
+		constexpr bool is_uint_1 = is_nth_type_v<1, uint, Args...>;
+		constexpr bool is_string_2 = is_nth_type_v<2, std::string, Args...>;
+		constexpr bool is_trn_id_2 = is_nth_type_v<2, trn_id_t, Args...>;
+		constexpr bool is_db_op_3 = is_nth_type_v<3, db::db_op_t, Args...>;
 
 		static_assert(is_wal_entry_0, "First argument must be of type wal_entry_t");
 		static_assert(is_uint_1, "Second argument must be of type uint");
 		static_assert((is_string_2) or (is_trn_id_2 and is_db_op_3),
 			"Third argument must be of type std::string or trn_id_t and fourth argument must be of type db::db_op_t"
 		);
+	}
+
+	// the WAL file
+	std::ofstream m_wal_file;
+
+	// mutex for the WAL
+	std::mutex m_wal_mutex;
+
+
+	// write an entry to the wal
+	template<typename ...Args>
+	void wal(const Args &... args) {
+		validate_types(args...);
 
 		std::lock_guard lock(m_wal_mutex);
 		if (not m_wal_file.is_open())
 			return;
 
 		serializer::WriteHandle writer{m_wal_file};
-		(writer.write(args), ...);
-		m_wal_file << std::endl;
+		writer.write(args...);
+		std::endl(m_wal_file);
 	}
 
 	// close the WAL
