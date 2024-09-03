@@ -36,8 +36,6 @@ using db_data_type = std::variant<string_t, int_t, float_t, list_t, set_t, hash_
 template<size_t I>
 using db_index_t = typename std::variant_alternative_t<I, db_data_type>;
 
-using trn_id_t = uint64_t;
-
 } // namespace vanity::db
 
 #endif //VANITY_TYPES_H

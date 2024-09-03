@@ -11,6 +11,7 @@
 
 #include "client/client.h"
 #include "db/db/db_operations.h"
+#include "db/trn_constants.h"
 #include "utils/serializer.h"
 #include "wal_entry_t.h"
 
@@ -54,13 +55,13 @@ private:
 		static constexpr bool is_wal_entry_0 = is_nth_type_v<0, wal_entry_t, Args...>;
 		static constexpr bool is_uint_1 = is_nth_type_v<1, uint, Args...>;
 		static constexpr bool is_string_2 = is_nth_type_v<2, std::string, Args...>;
-		static constexpr bool is_trn_id_2 = is_nth_type_v<2, db::trn_id_t, Args...>;
+		static constexpr bool is_trn_id_2 = is_nth_type_v<2, trn_id_t, Args...>;
 		static constexpr bool is_db_op_3 = is_nth_type_v<3, db::db_op_t, Args...>;
 
 		static_assert(is_wal_entry_0, "First argument must be of type wal_entry_t");
 		static_assert(is_uint_1, "Second argument must be of type uint");
 		static_assert((is_string_2) or (is_trn_id_2 and is_db_op_3),
-			"Third argument must be of type std::string or db::trn_id_t and fourth argument must be of type db::db_op_t"
+			"Third argument must be of type std::string or trn_id_t and fourth argument must be of type db::db_op_t"
 		);
 
 		std::lock_guard lock(m_wal_mutex);
@@ -81,7 +82,7 @@ public:
 
 	// log a db operation that's about to happen
 	template<typename ...Args>
-	void wal_db_op(uint db, db::trn_id_t trn_id, db::db_op_t op, const Args &... args) {
+	void wal_db_op(uint db, trn_id_t trn_id, db::db_op_t op, const Args &... args) {
 		wal(wal_entry_t::db_op, db, trn_id, op, args...);
 	}
 

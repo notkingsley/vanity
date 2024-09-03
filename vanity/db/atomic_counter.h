@@ -23,7 +23,7 @@ private:
 
 public:
 	// create a new AtomicCounter with an initial value
-	explicit AtomicCounter(uint64_t value = 0) : m_value(value) {}
+	explicit AtomicCounter(uint64_t value) : m_value(value) {}
 
 	// get the next value of the counter
 	uint64_t next() {

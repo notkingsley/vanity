@@ -11,6 +11,8 @@
 #include <set>
 #include <string>
 
+#include "db/trn_constants.h"
+
 
 namespace vanity {
 
@@ -43,7 +45,7 @@ struct user_data_t {
 	uint database = 0;
 
 	// id of the current transaction
-	uint64_t trn_id = 0;
+	trn_id_t trn_id = NO_TRN_ID;
 };
 
 // a peer's data
