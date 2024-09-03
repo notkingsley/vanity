@@ -9,7 +9,6 @@
 #include <fstream>
 #include <mutex>
 
-#include "client/client.h"
 #include "db/db/db_operations.h"
 #include "db/trn_constants.h"
 #include "utils/serializer.h"

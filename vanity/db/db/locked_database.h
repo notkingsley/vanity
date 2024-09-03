@@ -11,7 +11,7 @@
 #include <mutex>
 
 #include "database.h"
-#include "wal/write_ahead_logger.h"
+#include "db/wal/write_ahead_logger.h"
 
 
 namespace vanity::db {

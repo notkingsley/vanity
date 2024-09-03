@@ -12,7 +12,7 @@
 #include "repeat_event_server.h"
 #include "request/request_handler.h"
 #include "response/response_server.h"
-#include "wal/persist_journal_server.h"
+#include "db/wal/persist_journal_server.h"
 
 
 namespace vanity {
