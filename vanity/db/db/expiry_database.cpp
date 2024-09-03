@@ -2,6 +2,7 @@
 // Created by kingsli on 11/22/23.
 //
 
+#include <algorithm>
 #include <random>
 #include <ranges>
 #include <utility>
@@ -68,24 +69,19 @@ void ExpiryDatabase::shallow_purge() {
 
 	while (not m_expiry_times.empty())
 	{
-		auto sample_size = std::min<size_t>(M_MAX_SAMPLE_SIZE, m_expiry_times.size());
-		auto all_keys = std::views::keys(m_expiry_times);
-		std::vector<key_type> sampled_keys;
-		sampled_keys.reserve(sample_size);
+		auto size = std::min(M_MAX_SAMPLE_SIZE, m_expiry_times.size());
+		std::vector<key_type> keys;
+		keys.reserve(size);
 
-		sample(
-			all_keys.begin(),
-			all_keys.end(),
-			back_inserter(sampled_keys),
-			sample_size,
-			gen
-		);
+		auto all_keys = m_expiry_times | std::views::keys;
+		std::ranges::sample(all_keys, back_inserter(keys), size, gen);
+
 		size_t expired_count = 0;
-		for (auto& key: sampled_keys)
+		for (auto& key: keys)
 			if (erase_if_expired(key))
 				expired_count += 1;
 
-		if (expired_count / sample_size < M_MIN_EXPIRED_PERCENTAGE)
+		if (expired_count / size < M_MIN_EXPIRED_PERCENTAGE)
 			break;
 	}
 }
