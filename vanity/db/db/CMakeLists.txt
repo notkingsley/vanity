@@ -11,4 +11,6 @@ add_library(vanity_db_db STATIC
 	locked_database.cpp
 	primitive_database.cpp
 	set_database.cpp
+	general_database.cpp
+	general_database.h
 )
