@@ -1,12 +1,12 @@
 //
-// Created by kingsli on 10/29/23.
+// Created by kingsli on 9/3/24.
 //
 
-#include "base_database_server.h"
+#include "general_database_server.h"
 
 namespace vanity {
 
-void BaseDatabaseServer::request_switch_db(Client &client, int64_t db) {
+void GeneralDatabaseServer::request_switch_db(Client &client, int64_t db) {
 	if (not validate_db_index(client, db))
 		return;
 
@@ -14,7 +14,7 @@ void BaseDatabaseServer::request_switch_db(Client &client, int64_t db) {
 	send(client, ok());
 }
 
-void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
+void GeneralDatabaseServer::request_get(Client &client, const std::string &key) {
 	auto value = database(client).get(key);
 	if (not value.has_value())
 		return send(client, null());
@@ -38,14 +38,14 @@ void BaseDatabaseServer::request_get(Client &client, const std::string &key) {
 	}
 }
 
-void BaseDatabaseServer::request_del(Client &client, const std::string &key) {
+void GeneralDatabaseServer::request_del(Client &client, const std::string &key) {
 	if (database(client).del(key))
 		send(client, ok());
 	else
 		send(client, null());
 }
 
-void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
+void GeneralDatabaseServer::request_type(Client &client, const std::string &key) {
 	auto type = database(client).type(key);
 	if (not type.has_value())
 		return send(client, null());
@@ -68,20 +68,20 @@ void BaseDatabaseServer::request_type(Client &client, const std::string &key) {
 	}
 }
 
-void BaseDatabaseServer::request_reset(Client &client) {
+void GeneralDatabaseServer::request_reset(Client &client) {
 	database(client).reset();
 	logger().info("Reset database");
 	send(client, ok());
 }
 
-void BaseDatabaseServer::request_exists(Client &client, const std::string &key) {
+void GeneralDatabaseServer::request_exists(Client &client, const std::string &key) {
 	if (database(client).has(key))
 		send(client, ok());
 	else
 		send(client, null());
 }
 
-void BaseDatabaseServer::request_keys(Client &client) {
+void GeneralDatabaseServer::request_keys(Client &client) {
 	auto keys = database(client).keys();
 	if (keys.empty())
 		return send(client, null());
@@ -89,21 +89,21 @@ void BaseDatabaseServer::request_keys(Client &client) {
 		send(client, ok(keys));
 }
 
-void BaseDatabaseServer::request_copy_to(Client &client, const std::string &from, const std::string &to) {
+void GeneralDatabaseServer::request_copy_to(Client &client, const std::string &from, const std::string &to) {
 	if (database(client).copy_to(from, to))
 		send(client, ok());
 	else
 		send(client, null());
 }
 
-void BaseDatabaseServer::request_move_to(Client &client, const std::string &from, const std::string &to) {
+void GeneralDatabaseServer::request_move_to(Client &client, const std::string &from, const std::string &to) {
 	if (database(client).move_to(from, to))
 		send(client, ok());
 	else
 		send(client, null());
 }
 
-void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &from, int64_t dest) {
+void GeneralDatabaseServer::request_copy_to_db(Client &client, const std::string &from, int64_t dest) {
 	if (not validate_db_index(client, dest))
 		return;
 
@@ -116,7 +116,7 @@ void BaseDatabaseServer::request_copy_to_db(Client &client, const std::string &f
 		send(client, null());
 }
 
-void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &from, int64_t dest) {
+void GeneralDatabaseServer::request_move_to_db(Client &client, const std::string &from, int64_t dest) {
 	if (not validate_db_index(client, dest))
 		return;
 
@@ -129,7 +129,7 @@ void BaseDatabaseServer::request_move_to_db(Client &client, const std::string &f
 		send(client, null());
 }
 
-bool BaseDatabaseServer::validate_db_index(Client &client, int64_t index) {
+bool GeneralDatabaseServer::validate_db_index(Client &client, int64_t index) {
 	if (index < 0) {
 		send(client, error(" db index must be non-negative"));
 		return false;

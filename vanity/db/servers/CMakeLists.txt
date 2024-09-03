@@ -3,7 +3,6 @@ project(vanity_db_servers)
 include_directories(.)
 
 add_library(vanity_db_servers STATIC
-	base_database_server.cpp
 	database_object_server.cpp
 	# linker error if this is not in this file
 	database_wrapper.cpp
@@ -12,4 +11,6 @@ add_library(vanity_db_servers STATIC
 	list_database_server.cpp
 	primitive_database_server.cpp
 	set_database_server.cpp
+	general_database_server.cpp
+	general_database_server.h
 )

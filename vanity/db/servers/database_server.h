@@ -6,6 +6,7 @@
 #define VANITY_DATABASE_SERVER_H
 
 #include "expiry_database_server.h"
+#include "general_database_server.h"
 #include "hash_database_server.h"
 #include "list_database_server.h"
 #include "primitive_database_server.h"
@@ -18,6 +19,7 @@ namespace vanity {
  */
 class DatabaseServer :
 	public virtual ExpiryDatabaseServer,
+	public virtual GeneralDatabaseServer,
 	public virtual HashDatabaseServer,
 	public virtual ListDatabaseServer,
 	public virtual PrimitiveDatabaseServer,
