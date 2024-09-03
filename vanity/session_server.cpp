@@ -11,7 +11,6 @@ client_auth SessionServer::session_auth(Client &client) {
 }
 
 void SessionServer::session_set_auth(Client &client, client_auth auth) {
-	auto &session_info = client.session_info();
 	switch (auth) {
 		case client_auth::USER:
 		case client_auth::ADMIN: {
@@ -25,8 +24,9 @@ void SessionServer::session_set_auth(Client &client, client_auth auth) {
 		}
 	}
 
+	auto &session_info = client.session_info();
 	session_info.auth = auth;
-	session_info.user_data = std::make_unique<user_data_t>();
+	session_info.session_data = user_data_t{};
 }
 
 void SessionServer::session_set_auth(Client &client, client_auth auth, const std::string& addr, std::optional<std::string> id) {
@@ -35,7 +35,7 @@ void SessionServer::session_set_auth(Client &client, client_auth auth, const std
 
 	auto &session_info = client.session_info();
 	session_info.auth = auth;
-	session_info.peer_data = std::make_unique<peer_data_t>(addr, std::move(id));
+	session_info.session_data = peer_data_t{addr, std::move(id)};
 
 }
 
@@ -50,7 +50,7 @@ bool SessionServer::session_is_user(Client &client) {
 }
 
 user_data_t& SessionServer::session_user_data(Client& client) {
-	if (auto &user_data = client.session_info().user_data)
+	if (auto user_data = std::get_if<user_data_t>(&client.session_info().session_data))
 		return *user_data;
 
 	throw std::runtime_error("client is not a user");
@@ -74,7 +74,7 @@ uint64_t &SessionServer::session_trn_id(Client &client) {
 }
 
 peer_data_t &SessionServer::session_peer_data(Client &client) {
-	if (auto &peer_data = client.session_info().peer_data)
+	if (auto peer_data = std::get_if<peer_data_t>(&client.session_info().session_data))
 		return *peer_data;
 
 	throw std::runtime_error("client is not a peer");

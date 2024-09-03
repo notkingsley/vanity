@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 
 #include "db/trn_constants.h"
 
@@ -73,11 +74,8 @@ struct peer_data_t {
  * A session_info is a struct that contains information about a client's session
  */
 struct session_info {
-	// the peer's data, if the client is a peer
-	std::unique_ptr<peer_data_t> peer_data;
-
-	// the user's data, if the client is a user
-	std::unique_ptr<user_data_t> user_data;
+	// session data of the client, either user or peer data (or nothing)
+	std::variant<std::monostate, user_data_t, peer_data_t> session_data;
 
 	// client auth
 	client_auth auth = client_auth::UNKNOWN;
