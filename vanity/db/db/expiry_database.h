@@ -96,6 +96,15 @@ public:
 	void expiry_enabled(bool enable);
 
 protected:
+	// get the value for a key, checking if it is expired
+	// returns the value, or std::nullopt if the key does not exist
+	// or if it is expired
+	std::optional<const data_type> expiry_aware_get(const key_type& key);
+
+	// delete the value for a key
+	// and clear the expiry time
+	bool expiry_aware_del(const key_type& key);
+
 	// check if the key is is_expired
 	bool is_expired(const key_type &key);
 

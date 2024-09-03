@@ -76,7 +76,7 @@ SetDatabase::set_remove(const key_type &key, size_t count) {
 	}
 
 	if (set.empty())
-		del(key);
+		expiry_aware_del(key);
 
 	return removed;
 }
@@ -97,7 +97,7 @@ SetDatabase::set_discard(const key_type &key, const set_t& values) {
 		set.erase(v);
 
 	if (set.empty())
-		del(key);
+		expiry_aware_del(key);
 
 	return size - set.size();
 }
@@ -154,7 +154,7 @@ SetDatabase::set_move(const key_type &source, const key_type &dest, const std::s
 	dest_set.insert(source_set.extract(value));
 
 	if (source_set.empty())
-		del(source);
+		expiry_aware_del(source);
 
 	return true;
 }

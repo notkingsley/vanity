@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <random>
 #include <ranges>
-#include <utility>
 
 #include "expiry_database.h"
 
@@ -102,6 +101,18 @@ void ExpiryDatabase::expiry_enabled(bool enable) {
 
 void ExpiryDatabase::force_expire(const key_type &key) {
 	_do_expire(key);
+}
+
+auto ExpiryDatabase::expiry_aware_get(const BaseMap::key_type &key) -> std::optional<const data_type> {
+	erase_if_expired(key);
+	if (m_data.contains(key))
+		return m_data.at(key);
+	return std::nullopt;
+}
+
+bool ExpiryDatabase::expiry_aware_del(const BaseMap::key_type &key) {
+	clear_expiry(key);
+	return m_data.erase(key);
 }
 
 } // namespace vanity::db

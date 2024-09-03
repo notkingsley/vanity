@@ -80,7 +80,7 @@ std::vector<std::optional<PrimitiveDatabase::data_type>> PrimitiveDatabase::many
 	std::vector<std::optional<data_type>> values;
 	values.reserve(keys.size());
 	for (const auto &key: keys)
-		values.emplace_back(get(key));
+		values.emplace_back(expiry_aware_get(key));
 
 	return values;
 }

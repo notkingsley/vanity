@@ -106,7 +106,7 @@ std::variant<size_t, HashError> HashDatabase::hash_remove(const key_type &key, c
 		hash.erase(hash_key);
 
 	if (hash.empty())
-		del(key);
+		expiry_aware_del(key);
 
 	return size - hash.size();
 }
