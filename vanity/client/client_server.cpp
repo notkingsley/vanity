@@ -59,7 +59,7 @@ void ClientServer::remove_client(TcpClient &client) {
 }
 
 auto ClientServer::handle_callback(TcpClient& client) -> handle_callback_t {
-	return [this, &client](auto msg) {
+	return [this, &client](const auto& msg) {
 		handle(msg, client);
 	};
 }
