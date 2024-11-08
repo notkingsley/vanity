@@ -21,7 +21,7 @@ bool DatabaseWrapper::del(const key_type &key) {
 	return m_database.del(m_trn_id, key);
 }
 
-std::optional<Database::data_type> DatabaseWrapper::get(const key_type &key) {
+std::optional<db::db_data_type> DatabaseWrapper::get(const key_type &key) {
 	return m_database.get(m_trn_id, key);
 }
 
@@ -29,7 +29,7 @@ std::optional<int> DatabaseWrapper::type(const key_type &key) {
 	return m_database.type(m_trn_id, key);
 }
 
-std::vector<Database::key_type> DatabaseWrapper::keys() {
+std::vector<db::db_key_type> DatabaseWrapper::keys() {
 	return m_database.keys(m_trn_id);
 }
 
@@ -91,7 +91,7 @@ std::optional<int_t> DatabaseWrapper::str_len(const key_type &key) {
 	return m_database.str_len(m_trn_id, key);
 }
 
-std::vector<std::optional<Database::data_type>> DatabaseWrapper::many_get(const std::vector<key_type> &keys) {
+std::vector<std::optional<db::db_data_type>> DatabaseWrapper::many_get(const std::vector<key_type> &keys) {
 	return m_database.many_get(m_trn_id, keys);
 }
 

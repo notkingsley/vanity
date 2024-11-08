@@ -14,11 +14,10 @@ namespace vanity::db {
  */
 class BaseMap
 {
-public:
+protected:
 	using key_type = db_key_type;
 	using data_type = db_data_type;
 
-protected:
 	// the key value store
 	std::unordered_map<key_type, data_type> m_data;
 };
