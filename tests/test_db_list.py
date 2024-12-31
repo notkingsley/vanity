@@ -233,6 +233,7 @@ class ListMethodsTest(BaseDatabaseTest):
         """
         response = self.client.list_set("test_list_methods", 2, "valuex")
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, "value3")
         response = self.client.list_get("test_list_methods", 2)
         self.assertTrue(response.is_ok())
         self.assertEqual(response.value, "valuex")
@@ -425,11 +426,13 @@ class NegativeIndicesTest(BaseDatabaseTest):
         """
         response = self.client.list_set("test_list_negative_indices", -3, "valuex")
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, "value10")
         response = self.client.list_get("test_list_negative_indices", -3)
         self.assertTrue(response.is_ok())
         self.assertEqual(response.value, "valuex")
         response = self.client.list_set("test_list_negative_indices", -7, "valuex")
         self.assertTrue(response.is_ok())
+        self.assertEqual(response.value, "value6")
         response = self.client.list_get("test_list_negative_indices", -7)
         self.assertTrue(response.is_ok())
         self.assertEqual(response.value, "valuex")
