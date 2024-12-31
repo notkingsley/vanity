@@ -162,7 +162,7 @@ public:
 	virtual void request_list_get(Client& client, const std::string& key, int64_t index) = 0;
 
 	// a list_set request was received from a client
-	virtual void request_list_set(Client& client, const std::string& key, int64_t index, const std::string& value) = 0;
+	virtual void request_list_set(Client& client, const std::string& key, int64_t index, std::string value) = 0;
 
 	// a list_push_left request was received from a client
 	virtual void request_list_push_left(Client& client, const std::string& key, std::list<std::string> values) = 0;

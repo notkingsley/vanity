@@ -292,7 +292,7 @@ void RequestHandler::dispatch(Client &client, Request& request, bool end) {
 		case operation_t::LIST_SET:
 		{
 			auto [key, index, value] = request.get_exact<STR, INT, STR>(end);
-			request_list_set(client, key, index, value);
+			request_list_set(client, key, index, std::move(value));
 			break;
 		}
 		case operation_t::LIST_PUSH_LEFT:

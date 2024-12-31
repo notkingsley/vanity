@@ -105,8 +105,8 @@ std::variant<std::string, ListErrorKind> DatabaseWrapper::list_get(const key_typ
 }
 
 std::variant<bool, ListErrorKind>
-DatabaseWrapper::list_set(const key_type &key, int64_t index, const std::string &value) {
-	return m_database.list_set(m_trn_id, key, index, value);
+DatabaseWrapper::list_set(const key_type &key, int64_t index, std::string value) {
+	return m_database.list_set(m_trn_id, key, index, std::move(value));
 }
 
 std::variant<size_t, ListErrorKind> DatabaseWrapper::list_push_left(const key_type &key, list_t values) {
