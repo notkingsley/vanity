@@ -388,10 +388,10 @@ void LockedDatabase::pre_expire(const key_type &key) {
 }
 
 
-void LockedDatabase::str_set(trn_id_t trn_id, const key_type &key, const std::string &value) {
+void LockedDatabase::str_set(trn_id_t trn_id, const key_type &key, std::string value) {
 	std::lock_guard lock{m_mutex};
 	wal_log(trn_id, db_op_t::str_set, key, value);
-	Database::str_set(key, value);
+	Database::str_set(key, std::move(value));
 }
 
 void LockedDatabase::int_set(trn_id_t trn_id, const key_type &key, int_t value) {

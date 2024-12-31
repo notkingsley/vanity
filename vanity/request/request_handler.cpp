@@ -237,7 +237,7 @@ void RequestHandler::dispatch(Client &client, Request& request, bool end) {
 		case operation_t::STR_SET:
 		{
 			auto [key, value] = request.get_exact<STR, STR>(end);
-			request_str_set(client, key, value);
+			request_str_set(client, key, std::move(value));
 			break;
 		}
 		case operation_t::INT_SET:

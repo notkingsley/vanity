@@ -6,17 +6,17 @@
 
 namespace vanity {
 
-void PrimitiveDatabaseServer::request_str_set(Client &client, const std::string &key, const std::string &value) {
-	database(client).str_set(key, value);
+void PrimitiveDatabaseServer::request_str_set(Client &client, const std::string &key, std::string value) {
+	database(client).str_set(key, std::move(value));
 	send(client, ok());
 }
 
-void PrimitiveDatabaseServer::request_int_set(Client &client, const std::string &key, const int64_t &value) {
+void PrimitiveDatabaseServer::request_int_set(Client &client, const std::string &key, int64_t value) {
 	database(client).int_set(key, value);
 	send(client, ok());
 }
 
-void PrimitiveDatabaseServer::request_float_set(Client &client, const std::string &key, const double &value) {
+void PrimitiveDatabaseServer::request_float_set(Client &client, const std::string &key, double value) {
 	database(client).float_set(key, value);
 	send(client, ok());
 }
@@ -36,7 +36,7 @@ void PrimitiveDatabaseServer::request_incr_float(Client &client, const std::stri
 	if (result.has_value())
 		send(client, ok(result.value()));
 	else
-		send(client, bad_type("not a list"));
+		send(client, bad_type("not a float"));
 }
 
 void PrimitiveDatabaseServer::request_str_len(Client &client, const std::string &key) {

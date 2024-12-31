@@ -31,7 +31,7 @@ public:
 	PrimitiveDatabase& operator=(PrimitiveDatabase&& other) noexcept;
 
 	// set a string value for a key
-	void str_set(const key_type& key, const std::string& value);
+	void str_set(const key_type& key, std::string value);
 
 	// set an integer value for a key
 	void int_set(const key_type& key, int_t value);

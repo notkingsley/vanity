@@ -16,8 +16,8 @@ PrimitiveDatabase &PrimitiveDatabase::operator=(PrimitiveDatabase &&other) noexc
 	return *this;
 }
 
-void PrimitiveDatabase::str_set(const key_type& key, const std::string& value) {
-	m_data[key] = value;
+void PrimitiveDatabase::str_set(const key_type& key, std::string value) {
+	m_data[key] = std::move(value);
 	clear_expiry(key);
 }
 

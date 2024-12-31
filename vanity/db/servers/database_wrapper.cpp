@@ -67,8 +67,8 @@ void DatabaseWrapper::clear_all_expiry() {
 }
 
 
-void DatabaseWrapper::str_set(const key_type &key, const std::string &value) {
-	m_database.str_set(m_trn_id, key, value);
+void DatabaseWrapper::str_set(const key_type &key, std::string value) {
+	m_database.str_set(m_trn_id, key, std::move(value));
 }
 
 void DatabaseWrapper::int_set(const key_type &key, int_t value) {
