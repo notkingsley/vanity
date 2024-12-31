@@ -15,12 +15,7 @@ void ListDatabaseServer::request_list_get(Client &client, const std::string &key
 }
 
 void ListDatabaseServer::request_list_set(Client &client, const std::string &key, int64_t index, std::string value) {
-	auto result = database(client).list_set(key, index, std::move(value));
-
-	if (std::holds_alternative<db::ListErrorKind>(result))
-		send_error(client, std::get<db::ListErrorKind>(result));
-	else
-		send(client, ok());
+	handle_result(client, database(client).list_set(key, index, std::move(value)));
 }
 
 void ListDatabaseServer::request_list_push_left(Client &client, const std::string &key, std::list<std::string> values) {

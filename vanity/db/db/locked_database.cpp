@@ -443,7 +443,7 @@ std::variant<std::string, ListErrorKind> LockedDatabase::list_get(trn_id_t trn_i
 	return Database::list_get(key, index);
 }
 
-std::variant<bool, ListErrorKind>
+std::variant<string_t, ListErrorKind>
 LockedDatabase::list_set(trn_id_t trn_id, const key_type &key, int64_t index, std::string value) {
 	std::lock_guard lock{m_mutex};
 	wal_log(trn_id, db_op_t::list_set, key, index, value);

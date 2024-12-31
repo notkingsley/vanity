@@ -40,7 +40,7 @@ ListDatabase::list_get(const key_type &key, int64_t index) {
 	return *std::get<list_t::iterator>(it_or_error);
 }
 
-std::variant<bool, ListErrorKind>
+std::variant<string_t, ListErrorKind>
 ListDatabase::list_set(const key_type &key, int64_t index, std::string value) {
 	erase_if_expired(key);
 
@@ -49,8 +49,8 @@ ListDatabase::list_set(const key_type &key, int64_t index, std::string value) {
 		return std::get<ListErrorKind>(it_or_error);
 
 	auto& it = std::get<list_t::iterator>(it_or_error);
-	*it = std::move(value);
-	return true;
+	std::swap(*it, value);
+	return value;
 }
 
 std::variant<size_t, ListErrorKind>

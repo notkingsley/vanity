@@ -208,9 +208,9 @@ public:
 	std::variant<std::string, ListErrorKind> list_get(trn_id_t trn_id, const key_type &key, int64_t index);
 
 	// set the value for a list key at a given index
-	// returns true if the value was set, or ListErrorKind::NotList if the value is not a list
+	// returns the old value if the value was set, or ListErrorKind::NotList if the value is not a list
 	// or ListErrorKind::OutOfRange if the index is out of range or if value does not exist
-	std::variant<bool, ListErrorKind> list_set(trn_id_t trn_id, const key_type &key, int64_t index, std::string value);
+	std::variant<string_t, ListErrorKind> list_set(trn_id_t trn_id, const key_type &key, int64_t index, std::string value);
 
 	// push values to the top of a list
 	// returns the new length, or ListErrorKind::NotList if the value is not a list
